@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package mqtt;
+
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "MqttDataProto";
+
+message MqttProtoModel {
+  string ip = 1;
+  string port = 2;
+  string client_id = 3;
+  string username = 4;
+  string password = 5;
+  bool enabled = 7;
+  string friendly_name = 8;
+}

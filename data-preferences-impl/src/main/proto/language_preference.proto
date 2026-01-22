@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option java_package = "data.preferences.impl.proto";
+option java_multiple_files = true;
+
+message LanguagePreferenceProto {
+  string locale_code = 1;
+}

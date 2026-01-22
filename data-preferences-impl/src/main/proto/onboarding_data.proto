@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package onboarding;
+
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "OnboardingDataProto";
+
+message OnboardingProtoModel {
+  bool is_completed = 1;
+}
