@@ -1,0 +1,86 @@
+<resources>
+    <!-- Onboarding Slide 1 -->
+    <string name="onboarding_slide_1_title">Control everything in one place</string>
+    <string name="onboarding_slide_1_description">Your professional dashboard.</string>
+
+    <!-- Onboarding Slide 2 -->
+    <string name="onboarding_slide_2_title">System Permissions</string>
+    <string name="onboarding_slide_2_description">Grant access for stable kiosk mode operation.</string>
+
+    <!-- Onboarding Slide 3 -->
+    <string name="onboarding_slide_3_title">URL Configuration</string>
+    <string name="onboarding_slide_3_description">Enter Dashboard URL and setup White list.</string>
+
+    <!-- Onboarding Slide 4 -->
+    <string name="onboarding_slide_4_title">Ready to go</string>
+    <string name="onboarding_slide_4_description">Everything is now under your full control.</string>
+
+    <!-- Wizard Pager Buttons -->
+    <string name="wizard_button_previous">Previous</string>
+    <string name="wizard_button_next">Next</string>
+    <string name="wizard_button_finish">Finish</string>
+
+    <!-- Permissions -->
+    <string name="permission_camera_access">Camera Access</string>
+    <string name="permission_overlay_access">Overlay Access</string>
+    <string name="permission_device_admin">Device Admin</string>
+    <string name="permission_device_admin_explanation">Required for programmatic screen locking and stable kiosk operation.</string>
+    <string name="permission_system_settings">System Settings</string>
+    <string name="permission_post_notifications">Post Notifications</string>
+
+    <!-- URL Configuration Placeholders -->
+    <string name="url_configuration_dashboard_url_placeholder">Dashboard URL</string>
+    <string name="url_configuration_whitelist_placeholder">White list</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_ui_ux">UI &amp; UX</string>
+    <string name="settings_web_kiosk">Web kiosk</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_lang">Language</string>
+    <string name="settings_application">Application</string>
+    <string name="settings_sensitivity">Sensitivity</string>
+    <string name="settings_dim_delay">Dim delay</string>
+    <string name="settings_fab_delay">FAB delay</string>
+    <string name="settings_screen_timeout">Screen timeout</string>
+    <string name="settings_move_detector">Mode detector</string>
+    <string name="settings_dock_position">Dock position</string>
+
+    <!-- MQTT -->
+    <string name="settings_mqtt">MQTT</string>
+    <string name="settings_mqtt_ip">IP Address</string>
+    <string name="settings_mqtt_port">Port</string>
+    <string name="settings_mqtt_client_id">Client ID</string>
+    <string name="settings_mqtt_username">Username</string>
+    <string name="settings_mqtt_password">Password</string>
+    <string name="settings_mqtt_topic">Topic</string>
+    <string name="settings_mqtt_friendly_name">Friendly Name</string>
+
+    <string name="settings_system">System</string>
+    <string name="settings_restart">Restart application</string>
+
+    <!-- About -->
+    <string name="about_title">About</string>
+    <string name="about_description">A modern open-source tool for transforming Android tablets into smart control panels with sensor-driven automated wake-up.</string>
+
+    <!-- Language Selection -->
+    <string name="settings_lang_select">Select Language</string>
+    <string name="lang_english">English</string>
+    <string name="lang_ukrainian">Ukrainian</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Errors -->
+    <string name="error_title">Error</string>
+    <string name="error_unknown">An unknown error occurred</string>
+    <string name="error_network">Network error. Please check your connection</string>
+    <string name="error_database">Database error occurred</string>
+    <string name="error_preference">Preference storage error</string>
+    <string name="error_not_found">Resource not found</string>
+
+    <!-- Services -->
+    <string name="motion_service_notification_title">Motion Detection</string>
+    <string name="motion_service_notification_text">Running in the background</string>
+    <string name="mqtt_service_notification_title">MQTT Telemetry</string>
+    <string name="mqtt_service_notification_text">Reporting device state</string>
+
+</resources>
