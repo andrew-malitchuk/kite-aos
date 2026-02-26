@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="launcher_background">#191919</color>
+    <color name="launcher_foreground">#FF7A1A</color>
+    <color name="launcher_accent">#FAFAFA</color>
+</resources>
