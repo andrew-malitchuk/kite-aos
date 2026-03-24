@@ -20,6 +20,8 @@ dependencies {
     compileOnly(libs.android.gradle.plugin)
     compileOnly(libs.kotlin.gradle.plugin)
     compileOnly(libs.ksp.gradle.plugin)
+    implementation(libs.detekt.gradle.plugin)
+    implementation(libs.ktlint.gradle.plugin)
     implementation(libs.compose.compiler.gradle)
 }
 gradlePlugin {
@@ -59,6 +61,12 @@ gradlePlugin {
                 "dev.yahk.convention.source.conventionplugin.kotlin.KotlinLibraryConventionPlugin"
         }
         //endregion kotlin
+
+        register("codeQuality") {
+            id = "dev.yahk.convention.quality"
+            implementationClass =
+                "dev.yahk.convention.source.conventionplugin.core.CodeQualityConventionPlugin"
+        }
     }
 }
 

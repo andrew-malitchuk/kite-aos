@@ -17,9 +17,10 @@ public class AndroidApplicationConventionPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
         plugins {
-            apply("com.android.application")
+            apply("co1m.android.application")
             apply("org.jetbrains.kotlin.android")
             apply("org.jetbrains.kotlin.plugin.compose")
+            apply("dev.yahk.convention.quality")
         }
 
         configureKotlinBase()
@@ -31,6 +32,11 @@ public class AndroidApplicationConventionPlugin : Plugin<Project> {
             buildFeatures {
                 buildConfig = true
                 compose = true
+            }
+
+            dependenciesInfo {
+                includeInApk = false
+                includeInBundle = false
             }
 
             defaultConfig {

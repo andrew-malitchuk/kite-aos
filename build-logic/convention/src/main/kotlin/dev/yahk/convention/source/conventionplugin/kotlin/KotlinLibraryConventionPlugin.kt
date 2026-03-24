@@ -34,6 +34,7 @@ public class KotlinLibraryConventionPlugin : Plugin<Project> {
         plugins {
             apply("org.jetbrains.kotlin.jvm")
             apply("org.jetbrains.kotlin.plugin.serialization")
+            apply("dev.yahk.convention.quality")
         }
 
         configureKotlinBase()
