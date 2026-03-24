@@ -10,5 +10,5 @@ internal val attributeLineHeight: ThemeLineHeight =
         label = 20.sp,
         body = 24.sp,
         caption = 16.sp,
-        action = 20.sp
+        action = 20.sp,
     )

@@ -25,14 +25,15 @@ public class BootReceiver : BroadcastReceiver() {
         if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
             Log.i(
                 "BootReceiver",
-                "Starting activity first for Android 14 background restrictions..."
+                "Starting activity first for Android 14 background restrictions...",
             )
 
-            val activityIntent = Intent(context, HostActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                putExtra("AUTO_START", true)
-            }
+            val activityIntent =
+                Intent(context, HostActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    putExtra("AUTO_START", true)
+                }
             context.startActivity(activityIntent)
         }
     }

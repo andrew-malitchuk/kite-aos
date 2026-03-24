@@ -21,13 +21,10 @@
 
 package presentation.core.ui.source.kit.atom.shape
 
-import presentation.core.ui.source.kit.atom.shape.SquircleShape
-
 /**
  * A collection of commonly used corner smoothing [Int] values for a [SquircleShape].
  */
 public object CornerSmoothing {
-
     /**
      * Does not apply corner smoothing.
      * The result will be similar to a [RoundedCornerShape].
@@ -57,5 +54,4 @@ public object CornerSmoothing {
      * resulting fully pronounced [SquircleShape].
      */
     public val Full: Int get() = 100
-
 }

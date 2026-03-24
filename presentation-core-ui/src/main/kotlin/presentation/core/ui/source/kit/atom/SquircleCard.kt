@@ -24,46 +24,47 @@ public fun SquircleCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
     enabled: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
     val backgroundColor by animateColorAsState(
         targetValue = if (isPressed && enabled) Theme.color.surfaceVariant else Theme.color.surface,
-        label = "SquircleCardBackgroundColor"
+        label = "SquircleCardBackgroundColor",
     )
 
     Box(
-        modifier = modifier
+        modifier =
+        modifier
             .clip(SquircleShape(Theme.size.sizeXL))
             .background(
-                when(enabled){
+                when (enabled) {
                     true -> backgroundColor
                     false -> Theme.color.canvas.copy(alpha = 0.5f)
-                }
-
-                )
+                },
+            )
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick,
-                enabled = enabled
+                enabled = enabled,
             )
-            .padding(Theme.spacing.sizeS)
+            .padding(Theme.spacing.sizeS),
     ) {
         content()
 
         if (!enabled) {
             Box(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .matchParentSize()
                     .clickable(
                         enabled = true,
                         onClick = {},
                         indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    )
+                        interactionSource = remember { MutableInteractionSource() },
+                    ),
             )
         }
     }
@@ -85,7 +86,7 @@ private fun SquircleCardDisabledPreview() {
     AppTheme {
         SquircleCard(
             modifier = Modifier.padding(16.dp),
-            enabled = false
+            enabled = false,
         ) {
             Text(text = "This is a squircle card")
         }

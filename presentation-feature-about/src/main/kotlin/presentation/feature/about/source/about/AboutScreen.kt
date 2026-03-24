@@ -19,9 +19,7 @@ import presentation.core.navigation.api.core.composition.LocalAppNavigator
  * @param viewModel The Koin-provided ViewModel managing the About screen logic.
  */
 @Composable
-public fun AboutScreen(
-    viewModel: AboutViewModel = koinViewModel(),
-) {
+public fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {
     val appNavigator = LocalAppNavigator.current
     val context = LocalContext.current
     val state by viewModel.collectAsState()

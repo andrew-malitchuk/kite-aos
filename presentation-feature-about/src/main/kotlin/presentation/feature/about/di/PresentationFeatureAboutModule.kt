@@ -1,7 +1,7 @@
 package presentation.feature.about.di
 
-import org.koin.core.annotation.Module
 import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 
 /**
 
@@ -16,7 +16,5 @@ import org.koin.core.annotation.ComponentScan
  */
 
 @Module
-
 @ComponentScan("presentation.feature.about")
-
 public class PresentationFeatureAboutModule

@@ -6,12 +6,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
-import presentation.core.styling.source.theme.AppTheme
-import presentation.core.ui.R
-import presentation.core.ui.source.kit.atom.button.core.StateIconButton
 import presentation.core.ui.source.kit.atom.button.core.ButtonAnimation
 import presentation.core.ui.source.kit.atom.button.core.ButtonColor
 import presentation.core.ui.source.kit.atom.button.core.ButtonSize
+import presentation.core.ui.source.kit.atom.button.core.StateIconButton
 import presentation.core.ui.source.kit.atom.button.icon.core.IconButtonDefault
 
 /**

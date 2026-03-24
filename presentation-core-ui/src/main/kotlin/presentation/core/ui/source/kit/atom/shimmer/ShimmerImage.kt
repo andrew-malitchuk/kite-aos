@@ -42,18 +42,20 @@ public fun ShimmerImage(
     val offsetX by transition.animateFloat(
         initialValue = -300f,
         targetValue = 1000f,
-        animationSpec = infiniteRepeatable(
+        animationSpec =
+        infiniteRepeatable(
             tween(durationMillis = shimmerDuration, easing = LinearEasing),
             RepeatMode.Restart,
         ),
         label = "",
     )
 
-    val brush = Brush.linearGradient(
-        colors = listOf(baseColor, highlightColor, baseColor),
-        start = Offset(offsetX, 0f),
-        end = Offset(offsetX + 500f, 500f),
-    )
+    val brush =
+        Brush.linearGradient(
+            colors = listOf(baseColor, highlightColor, baseColor),
+            start = Offset(offsetX, 0f),
+            end = Offset(offsetX + 500f, 500f),
+        )
 
     val painter = rememberVectorPainter(imageVector)
 

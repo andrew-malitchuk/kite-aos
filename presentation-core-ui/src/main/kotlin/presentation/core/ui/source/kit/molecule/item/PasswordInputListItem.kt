@@ -1,13 +1,10 @@
 package presentation.core.ui.source.kit.molecule.item
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.isImeVisible
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -23,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -37,8 +33,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
-import presentation.core.ui.source.kit.atom.SquircleCard
-import presentation.core.ui.source.kit.atom.container.IconContainer
 import presentation.core.ui.source.kit.atom.icon.IcClose24
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 
@@ -53,7 +47,7 @@ public fun PasswordInputListItem(
     icon: ImageVector,
     iconBackgroundColor: Color,
     iconForegroundColor: Color,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     val handleColor = Theme.color.brand
     val backgroundColor = Theme.color.brand.copy(alpha = 0.4f)
@@ -76,12 +70,13 @@ public fun PasswordInputListItem(
         enabled = enabled,
         content = {
             Box(modifier = Modifier.weight(1f)) {
-                val customTextSelectionColors = remember {
-                    TextSelectionColors(
-                        handleColor = handleColor,
-                        backgroundColor = backgroundColor
-                    )
-                }
+                val customTextSelectionColors =
+                    remember {
+                        TextSelectionColors(
+                            handleColor = handleColor,
+                            backgroundColor = backgroundColor,
+                        )
+                    }
 
                 CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
                     BasicTextField(
@@ -96,16 +91,18 @@ public fun PasswordInputListItem(
                         modifier = Modifier.fillMaxWidth(),
                         visualTransformation = PasswordVisualTransformation(),
                         cursorBrush = SolidColor(Theme.color.brand),
-                        keyboardOptions = KeyboardOptions(
+                        keyboardOptions =
+                        KeyboardOptions(
                             imeAction = ImeAction.Done,
                             keyboardType = KeyboardType.Password,
-                            autoCorrect = false
+                            autoCorrect = false,
                         ),
-                        keyboardActions = KeyboardActions(
+                        keyboardActions =
+                        KeyboardActions(
                             onDone = {
                                 focusManager.clearFocus()
-                            }
-                        )
+                            },
+                        ),
                     )
                 }
                 if (text.isEmpty()) {
@@ -114,7 +111,7 @@ public fun PasswordInputListItem(
                         style = textStyle,
                         color = Theme.color.inkMain.copy(alpha = 0.5f),
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -126,16 +123,16 @@ public fun PasswordInputListItem(
                         text = ""
                         onTextChanged("")
                     },
-                    enabled = enabled
+                    enabled = enabled,
                 ) {
                     Icon(
                         imageVector = IcClose24,
                         contentDescription = "Clear input",
-                        tint = Theme.color.inkMain
+                        tint = Theme.color.inkMain,
                     )
                 }
             }
-        }
+        },
     )
 }
 
@@ -148,7 +145,7 @@ private fun PasswordInputListItemPreview() {
             placeholder = "Password",
             icon = IcOutline3,
             iconBackgroundColor = Theme.color.brand,
-            iconForegroundColor = Theme.color.inkMain
+            iconForegroundColor = Theme.color.inkMain,
         )
     }
 }

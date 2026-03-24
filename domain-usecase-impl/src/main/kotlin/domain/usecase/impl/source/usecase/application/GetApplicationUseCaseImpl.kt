@@ -14,13 +14,13 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [GetApplicationUseCase::class])
 internal class GetApplicationUseCaseImpl(
-    private val applicationRepository: ApplicationRepository
+    private val applicationRepository: ApplicationRepository,
 ) : GetApplicationUseCase {
     override suspend fun invoke(packageName: String): Result<ApplicationModel> = resultLauncher(
-        errorMapper = Failure.Technical::Database
+        errorMapper = Failure.Technical::Database,
     ) {
         applicationRepository.getApplication(packageName) ?: throw Failure.Technical.Platform(
-            Failure.Logic.NotFound
+            Failure.Logic.NotFound,
         )
     }
 }

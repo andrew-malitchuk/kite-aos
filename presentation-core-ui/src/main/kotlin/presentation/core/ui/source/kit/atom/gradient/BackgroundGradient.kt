@@ -7,13 +7,14 @@ import presentation.core.styling.core.Theme
 
 @Composable
 public fun backgroundGradient(): Brush {
-    val colors = listOf(
-        Theme.color.canvas,
-        lerp(Theme.color.canvas, Theme.color.brandVariant, 0.1f),
-        lerp(Theme.color.canvas, Theme.color.disabled, 0.1f)
-    )
+    val colors =
+        listOf(
+            Theme.color.canvas,
+            lerp(Theme.color.canvas, Theme.color.brandVariant, 0.1f),
+            lerp(Theme.color.canvas, Theme.color.disabled, 0.1f),
+        )
 
     return Brush.verticalGradient(
-        colors = colors
+        colors = colors,
     )
 }

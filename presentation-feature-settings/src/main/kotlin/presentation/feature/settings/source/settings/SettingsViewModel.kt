@@ -40,6 +40,7 @@ import presentation.core.localisation.R
  * It uses the Orbit MVI framework to manage state and side effects.
  */
 @KoinViewModel
+@Suppress("MagicNumber", "MaxLineLength")
 public class SettingsViewModel(
     private val getThemeUseCase: GetThemeUseCase,
     private val setThemeUseCase: SetThemeUseCase,
@@ -52,22 +53,20 @@ public class SettingsViewModel(
     private val getMqttConfigurationUseCase: GetMqttConfigurationUseCase,
     private val setMqttConfigurationUseCase: SetMqttConfigurationUseCase,
     private val setApplicationLanguageUseCase: SetApplicationLanguageUseCase,
-    private val getApplicationLanguageUseCase: GetApplicationLanguageUseCase
+    private val getApplicationLanguageUseCase: GetApplicationLanguageUseCase,
 ) : ContainerHost<SettingsState, SettingsSideEffect>,
     ViewModel() {
-
     public override val container: Container<SettingsState, SettingsSideEffect> =
         container(SettingsState())
 
-    private fun mapError(failure: Throwable): Int =
-        when (failure) {
-            is Failure.Technical.Network -> R.string.error_network
-            is Failure.Technical.Database -> R.string.error_database
-            is Failure.Technical.Preference -> R.string.error_preference
-            is Failure.Logic.NotFound -> R.string.error_not_found
-            is Failure.Logic.Business -> R.string.error_unknown
-            else -> R.string.error_unknown
-        }
+    private fun mapError(failure: Throwable): Int = when (failure) {
+        is Failure.Technical.Network -> R.string.error_network
+        is Failure.Technical.Database -> R.string.error_database
+        is Failure.Technical.Preference -> R.string.error_preference
+        is Failure.Logic.NotFound -> R.string.error_not_found
+        is Failure.Logic.Business -> R.string.error_unknown
+        else -> R.string.error_unknown
+    }
 
     private fun handleError(failure: Throwable) {
         if (failure is CancellationException) return
@@ -81,7 +80,9 @@ public class SettingsViewModel(
 
     // Regex patterns for validation
     private val ipRegex =
-        Regex("^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$|^(?!:\\/\\/)([a-zA-Z0-9-_]+\\.?)*[a-zA-Z0-9][a-zA-Z0-9-_]*$")
+        Regex(
+            "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$|^(?!:\\/\\/)([a-zA-Z0-9-_]+\\.?)*[a-zA-Z0-9][a-zA-Z0-9-_]*$",
+        )
     private val portRegex =
         Regex("^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$")
     private val commonRegex = Regex("^[a-zA-Z0-9_\\-\\.\\s]{1,64}$")
@@ -108,7 +109,7 @@ public class SettingsViewModel(
             dashboard?.whitelistUrl?.let { it.isEmpty() || whitelistRegex.matches(it) } ?: true
 
         return isIpValid && isPortValid && isClientIdValid && isUsernameValid &&
-                isPasswordValid && isFriendlyNameValid && isDashboardUrlValid && isWhitelistValid
+            isPasswordValid && isFriendlyNameValid && isDashboardUrlValid && isWhitelistValid
     }
 
     init {
@@ -135,7 +136,7 @@ public class SettingsViewModel(
             intent {
                 reduce { state.copy(currentLanguage = null) }
             }
-        }
+        },
     )
 
     /**
@@ -148,7 +149,7 @@ public class SettingsViewModel(
             intent {
                 reduce { state.copy(theme = theme ?: ThemeModel.Light) }
             }
-        }
+        },
     )
 
     /**
@@ -166,7 +167,7 @@ public class SettingsViewModel(
             intent {
                 reduce { state.copy(dock = DockPositionModel(DockPositionModel.Position.Left)) }
             }
-        }
+        },
     )
 
     /**
@@ -190,7 +191,7 @@ public class SettingsViewModel(
                     state.copy(dashboardUrls = null, isLoading = false)
                 }
             }
-        }
+        },
     )
 
     /**
@@ -203,7 +204,7 @@ public class SettingsViewModel(
             intent {
                 reduce { state.copy(moveDetector = moveDetector) }
             }
-        }
+        },
     )
 
     /**
@@ -216,7 +217,7 @@ public class SettingsViewModel(
             intent {
                 reduce { state.copy(mqtt = mqtt) }
             }
-        }
+        },
     )
 
     /**
@@ -232,7 +233,7 @@ public class SettingsViewModel(
                 reduce { state.copy(theme = theme) }
             }
         },
-        errorBlock = { handleError(it) }
+        errorBlock = { handleError(it) },
     )
 
     /**
@@ -246,7 +247,7 @@ public class SettingsViewModel(
                 reduce { state.copy(dock = dock) }
             }
         },
-        errorBlock = { handleError(it) }
+        errorBlock = { handleError(it) },
     )
 
     /**
@@ -270,16 +271,17 @@ public class SettingsViewModel(
 
                 if (validatedMqtt != currentMqtt) {
                     mqttJob?.cancel()
-                    mqttJob = executeResult(
-                        scope = viewModelScope,
-                        request = { setMqttConfigurationUseCase(validatedMqtt) },
-                        result = { /* Persistence success */ },
-                        errorBlock = { handleError(it) }
-                    )
+                    mqttJob =
+                        executeResult(
+                            scope = viewModelScope,
+                            request = { setMqttConfigurationUseCase(validatedMqtt) },
+                            result = { /* Persistence success */ },
+                            errorBlock = { handleError(it) },
+                        )
                 }
             }
         },
-        errorBlock = { handleError(it) }
+        errorBlock = { handleError(it) },
     )
 
     /**
@@ -287,33 +289,36 @@ public class SettingsViewModel(
      * Automatically disables the detector if any delay or sensitivity parameter is zero.
      */
     public fun onSetMoveDetector(moveDetector: MoveDetectorModel) {
-        val isDisabledLogic = (moveDetector.sensitivity ?: 0) == 0 ||
+        val isDisabledLogic =
+            (moveDetector.sensitivity ?: 0) == 0 ||
                 (moveDetector.dimDelay ?: 0L) == 0L ||
                 (moveDetector.screenTimeout ?: 0L) == 0L ||
                 (moveDetector.fabDelay ?: 0L) == 0L
 
-        val validatedMoveDetector = if (isDisabledLogic) {
-            moveDetector.copy(enabled = false)
-        } else {
-            moveDetector
-        }
+        val validatedMoveDetector =
+            if (isDisabledLogic) {
+                moveDetector.copy(enabled = false)
+            } else {
+                moveDetector
+            }
 
         intent {
             reduce { state.copy(moveDetector = validatedMoveDetector) }
         }
 
         moveDetectorJob?.cancel()
-        moveDetectorJob = executeResult(
-            scope = viewModelScope,
-            request = {
-                delay(500) // Debounce for 500ms
-                setMoveDetectorUseCase(validatedMoveDetector)
-            },
-            result = {
-                // Persistence success
-            },
-            errorBlock = { handleError(it) }
-        )
+        moveDetectorJob =
+            executeResult(
+                scope = viewModelScope,
+                request = {
+                    delay(500) // Debounce for 500ms
+                    setMoveDetectorUseCase(validatedMoveDetector)
+                },
+                result = {
+                    // Persistence success
+                },
+                errorBlock = { handleError(it) },
+            )
     }
 
     /**
@@ -321,14 +326,15 @@ public class SettingsViewModel(
      * Automatically disables MQTT if any field (including Dashboard URL) is invalid.
      */
     public fun onSetMqtt(mqtt: MqttModel) {
-        val trimmedMqtt = mqtt.copy(
-            ip = mqtt.ip?.trim(),
-            port = mqtt.port?.trim(),
-            clientId = mqtt.clientId?.trim(),
-            username = mqtt.username?.trim(),
-            password = mqtt.password?.trim(),
-            friendlyName = mqtt.friendlyName?.trim()
-        )
+        val trimmedMqtt =
+            mqtt.copy(
+                ip = mqtt.ip?.trim(),
+                port = mqtt.port?.trim(),
+                clientId = mqtt.clientId?.trim(),
+                username = mqtt.username?.trim(),
+                password = mqtt.password?.trim(),
+                friendlyName = mqtt.friendlyName?.trim(),
+            )
 
         intent {
             val dashboard = state.dashboardUrls
@@ -338,17 +344,18 @@ public class SettingsViewModel(
             reduce { state.copy(mqtt = validatedMqtt) }
 
             mqttJob?.cancel()
-            mqttJob = executeResult(
-                scope = viewModelScope,
-                request = {
-                    delay(500) // Debounce for 500ms
-                    setMqttConfigurationUseCase(validatedMqtt)
-                },
-                result = {
-                    // Persistence success
-                },
-                errorBlock = { handleError(it) }
-            )
+            mqttJob =
+                executeResult(
+                    scope = viewModelScope,
+                    request = {
+                        delay(500) // Debounce for 500ms
+                        setMqttConfigurationUseCase(validatedMqtt)
+                    },
+                    result = {
+                        // Persistence success
+                    },
+                    errorBlock = { handleError(it) },
+                )
         }
     }
 
@@ -366,7 +373,7 @@ public class SettingsViewModel(
                 reduce { state.copy(currentLanguage = localeCode) }
             }
         },
-        errorBlock = { handleError(it) }
+        errorBlock = { handleError(it) },
     )
 
     /**
@@ -425,10 +432,11 @@ public class SettingsViewModel(
             is SettingsIntent.OnLangIntent -> onLang()
             is SettingsIntent.OnLangSystemSettingsResultIntent -> onLangResult(intent.wasOpened)
             is SettingsIntent.OnSetThemeIntent -> onSetTheme(intent.theme)
-            is SettingsIntent.OnSetDashboardIntent -> onSetDashboard(
-                intent.dashboardUrl,
-                intent.whitelistUrl
-            )
+            is SettingsIntent.OnSetDashboardIntent ->
+                onSetDashboard(
+                    intent.dashboardUrl,
+                    intent.whitelistUrl,
+                )
 
             SettingsIntent.OnMoreIntent -> onMore()
             SettingsIntent.OnApplicationIntent -> onApplication()

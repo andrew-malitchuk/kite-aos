@@ -7,7 +7,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asComposePath
-import androidx.compose.ui.unit.dp
 import androidx.graphics.shapes.CornerRounding
 import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
@@ -34,34 +32,34 @@ import androidx.graphics.shapes.toPath
  * @param color The color of the shape.
  */
 @Composable
-public fun AnimatedCookieShape(
-    modifier: Modifier = Modifier,
-    color: Color,
-) {
-    val shape12 = remember {
-        RoundedPolygon.star(
-            numVerticesPerRadius = VERTICES_LARGE,
-            innerRadius = INNER_RADIUS,
-            rounding = CornerRounding(ROUNDING),
-            innerRounding = CornerRounding(ROUNDING)
-        )
-    }
-    val shape9 = remember {
-        RoundedPolygon.star(
-            numVerticesPerRadius = VERTICES_MEDIUM,
-            innerRadius = INNER_RADIUS,
-            rounding = CornerRounding(ROUNDING),
-            innerRounding = CornerRounding(ROUNDING)
-        )
-    }
-    val shape7 = remember {
-        RoundedPolygon.star(
-            numVerticesPerRadius = VERTICES_SMALL,
-            innerRadius = INNER_RADIUS,
-            rounding = CornerRounding(ROUNDING),
-            innerRounding = CornerRounding(ROUNDING)
-        )
-    }
+public fun AnimatedCookieShape(modifier: Modifier = Modifier, color: Color) {
+    val shape12 =
+        remember {
+            RoundedPolygon.star(
+                numVerticesPerRadius = VERTICES_LARGE,
+                innerRadius = INNER_RADIUS,
+                rounding = CornerRounding(ROUNDING),
+                innerRounding = CornerRounding(ROUNDING),
+            )
+        }
+    val shape9 =
+        remember {
+            RoundedPolygon.star(
+                numVerticesPerRadius = VERTICES_MEDIUM,
+                innerRadius = INNER_RADIUS,
+                rounding = CornerRounding(ROUNDING),
+                innerRounding = CornerRounding(ROUNDING),
+            )
+        }
+    val shape7 =
+        remember {
+            RoundedPolygon.star(
+                numVerticesPerRadius = VERTICES_SMALL,
+                innerRadius = INNER_RADIUS,
+                rounding = CornerRounding(ROUNDING),
+                innerRounding = CornerRounding(ROUNDING),
+            )
+        }
 
     val shapes = listOf(shape12, shape9, shape7)
 
@@ -71,34 +69,38 @@ public fun AnimatedCookieShape(
     val progress by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = shapes.size.toFloat(),
-        animationSpec = infiniteRepeatable(
+        animationSpec =
+        infiniteRepeatable(
             animation = tween(MORPH_DURATION, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
+            repeatMode = RepeatMode.Restart,
         ),
-        label = "morphProgress"
+        label = "morphProgress",
     )
 
     // Continuous rotation to make it less static
     val rotation by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
-        animationSpec = infiniteRepeatable(
+        animationSpec =
+        infiniteRepeatable(
             animation = tween(ROTATION_DURATION, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
+            repeatMode = RepeatMode.Restart,
         ),
-        label = "rotation"
+        label = "rotation",
     )
 
     val currentIndex = progress.toInt() % shapes.size
     val nextIndex = (currentIndex + 1) % shapes.size
     val morphProgress = progress % 1f
 
-    val morph = remember(currentIndex, nextIndex) {
-        Morph(shapes[currentIndex], shapes[nextIndex])
-    }
+    val morph =
+        remember(currentIndex, nextIndex) {
+            Morph(shapes[currentIndex], shapes[nextIndex])
+        }
 
     Box(
-        modifier = modifier
+        modifier =
+        modifier
             .drawWithCache {
                 val androidMatrix = android.graphics.Matrix()
                 val commonPath = android.graphics.Path()
@@ -118,7 +120,7 @@ public fun AnimatedCookieShape(
                     commonPath.transform(androidMatrix)
                     drawPath(commonPath.asComposePath(), color = color)
                 }
-            }
+            },
     )
 }
 

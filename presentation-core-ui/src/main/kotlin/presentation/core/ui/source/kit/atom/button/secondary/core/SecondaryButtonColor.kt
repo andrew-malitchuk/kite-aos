@@ -11,18 +11,11 @@ import presentation.core.ui.source.kit.atom.button.core.ButtonInteractionState
 
 public class SecondaryButtonColor : ButtonColor {
     @Composable
-    override fun borderColor(
-        interactionState: Int,
-        enabled: Boolean,
-        loading: Boolean,
-    ): State<Color> = rememberUpdatedState(Color.Transparent)
+    override fun borderColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
+        rememberUpdatedState(Color.Transparent)
 
     @Composable
-    override fun foregroundColor(
-        interactionState: Int,
-        enabled: Boolean,
-        loading: Boolean,
-    ): State<Color> =
+    override fun foregroundColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
         rememberUpdatedState(
             when {
                 // Disabled text color
@@ -35,11 +28,7 @@ public class SecondaryButtonColor : ButtonColor {
         )
 
     @Composable
-    override fun backgroundColor(
-        interactionState: Int,
-        enabled: Boolean,
-        loading: Boolean,
-    ): State<Color> =
+    override fun backgroundColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
         rememberUpdatedState(
             when {
                 // Subtle transparent background for disabled state

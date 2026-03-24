@@ -31,17 +31,18 @@ public fun NavigationHost(startDestination: Destination? = null) {
 
     CompositionLocalProvider(
         LocalAppNavigator provides appNavigator,
-        LocalBackAction provides { appNavigator.popBackStack() }
+        LocalBackAction provides { appNavigator.popBackStack() },
     ) {
         NavDisplay(
             backStack = backStack,
-            entryProvider = entryProvider {
+            entryProvider =
+            entryProvider {
                 entry<Destination.Onboarding> { OnboardingScreen() }
                 entry<Destination.Main> { MainScreen() }
                 entry<Destination.Settings> { SettingsScreen() }
                 entry<Destination.About> { AboutScreen() }
                 entry<Destination.Application> { ApplicationScreen() }
-            }
+            },
         )
     }
 }

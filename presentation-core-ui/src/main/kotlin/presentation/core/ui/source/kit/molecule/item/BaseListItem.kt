@@ -47,16 +47,16 @@ public fun BaseListItem(
     onClick: (() -> Unit)? = null,
     trailingContent: @Composable (RowScope.() -> Unit)? = null,
     content: @Composable (RowScope.() -> Unit)? = null,
-    iconContent: @Composable (RowScope.() -> Unit)? = null
+    iconContent: @Composable (RowScope.() -> Unit)? = null,
 ) {
     SquircleCard(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick ?: {},
-        enabled = enabled
+        enabled = enabled,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.sizeS)
+            horizontalArrangement = Arrangement.spacedBy(Theme.spacing.sizeS),
         ) {
             if (iconContent != null) {
                 iconContent()
@@ -65,10 +65,10 @@ public fun BaseListItem(
                     modifier = Modifier.size(Theme.size.size3XL),
                     icon = icon,
                     backgroundColor = iconBackgroundColor,
-                    foregroundColor = iconForegroundColor
+                    foregroundColor = iconForegroundColor,
                 )
             }
-            
+
             if (content != null) {
                 content()
             } else if (text != null) {
@@ -78,10 +78,10 @@ public fun BaseListItem(
                     color = Theme.color.inkMain,
                     style = textStyle,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
-            
+
             trailingContent?.invoke(this)
         }
     }

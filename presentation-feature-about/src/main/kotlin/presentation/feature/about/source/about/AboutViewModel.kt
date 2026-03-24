@@ -15,12 +15,13 @@ import org.orbitmvi.orbit.viewmodel.container
  */
 @KoinViewModel
 public class AboutViewModel : ContainerHost<AboutState, AboutSideEffect>, ViewModel() {
-
     public companion object {
         /** Link to the GitHub repository. */
         public const val LINK_GITHUB: String = "https://github.com/andrew-malitchuk/kite-aos"
+
         /** Link to the developer's LinkedIn profile. */
         public const val LINK_LINKEDIN: String = "https://www.linkedin.com/in/andrew-malitchuk"
+
         /** Link to the developer's Twitter (X) profile. */
         public const val LINK_TWITTER: String = "https://x.com/AndrewMalitchuk"
     }

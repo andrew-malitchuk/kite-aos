@@ -13,10 +13,8 @@ import kotlinx.coroutines.flow.Flow
  * Room DAO implementation for [ApplicationDatabase] entities.
  */
 @Dao
-
 public abstract class ApplicationDao :
     data.database.impl.source.dao.base.Dao<ApplicationDatabase>() {
-
     @Query("SELECT * FROM ${DatabaseConfigure.Table.APPLICATION}")
     public abstract override suspend fun get(): List<ApplicationDatabase>?
 

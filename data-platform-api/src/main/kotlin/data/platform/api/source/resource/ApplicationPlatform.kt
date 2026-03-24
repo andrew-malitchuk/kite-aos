@@ -15,5 +15,5 @@ import data.core.source.resource.Resource
 public data class ApplicationPlatform(
     val name: String,
     val packageName: String,
-    val icon: Int
+    val icon: Int,
 ) : Resource

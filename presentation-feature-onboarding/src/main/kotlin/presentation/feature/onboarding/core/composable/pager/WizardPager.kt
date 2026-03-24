@@ -43,8 +43,10 @@ import presentation.core.ui.source.kit.atom.button.primary.core.PrimaryButtonDef
 public sealed interface WizardPagerAction {
     /** Triggered when the final page's finish button is clicked. */
     public data object OnFinishClick : WizardPagerAction
+
     /** Triggered when the next button is clicked to move to the next slide. */
     public data object OnNextClick : WizardPagerAction
+
     /** Triggered when the back button is clicked to move to the previous slide. */
     public data object OnBackClick : WizardPagerAction
 }
@@ -82,39 +84,44 @@ public data class WizardPageData(
 public fun WizardPager(
     modifier: Modifier = Modifier,
     pages: List<WizardPageData>,
-    onAction: (WizardPagerAction) -> Unit
+    pagerState: androidx.compose.foundation.pager.PagerState = rememberPagerState(pageCount = { pages.size }),
+    onAction: (WizardPagerAction) -> Unit,
 ) {
-    val pagerState = rememberPagerState(pageCount = { pages.size })
     val coroutineScope = rememberCoroutineScope()
+    val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
+    val keyboardController = androidx.compose.ui.platform.LocalSoftwareKeyboardController.current
     val currentPageData = pages[pagerState.currentPage]
     val animatedBackgroundColor by animateColorAsState(
         targetValue = currentPageData.backgroundColor,
-        label = "background color"
+        label = "background color",
     )
 
     Column(
-        modifier = modifier
+        modifier =
+        modifier
             .fillMaxSize()
             .background(animatedBackgroundColor)
-            .padding(Theme.spacing.sizeM)
+            .padding(Theme.spacing.sizeM),
     ) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.weight(1f),
             userScrollEnabled = false,
         ) { page ->
-            val pageOffset = (
+            val pageOffset =
+                (
                     (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
                     ).coerceIn(-1f, 1f)
 
             Box(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxSize()
                     .graphicsLayer {
                         alpha = 1f - kotlin.math.abs(pageOffset)
 
                         translationX = pageOffset * size.width
-                    }
+                    },
             ) {
                 pages[page].content()
             }
@@ -124,19 +131,20 @@ public fun WizardPager(
         Row(
             Modifier
                 .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.Start,
         ) {
             repeat(pages.size) { iteration ->
                 val indicatorColor by animateColorAsState(
                     targetValue = if (pagerState.currentPage == iteration) Theme.color.brand else Theme.color.inkMain,
-                    label = "page indicator color"
+                    label = "page indicator color",
                 )
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .padding(Theme.spacing.sizeXXS)
                         .clip(CircleShape)
                         .background(indicatorColor)
-                        .size(Theme.size.sizeS)
+                        .size(Theme.size.sizeS),
                 )
             }
         }
@@ -152,7 +160,7 @@ public fun WizardPager(
             maxLines = 2,
             minLines = 2,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
         Spacer(modifier = Modifier.height(Theme.spacing.sizeS))
         Text(
@@ -163,35 +171,45 @@ public fun WizardPager(
             maxLines = 2,
             minLines = 2,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Spacer(modifier = Modifier.weight(0.2f))
 
         // Buttons
         Row(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             PrimaryButton(
                 text = stringResource(id = R.string.wizard_button_previous),
                 onClick = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
                     coroutineScope.launch {
                         onAction(WizardPagerAction.OnBackClick)
                         pagerState.animateScrollToPage(pagerState.currentPage - 1)
                     }
                 },
                 enabled = pagerState.currentPage > 0,
-                sizes = PrimaryButtonDefault.buttonSizeSet().buttonSize48()
+                sizes = PrimaryButtonDefault.buttonSizeSet().buttonSize48(),
             )
             PrimaryButton(
-                text = if (pagerState.currentPage == pages.size - 1) stringResource(id = R.string.wizard_button_finish) else stringResource(
-                    id = R.string.wizard_button_next
-                ),
+                text =
+                if (pagerState.currentPage == pages.size - 1) {
+                    stringResource(id = R.string.wizard_button_finish)
+                } else {
+                    stringResource(
+                        id = R.string.wizard_button_next,
+                    )
+                },
                 onClick = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
                     coroutineScope.launch {
                         if (pagerState.currentPage == pages.size - 1) {
                             onAction(WizardPagerAction.OnFinishClick)
@@ -202,7 +220,7 @@ public fun WizardPager(
                     }
                 },
                 enabled = currentPageData.isNextEnabled(), // Use the new condition
-                sizes = PrimaryButtonDefault.buttonSizeSet().buttonSize48()
+                sizes = PrimaryButtonDefault.buttonSizeSet().buttonSize48(),
             )
         }
     }
@@ -211,29 +229,33 @@ public fun WizardPager(
 @Preview
 @Composable
 private fun WizardPagerPreview() {
-    val samplePages = listOf(
-        WizardPageData(
-            "Welcome!",
-            "This is the first page.",
-            Color.LightGray,
-            isNextEnabled = { false }) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Content 1") }
-        },
-        WizardPageData(
-            "Features",
-            "Discover our new features.",
-            Color.Cyan,
-            isNextEnabled = { true }) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Content 2") }
-        },
-        WizardPageData(
-            "Get Started",
-            "You are ready to go.",
-            Color.Yellow,
-            isNextEnabled = { true }) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Content 3") }
-        }
-    )
+    val samplePages =
+        listOf(
+            WizardPageData(
+                "Welcome!",
+                "This is the first page.",
+                Color.LightGray,
+                isNextEnabled = { false },
+            ) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Content 1") }
+            },
+            WizardPageData(
+                "Features",
+                "Discover our new features.",
+                Color.Cyan,
+                isNextEnabled = { true },
+            ) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Content 2") }
+            },
+            WizardPageData(
+                "Get Started",
+                "You are ready to go.",
+                Color.Yellow,
+                isNextEnabled = { true },
+            ) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("Content 3") }
+            },
+        )
     AppTheme {
         WizardPager(pages = samplePages, onAction = { action ->
             when (action) {

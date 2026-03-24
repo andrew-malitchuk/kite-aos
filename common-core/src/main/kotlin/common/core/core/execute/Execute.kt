@@ -83,7 +83,7 @@ public fun <T> executeResult(
             val monad = withContext(context) { request() }
             monad?.fold(
                 onSuccess = { result?.invoke(it) },
-                onFailure = { errorBlock?.invoke(it) }
+                onFailure = { errorBlock?.invoke(it) },
             )
         } catch (e: Throwable) {
             errorBlock?.invoke(e)

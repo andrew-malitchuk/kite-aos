@@ -19,14 +19,11 @@ internal abstract class BasePreferenceSourceImpl<PROTO : Any, PREF : Resource>(
     private val storage: BasePreferenceStorage<PROTO>,
     private val mapper: ProtobufPreferenceMapper<PROTO, PREF>,
 ) : PreferenceSource<PREF> {
-
-    override fun observeData(): Flow<PREF?> =
-        storage.subscribeToData().map { it?.let(mapper.toPreference::map) }
+    override fun observeData(): Flow<PREF?> = storage.subscribeToData().map { it?.let(mapper.toPreference::map) }
 
     override suspend fun setData(data: PREF?) {
         storage.updateData(data?.let(mapper.toProtobuf::map))
     }
 
-    override suspend fun getData(): PREF? =
-        storage.getData()?.let(mapper.toPreference::map)
+    override suspend fun getData(): PREF? = storage.getData()?.let(mapper.toPreference::map)
 }

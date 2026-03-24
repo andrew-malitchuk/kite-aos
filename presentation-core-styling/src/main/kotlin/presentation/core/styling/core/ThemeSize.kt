@@ -13,7 +13,6 @@ public data class ThemeSize(
     /** Extra-small size. */
     val sizeXS: Dp,
     //endregion small range
-
     //region medium range
     /** Small size. */
     val sizeS: Dp,
@@ -22,7 +21,6 @@ public data class ThemeSize(
     /** Large size. */
     val sizeL: Dp,
     //endregion medium range
-
     //region large range
     /** Extra-large size. */
     val sizeXL: Dp,
@@ -33,6 +31,6 @@ public data class ThemeSize(
     /** Quadruple extra-large size. */
     val size4XL: Dp,
     /** Quintuple extra-large size. */
-    val size5XL: Dp
+    val size5XL: Dp,
     //region large range
 )

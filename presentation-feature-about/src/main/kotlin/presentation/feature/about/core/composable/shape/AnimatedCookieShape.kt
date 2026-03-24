@@ -31,34 +31,34 @@ import androidx.graphics.shapes.toPath
  * @param color The color used to draw the morphing shape.
  */
 @Composable
-public fun AnimatedCookieShape(
-    modifier: Modifier = Modifier,
-    color: Color,
-) {
-    val shape12 = remember {
-        RoundedPolygon.star(
-            numVerticesPerRadius = 12,
-            innerRadius = 0.7f,
-            rounding = CornerRounding(0.15f),
-            innerRounding = CornerRounding(0.15f)
-        )
-    }
-    val shape9 = remember {
-        RoundedPolygon.star(
-            numVerticesPerRadius = 9,
-            innerRadius = 0.7f,
-            rounding = CornerRounding(0.15f),
-            innerRounding = CornerRounding(0.15f)
-        )
-    }
-    val shape7 = remember {
-        RoundedPolygon.star(
-            numVerticesPerRadius = 7,
-            innerRadius = 0.7f,
-            rounding = CornerRounding(0.15f),
-            innerRounding = CornerRounding(0.15f)
-        )
-    }
+public fun AnimatedCookieShape(modifier: Modifier = Modifier, color: Color) {
+    val shape12 =
+        remember {
+            RoundedPolygon.star(
+                numVerticesPerRadius = 12,
+                innerRadius = 0.7f,
+                rounding = CornerRounding(0.15f),
+                innerRounding = CornerRounding(0.15f),
+            )
+        }
+    val shape9 =
+        remember {
+            RoundedPolygon.star(
+                numVerticesPerRadius = 9,
+                innerRadius = 0.7f,
+                rounding = CornerRounding(0.15f),
+                innerRounding = CornerRounding(0.15f),
+            )
+        }
+    val shape7 =
+        remember {
+            RoundedPolygon.star(
+                numVerticesPerRadius = 7,
+                innerRadius = 0.7f,
+                rounding = CornerRounding(0.15f),
+                innerRounding = CornerRounding(0.15f),
+            )
+        }
 
     val shapes = listOf(shape12, shape9, shape7)
 
@@ -67,33 +67,37 @@ public fun AnimatedCookieShape(
     val progress by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = shapes.size.toFloat(),
-        animationSpec = infiniteRepeatable(
+        animationSpec =
+        infiniteRepeatable(
             animation = tween(4000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
+            repeatMode = RepeatMode.Restart,
         ),
-        label = "morphProgress"
+        label = "morphProgress",
     )
 
     val rotation by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 360f,
-        animationSpec = infiniteRepeatable(
+        animationSpec =
+        infiniteRepeatable(
             animation = tween(30_000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
+            repeatMode = RepeatMode.Restart,
         ),
-        label = "rotation"
+        label = "rotation",
     )
 
     val currentIndex = progress.toInt() % shapes.size
     val nextIndex = (currentIndex + 1) % shapes.size
     val morphProgress = progress % 1f
 
-    val morph = remember(currentIndex, nextIndex) {
-        Morph(shapes[currentIndex], shapes[nextIndex])
-    }
+    val morph =
+        remember(currentIndex, nextIndex) {
+            Morph(shapes[currentIndex], shapes[nextIndex])
+        }
 
     Box(
-        modifier = modifier
+        modifier =
+        modifier
             .drawWithCache {
                 val androidMatrix = android.graphics.Matrix()
                 val commonPath = android.graphics.Path()
@@ -108,8 +112,8 @@ public fun AnimatedCookieShape(
                     androidMatrix.postTranslate(size.width / 2f, size.height / 2f)
 
                     commonPath.transform(androidMatrix)
-                    drawPath(commonPath.asComposePath(), color =color)
+                    drawPath(commonPath.asComposePath(), color = color)
                 }
-            }
+            },
     )
 }

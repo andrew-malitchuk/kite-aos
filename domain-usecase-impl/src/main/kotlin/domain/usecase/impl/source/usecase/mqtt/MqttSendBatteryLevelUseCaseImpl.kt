@@ -12,10 +12,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [MqttSendBatteryLevelUseCase::class])
 internal class MqttSendBatteryLevelUseCaseImpl(
-    private val mqttRepository: MqttRepository
+    private val mqttRepository: MqttRepository,
 ) : MqttSendBatteryLevelUseCase {
     override suspend operator fun invoke(level: Int): Optional = resultLauncher(
-        errorMapper = Failure.Technical::Network
+        errorMapper = Failure.Technical::Network,
     ) {
         mqttRepository.sendBatteryLevel(level)
     }

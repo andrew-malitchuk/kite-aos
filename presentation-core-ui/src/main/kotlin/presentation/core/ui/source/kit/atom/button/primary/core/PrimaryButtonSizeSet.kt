@@ -8,68 +8,68 @@ import presentation.core.ui.source.kit.atom.button.core.ButtonSize
 import presentation.core.ui.source.kit.atom.button.core.ButtonSizeSet
 
 public class PrimaryButtonSizeSet : ButtonSizeSet {
-    override fun buttonSize32(): ButtonSize =
-        object : ButtonSize {
-            override val iconSize @Composable get() = Theme.size.sizeL     // 16.dp
-            override val borderSize @Composable get() = Theme.spacing.sizeXXS
-            override val contentPadding @Composable get() = PaddingValues(
+    override fun buttonSize32(): ButtonSize = object : ButtonSize {
+        override val iconSize @Composable get() = Theme.size.sizeL // 16.dp
+        override val borderSize @Composable get() = Theme.spacing.sizeXXS
+        override val contentPadding @Composable get() =
+            PaddingValues(
                 horizontal = Theme.spacing.sizeXL, // 24.dp
-                vertical = Theme.spacing.sizeS     // 8.dp
+                vertical = Theme.spacing.sizeS, // 8.dp
             )
-            override val spacing @Composable get() = Theme.spacing.sizeS    // 8.dp
-            override val minHeight @Composable get() = Theme.spacing.size2XL // 32.dp
-            override val loadingSize @Composable get() = Theme.size.sizeL
-        }
+        override val spacing @Composable get() = Theme.spacing.sizeS // 8.dp
+        override val minHeight @Composable get() = Theme.spacing.size2XL // 32.dp
+        override val loadingSize @Composable get() = Theme.size.sizeL
+    }
 
-    override fun buttonSize40(): ButtonSize =
-        object : ButtonSize {
-            override val iconSize @Composable get() = Theme.size.sizeL     // 16.dp
-            override val borderSize @Composable get() = Theme.spacing.sizeXXS
-            override val contentPadding @Composable get() = PaddingValues(
+    override fun buttonSize40(): ButtonSize = object : ButtonSize {
+        override val iconSize @Composable get() = Theme.size.sizeL // 16.dp
+        override val borderSize @Composable get() = Theme.spacing.sizeXXS
+        override val contentPadding @Composable get() =
+            PaddingValues(
                 horizontal = Theme.spacing.sizeXL, // 24.dp
-                vertical = Theme.spacing.sizeM     // 12.dp
+                vertical = Theme.spacing.sizeM, // 12.dp
             )
-            override val spacing @Composable get() = Theme.spacing.sizeS
-            override val minHeight @Composable get() = 40.dp
-            override val loadingSize @Composable get() = Theme.size.sizeL
-        }
+        override val spacing @Composable get() = Theme.spacing.sizeS
+        override val minHeight @Composable get() = 40.dp
+        override val loadingSize @Composable get() = Theme.size.sizeL
+    }
 
-    override fun buttonSize48(): ButtonSize =
-        object : ButtonSize {
-            override val iconSize @Composable get() = Theme.size.sizeXL    // 24.dp
-            override val borderSize @Composable get() = Theme.spacing.sizeXXS
-            override val contentPadding @Composable get() = PaddingValues(
+    override fun buttonSize48(): ButtonSize = object : ButtonSize {
+        override val iconSize @Composable get() = Theme.size.sizeXL // 24.dp
+        override val borderSize @Composable get() = Theme.spacing.sizeXXS
+        override val contentPadding @Composable get() =
+            PaddingValues(
                 horizontal = Theme.spacing.sizeXL, // 24.dp
-                vertical = Theme.spacing.sizeM     // 12.dp
+                vertical = Theme.spacing.sizeM, // 12.dp
             )
-            override val spacing @Composable get() = Theme.spacing.sizeS
-            override val minHeight @Composable get() = Theme.spacing.size3XL // 48.dp
-            override val loadingSize @Composable get() = Theme.size.sizeXL
-        }
+        override val spacing @Composable get() = Theme.spacing.sizeS
+        override val minHeight @Composable get() = Theme.spacing.size3XL // 48.dp
+        override val loadingSize @Composable get() = Theme.size.sizeXL
+    }
 
-    override fun buttonSize56(): ButtonSize =
-        object : ButtonSize {
-            override val iconSize @Composable get() = Theme.size.sizeXL    // 24.dp
-            override val borderSize @Composable get() = Theme.spacing.sizeXXS
-            override val contentPadding @Composable get() = PaddingValues(
+    override fun buttonSize56(): ButtonSize = object : ButtonSize {
+        override val iconSize @Composable get() = Theme.size.sizeXL // 24.dp
+        override val borderSize @Composable get() = Theme.spacing.sizeXXS
+        override val contentPadding @Composable get() =
+            PaddingValues(
                 horizontal = Theme.spacing.sizeXL, // 24.dp
-                vertical = Theme.spacing.sizeL     // 16.dp
+                vertical = Theme.spacing.sizeL, // 16.dp
             )
-            override val spacing @Composable get() = Theme.spacing.sizeS
-            override val minHeight @Composable get() = 56.dp
-            override val loadingSize @Composable get() = Theme.size.sizeXL
-        }
+        override val spacing @Composable get() = Theme.spacing.sizeS
+        override val minHeight @Composable get() = 56.dp
+        override val loadingSize @Composable get() = Theme.size.sizeXL
+    }
 
-    override fun buttonSize64(): ButtonSize =
-        object : ButtonSize {
-            override val iconSize @Composable get() = Theme.size.sizeXL    // 24.dp
-            override val borderSize @Composable get() = Theme.spacing.sizeXXS
-            override val contentPadding @Composable get() = PaddingValues(
+    override fun buttonSize64(): ButtonSize = object : ButtonSize {
+        override val iconSize @Composable get() = Theme.size.sizeXL // 24.dp
+        override val borderSize @Composable get() = Theme.spacing.sizeXXS
+        override val contentPadding @Composable get() =
+            PaddingValues(
                 horizontal = Theme.spacing.sizeXL, // 24.dp
-                vertical = Theme.spacing.sizeXL    // 24.dp
+                vertical = Theme.spacing.sizeXL, // 24.dp
             )
-            override val spacing @Composable get() = Theme.spacing.sizeS
-            override val minHeight @Composable get() = Theme.spacing.size4XL // 64.dp
-            override val loadingSize @Composable get() = Theme.size.sizeXL
-        }
+        override val spacing @Composable get() = Theme.spacing.sizeS
+        override val minHeight @Composable get() = Theme.spacing.size4XL // 64.dp
+        override val loadingSize @Composable get() = Theme.size.sizeXL
+    }
 }

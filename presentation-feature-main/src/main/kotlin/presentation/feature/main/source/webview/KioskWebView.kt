@@ -6,7 +6,6 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -15,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
-import kotlinx.coroutines.delay
 
 /**
  * State holder for the [KioskWebView].
@@ -25,16 +23,20 @@ import kotlinx.coroutines.delay
 @Stable
 public class KioskWebViewState(
     initialUrl: String = "http://192.168.68.125:8123/",
-    initialWhitelist: List<String> = listOf("192.168.68.125", "127.0.0.1")
+    initialWhitelist: List<String> = listOf("192.168.68.125", "127.0.0.1"),
 ) {
     /** The current URL to load in the WebView. */
     public var url: String by mutableStateOf(initialUrl)
+
     /** The list of domains that are allowed to be navigated to. */
     public var whitelist: List<String> by mutableStateOf(initialWhitelist)
+
     /** Indicates if the WebView is currently loading a page. */
     public var isLoading: Boolean by mutableStateOf(true)
+
     /** Indicates if the WebView can navigate backward in history. */
     public var canGoBack: Boolean by mutableStateOf(false)
+
     /** Indicates if the WebView can navigate forward in history. */
     public var canGoForward: Boolean by mutableStateOf(false)
     internal var webView: WebView? = null
@@ -61,7 +63,7 @@ public class KioskWebViewState(
 @Composable
 public fun rememberKioskWebViewState(
     url: String = "http://192.168.68.125:8123/",
-    whitelist: List<String> = listOf("192.168.68.125", "127.0.0.1")
+    whitelist: List<String> = listOf("192.168.68.125", "127.0.0.1"),
 ): KioskWebViewState = remember {
     KioskWebViewState(url, whitelist)
 }
@@ -76,10 +78,7 @@ public fun rememberKioskWebViewState(
  * @param modifier The modifier for the WebView container.
  */
 @Composable
-public fun KioskWebView(
-    state: KioskWebViewState,
-    modifier: Modifier = Modifier,
-) {
+public fun KioskWebView(state: KioskWebViewState, modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxSize()) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),
@@ -94,33 +93,34 @@ public fun KioskWebView(
                         useWideViewPort = true
                     }
 
-                    webViewClient = object : WebViewClient() {
-                        override fun onPageStarted(
-                            view: WebView?,
-                            url: String?,
-                            favicon: android.graphics.Bitmap?
-                        ) {
-                            state.isLoading = true
-                            state.canGoBack = view?.canGoBack() ?: false
-                            state.canGoForward = view?.canGoForward() ?: false
-                        }
+                    webViewClient =
+                        object : WebViewClient() {
+                            override fun onPageStarted(
+                                view: WebView?,
+                                url: String?,
+                                favicon: android.graphics.Bitmap?,
+                            ) {
+                                state.isLoading = true
+                                state.canGoBack = view?.canGoBack() ?: false
+                                state.canGoForward = view?.canGoForward() ?: false
+                            }
 
-                        override fun onPageFinished(view: WebView?, url: String?) {
-                            state.isLoading = false
-                            state.canGoBack = view?.canGoBack() ?: false
-                            state.canGoForward = view?.canGoForward() ?: false
-                        }
+                            override fun onPageFinished(view: WebView?, url: String?) {
+                                state.isLoading = false
+                                state.canGoBack = view?.canGoBack() ?: false
+                                state.canGoForward = view?.canGoForward() ?: false
+                            }
 
-                        override fun shouldOverrideUrlLoading(
-                            view: WebView?,
-                            request: WebResourceRequest?
-                        ): Boolean {
-                            val newUrl = request?.url?.toString() ?: ""
-                            val isAllowed =
-                                state.whitelist.any { domain -> newUrl.contains(domain) }
-                            return !isAllowed
+                            override fun shouldOverrideUrlLoading(
+                                view: WebView?,
+                                request: WebResourceRequest?,
+                            ): Boolean {
+                                val newUrl = request?.url?.toString() ?: ""
+                                val isAllowed =
+                                    state.whitelist.any { domain -> newUrl.contains(domain) }
+                                return !isAllowed
+                            }
                         }
-                    }
 
                     val cookieManager = CookieManager.getInstance()
                     cookieManager.setAcceptCookie(true)
@@ -133,7 +133,7 @@ public fun KioskWebView(
                 if (view.url != state.url) {
                     view.loadUrl(state.url)
                 }
-            }
+            },
         )
     }
 }

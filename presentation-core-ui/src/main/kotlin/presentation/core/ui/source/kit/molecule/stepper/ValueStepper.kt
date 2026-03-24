@@ -42,7 +42,7 @@ public fun ValueStepper(
     range: IntRange = 0..360,
     step: Int = 1,
     label: String? = null,
-    suffix: String = ""
+    suffix: String = "",
 ) {
     var textValue by remember(value) { mutableStateOf(value.toString()) }
 
@@ -51,18 +51,19 @@ public fun ValueStepper(
             Text(
                 text = label,
                 style = Theme.typography.label,
-                color = Theme.color.surface
+                color = Theme.color.surface,
             )
         }
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
+            modifier =
+            Modifier
                 .background(
                     color = Theme.color.surfaceVariant.copy(alpha = 0.5f),
-                    shape = SquircleShape(Theme.size.sizeL)
+                    shape = SquircleShape(Theme.size.sizeL),
                 )
-                .padding(4.dp)
+                .padding(4.dp),
         ) {
             StepperButton(
                 text = "-",
@@ -70,12 +71,12 @@ public fun ValueStepper(
                 onAction = {
                     val newValue = value - step
                     if (newValue >= range.first) onValueChange(newValue)
-                }
+                },
             )
 
             Box(
                 modifier = Modifier.width(48.dp),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 BasicTextField(
                     value = textValue,
@@ -85,16 +86,17 @@ public fun ValueStepper(
                             newText.toIntOrNull()?.let { if (it in range) onValueChange(it) }
                         }
                     },
-                    textStyle = Theme.typography.body.copy(
+                    textStyle =
+                    Theme.typography.body.copy(
                         textAlign = TextAlign.Center,
-                        color = Theme.color.inkMain
+                        color = Theme.color.inkMain,
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     decorationBox = { innerTextField: @Composable () -> Unit ->
                         Row(
                             horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             innerTextField()
                             if (suffix.isNotEmpty()) {
@@ -102,11 +104,11 @@ public fun ValueStepper(
                                     text = suffix,
                                     modifier = Modifier.padding(start = 2.dp),
                                     style = Theme.typography.body,
-                                    color = Theme.color.inkMain
+                                    color = Theme.color.inkMain,
                                 )
                             }
                         }
-                    }
+                    },
                 )
             }
 
@@ -116,18 +118,14 @@ public fun ValueStepper(
                 onAction = {
                     val newValue = value + step
                     if (newValue <= range.last) onValueChange(newValue)
-                }
+                },
             )
         }
     }
 }
 
 @Composable
-private fun StepperButton(
-    text: String,
-    onAction: () -> Unit,
-    enabled: Boolean
-) {
+private fun StepperButton(text: String, onAction: () -> Unit, enabled: Boolean) {
     val haptic = LocalHapticFeedback.current
     var isPressed by remember { mutableStateOf(false) }
     val currentOnAction by rememberUpdatedState(onAction)
@@ -147,7 +145,8 @@ private fun StepperButton(
     }
 
     Box(
-        modifier = Modifier
+        modifier =
+        Modifier
             .size(44.dp)
             .clip(SquircleShape(Theme.size.sizeM))
             .background(if (isPressed) Theme.color.inkMain.copy(alpha = 0.1f) else Color.Transparent)
@@ -161,12 +160,12 @@ private fun StepperButton(
                     }
                 }
             },
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(
             text = text,
             style = Theme.typography.body,
-            color = if (enabled) Theme.color.inkMain else Theme.color.inkMain.copy(alpha = 0.3f)
+            color = if (enabled) Theme.color.inkMain else Theme.color.inkMain.copy(alpha = 0.3f),
         )
     }
 }

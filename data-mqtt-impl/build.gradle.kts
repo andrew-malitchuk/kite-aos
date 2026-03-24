@@ -10,4 +10,3 @@ dependencies {
     implementation(libs.kmqtt.client)
     implementation(libs.kotlinx.serialization.json)
 }
-

@@ -16,10 +16,7 @@ import kotlin.coroutines.cancellation.CancellationException
  * @param block The suspendable logic to execute.
  * @return A [Result] containing either the success value or a [Failure].
  */
-internal suspend fun <T> resultLauncher(
-    errorMapper: (Throwable) -> Failure,
-    block: suspend () -> T
-): Result<T> {
+internal suspend fun <T> resultLauncher(errorMapper: (Throwable) -> Failure, block: suspend () -> T): Result<T> {
     return try {
         Result.success(block())
     } catch (e: CancellationException) {

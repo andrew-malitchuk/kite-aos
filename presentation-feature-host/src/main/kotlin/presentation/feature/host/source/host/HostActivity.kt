@@ -29,7 +29,6 @@ import presentation.core.ui.core.splash.splash
  * including the splash screen and determining the initial navigation route.
  */
 public class HostActivity : AppCompatActivity() {
-
     private var splashScreen: SplashScreenDecorator? = null
     private val viewModel: HostViewModel by inject()
 
@@ -59,23 +58,24 @@ public class HostActivity : AppCompatActivity() {
      * process in the ViewModel is complete.
      */
     private fun setupSplashScreen() {
-        splashScreen = splash {
-            content {
-                val state by viewModel.collectAsState()
+        splashScreen =
+            splash {
+                content {
+                    val state by viewModel.collectAsState()
 
-                exitAnimationDuration = SPLASH_EXIT_ANIMATION_DURATION
-                composeViewFadeDurationOffset = COMPOSE_FADE_DURATION_OFFSET
+                    exitAnimationDuration = SPLASH_EXIT_ANIMATION_DURATION
+                    composeViewFadeDurationOffset = COMPOSE_FADE_DURATION_OFFSET
 
-                // Apply the theme to the splash screen content to match the app's look.
-                AppTheme(mode = state.theme) {
-                    SplashLoading(
-                        isVisible = isVisible.value,
-                        exitAnimationDuration = SPLASH_EXIT_ANIMATION_DURATION.toInt(),
-                        onStartExitAnimation = { startExitAnimation() }
-                    )
+                    // Apply the theme to the splash screen content to match the app's look.
+                    AppTheme(mode = state.theme) {
+                        SplashLoading(
+                            isVisible = isVisible.value,
+                            exitAnimationDuration = SPLASH_EXIT_ANIMATION_DURATION.toInt(),
+                            onStartExitAnimation = { startExitAnimation() },
+                        )
+                    }
                 }
             }
-        }
         // Keep the splash screen visible until we explicitly hide it.
         splashScreen?.shouldKeepOnScreen = true
     }

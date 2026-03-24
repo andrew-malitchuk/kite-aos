@@ -10,7 +10,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 import org.koin.core.annotation.Single
 
 /**
@@ -22,9 +21,8 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [ConnectivityObserver::class])
 internal class ConnectivityObserverImpl(
-    context: Context
+    context: Context,
 ) : ConnectivityObserver {
-
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -37,43 +35,47 @@ internal class ConnectivityObserverImpl(
      * 3. Uses [distinctUntilChanged] to ensure consumers only receive actual status transitions.
      * 4. Automatically unregisters the callback when the flow collection is stopped (via [awaitClose]).
      */
-    override val status: Flow<ConnectivityObserver.NetworkStatus> = callbackFlow {
-        val callback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                trySend(ConnectivityObserver.NetworkStatus.Available)
+    override val status: Flow<ConnectivityObserver.NetworkStatus> =
+        callbackFlow {
+            val callback =
+                object : ConnectivityManager.NetworkCallback() {
+                    override fun onAvailable(network: Network) {
+                        trySend(ConnectivityObserver.NetworkStatus.Available)
+                    }
+
+                    override fun onLosing(network: Network, maxMsToLive: Int) {
+                        trySend(ConnectivityObserver.NetworkStatus.Losing)
+                    }
+
+                    override fun onLost(network: Network) {
+                        trySend(ConnectivityObserver.NetworkStatus.Lost)
+                    }
+
+                    override fun onUnavailable() {
+                        trySend(ConnectivityObserver.NetworkStatus.Unavailable)
+                    }
+                }
+
+            // Send initial state before registering to avoid missing immediate changes
+            val initialState =
+                if (isNetworkAvailable()) {
+                    ConnectivityObserver.NetworkStatus.Available
+                } else {
+                    ConnectivityObserver.NetworkStatus.Unavailable
+                }
+            trySend(initialState)
+
+            val request =
+                NetworkRequest.Builder()
+                    .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    .build()
+
+            connectivityManager.registerNetworkCallback(request, callback)
+
+            awaitClose {
+                connectivityManager.unregisterNetworkCallback(callback)
             }
-
-            override fun onLosing(network: Network, maxMsToLive: Int) {
-                trySend(ConnectivityObserver.NetworkStatus.Losing)
-            }
-
-            override fun onLost(network: Network) {
-                trySend(ConnectivityObserver.NetworkStatus.Lost)
-            }
-
-            override fun onUnavailable() {
-                trySend(ConnectivityObserver.NetworkStatus.Unavailable)
-            }
-        }
-
-        // Send initial state before registering to avoid missing immediate changes
-        val initialState = if (isNetworkAvailable()) {
-            ConnectivityObserver.NetworkStatus.Available
-        } else {
-            ConnectivityObserver.NetworkStatus.Unavailable
-        }
-        trySend(initialState)
-
-        val request = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .build()
-
-        connectivityManager.registerNetworkCallback(request, callback)
-
-        awaitClose {
-            connectivityManager.unregisterNetworkCallback(callback)
-        }
-    }.distinctUntilChanged()
+        }.distinctUntilChanged()
 
     private fun isNetworkAvailable(): Boolean {
         val activeNetwork = connectivityManager.activeNetwork ?: return false

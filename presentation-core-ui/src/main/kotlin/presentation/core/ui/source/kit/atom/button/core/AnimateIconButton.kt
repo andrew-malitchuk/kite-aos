@@ -1,16 +1,11 @@
 package presentation.core.ui.source.kit.atom.button.core
 
-
 import android.R.attr.text
-import android.media.Image
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.EaseInBack
 import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -18,10 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import presentation.core.styling.core.Theme
-import presentation.core.styling.source.theme.AppTheme
-import presentation.core.ui.R
 
 /**
  * A composable function that represents an animated button.
@@ -95,10 +86,10 @@ internal fun AnimateIconButton(
     val localModifier =
         modifier.animateContentSize(
             animationSpec =
-                tween(
-                    durationMillis = animationDuration,
-                    easing = animationEasing,
-                ),
+            tween(
+                durationMillis = animationDuration,
+                easing = animationEasing,
+            ),
         )
     //endregion core
 

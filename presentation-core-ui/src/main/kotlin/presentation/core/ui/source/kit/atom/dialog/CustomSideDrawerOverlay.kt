@@ -81,7 +81,11 @@ public fun CustomSideDrawerOverlay(
 
     // Offset for the drawer animation
     val offsetX =
-        remember { Animatable(if (isDrawerOpen) 0f else drawerWidthPx * (if (drawerSide == DrawerSide.LEFT) -1 else 1)) }
+        remember {
+            Animatable(
+                if (isDrawerOpen) 0f else drawerWidthPx * (if (drawerSide == DrawerSide.LEFT) -1 else 1),
+            )
+        }
 
     // Launch animation when the drawer state changes
     LaunchedEffect(isDrawerOpen) {
@@ -111,12 +115,12 @@ public fun CustomSideDrawerOverlay(
         if (isDrawerOpen) {
             Box(
                 modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .background(maskColor)
-                        .pointerInput(Unit) {
-                            detectTapGestures(onTap = { onDismiss() })
-                        },
+                Modifier
+                    .fillMaxSize()
+                    .background(maskColor)
+                    .pointerInput(Unit) {
+                        detectTapGestures(onTap = { onDismiss() })
+                    },
             )
         }
 
@@ -124,66 +128,68 @@ public fun CustomSideDrawerOverlay(
 
         Column(
             modifier =
-                Modifier
-                    .fillMaxHeight()
-                    .width(drawerWidth)
-                    .offset { IntOffset(x = 2 * offsetX.value.roundToInt(), y = 0) }
-                    .align(if (drawerSide == DrawerSide.LEFT) Alignment.CenterStart else Alignment.CenterEnd)
-                    .pointerInput(Unit) {
-                        if (enableSwipe) {
-                            detectDragGestures(
-                                onDragStart = {
-                                    isExpanded = true
-                                },
-                                onDragEnd = {
-                                    isExpanded = false
-                                    scope.launch {
-                                        val shouldClose =
-                                            when (drawerSide) {
-                                                DrawerSide.LEFT -> offsetX.value < -drawerWidthPx * dragThresholdFraction
-                                                DrawerSide.RIGHT -> offsetX.value > drawerWidthPx * dragThresholdFraction
-                                            }
-
-                                        val finalTarget =
-                                            if (shouldClose) {
-                                                drawerWidthPx * (if (drawerSide == DrawerSide.LEFT) -1 else 1)
-                                            } else {
-                                                0f
-                                            }
-
-                                        offsetX.animateTo(
-                                            targetValue = finalTarget,
-                                            animationSpec = tween(durationMillis = animationDuration),
-                                        )
-
-                                        if (shouldClose) {
-                                            onDismiss()
-                                        }
-                                    }
-                                },
-                            ) { change, dragAmount ->
-                                change.consume()
+            Modifier
+                .fillMaxHeight()
+                .width(drawerWidth)
+                .offset { IntOffset(x = 2 * offsetX.value.roundToInt(), y = 0) }
+                .align(if (drawerSide == DrawerSide.LEFT) Alignment.CenterStart else Alignment.CenterEnd)
+                .pointerInput(Unit) {
+                    if (enableSwipe) {
+                        detectDragGestures(
+                            onDragStart = {
+                                isExpanded = true
+                            },
+                            onDragEnd = {
+                                isExpanded = false
                                 scope.launch {
-                                    val newOffset = offsetX.value + dragAmount.x
-
-                                    val clampedOffset =
+                                    val shouldClose =
                                         when (drawerSide) {
-                                            DrawerSide.LEFT -> newOffset.coerceIn(
-                                                -drawerWidthPx,
-                                                0f
-                                            )
-
-                                            DrawerSide.RIGHT -> newOffset.coerceIn(
-                                                0f,
-                                                drawerWidthPx
-                                            )
+                                            DrawerSide.LEFT -> offsetX.value < -drawerWidthPx * dragThresholdFraction
+                                            DrawerSide.RIGHT -> offsetX.value > drawerWidthPx * dragThresholdFraction
                                         }
 
-                                    offsetX.snapTo(clampedOffset)
+                                    val finalTarget =
+                                        if (shouldClose) {
+                                            drawerWidthPx * (if (drawerSide == DrawerSide.LEFT) -1 else 1)
+                                        } else {
+                                            0f
+                                        }
+
+                                    offsetX.animateTo(
+                                        targetValue = finalTarget,
+                                        animationSpec = tween(durationMillis = animationDuration),
+                                    )
+
+                                    if (shouldClose) {
+                                        onDismiss()
+                                    }
                                 }
+                            },
+                        ) { change, dragAmount ->
+                            change.consume()
+                            scope.launch {
+                                val newOffset = offsetX.value + dragAmount.x
+
+                                val clampedOffset =
+                                    when (drawerSide) {
+                                        DrawerSide.LEFT ->
+                                            newOffset.coerceIn(
+                                                -drawerWidthPx,
+                                                0f,
+                                            )
+
+                                        DrawerSide.RIGHT ->
+                                            newOffset.coerceIn(
+                                                0f,
+                                                drawerWidthPx,
+                                            )
+                                    }
+
+                                offsetX.snapTo(clampedOffset)
                             }
                         }
-                    },
+                    }
+                },
 //                .then(
 //                    if (isDrawerOpen) Modifier.shadow(
 //                        elevation = 16.dp,
@@ -196,12 +202,13 @@ public fun CustomSideDrawerOverlay(
 
             Row(
                 modifier =
-                    Modifier
-                        .fillMaxSize(),
+                Modifier
+                    .fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .width(Theme.spacing.sizeL)
                         .height(animatedHeight)
                         .padding(2.dp)

@@ -16,15 +16,14 @@ internal class DashboardPreferenceStorage(
     @Named("dashboardDataStore")
     private val preference: DataStore<DashboardDataProto.DashboardProtoModel>,
 ) : BasePreferenceStorage<DashboardDataProto.DashboardProtoModel> {
-    override fun subscribeToData(): Flow<DashboardDataProto.DashboardProtoModel?> =
-        preference.data.catch { exception ->
-            if (exception is IOException) {
-                Log.e("Error", exception.message.toString())
-                emit(DashboardDataProto.DashboardProtoModel.getDefaultInstance())
-            } else {
-                throw exception
-            }
+    override fun subscribeToData(): Flow<DashboardDataProto.DashboardProtoModel?> = preference.data.catch { exception ->
+        if (exception is IOException) {
+            Log.e("Error", exception.message.toString())
+            emit(DashboardDataProto.DashboardProtoModel.getDefaultInstance())
+        } else {
+            throw exception
         }
+    }
 
     override suspend fun getData(): DashboardDataProto.DashboardProtoModel? = preference.data.firstOrNull()
 

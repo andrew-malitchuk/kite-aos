@@ -5,7 +5,6 @@ import IcPassword24
 import IcPort24
 import IcUsername24
 import android.os.Build
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
@@ -35,8 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -94,22 +91,24 @@ import presentation.core.ui.source.kit.organism.animatedsequence.AnimationSequen
  * @param onShowLanguageDialogChange Callback to toggle language dialog visibility.
  * @param snackbarHostState State for displaying snackbars.
  */
+@Suppress("Indentation")
 @Composable
 internal fun SettingsContent(
     state: SettingsState,
     onIntent: (SettingsIntent) -> Unit,
     showLanguageDialog: Boolean,
     onShowLanguageDialogChange: (Boolean) -> Unit,
-    snackbarHostState: StackedSnakbarHostState = rememberStackedSnackbarHostState()
+    snackbarHostState: StackedSnakbarHostState = rememberStackedSnackbarHostState(),
 ) {
     val scrollState = rememberScrollState()
 
     SafeContainer(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxSize()
             .background(backgroundGradient())
             .padding(top = Theme.spacing.sizeL),
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
     ) {
         if (state.theme != null) {
             CircularReveal(
@@ -119,17 +118,22 @@ internal fun SettingsContent(
                 AppTheme(mode = circularTheme) {
                     AnimationSequenceHost {
                         Column(
-                            modifier = Modifier
+                            modifier =
+                            Modifier
                                 .fillMaxSize()
-                                .background(backgroundGradient())
+                                .background(backgroundGradient()),
                         ) {
                             AnimatedItem(
                                 index = 0,
-                                enter = slideInVertically(tween(250)) { -it }
+                                enter = slideInVertically(tween(250)) { -it },
                             ) {
                                 SettingsHeader(
-                                    modifier = Modifier.padding(horizontal = Theme.spacing.sizeL, vertical = Theme.spacing.sizeL),
-                                    title = stringResource(R.string.settings_title)
+                                    modifier =
+                                    Modifier.padding(
+                                        horizontal = Theme.spacing.sizeL,
+                                        vertical = Theme.spacing.sizeL,
+                                    ),
+                                    title = stringResource(R.string.settings_title),
                                 ) { action ->
                                     when (action) {
                                         SettingsHeaderAction.OnBackClick -> onIntent(SettingsIntent.OnBackIntent)
@@ -140,11 +144,12 @@ internal fun SettingsContent(
 
                             AnimatedItem(
                                 index = 1,
-                                enter = slideInVertically(tween(250)) { it }
+                                enter = slideInVertically(tween(250)) { it },
                             ) {
                                 HorizontalAnimatedDivider(isVisible = scrollState.canScrollBackward)
                                 Column(
-                                    modifier = Modifier
+                                    modifier =
+                                    Modifier
                                         .fillMaxWidth()
                                         .weight(1f)
                                         .padding(horizontal = Theme.spacing.sizeL)
@@ -174,7 +179,7 @@ internal fun SettingsContent(
                                 onIntent(SettingsIntent.OnSetApplicationLanguageIntent(localeCode))
                                 onShowLanguageDialogChange(false)
                             },
-                            onDismiss = { onShowLanguageDialogChange(false) }
+                            onDismiss = { onShowLanguageDialogChange(false) },
                         )
                     }
                 }
@@ -186,17 +191,20 @@ internal fun SettingsContent(
 /**
  * Section for configuring the camera-based motion detector.
  */
+@Suppress("Indentation")
 @Composable
 private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
-    val moveDetector = state.moveDetector ?: MoveDetectorModel(
-        enabled = true,
-        sensitivity = 50,
-        dimDelay = 30L,
-        screenTimeout = 60L,
-        fabDelay = 60L
-    )
+    val moveDetector =
+        state.moveDetector ?: MoveDetectorModel(
+            enabled = true,
+            sensitivity = 50,
+            dimDelay = 30L,
+            screenTimeout = 60L,
+            fabDelay = 60L,
+        )
 
-    val isToggleAllowed = (moveDetector.sensitivity ?: 0) != 0 &&
+    val isToggleAllowed =
+        (moveDetector.sensitivity ?: 0) != 0 &&
             (moveDetector.dimDelay ?: 0L) != 0L &&
             (moveDetector.screenTimeout ?: 0L) != 0L &&
             (moveDetector.fabDelay ?: 0L) != 0L
@@ -208,7 +216,7 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
             enabled = isToggleAllowed,
             onCheckedChange = { isEnabled ->
                 onIntent(SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(enabled = isEnabled)))
-            }
+            },
         )
 
         NumberInputListItem(
@@ -219,7 +227,7 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
             value = moveDetector.sensitivity ?: 0,
             onValueChange = { onIntent(SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(sensitivity = it))) },
             range = 0..100,
-            enabled = true
+            enabled = true,
         )
 
         NumberInputListItem(
@@ -228,9 +236,13 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
             value = moveDetector.dimDelay?.toInt() ?: 0,
-            onValueChange = { onIntent(SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(dimDelay = it.toLong()))) },
+            onValueChange = {
+                onIntent(
+                    SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(dimDelay = it.toLong())),
+                )
+            },
             range = 0..300,
-            enabled = true
+            enabled = true,
         )
 
         NumberInputListItem(
@@ -239,9 +251,13 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
             value = moveDetector.screenTimeout?.toInt() ?: 0,
-            onValueChange = { onIntent(SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(screenTimeout = it.toLong()))) },
+            onValueChange = {
+                onIntent(
+                    SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(screenTimeout = it.toLong())),
+                )
+            },
             range = 0..3600,
-            enabled = true
+            enabled = true,
         )
 
         NumberInputListItem(
@@ -250,9 +266,13 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
             value = moveDetector.fabDelay?.toInt() ?: 0,
-            onValueChange = { onIntent(SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(fabDelay = it.toLong()))) },
+            onValueChange = {
+                onIntent(
+                    SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(fabDelay = it.toLong())),
+                )
+            },
             range = 0..3600,
-            enabled = true
+            enabled = true,
         )
     }
 }
@@ -261,11 +281,7 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
  * Section for configuring the MQTT telemetry and control broker connection.
  */
 @Composable
-private fun MqttSection(
-    state: SettingsState,
-    onIntent: (SettingsIntent) -> Unit,
-    isDashboardValid: Boolean
-) {
+private fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit, isDashboardValid: Boolean) {
     var mqttIp by remember { mutableStateOf(state.mqtt?.ip ?: "") }
     var mqttPort by remember { mutableStateOf(state.mqtt?.port ?: "") }
     var mqttClientId by remember { mutableStateOf(state.mqtt?.clientId ?: "") }
@@ -287,26 +303,36 @@ private fun MqttSection(
     LaunchedEffect(mqttIp, mqttPort, mqttClientId, mqttUsername, mqttPassword, mqttFriendlyName) {
         if (!state.isLoading) {
             kotlinx.coroutines.delay(1000)
-            onIntent(SettingsIntent.OnSetMqttIntent(
-                (state.mqtt ?: MqttModel()).copy(
-                    ip = mqttIp,
-                    port = mqttPort,
-                    clientId = mqttClientId,
-                    username = mqttUsername,
-                    password = mqttPassword,
-                    friendlyName = mqttFriendlyName
-                )
-            ))
+            onIntent(
+                SettingsIntent.OnSetMqttIntent(
+                    (state.mqtt ?: MqttModel()).copy(
+                        ip = mqttIp,
+                        port = mqttPort,
+                        clientId = mqttClientId,
+                        username = mqttUsername,
+                        password = mqttPassword,
+                        friendlyName = mqttFriendlyName,
+                    ),
+                ),
+            )
         }
     }
 
     // Regex patterns for validation (from architectural requirements)
-    val ipRegex = remember { Regex("^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$|^(?!:\\/\\/)([a-zA-Z0-9-_]+\\.?)*[a-zA-Z0-9][a-zA-Z0-9-_]*$") }
-    val portRegex = remember { Regex("^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$") }
+    @Suppress("MaximumLineLength")
+    val ipRegex =
+        remember {
+            Regex(
+                "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$|^(?!:\\/\\/)([a-zA-Z0-9-_]+\\.?)*[a-zA-Z0-9][a-zA-Z0-9-_]*$",
+            )
+        }
+    val portRegex =
+        remember { Regex("^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$") }
     val commonRegex = remember { Regex("^[a-zA-Z0-9_\\-\\.\\s]{1,64}$") }
 
     // Toggle eligibility: mandatory MQTT fields + Dashboard validity must match Regex.
-    val isMqttConfigValid = isDashboardValid &&
+    val isMqttConfigValid =
+        isDashboardValid &&
             ipRegex.matches(mqttIp) &&
             portRegex.matches(mqttPort) &&
             commonRegex.matches(mqttClientId) &&
@@ -321,11 +347,11 @@ private fun MqttSection(
             enabled = isMqttConfigValid,
             onCheckedChange = { isEnabled ->
                 onIntent(SettingsIntent.OnSetMqttIntent((state.mqtt ?: MqttModel()).copy(enabled = isEnabled)))
-            }
+            },
         )
 
         // Inputs always enabled (enabled = true) to allow configuration while MQTT is off.
-        
+
         TextInputListItem(
             initialText = mqttIp,
             onTextChanged = { mqttIp = it },
@@ -335,7 +361,12 @@ private fun MqttSection(
             iconForegroundColor = Theme.color.inkMain,
             enabled = true,
             validationRegex = ipRegex,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Text, autoCorrect = false)
+            keyboardOptions =
+            KeyboardOptions(
+                imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Text,
+                autoCorrect = false,
+            ),
         )
         TextInputListItem(
             initialText = mqttPort,
@@ -346,7 +377,7 @@ private fun MqttSection(
             iconForegroundColor = Theme.color.inkMain,
             enabled = true,
             validationRegex = portRegex,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number)
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number),
         )
         TextInputListItem(
             initialText = mqttClientId,
@@ -357,7 +388,12 @@ private fun MqttSection(
             iconForegroundColor = Theme.color.inkMain,
             enabled = true,
             validationRegex = commonRegex,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Ascii, autoCorrect = false)
+            keyboardOptions =
+            KeyboardOptions(
+                imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Ascii,
+                autoCorrect = false,
+            ),
         )
         TextInputListItem(
             initialText = mqttUsername,
@@ -368,7 +404,12 @@ private fun MqttSection(
             iconForegroundColor = Theme.color.inkMain,
             enabled = true,
             validationRegex = commonRegex,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Ascii, autoCorrect = false)
+            keyboardOptions =
+            KeyboardOptions(
+                imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Ascii,
+                autoCorrect = false,
+            ),
         )
         PasswordInputListItem(
             initialText = mqttPassword,
@@ -377,7 +418,7 @@ private fun MqttSection(
             icon = IcPassword24,
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
-            enabled = true
+            enabled = true,
         )
         TextInputListItem(
             initialText = mqttFriendlyName,
@@ -388,7 +429,7 @@ private fun MqttSection(
             iconForegroundColor = Theme.color.inkMain,
             enabled = true,
             validationRegex = commonRegex,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text)
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text),
         )
     }
 }
@@ -400,7 +441,7 @@ private fun MqttSection(
 private fun WebKioskSection(
     state: SettingsState,
     onIntent: (SettingsIntent) -> Unit,
-    onValidationChange: (Boolean) -> Unit
+    onValidationChange: (Boolean) -> Unit,
 ) {
     var dashboardUrl by remember { mutableStateOf(state.dashboardUrls?.dashboardUrl ?: "http://") }
     var whitelistUrl by remember { mutableStateOf(state.dashboardUrls?.whitelistUrl ?: "http://") }
@@ -423,7 +464,7 @@ private fun WebKioskSection(
     val dashboardRegex = remember { Regex("^(https?://)?([\\da-z\\.-]+)(:[0-9]{1,5})?([/\\w \\.-]*)*\\/?$") }
     val whitelistRegex = remember { Regex("^([a-zA-Z0-9_\\-\\.\\s,]*)$") }
 
-    // Report validation state: Dashboard URL is mandatory, 
+    // Report validation state: Dashboard URL is mandatory,
     // White List is optional but must match Regex if filled.
     LaunchedEffect(dashboardUrl, whitelistUrl) {
         val isDashboardOk = dashboardRegex.matches(dashboardUrl)
@@ -442,7 +483,12 @@ private fun WebKioskSection(
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
             validationRegex = dashboardRegex,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Uri, autoCorrect = false)
+            keyboardOptions =
+            KeyboardOptions(
+                imeAction = ImeAction.Next,
+                keyboardType = KeyboardType.Uri,
+                autoCorrect = false,
+            ),
         )
         TextInputListItem(
             initialText = whitelistUrl,
@@ -452,7 +498,12 @@ private fun WebKioskSection(
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
             validationRegex = whitelistRegex,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Uri, autoCorrect = false)
+            keyboardOptions =
+            KeyboardOptions(
+                imeAction = ImeAction.Done,
+                keyboardType = KeyboardType.Uri,
+                autoCorrect = false,
+            ),
         )
         SimpleListItem(
             text = stringResource(R.string.settings_application),
@@ -481,18 +532,20 @@ private fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
             icon = IcTheme24,
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
-            selectedTheme = when (state.theme) {
+            selectedTheme =
+            when (state.theme) {
                 ThemeModel.Dark -> ThemeOption.Dark
                 ThemeModel.MaterialU -> ThemeOption.MaterialU
                 else -> ThemeOption.Light
             },
-            isMaterialUAvailable = isMaterialUAvailable
+            isMaterialUAvailable = isMaterialUAvailable,
         ) { option ->
-            val newTheme = when (option) {
-                ThemeOption.Light -> ThemeModel.Light
-                ThemeOption.Dark -> ThemeModel.Dark
-                ThemeOption.MaterialU -> ThemeModel.MaterialU
-            }
+            val newTheme =
+                when (option) {
+                    ThemeOption.Light -> ThemeModel.Light
+                    ThemeOption.Dark -> ThemeModel.Dark
+                    ThemeOption.MaterialU -> ThemeModel.MaterialU
+                }
             onIntent(SettingsIntent.OnSetThemeIntent(newTheme))
         }
 
@@ -501,17 +554,22 @@ private fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
             icon = IcDock24,
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
-            selectedSide = when (state.dock?.position) {
+            selectedSide =
+            when (state.dock?.position) {
                 DockPositionModel.Position.Up -> DockPosition.Up
                 else -> DockPosition.Left
-            }
+            },
         ) { option ->
-            onIntent(SettingsIntent.OnSetDockIntent(DockPositionModel(
-                when (option) {
-                    DockPosition.Up -> DockPositionModel.Position.Up
-                    DockPosition.Left -> DockPositionModel.Position.Left
-                }
-            )))
+            onIntent(
+                SettingsIntent.OnSetDockIntent(
+                    DockPositionModel(
+                        when (option) {
+                            DockPosition.Up -> DockPositionModel.Position.Up
+                            DockPosition.Left -> DockPositionModel.Position.Left
+                        },
+                    ),
+                ),
+            )
         }
 
         LanguageListItem(
@@ -520,7 +578,7 @@ private fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
             iconForegroundColor = Theme.color.inkMain,
             icon = IcLang24,
             selectedLanguageCode = (state.currentLanguage ?: currentTag).uppercase(java.util.Locale.getDefault()),
-            onLanguageChange = { onIntent(SettingsIntent.OnLangIntent) }
+            onLanguageChange = { onIntent(SettingsIntent.OnLangIntent) },
         )
     }
 }
@@ -547,13 +605,14 @@ private fun SystemSection(state: SettingsState, onIntent: (SettingsIntent) -> Un
         }
 
         Text(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(top = Theme.spacing.sizeM, bottom = Theme.spacing.sizeL),
             text = versionDisplay,
             style = Theme.typography.caption,
             color = Theme.color.inkMain.copy(alpha = 0.3f),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
     }
 }
@@ -566,17 +625,19 @@ public fun LanguageSelectionDialog(
     showDialog: Boolean,
     currentLanguage: String?,
     onLanguageSelected: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     if (showDialog) {
-        val languages = listOf(
-            java.util.Locale.ENGLISH.toLanguageTag(),
-            java.util.Locale("uk").toLanguageTag()
-        )
-        val languageNames = mapOf(
-            java.util.Locale.ENGLISH.toLanguageTag() to stringResource(R.string.lang_english),
-            java.util.Locale("uk").toLanguageTag() to stringResource(R.string.lang_ukrainian)
-        )
+        val languages =
+            listOf(
+                java.util.Locale.ENGLISH.toLanguageTag(),
+                java.util.Locale("uk").toLanguageTag(),
+            )
+        val languageNames =
+            mapOf(
+                java.util.Locale.ENGLISH.toLanguageTag() to stringResource(R.string.lang_english),
+                java.util.Locale("uk").toLanguageTag() to stringResource(R.string.lang_ukrainian),
+            )
 
         AlertDialog(
             onDismissRequest = onDismiss,
@@ -585,19 +646,20 @@ public fun LanguageSelectionDialog(
                 Column {
                     languages.forEach { lang ->
                         Row(
-                            modifier = Modifier
+                            modifier =
+                            Modifier
                                 .fillMaxWidth()
                                 .clickable { onLanguageSelected(lang) }
                                 .padding(Theme.spacing.sizeM),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             RadioButton(
                                 selected = lang == currentLanguage,
-                                onClick = { onLanguageSelected(lang) }
+                                onClick = { onLanguageSelected(lang) },
                             )
                             Text(
                                 text = languageNames[lang] ?: lang,
-                                modifier = Modifier.padding(start = Theme.spacing.sizeM)
+                                modifier = Modifier.padding(start = Theme.spacing.sizeM),
                             )
                         }
                     }
@@ -607,7 +669,7 @@ public fun LanguageSelectionDialog(
                 TextButton(onClick = onDismiss) {
                     Text(stringResource(R.string.cancel))
                 }
-            }
+            },
         )
     }
 }

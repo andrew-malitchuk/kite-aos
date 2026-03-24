@@ -26,25 +26,25 @@ public fun SideBar(
     isDrawerOpen: Boolean,
     onDismiss: () -> Unit,
     drawer: @Composable () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     when (isBottom) {
-        true -> BlurredCustomBottomDrawerOverlay(
-            modifier = modifier,
-            isDrawerOpen = isDrawerOpen,
-            onDismiss = onDismiss,
-            drawerContent = drawer,
-            content = content
-        )
+        true ->
+            BlurredCustomBottomDrawerOverlay(
+                modifier = modifier,
+                isDrawerOpen = isDrawerOpen,
+                onDismiss = onDismiss,
+                drawerContent = drawer,
+                content = content,
+            )
 
-        false -> BlurredCustomSideDrawerOverlay(
-            modifier = modifier,
-            isDrawerOpen = isDrawerOpen,
-            onDismiss = onDismiss,
-            drawerContent = drawer,
-            content = content
-        )
+        false ->
+            BlurredCustomSideDrawerOverlay(
+                modifier = modifier,
+                isDrawerOpen = isDrawerOpen,
+                onDismiss = onDismiss,
+                drawerContent = drawer,
+                content = content,
+            )
     }
-
-
 }

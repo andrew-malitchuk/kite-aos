@@ -7,15 +7,15 @@ public object DatabaseConfigure {
     /**
      * The name of the database file.
      */
-    public const val DATABASE: String ="yahk"
+    public const val DATABASE: String = "yahk"
 
     /**
      * Table name constants.
      */
-    public object Table{
+    public object Table {
         /**
          * The name of the application table.
          */
-        public const val APPLICATION: String ="application"
+        public const val APPLICATION: String = "application"
     }
 }

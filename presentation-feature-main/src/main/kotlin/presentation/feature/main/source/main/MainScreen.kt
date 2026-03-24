@@ -2,7 +2,6 @@ package presentation.feature.main.source.main
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import org.koin.androidx.compose.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -17,9 +16,7 @@ import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHost
  * and application launching, and hosts the primary [MainContent].
  */
 @Composable
-public fun MainScreen(
-    viewModel: MainViewModel = koinViewModel()
-) {
+public fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
     val appNavigator = LocalAppNavigator.current
     val context = LocalContext.current
 
@@ -39,7 +36,7 @@ public fun MainScreen(
 
             is MainSideEffect.ShowError -> {
                 snackbarHostState.showSnackbar(
-                    title = context.getString(effect.messageId)
+                    title = context.getString(effect.messageId),
                 )
             }
         }
@@ -48,6 +45,6 @@ public fun MainScreen(
     MainContent(
         state = state.value,
         onIntent = viewModel::handleIntent,
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
     )
 }

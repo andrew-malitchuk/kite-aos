@@ -21,33 +21,30 @@ import androidx.compose.ui.unit.Dp
  * @return A new `Modifier` instance with the clickable behavior applied (if `onClick` is not
  *         null) or the original modifier unchanged (if `onClick` is null).
  */
-public fun Modifier.noRippleClickable(onClick: (() -> Unit)? = null): Modifier =
-    composed {
-        if (onClick != null) {
-            this.clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() },
-            ) {
-                onClick.invoke()
-            }
-        } else {
-            this
+public fun Modifier.noRippleClickable(onClick: (() -> Unit)? = null): Modifier = composed {
+    if (onClick != null) {
+        this.clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() },
+        ) {
+            onClick.invoke()
         }
+    } else {
+        this
     }
+}
 
-public fun Modifier.noRippleLongClickable(onClick: (() -> Unit)? = null): Modifier =
-    composed {
-        if (onClick != null) {
-            this.pointerInput(Unit) {
-                detectTapGestures(
-                    onLongPress = { onClick.invoke() }
-                )
-            }
-        } else {
-            this
+public fun Modifier.noRippleLongClickable(onClick: (() -> Unit)? = null): Modifier = composed {
+    if (onClick != null) {
+        this.pointerInput(Unit) {
+            detectTapGestures(
+                onLongPress = { onClick.invoke() },
+            )
         }
+    } else {
+        this
     }
-
+}
 
 /**
  * Extension to automatically fill the maximum available side
@@ -57,7 +54,7 @@ public fun Modifier.fillMaxSquare(
     maxWidth: Dp,
     maxHeight: Dp,
     aspectRatio: Float = 1f,
-    fraction: Float = 1f
+    fraction: Float = 1f,
 ): Modifier {
     return if (maxWidth < maxHeight) {
         this

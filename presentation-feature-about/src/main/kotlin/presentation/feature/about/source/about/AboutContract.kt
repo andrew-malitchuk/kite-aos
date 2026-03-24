@@ -6,7 +6,7 @@ package presentation.feature.about.source.about
  * @property isLoading Indicates whether the screen is currently performing a background operation.
  */
 public data class AboutState(
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
 )
 
 /**
@@ -26,7 +26,6 @@ public sealed class AboutSideEffect {
     public data object GoBackEffect : AboutSideEffect()
 }
 
-
 /**
  * Represents the intents (user actions) that can be dispatched from the About screen.
  */
@@ -34,7 +33,7 @@ public sealed class AboutIntent {
     /**
      * Intent triggered when the user clicks the back button.
      */
-    public data object OnBackIntent: AboutIntent()
+    public data object OnBackIntent : AboutIntent()
 
     /**
      * Intent triggered when the user clicks the GitHub social link button.

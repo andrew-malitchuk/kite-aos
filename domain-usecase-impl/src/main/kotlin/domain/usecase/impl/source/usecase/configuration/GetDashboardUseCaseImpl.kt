@@ -12,10 +12,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [GetDashboardUseCase::class])
 internal class GetDashboardUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : GetDashboardUseCase {
     override suspend fun invoke(): Result<DashboardModel> = resultLauncher(
-        errorMapper = Failure.Technical::Preference
+        errorMapper = Failure.Technical::Preference,
     ) {
         configureRepository.getDashboard() ?: throw Failure.Logic.NotFound
     }

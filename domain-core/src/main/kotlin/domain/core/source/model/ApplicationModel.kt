@@ -16,5 +16,5 @@ public data class ApplicationModel(
     val name: String,
     val packageName: String,
     val icon: Int,
-    val chosen: Boolean? = null
+    val chosen: Boolean? = null,
 ) : Model

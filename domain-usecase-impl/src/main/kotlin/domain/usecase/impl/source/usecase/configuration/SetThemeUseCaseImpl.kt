@@ -8,16 +8,15 @@ import domain.usecase.api.source.usecase.configuration.SetThemeUseCase
 import domain.usecase.impl.core.resultLauncher
 import org.koin.core.annotation.Single
 
-
 /**
  * Implementation of [SetThemeUseCase] using [ConfigureRepository].
  */
 @Single(binds = [SetThemeUseCase::class])
 internal class SetThemeUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : SetThemeUseCase {
     override suspend fun invoke(value: ThemeModel): Optional = resultLauncher(
-        errorMapper = Failure.Technical::Preference
+        errorMapper = Failure.Technical::Preference,
     ) {
         configureRepository.setTheme(value)
     }

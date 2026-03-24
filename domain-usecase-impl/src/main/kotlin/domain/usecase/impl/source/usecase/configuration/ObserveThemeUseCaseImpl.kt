@@ -14,19 +14,17 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [ObserveThemeUseCase::class])
 internal class ObserveThemeUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : ObserveThemeUseCase {
-    override fun invoke(): Flow<Result<ThemeModel?>> =
-        configureRepository.observeTheme()
-            .map { theme ->
-                if (theme == null) {
-                    Result.failure(Failure.Logic.NotFound)
-                } else {
-                    Result.success(theme)
-                }
+    override fun invoke(): Flow<Result<ThemeModel?>> = configureRepository.observeTheme()
+        .map { theme ->
+            if (theme == null) {
+                Result.failure(Failure.Logic.NotFound)
+            } else {
+                Result.success(theme)
             }
-            .catch { throwable ->
-                emit(Result.failure(Failure.Technical.Preference(throwable)))
-            }
-
+        }
+        .catch { throwable ->
+            emit(Result.failure(Failure.Technical.Preference(throwable)))
+        }
 }

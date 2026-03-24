@@ -16,9 +16,8 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [ApplicationPlatformSource::class])
 internal class ApplicationPlatformSourceImpl(
-    private val context: Context
+    private val context: Context,
 ) : ApplicationPlatformSource {
-
     /**
      * Queries all installed applications and filters for those with a launch intent.
      *
@@ -38,7 +37,7 @@ internal class ApplicationPlatformSourceImpl(
             }
             .map { info ->
                 ApplicationSystemPlatformMapper.toPlatform.map(info).copy(
-                    name = info.loadLabel(packageManager).toString()
+                    name = info.loadLabel(packageManager).toString(),
                 )
             }
             .sortedBy { it.name.lowercase() }
@@ -51,7 +50,7 @@ internal class ApplicationPlatformSourceImpl(
             val info = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
 
             ApplicationSystemPlatformMapper.toPlatform.map(info).copy(
-                name = info.loadLabel(packageManager).toString()
+                name = info.loadLabel(packageManager).toString(),
             )
         } catch (_: PackageManager.NameNotFoundException) {
             null

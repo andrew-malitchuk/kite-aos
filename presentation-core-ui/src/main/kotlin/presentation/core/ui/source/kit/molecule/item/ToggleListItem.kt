@@ -1,16 +1,10 @@
 package presentation.core.ui.source.kit.molecule.item
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -18,9 +12,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
-import presentation.core.ui.source.kit.atom.SquircleCard
 import presentation.core.ui.source.kit.atom.button.toggle.Toggle
-import presentation.core.ui.source.kit.atom.container.IconContainer
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 
 @Composable
@@ -32,7 +24,7 @@ public fun ToggleListItem(
     iconBackgroundColor: Color,
     iconForegroundColor: Color,
     isChecked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
+    onCheckedChange: (Boolean) -> Unit,
 ) {
     BaseListItem(
         modifier = modifier,
@@ -44,9 +36,9 @@ public fun ToggleListItem(
         trailingContent = {
             Toggle(
                 checked = isChecked,
-                onCheckedChange = onCheckedChange
+                onCheckedChange = onCheckedChange,
             )
-        }
+        },
     )
 }
 
@@ -61,7 +53,7 @@ private fun ToggleListItemPreviewLight() {
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.surface,
             isChecked = isChecked,
-            onCheckedChange = { isChecked = it }
+            onCheckedChange = { isChecked = it },
         )
     }
 }
@@ -77,7 +69,7 @@ private fun ToggleListItemPreviewDark() {
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.surface,
             isChecked = isChecked,
-            onCheckedChange = { isChecked = it }
+            onCheckedChange = { isChecked = it },
         )
     }
 }

@@ -13,10 +13,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [SetDashboardUseCase::class])
 internal class SetDashboardUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : SetDashboardUseCase {
     override suspend fun invoke(dashboardModel: DashboardModel): Optional = resultLauncher(
-        errorMapper = Failure.Technical::Preference
+        errorMapper = Failure.Technical::Preference,
     ) {
         configureRepository.setDashboard(dashboardModel)
     }

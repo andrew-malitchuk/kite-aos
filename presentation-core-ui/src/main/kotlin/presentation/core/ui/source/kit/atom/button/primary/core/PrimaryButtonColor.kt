@@ -11,11 +11,7 @@ import presentation.core.ui.source.kit.atom.button.core.ButtonInteractionState
 
 public class PrimaryButtonColor : ButtonColor {
     @Composable
-    override fun borderColor(
-        interactionState: Int,
-        enabled: Boolean,
-        loading: Boolean,
-    ): State<Color> =
+    override fun borderColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
         rememberUpdatedState(
             when {
                 !enabled -> Color.Transparent
@@ -25,11 +21,7 @@ public class PrimaryButtonColor : ButtonColor {
         )
 
     @Composable
-    override fun foregroundColor(
-        interactionState: Int,
-        enabled: Boolean,
-        loading: Boolean,
-    ): State<Color> =
+    override fun foregroundColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
         rememberUpdatedState(
             when {
                 !enabled -> Theme.color.inkSubtle
@@ -39,10 +31,6 @@ public class PrimaryButtonColor : ButtonColor {
         )
 
     @Composable
-    override fun backgroundColor(
-        interactionState: Int,
-        enabled: Boolean,
-        loading: Boolean,
-    ): State<Color> =
+    override fun backgroundColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
         rememberUpdatedState(Color.Transparent) // Always transparent background
 }

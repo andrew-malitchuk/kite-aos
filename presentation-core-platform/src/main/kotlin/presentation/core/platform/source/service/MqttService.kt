@@ -13,7 +13,6 @@ import domain.usecase.api.source.usecase.mqtt.MqttConnectUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttDisconnectUseCase
 import domain.usecase.api.source.usecase.mqtt.ObserveMqttConfigurationUseCase
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import presentation.core.platform.R
@@ -25,7 +24,6 @@ import presentation.core.platform.R
  * automatically connects or disconnects the client based on the current settings.
  */
 public class MqttService : LifecycleService() {
-
     private val observeMqttConfigurationUseCase: ObserveMqttConfigurationUseCase by inject()
     private val mqttConnectUseCase: MqttConnectUseCase by inject()
     private val mqttDisconnectUseCase: MqttDisconnectUseCase by inject()
@@ -77,11 +75,12 @@ public class MqttService : LifecycleService() {
      */
     private fun setupNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID,
-                NOTIFICATION_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_LOW
-            )
+            val channel =
+                NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    NOTIFICATION_CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_LOW,
+                )
             getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
         }
     }

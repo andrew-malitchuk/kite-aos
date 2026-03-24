@@ -9,5 +9,6 @@ import kotlinx.coroutines.flow.Flow
  */
 public interface MoveDetectorPreferenceSource : PreferenceSource<MoveDetectorPreference> {
     public fun observeMotion(): Flow<Unit>
+
     public suspend fun emitMotion()
 }

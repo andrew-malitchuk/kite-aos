@@ -18,7 +18,7 @@ public data class OnboardingState(
     val isPostNotificationPermissionGranted: Boolean,
     val isDeviceAdminGranted: Boolean,
     val isWriteSettingsGranted: Boolean,
-    val dashboardUrls: DashboardModel?
+    val dashboardUrls: DashboardModel?,
 )
 
 /**
@@ -27,16 +27,22 @@ public data class OnboardingState(
 public sealed class OnboardingSideEffect {
     /** Launch system camera permission dialog. */
     public data object AskCameraPermissionEffect : OnboardingSideEffect()
+
     /** Launch system overlay permission settings screen. */
     public data object AskOverlayPermissionEffect : OnboardingSideEffect()
+
     /** Launch system notification permission dialog. */
     public data object AskPostNotificationPermissionEffect : OnboardingSideEffect()
+
     /** Launch system Device Administrator activation screen. */
     public data object AskDeviceAdminEffect : OnboardingSideEffect()
+
     /** Launch system Write Settings toggle screen. */
     public data object AskWriteSettingsEffect : OnboardingSideEffect()
+
     /** Navigate to the main dashboard after successful setup. */
     public data object GoToMainEffect : OnboardingSideEffect()
+
     /** Show an error message via snackbar. */
     public data class ShowError(val messageId: Int) : OnboardingSideEffect()
 }

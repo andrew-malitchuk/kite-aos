@@ -23,18 +23,19 @@ public fun IconContainer(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     backgroundColor: Color,
-    foregroundColor: Color
+    foregroundColor: Color,
 ) {
     Box(
-        modifier = modifier
+        modifier =
+        modifier
             .clip(SquircleShape(Theme.size.sizeXL))
             .background(backgroundColor),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Image(
             imageVector = icon,
             contentDescription = null,
-            colorFilter = ColorFilter.tint(foregroundColor)
+            colorFilter = ColorFilter.tint(foregroundColor),
         )
     }
 }
@@ -47,7 +48,7 @@ private fun IconContainerPreview() {
             modifier = Modifier.size(64.dp),
             backgroundColor = Theme.color.surface,
             foregroundColor = Theme.color.brand,
-            icon = IcOutline3
+            icon = IcOutline3,
         )
     }
 }

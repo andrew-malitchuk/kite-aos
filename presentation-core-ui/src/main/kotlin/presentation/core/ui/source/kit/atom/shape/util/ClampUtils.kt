@@ -23,8 +23,6 @@ package presentation.core.ui.source.kit.atom.shape.util
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Size
-import presentation.core.ui.source.kit.atom.shape.util.transformFraction
-import presentation.core.ui.source.kit.atom.shape.util.triangleFraction
 
 /**
  *
@@ -35,10 +33,7 @@ import presentation.core.ui.source.kit.atom.shape.util.triangleFraction
  *
  **/
 @Stable
-internal fun clampedCornerRadius(
-    cornerSize: Float,
-    size: Size
-): Float {
+internal fun clampedCornerRadius(cornerSize: Float, size: Size): Float {
     val smallestAxis = size.minDimension / 2
     return cornerSize.coerceIn(0f, smallestAxis)
 }
@@ -53,25 +48,20 @@ internal fun clampedCornerRadius(
  *
  **/
 @Stable
-internal fun clampedCornerRadius(
-    size: Size,
-    cornerSize: Float,
-    smoothing: Int,
-): Float {
-
+internal fun clampedCornerRadius(size: Size, cornerSize: Float, smoothing: Int): Float {
     val smallestAxis = size.minDimension / 2
     val smoothness = smoothing.toFloat() / 100
     val smoothnessAmplitude = (1f - triangleFraction(smoothness)).coerceAtLeast(.75f)
-    val factor = transformFraction(
-        value = smoothness * smoothnessAmplitude,
-        startX = 0f,
-        endX = 1f,
-        startY = 1f,
-        endY = 2.33f
-    )
+    val factor =
+        transformFraction(
+            value = smoothness * smoothnessAmplitude,
+            startX = 0f,
+            endX = 1f,
+            startY = 1f,
+            endY = 2.33f,
+        )
 
     return (cornerSize * factor).coerceIn(0f, smallestAxis)
-
 }
 
 /**
@@ -81,6 +71,7 @@ internal fun clampedCornerRadius(
  *  @param smoothing The corner smoothing.
  *
  **/
+@Suppress("MagicNumber")
 @Stable
 internal fun clampedSmoothing(smoothing: Int): Int = smoothing.coerceIn(0, 100)
 
@@ -93,13 +84,10 @@ internal fun clampedSmoothing(smoothing: Int): Int = smoothing.coerceIn(0, 100)
  *
  **/
 @Stable
-internal fun clampedSmoothing(
-    radius: Float,
-    cornerThreshold: Float
-): Float = transformFraction(
+internal fun clampedSmoothing(radius: Float, cornerThreshold: Float): Float = transformFraction(
     value = radius.coerceAtMost(cornerThreshold),
     startX = 0f,
     endX = cornerThreshold,
     startY = 0f,
-    endY = .45f
+    endY = .45f,
 )

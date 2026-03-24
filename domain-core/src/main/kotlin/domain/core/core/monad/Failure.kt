@@ -5,7 +5,6 @@ package domain.core.core.monad
  * Extends [Throwable] to allow integration with coroutines and other standard error handling.
  */
 public sealed class Failure : Throwable() {
-
     /**
      * Represents technical failures that occur in the infrastructure layer.
      */

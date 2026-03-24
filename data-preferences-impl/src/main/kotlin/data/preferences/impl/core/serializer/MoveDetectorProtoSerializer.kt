@@ -9,7 +9,6 @@ import java.io.OutputStream
 
 internal class MoveDetectorProtoSerializer :
     Serializer<MoveDetectorDataProto.MoveDetectorProtoModel> {
-
     override suspend fun readFrom(input: InputStream): MoveDetectorDataProto.MoveDetectorProtoModel {
         try {
             return MoveDetectorDataProto.MoveDetectorProtoModel.parseFrom(input)
@@ -18,10 +17,7 @@ internal class MoveDetectorProtoSerializer :
         }
     }
 
-    override suspend fun writeTo(
-        t: MoveDetectorDataProto.MoveDetectorProtoModel,
-        output: OutputStream,
-    ) {
+    override suspend fun writeTo(t: MoveDetectorDataProto.MoveDetectorProtoModel, output: OutputStream) {
         t.writeTo(output)
     }
 

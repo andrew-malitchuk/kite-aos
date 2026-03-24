@@ -33,22 +33,22 @@ public fun SectionToggleItem(
     checked: Boolean,
     enabled: Boolean = true,
     onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = title,
             style = Theme.typography.title,
             color = Theme.color.inkMain,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
         Toggle(
             checked = checked,
-            enabled=enabled,
-            onCheckedChange = onCheckedChange
+            enabled = enabled,
+            onCheckedChange = onCheckedChange,
         )
     }
 }
@@ -62,7 +62,7 @@ private fun SectionToggleItemPreview() {
             title = "Advanced Settings",
             checked = isChecked,
             enabled = true,
-            onCheckedChange = { isChecked = it }
+            onCheckedChange = { isChecked = it },
         )
     }
 }

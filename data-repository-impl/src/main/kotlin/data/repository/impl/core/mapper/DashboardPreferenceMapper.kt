@@ -10,16 +10,18 @@ import domain.core.source.model.DashboardModel
  */
 internal object DashboardPreferenceMapper :
     ModelResourceMapper<DashboardModel, DashboardPreference> {
-    override val toModel: Mapper<DashboardPreference, DashboardModel> = Mapper { input ->
-        DashboardModel(
-            dashboardUrl = input.dashboardUrl ?: "",
-            whitelistUrl = input.whitelistUrl ?: ""
-        )
-    }
-    override val toResource: Mapper<DashboardModel, DashboardPreference> = Mapper { input ->
-        DashboardPreference(
-            dashboardUrl = input.dashboardUrl,
-            whitelistUrl = input.whitelistUrl
-        )
-    }
+    override val toModel: Mapper<DashboardPreference, DashboardModel> =
+        Mapper { input ->
+            DashboardModel(
+                dashboardUrl = input.dashboardUrl ?: "",
+                whitelistUrl = input.whitelistUrl ?: "",
+            )
+        }
+    override val toResource: Mapper<DashboardModel, DashboardPreference> =
+        Mapper { input ->
+            DashboardPreference(
+                dashboardUrl = input.dashboardUrl,
+                whitelistUrl = input.whitelistUrl,
+            )
+        }
 }

@@ -7,9 +7,7 @@ import data.preferences.impl.proto.OnboardingDataProto
 import java.io.InputStream
 import java.io.OutputStream
 
-
 internal class OnboardingProtoSerializer : Serializer<OnboardingDataProto.OnboardingProtoModel> {
-
     override suspend fun readFrom(input: InputStream): OnboardingDataProto.OnboardingProtoModel {
         try {
             return OnboardingDataProto.OnboardingProtoModel.parseFrom(input)
@@ -18,11 +16,7 @@ internal class OnboardingProtoSerializer : Serializer<OnboardingDataProto.Onboar
         }
     }
 
-
-    override suspend fun writeTo(
-        t: OnboardingDataProto.OnboardingProtoModel,
-        output: OutputStream,
-    ) {
+    override suspend fun writeTo(t: OnboardingDataProto.OnboardingProtoModel, output: OutputStream) {
         t.writeTo(output)
     }
 

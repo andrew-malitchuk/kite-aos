@@ -5,7 +5,6 @@ import data.preferences.api.source.resource.ThemePreference
 import data.preferences.impl.core.mapper.base.ProtobufPreferenceMapper
 import data.preferences.impl.proto.ThemeDataProto
 
-
 internal object ThemeProtobufPreferenceMapper :
     ProtobufPreferenceMapper<ThemeDataProto.ThemeProtoModel, ThemePreference> {
     override val toProtobuf: Mapper<ThemePreference, ThemeDataProto.ThemeProtoModel> =
@@ -18,7 +17,7 @@ internal object ThemeProtobufPreferenceMapper :
     override val toPreference: Mapper<ThemeDataProto.ThemeProtoModel, ThemePreference> =
         Mapper { input ->
             ThemePreference(
-                mode = input.mode
+                mode = input.mode,
             )
         }
 }

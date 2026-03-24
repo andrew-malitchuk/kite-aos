@@ -6,7 +6,6 @@ android {
     namespace = "presentation.core.navigation.impl"
 }
 
-
 dependencies {
     implementation(libs.bundles.navigation)
     implementation(projects.presentationCoreNavigationApi)

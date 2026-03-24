@@ -8,11 +8,11 @@ import data.preferences.impl.source.datasource.base.BasePreferenceSourceImpl
 import data.preferences.impl.source.storage.OnboardingPreferenceStorage
 import org.koin.core.annotation.Single
 
-
 @Single(binds = [OnboardingPreferenceSource::class])
 internal class OnboardingPreferenceSourceImpl(
     storage: OnboardingPreferenceStorage,
 ) : BasePreferenceSourceImpl<OnboardingDataProto.OnboardingProtoModel, OnboardingPreference>(
     storage = storage,
     mapper = OnboardingProtobufPreferenceMapper,
-), OnboardingPreferenceSource
+),
+    OnboardingPreferenceSource

@@ -17,10 +17,10 @@ import org.koin.core.annotation.Single
 @Single(binds = [MqttConnectUseCase::class])
 internal class MqttConnectUseCaseImpl(
     private val mqttRepository: MqttRepository,
-    private val getMqttConfigurationUseCase: GetMqttConfigurationUseCase
+    private val getMqttConfigurationUseCase: GetMqttConfigurationUseCase,
 ) : MqttConnectUseCase {
     override suspend operator fun invoke(): Optional = resultLauncher(
-        errorMapper = Failure.Technical::Network
+        errorMapper = Failure.Technical::Network,
     ) {
         val config = getMqttConfigurationUseCase().getOrThrow()
         if (config.enabled == true) {
@@ -28,9 +28,9 @@ internal class MqttConnectUseCaseImpl(
                 server = config.ip ?: "",
                 port = config.port?.toIntOrNull() ?: 1883,
                 clientId = config.clientId ?: "",
-                username = config.username?:"",
-                password = config.password?:"",
-                friendlyName = config.friendlyName?:""
+                username = config.username ?: "",
+                password = config.password ?: "",
+                friendlyName = config.friendlyName ?: "",
             )
         }
     }

@@ -1,9 +1,7 @@
 package presentation.core.ui.source.kit.atom.dialog
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -13,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -64,9 +61,10 @@ public fun BlurredCustomSideDrawerOverlay(
 
     val hazeState = remember { HazeState() }
 
-    val offsetX = remember {
-        Animatable(if (isDrawerOpen) 0f else drawerWidthPx * (if (drawerSide == DrawerSide.LEFT) -1 else 1))
-    }
+    val offsetX =
+        remember {
+            Animatable(if (isDrawerOpen) 0f else drawerWidthPx * (if (drawerSide == DrawerSide.LEFT) -1 else 1))
+        }
 
     LaunchedEffect(isDrawerOpen) {
         val targetOffsetX =
@@ -78,14 +76,6 @@ public fun BlurredCustomSideDrawerOverlay(
     }
 
     var isExpanded by remember { mutableStateOf(false) }
-    val baseHeight = Theme.spacing.size4XL
-    val expandedHeight = baseHeight * 2
-
-    val animatedHeight by animateDpAsState(
-        targetValue = if (isExpanded) expandedHeight else baseHeight,
-        animationSpec = tween(durationMillis = 200),
-        label = "divider-height",
-    )
 
     // Optimization: Use derivedStateOf to prevent excessive recompositions during animation
     val progress by remember(drawerWidthPx) {
@@ -99,9 +89,10 @@ public fun BlurredCustomSideDrawerOverlay(
     Box(modifier = modifier.fillMaxSize()) {
         // 1. Source content
         Box(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxSize()
-                .hazeSource(state = hazeState)
+                .hazeSource(state = hazeState),
         ) {
             content()
         }
@@ -109,14 +100,16 @@ public fun BlurredCustomSideDrawerOverlay(
         // 2. Blur Overlay (Mask)
         if (isDrawerOpen || abs(offsetX.value) < drawerWidthPx) {
             Box(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxSize()
                     .hazeEffect(
                         state = hazeState,
-                        style = HazeDefaults.style(
+                        style =
+                        HazeDefaults.style(
                             blurRadius = 6.dp * progress,
-                            backgroundColor = Color.Transparent
-                        )
+                            backgroundColor = Color.Transparent,
+                        ),
                     )
                     // Optimization: Draw the mask color in the Draw phase to avoid recomposition
                     .drawBehind {
@@ -130,7 +123,8 @@ public fun BlurredCustomSideDrawerOverlay(
 
         // 3. Drawer content
         Column(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxHeight()
                 .width(drawerWidth)
                 .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) }
@@ -147,13 +141,17 @@ public fun BlurredCustomSideDrawerOverlay(
                             onDragEnd = {
                                 isExpanded = false
                                 scope.launch {
-                                    val shouldClose = when (drawerSide) {
-                                        DrawerSide.LEFT -> offsetX.value < -drawerWidthPx * dragThresholdFraction
-                                        DrawerSide.RIGHT -> offsetX.value > drawerWidthPx * dragThresholdFraction
-                                    }
-                                    val finalTarget = if (shouldClose) {
-                                        drawerWidthPx * (if (drawerSide == DrawerSide.LEFT) -1 else 1)
-                                    } else 0f
+                                    val shouldClose =
+                                        when (drawerSide) {
+                                            DrawerSide.LEFT -> offsetX.value < -drawerWidthPx * dragThresholdFraction
+                                            DrawerSide.RIGHT -> offsetX.value > drawerWidthPx * dragThresholdFraction
+                                        }
+                                    val finalTarget =
+                                        if (shouldClose) {
+                                            drawerWidthPx * (if (drawerSide == DrawerSide.LEFT) -1 else 1)
+                                        } else {
+                                            0f
+                                        }
 
                                     offsetX.animateTo(finalTarget, tween(animationDuration))
                                     if (shouldClose) onDismiss()
@@ -163,10 +161,11 @@ public fun BlurredCustomSideDrawerOverlay(
                             change.consume()
                             scope.launch {
                                 val newOffset = offsetX.value + dragAmount.x
-                                val clampedOffset = when (drawerSide) {
-                                    DrawerSide.LEFT -> newOffset.coerceIn(-drawerWidthPx, 0f)
-                                    DrawerSide.RIGHT -> newOffset.coerceIn(0f, drawerWidthPx)
-                                }
+                                val clampedOffset =
+                                    when (drawerSide) {
+                                        DrawerSide.LEFT -> newOffset.coerceIn(-drawerWidthPx, 0f)
+                                        DrawerSide.RIGHT -> newOffset.coerceIn(0f, drawerWidthPx)
+                                    }
                                 offsetX.snapTo(clampedOffset)
                             }
                         }

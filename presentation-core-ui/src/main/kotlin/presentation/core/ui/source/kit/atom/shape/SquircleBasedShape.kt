@@ -41,10 +41,10 @@ public abstract class SquircleBasedShape(
     topEnd: CornerSize,
     bottomStart: CornerSize,
     bottomEnd: CornerSize,
-    public val smoothing: Int
+    public val smoothing: Int,
 ) : CornerBasedShape(
     topStart = topStart,
     topEnd = topEnd,
     bottomStart = bottomStart,
-    bottomEnd = bottomEnd
+    bottomEnd = bottomEnd,
 )

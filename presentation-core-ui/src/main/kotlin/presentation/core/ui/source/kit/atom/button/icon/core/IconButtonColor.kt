@@ -18,32 +18,21 @@ public class IconButtonColor(
     private val disabledContentColor: Color,
 ) : ButtonColor {
     @Composable
-    override fun borderColor(
-        interactionState: Int,
-        enabled: Boolean,
-        loading: Boolean,
-    ): State<Color> = rememberUpdatedState(Color.Transparent)
+    override fun borderColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
+        rememberUpdatedState(Color.Transparent)
 
     @Composable
-    override fun foregroundColor(
-        interactionState: Int,
-        enabled: Boolean,
-        loading: Boolean,
-    ): State<Color> =
+    override fun foregroundColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
         rememberUpdatedState(
             when {
                 !enabled -> disabledContentColor
                 interactionState has ButtonInteractionState.SELECTED -> selectedContentColor
                 else -> contentColor
-            }
+            },
         )
 
     @Composable
-    override fun backgroundColor(
-        interactionState: Int,
-        enabled: Boolean,
-        loading: Boolean,
-    ): State<Color> =
+    override fun backgroundColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
         rememberUpdatedState(
             when {
                 !enabled -> disabledContainerColor

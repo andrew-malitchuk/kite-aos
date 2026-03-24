@@ -4,7 +4,7 @@ plugins {
     id("com.google.protobuf")
 }
 
-android{
+android {
     namespace = "data.preferences.impl"
 }
 

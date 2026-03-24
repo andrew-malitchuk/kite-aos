@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -43,8 +41,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
-import presentation.core.ui.source.kit.atom.SquircleCard
-import presentation.core.ui.source.kit.atom.container.IconContainer
 import presentation.core.ui.source.kit.atom.icon.IcClose24
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
@@ -61,17 +57,17 @@ public fun TextInputListItem(
     iconBackgroundColor: Color,
     iconForegroundColor: Color,
     validationRegex: Regex? = null,
-    keyboardOptions: KeyboardOptions = KeyboardOptions(
-        imeAction = ImeAction.Done,
-        keyboardType = KeyboardType.Text,
-        autoCorrect = false,
-        capitalization = KeyboardCapitalization.None
-    ),
-    enabled: Boolean = true
+    keyboardOptions: KeyboardOptions =
+        KeyboardOptions(
+            imeAction = ImeAction.Done,
+            keyboardType = KeyboardType.Text,
+            autoCorrect = false,
+            capitalization = KeyboardCapitalization.None,
+        ),
+    enabled: Boolean = true,
 ) {
     val handleColor = Theme.color.brand
     val backgroundColor = Theme.color.brand.copy(alpha = 0.4f)
-
 
     var text by remember(initialText) { mutableStateOf(initialText) }
     var isError by remember(text) {
@@ -90,7 +86,7 @@ public fun TextInputListItem(
 
     val borderColor by animateColorAsState(
         targetValue = if (isError && enabled) Theme.color.error else Color.Transparent,
-        label = "BorderColor"
+        label = "BorderColor",
     )
 
     BaseListItem(
@@ -101,12 +97,13 @@ public fun TextInputListItem(
         enabled = enabled,
         content = {
             Box(modifier = Modifier.weight(1f)) {
-                val customTextSelectionColors = remember {
-                    TextSelectionColors(
-                        handleColor = handleColor,
-                        backgroundColor = backgroundColor
-                    )
-                }
+                val customTextSelectionColors =
+                    remember {
+                        TextSelectionColors(
+                            handleColor = handleColor,
+                            backgroundColor = backgroundColor,
+                        )
+                    }
 
                 CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
                     BasicTextField(
@@ -121,7 +118,8 @@ public fun TextInputListItem(
                         modifier = Modifier.fillMaxWidth(),
                         cursorBrush = SolidColor(Theme.color.brand),
                         keyboardOptions = keyboardOptions,
-                        keyboardActions = KeyboardActions(
+                        keyboardActions =
+                        KeyboardActions(
                             onDone = {
                                 keyboardController?.hide()
                                 focusManager.clearFocus()
@@ -132,8 +130,8 @@ public fun TextInputListItem(
                             onSearch = {
                                 keyboardController?.hide()
                                 focusManager.clearFocus()
-                            }
-                        )
+                            },
+                        ),
                     )
                 }
                 if (text.isEmpty()) {
@@ -142,7 +140,7 @@ public fun TextInputListItem(
                         style = textStyle,
                         color = Theme.color.inkMain.copy(alpha = 0.5f),
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -154,29 +152,29 @@ public fun TextInputListItem(
                         text = ""
                         onTextChanged("")
                     },
-                    enabled = enabled
+                    enabled = enabled,
                 ) {
                     Icon(
                         imageVector = IcClose24,
                         contentDescription = "Clear input",
-                        tint = Theme.color.inkMain
+                        tint = Theme.color.inkMain,
                     )
                 }
             }
-        }
+        },
     )
 }
-
 
 @Preview
 @Composable
 private fun TextInputListItemPreview() {
     AppTheme {
         Column(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxWidth()
                 .padding(Theme.spacing.sizeM),
-            verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeM)
+            verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeM),
         ) {
             var text1 by remember { mutableStateOf("invalid") } // Text that will trigger error
             var text2 by remember { mutableStateOf("") }
@@ -189,7 +187,7 @@ private fun TextInputListItemPreview() {
                 icon = IcOutline3, // Using LoginIcon for the first preview
                 iconBackgroundColor = Theme.color.brand,
                 iconForegroundColor = Theme.color.inkMain,
-                validationRegex = Regex("^valid$") // Regex to demonstrate error
+                validationRegex = Regex("^valid$"), // Regex to demonstrate error
             )
 
             Spacer(modifier = Modifier.size(Theme.spacing.sizeM))

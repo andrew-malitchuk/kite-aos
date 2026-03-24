@@ -9,7 +9,7 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [EmitMoveDetectorMotionUseCase::class])
 internal class EmitMoveDetectorMotionUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : EmitMoveDetectorMotionUseCase {
     override suspend fun invoke() {
         configureRepository.emitMoveDetectorMotion()

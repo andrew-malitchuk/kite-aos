@@ -14,4 +14,5 @@ internal class ThemePreferenceSourceImpl(
 ) : BasePreferenceSourceImpl<ThemeDataProto.ThemeProtoModel, ThemePreference>(
     storage = themePreferenceDao,
     mapper = ThemeProtobufPreferenceMapper,
-), ThemePreferenceSource
+),
+    ThemePreferenceSource

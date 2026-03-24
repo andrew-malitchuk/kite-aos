@@ -17,7 +17,6 @@ import presentation.core.ui.source.kit.atom.button.icon.core.IconButtonDefault
 import presentation.core.ui.source.kit.atom.button.secondary.core.SecondaryButtonDefault
 import presentation.core.ui.source.kit.atom.icon.IcArrowLeft24
 import presentation.core.ui.source.kit.atom.icon.IcMore24
-import presentation.core.ui.source.kit.atom.icon.IcOutline3
 
 /**
  * A header composable for settings screens.
@@ -30,22 +29,18 @@ import presentation.core.ui.source.kit.atom.icon.IcOutline3
  * @param modifier The modifier to be applied to the header row.
  */
 @Composable
-public fun SettingsHeader(
-    modifier: Modifier = Modifier,
-    title: String,
-    onAction: (SettingsHeaderAction) -> Unit,
-) {
+public fun SettingsHeader(modifier: Modifier = Modifier, title: String, onAction: (SettingsHeaderAction) -> Unit) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.sizeS)
+        horizontalArrangement = Arrangement.spacedBy(Theme.spacing.sizeS),
     ) {
         // Primary Icon Button (Left) -> Back
         IconButton(
             icon = IcArrowLeft24,
             onClick = { onAction(SettingsHeaderAction.OnBackClick) },
             sizes = IconButtonDefault.buttonSizeSet().buttonSize48(),
-            colors = IconButtonDefault.buttonColor() // Default is Primary (Brand)
+            colors = IconButtonDefault.buttonColor(), // Default is Primary (Brand)
         )
 
         // Title Text (Centered, Weight 1)
@@ -57,7 +52,7 @@ public fun SettingsHeader(
             minLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = Theme.typography.title, // Assuming H3 or similar for header title
-            color = Theme.color.inkMain
+            color = Theme.color.inkMain,
         )
 
         // Secondary Icon Button (Right) -> More
@@ -65,7 +60,7 @@ public fun SettingsHeader(
             icon = IcMore24, // Arbitrary icon as requested
             onClick = { onAction(SettingsHeaderAction.OnMoreClick) },
             sizes = IconButtonDefault.buttonSizeSet().buttonSize48(),
-            colors = SecondaryButtonDefault.buttonColor() // Use Secondary styles
+            colors = SecondaryButtonDefault.buttonColor(), // Use Secondary styles
         )
     }
 }
@@ -91,7 +86,7 @@ private fun SettingsHeaderPreview() {
     AppTheme {
         SettingsHeader(
             title = "Settings",
-            onAction = {}
+            onAction = {},
         )
     }
 }

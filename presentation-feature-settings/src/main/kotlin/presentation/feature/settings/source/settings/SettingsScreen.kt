@@ -1,7 +1,6 @@
 package presentation.feature.settings.source.settings
 
 import android.content.Intent
-import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,12 +22,9 @@ import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHost
  * side effects like navigation, opening system settings, and displaying errors.
  */
 @Composable
-public fun SettingsScreen(
-    viewModel: SettingsViewModel = koinViewModel()
-) {
+public fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
     val appNavigator = LocalAppNavigator.current
     val context = LocalContext.current
-    val activity = LocalActivity.current
 
     val snackbarHostState = rememberStackedSnackbarHostState()
     var showLanguageDialog by remember { mutableStateOf(false) }
@@ -53,7 +49,7 @@ public fun SettingsScreen(
             }
             is SettingsSideEffect.ShowError -> {
                 snackbarHostState.showSnackbar(
-                    title = context.getString(effect.message.toInt())
+                    title = context.getString(effect.message.toInt()),
                 )
             }
         }
@@ -64,6 +60,6 @@ public fun SettingsScreen(
         onIntent = viewModel::handleIntent,
         showLanguageDialog = showLanguageDialog,
         onShowLanguageDialogChange = { showLanguageDialog = it },
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
     )
 }

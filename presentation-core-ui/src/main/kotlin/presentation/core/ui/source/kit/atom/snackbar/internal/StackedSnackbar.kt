@@ -1,7 +1,5 @@
 package presentation.core.ui.source.kit.atom.snackbar.internal
 
-import presentation.core.ui.source.kit.atom.snackbar.Constant
-import presentation.core.ui.source.kit.atom.snackbar.StackedSnackbarAnimation
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -42,6 +40,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import presentation.core.styling.core.Theme
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
+import presentation.core.ui.source.kit.atom.snackbar.Constant
+import presentation.core.ui.source.kit.atom.snackbar.StackedSnackbarAnimation
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -81,27 +81,33 @@ internal fun StackedSnackbar(
             AnimatedVisibility(
                 visible = if (snackbarDataSize.dec() == index) firstItemVisibility else true,
                 enter =
-                    slideIn(
-                        initialOffset =
-                            { IntOffset(0, Constant.Y_TARGET_ENTER) },
-                        animationSpec = animation.enterAnimationSpec,
-                    ),
+                slideIn(
+                    initialOffset =
+                    { IntOffset(0, Constant.Y_TARGET_ENTER) },
+                    animationSpec = animation.enterAnimationSpec,
+                ),
                 exit =
-                    if (offsetX == -1f) {
-                        slideOut(
-                            targetOffset =
-                                { IntOffset(0, Constant.Y_TARGET_EXIT) },
-                            animationSpec = animation.exitAnimationSpec,
-                        )
-                    } else {
-                        slideOutHorizontally(
-                            targetOffsetX = { if (offsetX > 0) Constant.X_TARGET_EXIT_RIGHT else Constant.X_TARGET_EXIT_LEFT },
-                            animationSpec =
-                                tween(
-                                    easing = LinearEasing,
-                                ),
-                        )
-                    },
+                if (offsetX == -1f) {
+                    slideOut(
+                        targetOffset =
+                        { IntOffset(0, Constant.Y_TARGET_EXIT) },
+                        animationSpec = animation.exitAnimationSpec,
+                    )
+                } else {
+                    slideOutHorizontally(
+                        targetOffsetX = {
+                            if (offsetX > 0) {
+                                Constant.X_TARGET_EXIT_RIGHT
+                            } else {
+                                Constant.X_TARGET_EXIT_LEFT
+                            }
+                        },
+                        animationSpec =
+                        tween(
+                            easing = LinearEasing,
+                        ),
+                    )
+                },
             ) {
                 val draggableModifier =
                     if (snackbarData.lastIndex == index) {
@@ -110,11 +116,14 @@ internal fun StackedSnackbar(
                             .draggable(
                                 orientation = Orientation.Horizontal,
                                 state =
-                                    rememberDraggableState { delta ->
-                                        offsetX += delta
-                                    },
+                                rememberDraggableState { delta ->
+                                    offsetX += delta
+                                },
                                 onDragStopped = {
-                                    if (offsetX >= Constant.OFFSET_THRESHOLD_EXIT_RIGHT || offsetX <= Constant.OFFSET_THRESHOLD_EXIT_LEFT) {
+                                    if (
+                                        offsetX >= Constant.OFFSET_THRESHOLD_EXIT_RIGHT ||
+                                        offsetX <= Constant.OFFSET_THRESHOLD_EXIT_LEFT
+                                    ) {
                                         onSnackbarRemoved.invoke()
                                     } else {
                                         offsetX = initialPos
@@ -174,12 +183,12 @@ private fun CustomStackedSnackbarItem(
         content = {
             Box(
                 modifier =
-                    Modifier
-                        .background(Theme.color.brandVariant)
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .clip(SquircleShape(16.dp))
-                        .padding(16.dp),
+                Modifier
+                    .background(Theme.color.brandVariant)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .clip(SquircleShape(16.dp))
+                    .padding(16.dp),
             ) {
                 data.content.invoke(onActionClicked)
             }
@@ -202,13 +211,13 @@ private fun NormalStackedSnackbarItem(
         content = {
             Row(
                 modifier =
-                    Modifier
-                        .background(Theme.color.brand)
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .border(2.dp, Theme.color.surface, SquircleShape(16.dp))
-                        .clip(SquircleShape(32.dp))
-                        .padding(16.dp),
+                Modifier
+                    .background(Theme.color.brand)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .border(2.dp, Theme.color.surface, SquircleShape(16.dp))
+                    .clip(SquircleShape(32.dp))
+                    .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
@@ -238,9 +247,9 @@ private fun NormalStackedSnackbarItem(
                             Text(
                                 data.actionTitle,
                                 modifier =
-                                    Modifier.clickable {
-                                        onActionClicked.invoke()
-                                    },
+                                Modifier.clickable {
+                                    onActionClicked.invoke()
+                                },
                                 style = Theme.typography.action,
                                 color = Theme.color.inkSubtle,
                             )
@@ -262,11 +271,11 @@ private fun CardSnackbarContainer(
     Card(
         shape = SquircleShape(16.dp),
         modifier =
-            Modifier
-                .padding(bottom = paddingAnimation, start = 16.dp, end = 16.dp)
-                .wrapContentHeight()
-                .scale(scaleAnimation)
-                .then(modifier),
+        Modifier
+            .padding(bottom = paddingAnimation, start = 16.dp, end = 16.dp)
+            .wrapContentHeight()
+            .scale(scaleAnimation)
+            .then(modifier),
         elevation = CardDefaults.cardElevation(16.dp),
     ) {
         content.invoke()

@@ -13,10 +13,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [SetDockPositionUseCase::class])
 internal class SetDockPositionUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : SetDockPositionUseCase {
     override suspend fun invoke(dockPositionModel: DockPositionModel): Optional = resultLauncher(
-        errorMapper = Failure.Technical::Preference
+        errorMapper = Failure.Technical::Preference,
     ) {
         configureRepository.setDockPosition(dockPositionModel)
     }

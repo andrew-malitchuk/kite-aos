@@ -14,4 +14,5 @@ internal class MqttPreferenceSourceImpl(
 ) : BasePreferenceSourceImpl<MqttDataProto.MqttProtoModel, MqttPreference>(
     storage = storage,
     mapper = MqttProtobufPreferenceMapper,
-), MqttPreferenceSource
+),
+    MqttPreferenceSource

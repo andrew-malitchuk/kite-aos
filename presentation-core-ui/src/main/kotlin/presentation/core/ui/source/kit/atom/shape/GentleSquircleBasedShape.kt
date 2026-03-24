@@ -39,10 +39,10 @@ public abstract class GentleSquircleBasedShape(
     topStart: CornerSize,
     topEnd: CornerSize,
     bottomStart: CornerSize,
-    bottomEnd: CornerSize
+    bottomEnd: CornerSize,
 ) : CornerBasedShape(
     topStart = topStart,
     topEnd = topEnd,
     bottomStart = bottomStart,
-    bottomEnd = bottomEnd
+    bottomEnd = bottomEnd,
 )

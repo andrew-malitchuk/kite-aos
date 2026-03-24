@@ -16,5 +16,5 @@ public data class MoveDetectorPreference(
     val sensitivity: Int? = null,
     val dimDelay: Long? = null,
     val screenTimeout: Long? = null,
-    val fabDelay: Long? = null
+    val fabDelay: Long? = null,
 ) : Resource

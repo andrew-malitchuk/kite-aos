@@ -16,15 +16,14 @@ internal class DockPreferenceStorage(
     @Named("dockPositionDataStore")
     private val preference: DataStore<DockDataProto.DockProtoModel>,
 ) : BasePreferenceStorage<DockDataProto.DockProtoModel> {
-    override fun subscribeToData(): Flow<DockDataProto.DockProtoModel?> =
-        preference.data.catch { exception ->
-            if (exception is IOException) {
-                Log.e("Error", exception.message.toString())
-                emit(DockDataProto.DockProtoModel.getDefaultInstance())
-            } else {
-                throw exception
-            }
+    override fun subscribeToData(): Flow<DockDataProto.DockProtoModel?> = preference.data.catch { exception ->
+        if (exception is IOException) {
+            Log.e("Error", exception.message.toString())
+            emit(DockDataProto.DockProtoModel.getDefaultInstance())
+        } else {
+            throw exception
         }
+    }
 
     override suspend fun getData(): DockDataProto.DockProtoModel? = preference.data.firstOrNull()
 

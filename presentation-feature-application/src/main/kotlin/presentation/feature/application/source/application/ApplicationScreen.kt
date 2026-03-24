@@ -1,7 +1,5 @@
 package presentation.feature.application.source.application
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
@@ -18,9 +16,7 @@ import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHost
  * to select which ones should be available in the kiosk dashboard.
  */
 @Composable
-public fun ApplicationScreen(
-    viewModel: ApplicationViewModel = koinViewModel(),
-) {
+public fun ApplicationScreen(viewModel: ApplicationViewModel = koinViewModel()) {
     val appNavigator = LocalAppNavigator.current
     val context = LocalContext.current
     val snackbarHostState = rememberStackedSnackbarHostState()
@@ -31,7 +27,7 @@ public fun ApplicationScreen(
             ApplicationSideEffect.BackClick -> appNavigator?.backAction()
             is ApplicationSideEffect.ShowError -> {
                 snackbarHostState.showSnackbar(
-                    title = context.getString(effect.messageId)
+                    title = context.getString(effect.messageId),
                 )
             }
         }
@@ -40,6 +36,6 @@ public fun ApplicationScreen(
     ApplicationContent(
         state = state,
         onIntent = viewModel::handleIntent,
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
     )
 }

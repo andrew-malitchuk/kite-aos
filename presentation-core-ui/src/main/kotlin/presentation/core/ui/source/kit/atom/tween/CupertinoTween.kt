@@ -15,12 +15,12 @@ public fun <T> cupertinoTween(
     durationMillis: Int = CupertinoTransitionDuration,
     delayMillis: Int = 0,
     easing: Easing = CupertinoEasing,
-): TweenSpec<T> =
-    tween(
-        durationMillis = durationMillis,
-        easing = easing,
-        delayMillis = delayMillis,
-    )
+): TweenSpec<T> = tween(
+    durationMillis = durationMillis,
+    easing = easing,
+    delayMillis = delayMillis,
+)
 
+@Suppress("MagicNumber")
 public val CupertinoEasing: CubicBezierEasing = CubicBezierEasing(0.2833f, 0.99f, 0.31833f, 0.99f)
 private const val CupertinoTransitionDuration = 400

@@ -32,14 +32,7 @@ package presentation.core.ui.source.kit.atom.shape.util
  *
  * @return The transformed value.
  */
-internal fun transformFraction(
-    value: Float,
-    startX: Float = 0f,
-    endX: Float = 1f,
-    startY: Float,
-    endY: Float
-): Float {
-
+internal fun transformFraction(value: Float, startX: Float = 0f, endX: Float = 1f, startY: Float, endY: Float): Float {
     // Check if startX is less than endX
     val newStartX = if (startX <= endX) startX else endX
     val newEndX = if (startX <= endX) endX else startX
@@ -50,7 +43,6 @@ internal fun transformFraction(
 
     // Transform the value to the new range
     return ((value - newStartX) / (newEndX - newStartX)) * (newEndY - newStartY) + newStartY
-
 }
 
 /**
@@ -61,14 +53,12 @@ internal fun transformFraction(
  *
  * @return The transformed smoothing value.
  */
-internal fun convertIntBasedSmoothingToFloat(
-    smoothing: Int
-): Float = transformFraction(
+internal fun convertIntBasedSmoothingToFloat(smoothing: Int): Float = transformFraction(
     value = smoothing.toFloat(),
     startX = 0f,
     endX = 100f,
     startY = .55f,
-    endY = 1f
+    endY = 1f,
 )
 
 /**
@@ -87,6 +77,7 @@ internal fun convertIntBasedSmoothingToFloat(
  * @param fraction A floating-point value in the range `[0f, 1f]`, representing the input fraction.
  * @return A floating-point value in the range `[0f, 1f]`, following a triangular wave pattern.
  */
+@Suppress("MagicNumber")
 internal fun triangleFraction(value: Float): Float {
     return 1f - 2f * kotlin.math.abs(value - 0.5f)
 }

@@ -14,4 +14,5 @@ internal class DockPositionPreferenceSourceImpl(
 ) : BasePreferenceSourceImpl<DockDataProto.DockProtoModel, DockPreference>(
     storage = storage,
     mapper = DockProtobufPreferenceMapper,
-), DockPositionPreferenceSource
+),
+    DockPositionPreferenceSource

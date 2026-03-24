@@ -12,8 +12,8 @@ import presentation.core.platform.source.receiver.ApplicationDeviceAdminReceiver
 /**
  * Helper class for managing device power states, including brightness and locking.
  */
+@Suppress("MagicNumber")
 public class DevicePowerManager(private val context: Context) {
-
     private val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
     private val devicePolicyManager = context.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
     private val adminComponent = ComponentName(context, ApplicationDeviceAdminReceiver::class.java)
@@ -32,6 +32,7 @@ public class DevicePowerManager(private val context: Context) {
      * @param value The brightness value (0-255).
      * @return true if the brightness was updated, false otherwise.
      */
+    @Suppress("MagicNumber")
     public fun setBrightness(value: Int): Boolean {
         return try {
             if (Settings.System.canWrite(context)) {
@@ -57,10 +58,11 @@ public class DevicePowerManager(private val context: Context) {
     public fun wakeUp() {
         try {
             if (!powerManager.isInteractive) {
-                val wakeLock = powerManager.newWakeLock(
-                    PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
-                    "Yahk:MotionWakeLock"
-                )
+                val wakeLock =
+                    powerManager.newWakeLock(
+                        PowerManager.SCREEN_BRIGHT_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                        "Yahk:MotionWakeLock",
+                    )
                 wakeLock.acquire(1000L)
                 Log.i(TAG, "Screen wake-up triggered")
             }

@@ -29,7 +29,7 @@ internal object MqttProtobufPreferenceMapper :
                 username = input.username,
                 password = input.password,
                 enabled = input.enabled,
-                friendlyName = input.friendlyName
+                friendlyName = input.friendlyName,
             )
         }
 }

@@ -10,14 +10,16 @@ import domain.core.source.model.ThemeModel
  */
 internal object ThemePreferenceMapper :
     ModelResourceMapper<ThemeModel, ThemePreference> {
-    override val toModel: Mapper<ThemePreference, ThemeModel> = Mapper { input ->
-        ThemeModel.entries.firstOrNull {
-            it.mode == input.mode
-        } ?: ThemeModel.Light
-    }
-    override val toResource: Mapper<ThemeModel, ThemePreference> = Mapper { input ->
-        ThemePreference(
-            mode = input.mode
-        )
-    }
+    override val toModel: Mapper<ThemePreference, ThemeModel> =
+        Mapper { input ->
+            ThemeModel.entries.firstOrNull {
+                it.mode == input.mode
+            } ?: ThemeModel.Light
+        }
+    override val toResource: Mapper<ThemeModel, ThemePreference> =
+        Mapper { input ->
+            ThemePreference(
+                mode = input.mode,
+            )
+        }
 }

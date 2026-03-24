@@ -1,22 +1,13 @@
 package presentation.core.ui.source.kit.molecule.item
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
-import presentation.core.ui.source.kit.atom.SquircleCard
-import presentation.core.ui.source.kit.atom.container.IconContainer
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 
 /**
@@ -40,7 +31,7 @@ public fun SimpleListItem(
     icon: ImageVector,
     iconBackgroundColor: Color,
     iconForegroundColor: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     BaseListItem(
         modifier = modifier,
@@ -49,7 +40,7 @@ public fun SimpleListItem(
         textStyle = textStyle,
         iconBackgroundColor = iconBackgroundColor,
         iconForegroundColor = iconForegroundColor,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
@@ -62,7 +53,7 @@ private fun SimpleListItemPreview() {
             icon = IcOutline3,
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.surface,
-            onClick = {}
+            onClick = {},
         )
     }
 }

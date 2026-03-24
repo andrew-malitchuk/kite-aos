@@ -19,7 +19,7 @@ internal object DashboardProtobufPreferenceMapper :
         Mapper { input ->
             DashboardPreference(
                 dashboardUrl = input.dashboardUrl,
-                whitelistUrl = input.whitelistUrl
+                whitelistUrl = input.whitelistUrl,
             )
         }
 }

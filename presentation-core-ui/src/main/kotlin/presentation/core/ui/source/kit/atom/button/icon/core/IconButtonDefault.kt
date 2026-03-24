@@ -16,18 +16,17 @@ public object IconButtonDefault : IconButtonDefault {
         selectedContainerColor = Theme.color.brand,
         selectedContentColor = Theme.color.surface,
         disabledContentColor = Theme.color.inkSubtle,
-        disabledContainerColor =  Theme.color.surfaceVariant,
+        disabledContainerColor = Theme.color.surfaceVariant,
     )
 
     @Composable
     override fun buttonSizeSet(): IconButtonSizeSet = IconButtonSizeSet()
 
     @Composable
-    override fun animation(): ButtonAnimation =
-        object : ButtonAnimation {
-            override val duration = AnimationConfiguration.Duration.DEFAULT
-            override val easing = LinearEasing
-        }
+    override fun animation(): ButtonAnimation = object : ButtonAnimation {
+        override val duration = AnimationConfiguration.Duration.DEFAULT
+        override val easing = LinearEasing
+    }
 
     @Composable
     override fun corner(): Dp = Theme.spacing.sizeM

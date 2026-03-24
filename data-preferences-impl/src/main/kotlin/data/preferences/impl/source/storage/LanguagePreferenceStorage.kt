@@ -16,15 +16,14 @@ internal class LanguagePreferenceStorage(
     @Named("languageDataStore")
     private val preference: DataStore<LanguagePreferenceProto>,
 ) : BasePreferenceStorage<LanguagePreferenceProto> {
-    override fun subscribeToData(): Flow<LanguagePreferenceProto?> =
-        preference.data.catch { exception ->
-            if (exception is IOException) {
-                Log.e("Error", exception.message.toString())
-                emit(LanguagePreferenceProto.getDefaultInstance())
-            } else {
-                throw exception
-            }
+    override fun subscribeToData(): Flow<LanguagePreferenceProto?> = preference.data.catch { exception ->
+        if (exception is IOException) {
+            Log.e("Error", exception.message.toString())
+            emit(LanguagePreferenceProto.getDefaultInstance())
+        } else {
+            throw exception
         }
+    }
 
     override suspend fun getData(): LanguagePreferenceProto? = preference.data.firstOrNull()
 

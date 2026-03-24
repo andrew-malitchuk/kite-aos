@@ -13,10 +13,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [SetMqttConfigurationUseCase::class])
 internal class SetMqttConfigurationUseCaseImpl(
-    private val mqttRepository: MqttRepository
+    private val mqttRepository: MqttRepository,
 ) : SetMqttConfigurationUseCase {
     override suspend fun invoke(mqttModel: MqttModel): Optional = resultLauncher(
-        errorMapper = Failure.Technical::Preference
+        errorMapper = Failure.Technical::Preference,
     ) {
         mqttRepository.setMqttConfiguration(mqttModel)
     }

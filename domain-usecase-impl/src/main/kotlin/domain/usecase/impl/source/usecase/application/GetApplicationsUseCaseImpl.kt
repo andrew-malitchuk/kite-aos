@@ -12,10 +12,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [GetApplicationsUseCase::class])
 internal class GetApplicationsUseCaseImpl(
-    private val applicationRepository: ApplicationRepository
+    private val applicationRepository: ApplicationRepository,
 ) : GetApplicationsUseCase {
     override suspend fun invoke(): Result<List<ApplicationModel>> = resultLauncher(
-        errorMapper = Failure.Technical::Database
+        errorMapper = Failure.Technical::Database,
     ) {
         applicationRepository.getApplications()
     }

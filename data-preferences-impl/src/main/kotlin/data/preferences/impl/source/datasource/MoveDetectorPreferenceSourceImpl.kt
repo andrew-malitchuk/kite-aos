@@ -16,8 +16,8 @@ internal class MoveDetectorPreferenceSourceImpl(
 ) : BasePreferenceSourceImpl<MoveDetectorDataProto.MoveDetectorProtoModel, MoveDetectorPreference>(
     storage = storage,
     mapper = MoveDetectorProtobufPreferenceMapper,
-), MoveDetectorPreferenceSource {
-
+),
+    MoveDetectorPreferenceSource {
     private val motionFlow = MutableSharedFlow<Unit>(replay = 0, extraBufferCapacity = 1)
 
     override fun observeMotion(): Flow<Unit> = motionFlow

@@ -9,5 +9,5 @@ public data class MqttPreference(
     val clientId: String? = null,
     val username: String? = null,
     val password: String? = null,
-    val friendlyName: String? = null
+    val friendlyName: String? = null,
 ) : Resource

@@ -53,13 +53,13 @@ public fun CustomBottomDrawerOverlay(
     val animatedWidth by animateDpAsState(
         targetValue = if (isDrawerOpen) 40.dp else 0.dp,
         animationSpec = tween(animationDuration),
-        label = "width"
+        label = "width",
     )
 
     LaunchedEffect(isDrawerOpen) {
         offsetY.animateTo(
             targetValue = if (isDrawerOpen) 0f else drawerHeightPx,
-            animationSpec = tween(durationMillis = animationDuration)
+            animationSpec = tween(durationMillis = animationDuration),
         )
     }
 
@@ -68,17 +68,19 @@ public fun CustomBottomDrawerOverlay(
 
         if (isDrawerOpen || offsetY.value < drawerHeightPx) {
             Box(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxSize()
                     .background(maskColor.copy(alpha = maskColor.alpha * (1 - offsetY.value / drawerHeightPx)))
                     .pointerInput(Unit) {
                         detectTapGestures(onTap = { onDismiss() })
-                    }
+                    },
             )
         }
 
         Box(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .align(Alignment.BottomCenter)
                 .offset { IntOffset(x = 0, y = offsetY.value.roundToInt()) }
                 .fillMaxWidth()
@@ -93,7 +95,7 @@ public fun CustomBottomDrawerOverlay(
                                     offsetY.animateTo(target, tween(animationDuration))
                                     if (shouldClose) onDismiss()
                                 }
-                            }
+                            },
                         ) { change, dragAmount ->
                             change.consume()
                             scope.launch {
@@ -102,19 +104,20 @@ public fun CustomBottomDrawerOverlay(
                             }
                         }
                     }
-                }
+                },
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .padding(top = 12.dp)
                         .width(animatedWidth)
                         .height(4.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.5f))
+                        .background(Color.White.copy(alpha = 0.5f)),
                 )
 
                 drawerContent()

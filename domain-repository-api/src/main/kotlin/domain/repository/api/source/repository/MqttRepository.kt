@@ -24,14 +24,13 @@ public interface MqttRepository {
         clientId: String,
         username: String,
         password: String,
-        friendlyName: String
+        friendlyName: String,
     )
 
     /**
      * Safely disconnects from the MQTT broker and cleans up resources.
      */
     public suspend fun disconnect()
-
 
     /**
      * Sends the current motion detection state to the MQTT broker.
@@ -48,6 +47,8 @@ public interface MqttRepository {
     public suspend fun sendBatteryLevel(level: Int)
 
     public fun observeMqttConfiguration(): Flow<MqttModel?>
+
     public suspend fun getMqttConfiguration(): MqttModel?
+
     public suspend fun setMqttConfiguration(configuration: MqttModel)
 }

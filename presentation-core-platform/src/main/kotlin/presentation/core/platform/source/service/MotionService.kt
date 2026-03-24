@@ -41,8 +41,8 @@ import kotlin.coroutines.cancellation.CancellationException
  * It uses CameraX for image analysis and a dedicated [MotionAnalyzer] to detect presence.
  * When motion is detected, it wakes the device and reports the event to MQTT.
  */
+@Suppress("MagicNumber")
 public class MotionService : LifecycleService() {
-
     // region Injected Dependencies
     private val getMoveDetectorUseCase: GetMoveDetectorUseCase by inject()
     private val emitMoveDetectorMotionUseCase: EmitMoveDetectorMotionUseCase by inject()
@@ -134,7 +134,6 @@ public class MotionService : LifecycleService() {
 
                 setupCamera()
                 startInactivityChecker()
-
             } catch (e: CancellationException) {
                 Log.i(TAG, "Initialization cancelled.")
             } catch (e: Exception) {
@@ -201,22 +200,23 @@ public class MotionService : LifecycleService() {
             try {
                 val cameraProvider = cameraProviderFuture.get()
                 val previewUseCase = Preview.Builder().build()
-                val imageAnalysis = ImageAnalysis.Builder()
-                    .setTargetResolution(LOW_RES_SIZE)
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .build()
-                    .also {
-                        it.setAnalyzer(cameraExecutor) { imageProxy ->
-                            processImageProxy(imageProxy)
+                val imageAnalysis =
+                    ImageAnalysis.Builder()
+                        .setTargetResolution(LOW_RES_SIZE)
+                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                        .build()
+                        .also {
+                            it.setAnalyzer(cameraExecutor) { imageProxy ->
+                                processImageProxy(imageProxy)
+                            }
                         }
-                    }
 
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
                     this,
                     CameraSelector.DEFAULT_FRONT_CAMERA,
                     previewUseCase,
-                    imageAnalysis
+                    imageAnalysis,
                 )
             } catch (e: Exception) {
                 Log.e(TAG, "Camera bind failed", e)
@@ -302,11 +302,12 @@ public class MotionService : LifecycleService() {
      */
     private fun setupNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                NOTIFICATION_CHANNEL_ID,
-                NOTIFICATION_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_LOW
-            )
+            val channel =
+                NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    NOTIFICATION_CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_LOW,
+                )
             getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
         }
     }

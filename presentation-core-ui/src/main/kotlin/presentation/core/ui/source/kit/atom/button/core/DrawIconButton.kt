@@ -1,18 +1,10 @@
 package presentation.core.ui.source.kit.atom.button.core
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,14 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
-import presentation.core.ui.R
-import presentation.core.ui.core.configuration.AnimationConfiguration
-import presentation.core.ui.source.kit.atom.shape.SquircleShape
 
 /**
  * A composable function that represents a icon button with optional loading animation.
@@ -81,10 +65,11 @@ internal fun DrawIconButton(
         paddings = paddings,
         isLoading = isLoading,
         loadingSize = loadingSize,
-        horizontalArrangement = horizontalArrangement
+        horizontalArrangement = horizontalArrangement,
     ) {
         Box(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .wrapContentWidth()
                 .wrapContentHeight(),
         ) {
@@ -97,4 +82,3 @@ internal fun DrawIconButton(
         }
     }
 }
-

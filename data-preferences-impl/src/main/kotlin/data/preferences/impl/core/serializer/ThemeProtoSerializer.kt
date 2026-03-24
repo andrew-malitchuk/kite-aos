@@ -7,9 +7,7 @@ import data.preferences.impl.proto.ThemeDataProto
 import java.io.InputStream
 import java.io.OutputStream
 
-
 internal class ThemeProtoSerializer : Serializer<ThemeDataProto.ThemeProtoModel> {
-
     override suspend fun readFrom(input: InputStream): ThemeDataProto.ThemeProtoModel {
         try {
             return ThemeDataProto.ThemeProtoModel.parseFrom(input)
@@ -18,11 +16,7 @@ internal class ThemeProtoSerializer : Serializer<ThemeDataProto.ThemeProtoModel>
         }
     }
 
-
-    override suspend fun writeTo(
-        t: ThemeDataProto.ThemeProtoModel,
-        output: OutputStream,
-    ) {
+    override suspend fun writeTo(t: ThemeDataProto.ThemeProtoModel, output: OutputStream) {
         t.writeTo(output)
     }
 

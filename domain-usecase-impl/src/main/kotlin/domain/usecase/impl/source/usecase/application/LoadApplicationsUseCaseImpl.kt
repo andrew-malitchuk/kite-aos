@@ -16,24 +16,26 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [LoadApplicationsUseCase::class])
 internal class LoadApplicationsUseCaseImpl(
-    private val applicationRepository: ApplicationRepository
+    private val applicationRepository: ApplicationRepository,
 ) : LoadApplicationsUseCase {
     override suspend fun invoke(chosen: Boolean): Result<List<ApplicationModel>> = resultLauncher(
-        errorMapper = Failure.Technical::Database
+        errorMapper = Failure.Technical::Database,
     ) {
         val installedApps = applicationRepository.getApplications()
         val savedApps = applicationRepository.loadApplications()
 
-        val apps = installedApps.map { installedApp ->
-            val savedApp = savedApps.firstOrNull {
-                it.packageName == installedApp.packageName
-            }
+        val apps =
+            installedApps.map { installedApp ->
+                val savedApp =
+                    savedApps.firstOrNull {
+                        it.packageName == installedApp.packageName
+                    }
 
-            installedApp.copy(
-                id = savedApp?.id,
-                chosen = savedApp != null
-            )
-        }
+                installedApp.copy(
+                    id = savedApp?.id,
+                    chosen = savedApp != null,
+                )
+            }
 
         if (chosen) {
             apps.filter { it.chosen == true }

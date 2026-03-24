@@ -26,5 +26,5 @@ internal data class BatteryConfigMqtt(
     @SerialName("unit_of_measurement")
     val unitOfMeasurement: String = "%",
     @SerialName("unique_id")
-    val uniqueId: String
+    val uniqueId: String,
 )

@@ -12,10 +12,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [GetMoveDetectorUseCase::class])
 internal class GetMoveDetectorUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : GetMoveDetectorUseCase {
     override suspend fun invoke(): Result<MoveDetectorModel> = resultLauncher(
-        errorMapper = Failure.Technical::Preference
+        errorMapper = Failure.Technical::Preference,
     ) {
         configureRepository.getMoveDetector() ?: throw Failure.Logic.NotFound
     }

@@ -40,7 +40,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -73,25 +72,23 @@ public fun Toggle(
     onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     thumbContent: @Composable (() -> Unit)? = null,
-    colors: ToggleColors = ToggleDefaults.colors(
-        // The moving thumb part
-        thumbColor = Theme.color.outlineHigh,
-        disabledThumbColor = Theme.color.outlineHigh,
-
-        // ON state
-        checkedTrackColor = Theme.color.brand, // Lilac
-        checkedIconColor = Theme.color.inkOnBrand, // White
-
-        // OFF state
-        uncheckedTrackColor = Theme.color.brandVariant, // Soft Lilac/Grey
-        uncheckedIconColor = Theme.color.inkSubtle, // Blue/Grey
-
-        // Disabled states
-        disabledCheckedTrackColor = Theme.color.brand.copy(alpha = 0.33f),
-        disabledCheckedIconColor = Theme.color.inkOnBrand.copy(alpha = 0.5f),
-        disabledUncheckedTrackColor = Theme.color.outlineLow.copy(alpha = 0.5f),
-        disabledUncheckedIconColor = Theme.color.inkSubtle.copy(alpha = 0.5f)
-    ),
+    colors: ToggleColors =
+        ToggleDefaults.colors(
+            // The moving thumb part
+            thumbColor = Theme.color.outlineHigh,
+            disabledThumbColor = Theme.color.outlineHigh,
+            // ON state
+            checkedTrackColor = Theme.color.brand, // Lilac
+            checkedIconColor = Theme.color.inkOnBrand, // White
+            // OFF state
+            uncheckedTrackColor = Theme.color.brandVariant, // Soft Lilac/Grey
+            uncheckedIconColor = Theme.color.inkSubtle, // Blue/Grey
+            // Disabled states
+            disabledCheckedTrackColor = Theme.color.brand.copy(alpha = 0.33f),
+            disabledCheckedIconColor = Theme.color.inkOnBrand.copy(alpha = 0.5f),
+            disabledUncheckedTrackColor = Theme.color.outlineLow.copy(alpha = 0.5f),
+            disabledUncheckedIconColor = Theme.color.inkSubtle.copy(alpha = 0.5f),
+        ),
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
@@ -111,12 +108,10 @@ public fun Toggle(
         animationSpec = AlignmentAnimationSpec,
     )
 
-    val haptic = LocalHapticFeedback.current
-
     val positionalThreshold =
         remember {
             (ToggleDefaults.Width - ThumbPadding * 2) -
-                    ToggleDefaults.Height
+                ToggleDefaults.Height
         }
 
     val density = LocalDensity.current
@@ -189,8 +184,7 @@ public fun Toggle(
                     }
                 }
                 .background(
-//                    Color.Cyan
-                    animatedBackground
+                    animatedBackground,
 //                    colors.thumbColor(enabled).value
                 ),
         ) {
@@ -228,14 +222,13 @@ public class ToggleColors internal constructor(
      * @param enabled whether the Toggle is enabled or not
      */
     @Composable
-    internal fun thumbColor(enabled: Boolean): State<Color> =
-        rememberUpdatedState(
-            if (enabled) {
-                thumbColor
-            } else {
-                disabledThumbColor
-            },
-        )
+    internal fun thumbColor(enabled: Boolean): State<Color> = rememberUpdatedState(
+        if (enabled) {
+            thumbColor
+        } else {
+            disabledThumbColor
+        },
+    )
 
     /**
      * Represents the color used for the Toggle's track, depending on [enabled] and [checked].
@@ -244,17 +237,13 @@ public class ToggleColors internal constructor(
      * @param checked whether the Toggle is checked or not
      */
     @Composable
-    internal fun trackColor(
-        enabled: Boolean,
-        checked: Boolean,
-    ): State<Color> =
-        rememberUpdatedState(
-            if (enabled) {
-                if (checked) checkedTrackColor else uncheckedTrackColor
-            } else {
-                if (checked) disabledCheckedTrackColor else disabledUncheckedTrackColor
-            },
-        )
+    internal fun trackColor(enabled: Boolean, checked: Boolean): State<Color> = rememberUpdatedState(
+        if (enabled) {
+            if (checked) checkedTrackColor else uncheckedTrackColor
+        } else {
+            if (checked) disabledCheckedTrackColor else disabledUncheckedTrackColor
+        },
+    )
 
     /**
      * Represents the content color passed to the icon if used
@@ -263,17 +252,13 @@ public class ToggleColors internal constructor(
      * @param checked whether the Toggle is checked or not
      */
     @Composable
-    internal fun iconColor(
-        enabled: Boolean,
-        checked: Boolean,
-    ): State<Color> =
-        rememberUpdatedState(
-            if (enabled) {
-                if (checked) checkedIconColor else uncheckedIconColor
-            } else {
-                if (checked) disabledCheckedIconColor else disabledUncheckedIconColor
-            },
-        )
+    internal fun iconColor(enabled: Boolean, checked: Boolean): State<Color> = rememberUpdatedState(
+        if (enabled) {
+            if (checked) checkedIconColor else uncheckedIconColor
+        } else {
+            if (checked) disabledCheckedIconColor else disabledUncheckedIconColor
+        },
+    )
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -323,8 +308,8 @@ public object ToggleDefaults {
     public fun colors(
         thumbColor: Color = Color.White,
         disabledThumbColor: Color = thumbColor,
-        checkedTrackColor: Color, /*= Theme.color.primary1*/
-        checkedIconColor: Color, /*= Theme.colorScheme.opaqueSeparator*/
+        checkedTrackColor: Color, // = Theme.color.primary1
+        checkedIconColor: Color, // = Theme.colorScheme.opaqueSeparator
         uncheckedTrackColor: Color,
         uncheckedIconColor: Color = checkedIconColor,
         disabledCheckedTrackColor: Color = checkedTrackColor.copy(alpha = .33f),

@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,7 +51,7 @@ public fun ControlDrawer(
     applications: List<ApplicationModel>,
     canGoBack: Boolean,
     canGoForward: Boolean,
-    onAction: (ControlAction) -> Unit
+    onAction: (ControlAction) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
@@ -62,7 +62,7 @@ public fun ControlDrawer(
             sizes = IconButtonDefault.buttonSizeSet().buttonSize64(),
             onClick = {
                 onAction(ControlAction.OnSettingAction)
-            }
+            },
         )
         IconButton(
             modifier = Modifier,
@@ -70,7 +70,7 @@ public fun ControlDrawer(
             sizes = IconButtonDefault.buttonSizeSet().buttonSize64(),
             onClick = {
                 onAction(ControlAction.OnReloadAction)
-            }
+            },
         )
         // Back button
         IconButton(
@@ -80,7 +80,7 @@ public fun ControlDrawer(
             enabled = canGoBack,
             onClick = {
                 onAction(ControlAction.OnBackAction)
-            }
+            },
         )
         // Forward button
         IconButton(
@@ -90,40 +90,44 @@ public fun ControlDrawer(
             enabled = canGoForward,
             onClick = {
                 onAction(ControlAction.OnForwardAction)
-            }
+            },
         )
 
         when (isBottom) {
-            true -> Box(
-                modifier = Modifier
-                    .size(
-                        width = Theme.size.sizeXS,
-                        height = Theme.size.size3XL
-                    )
-                    .clip(CircleShape)
-                    .background(
-                        Theme.color.brandVariant
-                    )
-            )
+            true ->
+                Box(
+                    modifier =
+                    Modifier
+                        .size(
+                            width = Theme.size.sizeXS,
+                            height = Theme.size.size3XL,
+                        )
+                        .clip(CircleShape)
+                        .background(
+                            Theme.color.brandVariant,
+                        ),
+                )
 
-            false -> Box(
-                modifier = Modifier
-                    .size(
-                        width = Theme.size.size3XL,
-                        height = Theme.size.sizeXS,
-                    )
-                    .clip(CircleShape)
-                    .background(
-                        Theme.color.brandVariant
-                    )
-            )
+            false ->
+                Box(
+                    modifier =
+                    Modifier
+                        .size(
+                            width = Theme.size.size3XL,
+                            height = Theme.size.sizeXS,
+                        )
+                        .clip(CircleShape)
+                        .background(
+                            Theme.color.brandVariant,
+                        ),
+                )
         }
         applications.forEach { app ->
             SimpleApplicationListItem(
                 applicationModel = app,
                 onClick = {
                     onAction(ControlAction.OnApplicationAction(app.packageName))
-                }
+                },
             )
         }
     }
@@ -132,31 +136,33 @@ public fun ControlDrawer(
         targetState = isBottom,
         transitionSpec = {
             fadeIn(animationSpec = tween(300)) togetherWith
-                    fadeOut(animationSpec = tween(300))
+                fadeOut(animationSpec = tween(300))
         },
-        label = "LayoutSwitch"
+        label = "LayoutSwitch",
     ) { targetIsBottom ->
         if (targetIsBottom) {
             Row(
-                modifier = modifier
+                modifier =
+                modifier
                     .fillMaxSize()
                     .background(Theme.color.canvas)
                     .horizontalScroll(scrollState)
                     .padding(Theme.spacing.sizeL),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Theme.spacing.sizeM)
+                horizontalArrangement = Arrangement.spacedBy(Theme.spacing.sizeM),
             ) {
                 content()
             }
         } else {
             Column(
-                modifier = modifier
+                modifier =
+                modifier
                     .fillMaxSize()
                     .background(Theme.color.canvas)
                     .verticalScroll(scrollState)
                     .padding(Theme.spacing.sizeL),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeM)
+                verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeM),
             ) {
                 content()
             }
@@ -164,19 +170,22 @@ public fun ControlDrawer(
     }
 }
 
-
 /**
  * Represents the possible actions within the [ControlDrawer].
  */
 public sealed interface ControlAction {
     /** Reload the current kiosk dashboard. */
     public data object OnReloadAction : ControlAction
+
     /** Navigate to the settings screen. */
     public data object OnSettingAction : ControlAction
+
     /** Navigate backward in the WebView history. */
     public data object OnBackAction : ControlAction
+
     /** Navigate forward in the WebView history. */
     public data object OnForwardAction : ControlAction
+
     /** Launch an external application. */
     public data class OnApplicationAction(val packageName: String) : ControlAction
 }

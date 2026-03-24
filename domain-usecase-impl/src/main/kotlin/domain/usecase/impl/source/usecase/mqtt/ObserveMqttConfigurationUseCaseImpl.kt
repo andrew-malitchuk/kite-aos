@@ -11,7 +11,7 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [ObserveMqttConfigurationUseCase::class])
 internal class ObserveMqttConfigurationUseCaseImpl(
-    private val mqttRepository: MqttRepository
+    private val mqttRepository: MqttRepository,
 ) : ObserveMqttConfigurationUseCase {
     override fun invoke(): Flow<MqttModel?> = mqttRepository.observeMqttConfiguration()
 }

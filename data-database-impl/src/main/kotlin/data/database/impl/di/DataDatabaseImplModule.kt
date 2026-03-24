@@ -15,7 +15,6 @@ import org.koin.core.annotation.Single
 @Module
 @ComponentScan("data.database.impl")
 public class DataDatabaseImplModule {
-
     /**
      * Provides the singleton [RoomDatabase] instance.
      *
@@ -44,6 +43,4 @@ public class DataDatabaseImplModule {
     public fun provideApplicationDao(database: RoomDatabase): ApplicationDao {
         return database.getApplicationDao()
     }
-
-
 }

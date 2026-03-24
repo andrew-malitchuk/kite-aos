@@ -7,11 +7,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import presentation.core.styling.core.Theme
-import presentation.core.styling.source.theme.AppTheme
-import presentation.core.ui.source.kit.atom.button.core.StateButton
 import presentation.core.ui.source.kit.atom.button.core.ButtonAnimation
 import presentation.core.ui.source.kit.atom.button.core.ButtonColor
 import presentation.core.ui.source.kit.atom.button.core.ButtonSize
+import presentation.core.ui.source.kit.atom.button.core.StateButton
 import presentation.core.ui.source.kit.atom.button.primary.core.PrimaryButtonDefault
 
 /**
@@ -26,7 +25,7 @@ import presentation.core.ui.source.kit.atom.button.primary.core.PrimaryButtonDef
  * @param startIcon The resource ID of the icon to display at the start of the button, or `null` if no icon is needed.
  * @param endIcon The resource ID of the icon to display at the end of the button, or `null` if no icon is needed.
  * @param enabled A boolean indicating whether the button is enabled. Default is `true`.
- * @param isLoading A boolean indicating whether the button is in a loading state. Default is `false`.  
+ * @param isLoading A boolean indicating whether the button is in a loading state. Default is `false`.
  * @param colors The [ButtonColor] instance that provides colors for different button states.
  *               Default is provided by [PrimaryButtonDefault.buttonColor].
  * @param sizes The [ButtonSize] instance that provides size configurations for the button.

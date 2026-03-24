@@ -21,14 +21,16 @@ internal fun InfiniteTransition.fractionTransition(
     delayMillis: Int = 0,
     offsetMillis: Int = 0,
     repeatMode: RepeatMode = RepeatMode.Restart,
-    easing: Easing = FastOutSlowInEasing
+    easing: Easing = FastOutSlowInEasing,
 ): State<Float> {
     return animateFloat(
         initialValue = initialValue,
         targetValue = targetValue,
         label = "transition",
-        animationSpec = infiniteRepeatable(
-            animation = keyframes {
+        animationSpec =
+        infiniteRepeatable(
+            animation =
+            keyframes {
                 this.durationMillis = durationMillis
                 this.delayMillis = delayMillis
                 initialValue at 0 with easing
@@ -58,7 +60,7 @@ internal fun InfiniteTransition.fractionTransition(
                 }
             },
             repeatMode = repeatMode,
-            initialStartOffset = StartOffset(offsetMillis)
+            initialStartOffset = StartOffset(offsetMillis),
         ),
     )
 }

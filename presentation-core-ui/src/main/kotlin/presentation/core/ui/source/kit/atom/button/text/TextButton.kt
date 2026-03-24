@@ -7,11 +7,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import presentation.core.styling.core.Theme
-import presentation.core.styling.source.theme.AppTheme
-import presentation.core.ui.source.kit.atom.button.core.StateButton
 import presentation.core.ui.source.kit.atom.button.core.ButtonAnimation
 import presentation.core.ui.source.kit.atom.button.core.ButtonColor
 import presentation.core.ui.source.kit.atom.button.core.ButtonSize
+import presentation.core.ui.source.kit.atom.button.core.StateButton
 import presentation.core.ui.source.kit.atom.button.text.core.TextButtonDefault
 
 /**

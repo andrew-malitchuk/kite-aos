@@ -2,7 +2,7 @@ plugins {
     id("dev.yahk.convention.feature")
 }
 
-android{
+android {
     namespace = "presentation.core.styling"
 }
 

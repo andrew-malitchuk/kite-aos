@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
  * allowing features to adapt their behavior based on internet availability.
  */
 public interface ConnectivityObserver {
-
     /**
      * A [Flow] that emits the current [NetworkStatus] whenever it changes.
      *
@@ -24,11 +23,14 @@ public interface ConnectivityObserver {
     public enum class NetworkStatus {
         /** The device has an active internet connection. */
         Available,
+
         /** The current network connection is unstable and may be lost soon. */
         Losing,
+
         /** The previously available network connection has been lost. */
         Lost,
+
         /** No network connectivity is currently available. */
-        Unavailable
+        Unavailable,
     }
 }

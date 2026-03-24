@@ -1,24 +1,16 @@
 package presentation.core.ui.source.kit.molecule.item
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
-import presentation.core.ui.source.kit.atom.SquircleCard
-import presentation.core.ui.source.kit.atom.container.IconContainer
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 
 /**
@@ -44,7 +36,7 @@ public fun LanguageListItem(
     iconBackgroundColor: Color,
     iconForegroundColor: Color,
     selectedLanguageCode: String,
-    onLanguageChange: () -> Unit
+    onLanguageChange: () -> Unit,
 ) {
     BaseListItem(
         modifier = modifier,
@@ -58,12 +50,12 @@ public fun LanguageListItem(
             Text(
                 text = selectedLanguageCode.uppercase(),
                 style = Theme.typography.action,
-                color = Theme.color.brand
+                color = Theme.color.brand,
             )
             Spacer(
-                modifier = Modifier.width(Theme.spacing.sizeXXS)
+                modifier = Modifier.width(Theme.spacing.sizeXXS),
             )
-        }
+        },
     )
 }
 
@@ -77,7 +69,7 @@ private fun LanguageListItemPreview() {
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.surface,
             selectedLanguageCode = "en",
-            onLanguageChange = {}
+            onLanguageChange = {},
         )
     }
 }

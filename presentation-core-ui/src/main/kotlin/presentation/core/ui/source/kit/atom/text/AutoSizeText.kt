@@ -1,6 +1,5 @@
 package presentation.core.ui.source.kit.atom.text
 
-
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -68,14 +67,16 @@ public fun AutoSizeText(
     overflow: TextOverflow = TextOverflow.Clip,
     keepLineHeight: Boolean = false,
 ) {
-    val defaultFontSize = coerceTextUnit(
-        expected = fontSize,
-        default = style.fontSize
-    )
-    val defaultLineHeight = coerceTextUnit(
-        expected = lineHeight,
-        default = style.lineHeight
-    )
+    val defaultFontSize =
+        coerceTextUnit(
+            expected = fontSize,
+            default = style.fontSize,
+        )
+    val defaultLineHeight =
+        coerceTextUnit(
+            expected = lineHeight,
+            default = style.lineHeight,
+        )
 
     val ratio = defaultFontSize.value / defaultLineHeight.value
 
@@ -83,8 +84,8 @@ public fun AutoSizeText(
         mutableStateOf(
             InnerMetrics(
                 fontSize = defaultFontSize,
-                lineHeight = defaultLineHeight
-            )
+                lineHeight = defaultLineHeight,
+            ),
         )
     }
     var textReadyToDraw by remember(key1 = text) {
@@ -95,7 +96,8 @@ public fun AutoSizeText(
     }
 
     Text(
-        modifier = modifier.drawWithContent {
+        modifier =
+        modifier.drawWithContent {
             if (textReadyToDraw) {
                 drawContent()
             }
@@ -135,18 +137,20 @@ public fun AutoSizeText(
                         overriddenMetrics.fontSize.times(decreasingStage!!.value)
                     val correctedLineHeight =
                         if (keepLineHeight) lineHeight else correctedFontSize.div(ratio)
-                    overriddenMetrics = overriddenMetrics.copy(
-                        fontSize = correctedFontSize,
-                        lineHeight = correctedLineHeight
-                    )
+                    overriddenMetrics =
+                        overriddenMetrics.copy(
+                            fontSize = correctedFontSize,
+                            lineHeight = correctedLineHeight,
+                        )
                 }
             } else {
                 if (overriddenMetrics.fontSize <= minFontSize) {
                     val minLineHeight = if (keepLineHeight) lineHeight else minFontSize.div(ratio)
-                    overriddenMetrics = InnerMetrics(
-                        fontSize = minFontSize,
-                        lineHeight = minLineHeight
-                    )
+                    overriddenMetrics =
+                        InnerMetrics(
+                            fontSize = minFontSize,
+                            lineHeight = minLineHeight,
+                        )
                     textReadyToDraw = true
                 }
             }
@@ -161,7 +165,7 @@ internal enum class SizeDecreasingStage(val value: Float) {
     Offense(0.5f),
     Defence(1.2f),
     Diplomacy(0.95f),
-    Peace(Float.NaN);
+    Peace(Float.NaN),
 }
 
 internal fun SizeDecreasingStage?.next(didOverflowHeight: Boolean): SizeDecreasingStage {
@@ -181,7 +185,5 @@ internal data class InnerMetrics(
     val lineHeight: TextUnit,
 )
 
-internal fun coerceTextUnit(
-    expected: TextUnit,
-    default: TextUnit
-) = if (expected != TextUnit.Unspecified) expected else default
+internal fun coerceTextUnit(expected: TextUnit, default: TextUnit) =
+    if (expected != TextUnit.Unspecified) expected else default

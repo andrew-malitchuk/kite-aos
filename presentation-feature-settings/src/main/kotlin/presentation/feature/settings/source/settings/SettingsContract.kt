@@ -24,7 +24,7 @@ public data class SettingsState(
     val moveDetector: MoveDetectorModel? = null,
     val mqtt: MqttModel? = null,
     val isLoading: Boolean = true,
-    val currentLanguage: String? = null
+    val currentLanguage: String? = null,
 )
 
 /**
@@ -33,16 +33,22 @@ public data class SettingsState(
 public sealed class SettingsSideEffect {
     /** Navigates back to the previous screen. */
     public data object GoBackEffect : SettingsSideEffect()
+
     /** Navigates to the About/More information screen. */
     public data object GoMoreEffect : SettingsSideEffect()
+
     /** Navigates to the application selection screen. */
     public data object GoApplicationEffect : SettingsSideEffect()
+
     /** Attempts to open the system language settings. */
     public data object OpenLangSettingsEffect : SettingsSideEffect()
+
     /** Displays the in-app language selection dialog. */
     public data object ShowInAppLanguageSwitcherEffect : SettingsSideEffect()
+
     /** Triggers a complete restart of the application process. */
     public data object RestartApplicationEffect : SettingsSideEffect()
+
     /** Displays an error message to the user. */
     public data class ShowError(val message: String) : SettingsSideEffect()
 }
@@ -53,26 +59,37 @@ public sealed class SettingsSideEffect {
 public sealed class SettingsIntent {
     /** Sets the application's visual theme. */
     public data class OnSetThemeIntent(val theme: ThemeModel) : SettingsIntent()
+
     /** Sets the kiosk dashboard and whitelist URLs. */
     public data class OnSetDashboardIntent(val dashboardUrl: String, val whitelistUrl: String) : SettingsIntent()
+
     /** Sets the control dock position. */
     public data class OnSetDockIntent(val dock: DockPositionModel) : SettingsIntent()
+
     /** Updates the motion detector configuration. */
     public data class OnSetMoveDetectorIntent(val moveDetector: MoveDetectorModel) : SettingsIntent()
+
     /** Updates the MQTT connection configuration. */
     public data class OnSetMqttIntent(val mqtt: MqttModel) : SettingsIntent()
+
     /** Request to navigate back. */
     public data object OnBackIntent : SettingsIntent()
+
     /** Request to change language. */
     public data object OnLangIntent : SettingsIntent()
+
     /** Result of attempting to open system language settings. */
     public data class OnLangSystemSettingsResultIntent(val wasOpened: Boolean) : SettingsIntent()
+
     /** Request to see more information. */
     public data object OnMoreIntent : SettingsIntent()
+
     /** Request to select allowed applications. */
     public data object OnApplicationIntent : SettingsIntent()
+
     /** Sets the application language directly. */
     public data class OnSetApplicationLanguageIntent(val localeCode: String) : SettingsIntent()
+
     /** Request to restart the application. */
     public data object OnRestartIntent : SettingsIntent()
 }

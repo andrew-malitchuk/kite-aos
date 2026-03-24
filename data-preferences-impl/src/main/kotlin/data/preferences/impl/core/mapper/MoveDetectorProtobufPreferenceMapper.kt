@@ -25,7 +25,7 @@ internal object MoveDetectorProtobufPreferenceMapper :
                 sensitivity = input.sensitivity.toInt(),
                 dimDelay = input.dimDelay,
                 screenTimeout = input.screenTimeout,
-                fabDelay = input.fabDelay
+                fabDelay = input.fabDelay,
             )
         }
 }

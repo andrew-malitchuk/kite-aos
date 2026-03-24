@@ -8,5 +8,5 @@ import domain.core.source.model.base.Model
  * @property isCompleted `true` if the user has finished onboarding, `false` otherwise.
  */
 public data class OnboardingModel(
-    val isCompleted: Boolean
+    val isCompleted: Boolean,
 ) : Model

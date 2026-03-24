@@ -37,15 +37,12 @@ import presentation.core.ui.source.kit.atom.shape.util.createSquircleShapeOutlin
  *  @param smoothing The smoothing factor from 0 to 100.
  *
  **/
-public fun SquircleShape(
-    percent: Int = 100,
-    smoothing: Int = CornerSmoothing.Medium
-): SquircleShape = SquircleShape(
+public fun SquircleShape(percent: Int = 100, smoothing: Int = CornerSmoothing.Medium): SquircleShape = SquircleShape(
     topStartCorner = CornerSize(percent),
     topEndCorner = CornerSize(percent),
     bottomStartCorner = CornerSize(percent),
     bottomEndCorner = CornerSize(percent),
-    smoothing = smoothing
+    smoothing = smoothing,
 )
 
 /**
@@ -56,15 +53,12 @@ public fun SquircleShape(
  *  @param smoothing The smoothing factor from 0 to 100.
  *
  **/
-public fun SquircleShape(
-    radius: Dp,
-    smoothing: Int = CornerSmoothing.Medium
-): SquircleShape = SquircleShape(
+public fun SquircleShape(radius: Dp, smoothing: Int = CornerSmoothing.Medium): SquircleShape = SquircleShape(
     topStartCorner = CornerSize(radius),
     topEndCorner = CornerSize(radius),
     bottomStartCorner = CornerSize(radius),
     bottomEndCorner = CornerSize(radius),
-    smoothing = smoothing
+    smoothing = smoothing,
 )
 
 /**
@@ -75,15 +69,12 @@ public fun SquircleShape(
  *  @param smoothing The smoothing factor from 0 to 100.
  *
  **/
-public fun SquircleShape(
-    radius: Float,
-    smoothing: Int = CornerSmoothing.Medium
-): SquircleShape = SquircleShape(
+public fun SquircleShape(radius: Float, smoothing: Int = CornerSmoothing.Medium): SquircleShape = SquircleShape(
     topStartCorner = CornerSize(radius),
     topEndCorner = CornerSize(radius),
     bottomStartCorner = CornerSize(radius),
     bottomEndCorner = CornerSize(radius),
-    smoothing = smoothing
+    smoothing = smoothing,
 )
 
 /**
@@ -102,13 +93,13 @@ public fun SquircleShape(
     topEnd: Int = 0,
     bottomStart: Int = 0,
     bottomEnd: Int = 0,
-    smoothing: Int = CornerSmoothing.Medium
+    smoothing: Int = CornerSmoothing.Medium,
 ): SquircleShape = SquircleShape(
     topStartCorner = CornerSize(topStart),
     topEndCorner = CornerSize(topEnd),
     bottomStartCorner = CornerSize(bottomStart),
     bottomEndCorner = CornerSize(bottomEnd),
-    smoothing = smoothing
+    smoothing = smoothing,
 )
 
 /**
@@ -127,13 +118,13 @@ public fun SquircleShape(
     topEnd: Dp = 0.dp,
     bottomStart: Dp = 0.dp,
     bottomEnd: Dp = 0.dp,
-    smoothing: Int = CornerSmoothing.Medium
+    smoothing: Int = CornerSmoothing.Medium,
 ): SquircleShape = SquircleShape(
     topStartCorner = CornerSize(topStart),
     topEndCorner = CornerSize(topEnd),
     bottomStartCorner = CornerSize(bottomStart),
     bottomEndCorner = CornerSize(bottomEnd),
-    smoothing = smoothing
+    smoothing = smoothing,
 )
 
 /**
@@ -152,13 +143,13 @@ public fun SquircleShape(
     topEnd: Float = 0f,
     bottomStart: Float = 0f,
     bottomEnd: Float = 0f,
-    smoothing: Int = CornerSmoothing.Medium
+    smoothing: Int = CornerSmoothing.Medium,
 ): SquircleShape = SquircleShape(
     topStartCorner = CornerSize(topStart),
     topEndCorner = CornerSize(topEnd),
     bottomStartCorner = CornerSize(bottomStart),
     bottomEndCorner = CornerSize(bottomEnd),
-    smoothing = smoothing
+    smoothing = smoothing,
 )
 
 /**
@@ -177,26 +168,25 @@ public class SquircleShape(
     topEndCorner: CornerSize,
     bottomStartCorner: CornerSize,
     bottomEndCorner: CornerSize,
-    smoothing: Int
+    smoothing: Int,
 ) : SquircleBasedShape(
     topStart = topStartCorner,
     topEnd = topEndCorner,
     bottomStart = bottomStartCorner,
     bottomEnd = bottomEndCorner,
-    smoothing = smoothing
+    smoothing = smoothing,
 ) {
-
     override fun copy(
         topStart: CornerSize,
         topEnd: CornerSize,
         bottomEnd: CornerSize,
-        bottomStart: CornerSize
+        bottomStart: CornerSize,
     ): SquircleShape = SquircleShape(
         topStartCorner = topStart,
         topEndCorner = topEnd,
         bottomStartCorner = bottomStart,
         bottomEndCorner = bottomEnd,
-        smoothing = smoothing
+        smoothing = smoothing,
     )
 
     override fun createOutline(
@@ -205,7 +195,7 @@ public class SquircleShape(
         topEnd: Float,
         bottomEnd: Float,
         bottomStart: Float,
-        layoutDirection: LayoutDirection
+        layoutDirection: LayoutDirection,
     ): Outline = createSquircleShapeOutline(
         size = size,
         topStart = topStart,
@@ -213,17 +203,17 @@ public class SquircleShape(
         bottomEnd = bottomEnd,
         bottomStart = bottomStart,
         smoothing = smoothing,
-        layoutDirection = layoutDirection
+        layoutDirection = layoutDirection,
     )
 
     override fun toString(): String {
         return "SquircleShape(" +
-                "topStart = $topStart, " +
-                "topEnd = $topEnd, " +
-                "bottomStart = $bottomStart, " +
-                "bottomEnd = $bottomEnd, " +
-                "smoothing = $smoothing" +
-                ")"
+            "topStart = $topStart, " +
+            "topEnd = $topEnd, " +
+            "bottomStart = $bottomStart, " +
+            "bottomEnd = $bottomEnd, " +
+            "smoothing = $smoothing" +
+            ")"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -245,5 +235,4 @@ public class SquircleShape(
         result = 31 * result + smoothing.hashCode()
         return result
     }
-
 }

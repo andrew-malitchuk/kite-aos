@@ -13,8 +13,7 @@ import java.io.IOException
 
 @Single
 internal class MoveDetectorPreferenceStorage(
-    @Named("moveDetectorDataStore")
-    private val preference: DataStore<MoveDetectorDataProto.MoveDetectorProtoModel>,
+    @Named("moveDetectorDataStore") private val preference: DataStore<MoveDetectorDataProto.MoveDetectorProtoModel>,
 ) : BasePreferenceStorage<MoveDetectorDataProto.MoveDetectorProtoModel> {
     override fun subscribeToData(): Flow<MoveDetectorDataProto.MoveDetectorProtoModel?> =
         preference.data.catch { exception ->
@@ -33,13 +32,8 @@ internal class MoveDetectorPreferenceStorage(
             if (value == null) {
                 MoveDetectorDataProto.MoveDetectorProtoModel.getDefaultInstance()
             } else {
-                preference
-                    .toBuilder()
-                    .setEnabled(value.enabled)
-                    .setSensitivity(value.sensitivity)
-                    .setDimDelay(value.dimDelay)
-                    .setScreenTimeout(value.screenTimeout)
-                    .setFabDelay(value.fabDelay)
+                preference.toBuilder().setEnabled(value.enabled).setSensitivity(value.sensitivity)
+                    .setDimDelay(value.dimDelay).setScreenTimeout(value.screenTimeout).setFabDelay(value.fabDelay)
                     .build()
             }
         }

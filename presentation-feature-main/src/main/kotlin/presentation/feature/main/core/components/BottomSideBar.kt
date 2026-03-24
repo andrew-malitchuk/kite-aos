@@ -13,13 +13,13 @@ public fun BottomSideBar(
     isDrawerOpen: Boolean,
     onDismiss: () -> Unit,
     drawer: @Composable () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     BlurredCustomBottomDrawerOverlay(
         modifier = modifier,
         isDrawerOpen = isDrawerOpen,
         onDismiss = onDismiss,
         drawerContent = drawer,
-        content = content
+        content = content,
     )
 }

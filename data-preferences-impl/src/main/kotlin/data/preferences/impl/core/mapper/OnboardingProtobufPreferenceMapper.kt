@@ -5,7 +5,6 @@ import data.preferences.api.source.resource.OnboardingPreference
 import data.preferences.impl.core.mapper.base.ProtobufPreferenceMapper
 import data.preferences.impl.proto.OnboardingDataProto
 
-
 internal object OnboardingProtobufPreferenceMapper :
     ProtobufPreferenceMapper<OnboardingDataProto.OnboardingProtoModel, OnboardingPreference> {
     override val toProtobuf: Mapper<OnboardingPreference, OnboardingDataProto.OnboardingProtoModel> =
@@ -18,7 +17,7 @@ internal object OnboardingProtobufPreferenceMapper :
     override val toPreference: Mapper<OnboardingDataProto.OnboardingProtoModel, OnboardingPreference> =
         Mapper { input ->
             OnboardingPreference(
-                isCompleted = input.isCompleted
+                isCompleted = input.isCompleted,
             )
         }
 }

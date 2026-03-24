@@ -5,16 +5,14 @@ import androidx.navigation3.runtime.NavKey
 import presentation.core.navigation.api.source.destination.AppNavigator
 import presentation.core.navigation.api.source.destination.Destination
 
-
 /**
  * Concrete implementation of [AppNavigator] using Navigation 3's [NavBackStack].
  *
  * @property backStack The backstack to manage navigation entries.
  */
 public class AppNavigatorImpl(
-    private val backStack: NavBackStack<NavKey>
+    private val backStack: NavBackStack<NavKey>,
 ) : AppNavigator {
-
     override fun popBackStack() {
         backStack.removeLastOrNull()
     }

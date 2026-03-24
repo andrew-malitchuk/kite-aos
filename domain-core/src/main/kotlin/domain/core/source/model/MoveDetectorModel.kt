@@ -16,5 +16,5 @@ public data class MoveDetectorModel(
     val sensitivity: Int?,
     val dimDelay: Long?,
     val screenTimeout: Long?,
-    val fabDelay: Long?
+    val fabDelay: Long?,
 ) : Model

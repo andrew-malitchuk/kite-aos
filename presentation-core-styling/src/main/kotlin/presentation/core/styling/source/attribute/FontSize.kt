@@ -10,5 +10,5 @@ internal val attributeFontSize: ThemeFontSize =
         label = 14.sp,
         body = 16.sp,
         caption = 12.sp,
-        action = 14.sp
+        action = 14.sp,
     )

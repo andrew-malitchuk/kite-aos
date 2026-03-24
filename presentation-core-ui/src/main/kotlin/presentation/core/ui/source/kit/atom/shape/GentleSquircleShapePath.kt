@@ -51,14 +51,14 @@ import presentation.core.ui.source.kit.atom.shape.util.clampedSmoothing
  *  @param smoothing The corner smoothing from 0 to 100.
  *
  **/
+@Suppress("LongMethod")
 public fun gentleSquircleShapePath(
     size: Size,
     topLeftCorner: Float,
     topRightCorner: Float,
     bottomLeftCorner: Float,
-    bottomRightCorner: Float
+    bottomRightCorner: Float,
 ): Path {
-
     val width = size.width
     val height = size.height
     val minDimension = size.minDimension
@@ -80,124 +80,141 @@ public fun gentleSquircleShapePath(
     val bottomLeftSmoothingFactor = clampedSmoothing(bottomLeft, cornerThreshold)
 
     return Path().apply {
-
         // Enter the path at x = topLeft & y = 0.
 
         moveTo(
             x = topLeft,
-            y = 0f
+            y = 0f,
         )
 
         // Top-right corner.
 
         lineTo(
             x = width - topRight,
-            y = 0f
+            y = 0f,
         )
 
-        if (useArcAtTopRight) arcTo(
-            rect = Rect(
-                left = width - 2 * topRight,
-                top = 0f,
-                right = width,
-                bottom = 2 * topRight
-            ),
-            startAngleDegrees = -90f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        ) else cubicTo(
-            x1 = width - topRight * topRightSmoothingFactor,
-            y1 = 0f,
-            x2 = width,
-            y2 = topRight * topRightSmoothingFactor,
-            x3 = width,
-            y3 = topRight
-        )
+        if (useArcAtTopRight) {
+            arcTo(
+                rect =
+                Rect(
+                    left = width - 2 * topRight,
+                    top = 0f,
+                    right = width,
+                    bottom = 2 * topRight,
+                ),
+                startAngleDegrees = -90f,
+                sweepAngleDegrees = 90f,
+                forceMoveTo = false,
+            )
+        } else {
+            cubicTo(
+                x1 = width - topRight * topRightSmoothingFactor,
+                y1 = 0f,
+                x2 = width,
+                y2 = topRight * topRightSmoothingFactor,
+                x3 = width,
+                y3 = topRight,
+            )
+        }
 
         // Bottom-right corner.
 
         lineTo(
             x = width,
-            y = height - bottomRight
+            y = height - bottomRight,
         )
 
-        if (useArcAtBottomRight) arcTo(
-            rect = Rect(
-                left = width - 2 * bottomRight,
-                top = height - 2 * bottomRight,
-                right = width,
-                bottom = height
-            ),
-            startAngleDegrees = 0f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        ) else cubicTo(
-            x1 = width,
-            y1 = height - bottomRight * bottomRightSmoothingFactor,
-            x2 = width - bottomRight * bottomRightSmoothingFactor,
-            y2 = height,
-            x3 = width - bottomRight,
-            y3 = height
-        )
+        if (useArcAtBottomRight) {
+            arcTo(
+                rect =
+                Rect(
+                    left = width - 2 * bottomRight,
+                    top = height - 2 * bottomRight,
+                    right = width,
+                    bottom = height,
+                ),
+                startAngleDegrees = 0f,
+                sweepAngleDegrees = 90f,
+                forceMoveTo = false,
+            )
+        } else {
+            cubicTo(
+                x1 = width,
+                y1 = height - bottomRight * bottomRightSmoothingFactor,
+                x2 = width - bottomRight * bottomRightSmoothingFactor,
+                y2 = height,
+                x3 = width - bottomRight,
+                y3 = height,
+            )
+        }
 
         // Bottom-left corner.
 
         lineTo(
             x = bottomLeft,
-            y = height
+            y = height,
         )
 
-        if (useArcAtBottomLeft) arcTo(
-            rect = Rect(
-                left = 0f,
-                top = height - 2 * bottomLeft,
-                right = 2 * bottomLeft,
-                bottom = height
-            ),
-            startAngleDegrees = 90f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        ) else cubicTo(
-            x1 = bottomLeft * bottomLeftSmoothingFactor,
-            y1 = height,
-            x2 = 0f,
-            y2 = height - bottomLeft * bottomLeftSmoothingFactor,
-            x3 = 0f,
-            y3 = height - bottomLeft
-        )
+        if (useArcAtBottomLeft) {
+            arcTo(
+                rect =
+                Rect(
+                    left = 0f,
+                    top = height - 2 * bottomLeft,
+                    right = 2 * bottomLeft,
+                    bottom = height,
+                ),
+                startAngleDegrees = 90f,
+                sweepAngleDegrees = 90f,
+                forceMoveTo = false,
+            )
+        } else {
+            cubicTo(
+                x1 = bottomLeft * bottomLeftSmoothingFactor,
+                y1 = height,
+                x2 = 0f,
+                y2 = height - bottomLeft * bottomLeftSmoothingFactor,
+                x3 = 0f,
+                y3 = height - bottomLeft,
+            )
+        }
 
         // Top-left corner.
 
         lineTo(
             x = 0f,
-            y = topLeft
+            y = topLeft,
         )
 
-        if (useArcAtTopLeft) arcTo(
-            rect = Rect(
-                left = 0f,
-                top = 0f,
-                right = 2 * topLeft,
-                bottom = 2 * topLeft
-            ),
-            startAngleDegrees = 180f,
-            sweepAngleDegrees = 90f,
-            forceMoveTo = false
-        ) else cubicTo(
-            x1 = 0f,
-            y1 = topLeft * topLeftSmoothingFactor,
-            x2 = topLeft * topLeftSmoothingFactor,
-            y2 = 0f,
-            x3 = topLeft,
-            y3 = 0f
-        )
+        if (useArcAtTopLeft) {
+            arcTo(
+                rect =
+                Rect(
+                    left = 0f,
+                    top = 0f,
+                    right = 2 * topLeft,
+                    bottom = 2 * topLeft,
+                ),
+                startAngleDegrees = 180f,
+                sweepAngleDegrees = 90f,
+                forceMoveTo = false,
+            )
+        } else {
+            cubicTo(
+                x1 = 0f,
+                y1 = topLeft * topLeftSmoothingFactor,
+                x2 = topLeft * topLeftSmoothingFactor,
+                y2 = 0f,
+                x3 = topLeft,
+                y3 = 0f,
+            )
+        }
 
         // Close the path.
 
         close()
-
     }
-
 }
 
 /**
@@ -229,34 +246,31 @@ public fun DrawScope.drawGentleSquircle(
     style: DrawStyle = Fill,
     alpha: Float = 1.0f,
     colorFilter: ColorFilter? = null,
-    blendMode: BlendMode = DrawScope.DefaultBlendMode
+    blendMode: BlendMode = DrawScope.DefaultBlendMode,
 ) {
-
     val isRtl = this.layoutDirection == LayoutDirection.Rtl
-    val path = gentleSquircleShapePath(
-        size = size,
-        topLeftCorner = if (isRtl) topLeftCorner else topRightCorner,
-        topRightCorner = if (isRtl) topRightCorner else topLeftCorner,
-        bottomLeftCorner = if (isRtl) bottomLeftCorner else bottomRightCorner,
-        bottomRightCorner = if (isRtl) bottomRightCorner else bottomLeftCorner
-    )
+    val path =
+        gentleSquircleShapePath(
+            size = size,
+            topLeftCorner = if (isRtl) topLeftCorner else topRightCorner,
+            topRightCorner = if (isRtl) topRightCorner else topLeftCorner,
+            bottomLeftCorner = if (isRtl) bottomLeftCorner else bottomRightCorner,
+            bottomRightCorner = if (isRtl) bottomRightCorner else bottomLeftCorner,
+        )
 
     translate(
         left = topLeft.x,
-        top = topLeft.y
+        top = topLeft.y,
     ) {
-
         drawPath(
             path = path,
             color = color,
             alpha = alpha,
             style = style,
             colorFilter = colorFilter,
-            blendMode = blendMode
+            blendMode = blendMode,
         )
-
     }
-
 }
 
 /**
@@ -288,32 +302,29 @@ public fun DrawScope.drawGentleSquircle(
     style: DrawStyle = Fill,
     alpha: Float = 1.0f,
     colorFilter: ColorFilter? = null,
-    blendMode: BlendMode = DrawScope.DefaultBlendMode
+    blendMode: BlendMode = DrawScope.DefaultBlendMode,
 ) {
-
     val isRtl = this.layoutDirection == LayoutDirection.Rtl
-    val path = gentleSquircleShapePath(
-        size = size,
-        topLeftCorner = if (isRtl) topLeftCorner else topRightCorner,
-        topRightCorner = if (isRtl) topRightCorner else topLeftCorner,
-        bottomLeftCorner = if (isRtl) bottomLeftCorner else bottomRightCorner,
-        bottomRightCorner = if (isRtl) bottomRightCorner else bottomLeftCorner
-    )
+    val path =
+        gentleSquircleShapePath(
+            size = size,
+            topLeftCorner = if (isRtl) topLeftCorner else topRightCorner,
+            topRightCorner = if (isRtl) topRightCorner else topLeftCorner,
+            bottomLeftCorner = if (isRtl) bottomLeftCorner else bottomRightCorner,
+            bottomRightCorner = if (isRtl) bottomRightCorner else bottomLeftCorner,
+        )
 
     translate(
         left = topLeft.x,
-        top = topLeft.y
+        top = topLeft.y,
     ) {
-
         drawPath(
             path = path,
             brush = brush,
             alpha = alpha,
             style = style,
             colorFilter = colorFilter,
-            blendMode = blendMode
+            blendMode = blendMode,
         )
-
     }
-
 }

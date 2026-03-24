@@ -9,23 +9,24 @@ import androidx.compose.ui.text.font.FontWeight
 import presentation.core.styling.R
 import presentation.core.styling.core.ThemeTypography
 
-
 /**
  * Font family used primarily for headers and display text.
  */
-internal val OutfitFontFamily: FontFamily = FontFamily(
-    Font(R.font.outfit_regular, FontWeight.Normal),
-    Font(R.font.outfit_semi_bold, FontWeight.SemiBold)
-)
+internal val OutfitFontFamily: FontFamily =
+    FontFamily(
+        Font(R.font.outfit_regular, FontWeight.Normal),
+        Font(R.font.outfit_semi_bold, FontWeight.SemiBold),
+    )
 
 /**
  * Font family used for body text, labels, and actions.
  */
-internal val PlusJakartaFontFamily: FontFamily = FontFamily(
-    Font(R.font.plus_jakarta_sans_regular, FontWeight.Normal),
-    Font(R.font.plus_jakarta_sans_medium, FontWeight.Medium),
-    Font(R.font.plus_jakarta_sans_bold, FontWeight.Bold)
-)
+internal val PlusJakartaFontFamily: FontFamily =
+    FontFamily(
+        Font(R.font.plus_jakarta_sans_regular, FontWeight.Normal),
+        Font(R.font.plus_jakarta_sans_medium, FontWeight.Medium),
+        Font(R.font.plus_jakarta_sans_bold, FontWeight.Bold),
+    )
 
 /**
  * Implementation of the typography system using semantic tokens.
@@ -35,47 +36,54 @@ internal val PlusJakartaFontFamily: FontFamily = FontFamily(
 @Composable
 internal fun AttributeTypography(): ThemeTypography = remember {
     ThemeTypography(
-        display = TextStyle(
+        display =
+        TextStyle(
             fontSize = attributeFontSize.display,
             lineHeight = attributeLineHeight.display,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = OutfitFontFamily
+            fontFamily = OutfitFontFamily,
         ),
-        title = TextStyle(
+        title =
+        TextStyle(
             fontSize = attributeFontSize.title,
             lineHeight = attributeLineHeight.title,
             fontWeight = FontWeight.SemiBold,
-            fontFamily = OutfitFontFamily
+            fontFamily = OutfitFontFamily,
         ),
-        label = TextStyle(
+        label =
+        TextStyle(
             fontSize = attributeFontSize.label,
             lineHeight = attributeLineHeight.label,
             fontWeight = FontWeight.Medium,
-            fontFamily = PlusJakartaFontFamily
+            fontFamily = PlusJakartaFontFamily,
         ),
-        body = TextStyle(
+        body =
+        TextStyle(
             fontSize = attributeFontSize.body,
             lineHeight = attributeLineHeight.body,
             fontWeight = FontWeight.Normal,
-            fontFamily = PlusJakartaFontFamily
+            fontFamily = PlusJakartaFontFamily,
         ),
-        bodyEmphasis = TextStyle(
+        bodyEmphasis =
+        TextStyle(
             fontSize = attributeFontSize.body,
             lineHeight = attributeLineHeight.body,
             fontWeight = FontWeight.Bold,
-            fontFamily = PlusJakartaFontFamily
+            fontFamily = PlusJakartaFontFamily,
         ),
-        caption = TextStyle(
+        caption =
+        TextStyle(
             fontSize = attributeFontSize.caption,
             lineHeight = attributeLineHeight.caption,
             fontWeight = FontWeight.Normal,
-            fontFamily = PlusJakartaFontFamily
+            fontFamily = PlusJakartaFontFamily,
         ),
-        action = TextStyle(
+        action =
+        TextStyle(
             fontSize = attributeFontSize.action,
             lineHeight = attributeLineHeight.action,
             fontWeight = FontWeight.Bold,
-            fontFamily = PlusJakartaFontFamily
-        )
+            fontFamily = PlusJakartaFontFamily,
+        ),
     )
 }

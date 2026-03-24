@@ -1,10 +1,8 @@
 package presentation.core.ui.source.kit.atom.snackbar.internal
 
-import presentation.core.ui.source.kit.atom.snackbar.StackedSnackbarDuration
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import presentation.core.ui.source.kit.atom.snackbar.StackedSnackbarDuration
 
 @Stable
 internal sealed class StackedSnackbarData(val showDuration: StackedSnackbarDuration) {
@@ -21,6 +19,3 @@ internal sealed class StackedSnackbarData(val showDuration: StackedSnackbarDurat
         val duration: StackedSnackbarDuration = StackedSnackbarDuration.Short,
     ) : StackedSnackbarData(duration)
 }
-
-
-

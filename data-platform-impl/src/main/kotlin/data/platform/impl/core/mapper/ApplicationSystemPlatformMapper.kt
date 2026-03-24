@@ -14,13 +14,12 @@ import data.platform.impl.core.mapper.base.SystemPlatformMapper
  */
 public object ApplicationSystemPlatformMapper :
     SystemPlatformMapper<ApplicationInfo, ApplicationPlatform> {
-
     override val toPlatform: Mapper<ApplicationInfo, ApplicationPlatform> =
         Mapper { input ->
             ApplicationPlatform(
                 name = "",
                 packageName = input.packageName,
-                icon = input.icon
+                icon = input.icon,
             )
         }
 }

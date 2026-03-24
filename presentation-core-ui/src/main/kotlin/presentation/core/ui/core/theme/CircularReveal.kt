@@ -64,9 +64,10 @@ public fun <T> Transition<T>.CircularReveal(
 ) {
     var offset: Offset? by remember { mutableStateOf(null) }
     val currentlyVisible = remember { mutableStateListOf<T>().apply { add(currentState) } }
-    val contentMap = remember {
-        mutableMapOf<T, @Composable () -> Unit>()
-    }
+    val contentMap =
+        remember {
+            mutableMapOf<T, @Composable () -> Unit>()
+        }
     if (currentState == targetState) {
         // If not animating, just display the current state
         if (currentlyVisible.size != 1 || currentlyVisible[0] != targetState) {
@@ -77,9 +78,10 @@ public fun <T> Transition<T>.CircularReveal(
     }
     if (!contentMap.contains(targetState)) {
         // Replace target with the same key if any
-        val replacementId = currentlyVisible.indexOfFirst {
-            it == targetState
-        }
+        val replacementId =
+            currentlyVisible.indexOfFirst {
+                it == targetState
+            }
         if (replacementId == -1) {
             currentlyVisible.add(targetState)
         } else {
@@ -103,7 +105,8 @@ public fun <T> Transition<T>.CircularReveal(
         }
     }
     Box(
-        modifier = modifier.pointerInteropFilter {
+        modifier =
+        modifier.pointerInteropFilter {
             if (it.action == MotionEvent.ACTION_DOWN) {
                 if (!started) offset = Offset(it.x, it.y)
             }
@@ -131,11 +134,7 @@ public class CircularRevealShape(
     @FloatRange(from = 0.0, to = 1.0) private val progress: Float,
     private val offset: Offset? = null,
 ) : Shape {
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density,
-    ): Outline {
+    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
         return Outline.Generic(
             Path().apply {
                 addCircle(

@@ -3,7 +3,7 @@ plugins {
     id("dev.yahk.convention.di")
 }
 
-dependencies{
+dependencies {
     implementation(projects.commonCore)
     implementation(projects.domainCore)
     implementation(projects.domainRepositoryApi)

@@ -10,8 +10,10 @@ import domain.core.source.model.base.Model
 public enum class ThemeModel(public val mode: String) : Model {
     /** Classic light mode. */
     Light("light"),
+
     /** Classic dark mode. */
     Dark("dark"),
+
     /** Dynamic theme based on Android's Material You colors. */
-    MaterialU("materialu")
+    MaterialU("materialu"),
 }

@@ -19,7 +19,6 @@ import org.koin.core.component.inject
  * It calculates the battery percentage and reports it to the telemetry system via MQTT.
  */
 public class BatteryReceiver : BroadcastReceiver(), KoinComponent {
-
     private val mqttSendBatteryLevelUseCase: MqttSendBatteryLevelUseCase by inject()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 

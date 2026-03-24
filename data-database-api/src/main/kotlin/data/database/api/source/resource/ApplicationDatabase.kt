@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import data.core.source.resource.Resource
 import data.database.api.core.configure.DatabaseConfigure
 
-
 /**
  * Database entity representing an application.
  *
@@ -25,5 +24,5 @@ public data class ApplicationDatabase(
     @ColumnInfo(name = "package_name")
     val packageName: String,
     @ColumnInfo(name = "icon")
-    val icon: Int
+    val icon: Int,
 ) : Resource

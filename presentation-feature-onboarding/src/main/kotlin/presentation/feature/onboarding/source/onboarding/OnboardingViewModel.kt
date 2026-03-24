@@ -2,6 +2,8 @@ package presentation.feature.onboarding.source.onboarding
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import common.core.core.execute.executeResult
+import domain.core.core.monad.Failure
 import domain.core.source.model.DashboardModel
 import domain.usecase.api.source.usecase.configuration.GetDashboardUseCase
 import domain.usecase.api.source.usecase.configuration.SetDashboardUseCase
@@ -11,8 +13,6 @@ import org.koin.android.annotation.KoinViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
-import common.core.core.execute.executeResult
-import domain.core.core.monad.Failure
 import presentation.core.localisation.R
 
 /**
@@ -26,10 +26,9 @@ import presentation.core.localisation.R
 public class OnboardingViewModel(
     private val setOnboardingStatusUseCase: SetOnboardingStatusUseCase,
     private val setDashboardUseCase: SetDashboardUseCase,
-    private val getDashboardUseCase: GetDashboardUseCase
+    private val getDashboardUseCase: GetDashboardUseCase,
 ) : ContainerHost<OnboardingState, OnboardingSideEffect>,
     ViewModel() {
-
     public override val container: Container<OnboardingState, OnboardingSideEffect> =
         container(
             OnboardingState(
@@ -38,19 +37,18 @@ public class OnboardingViewModel(
                 isPostNotificationPermissionGranted = false,
                 isDeviceAdminGranted = false,
                 isWriteSettingsGranted = false,
-                dashboardUrls = null
-            )
+                dashboardUrls = null,
+            ),
         )
 
-    private fun mapError(failure: Throwable): Int =
-        when (failure) {
-            is Failure.Technical.Network -> R.string.error_network
-            is Failure.Technical.Database -> R.string.error_database
-            is Failure.Technical.Preference -> R.string.error_preference
-            is Failure.Logic.NotFound -> R.string.error_not_found
-            is Failure.Logic.Business -> R.string.error_unknown
-            else -> R.string.error_unknown
-        }
+    private fun mapError(failure: Throwable): Int = when (failure) {
+        is Failure.Technical.Network -> R.string.error_network
+        is Failure.Technical.Database -> R.string.error_database
+        is Failure.Technical.Preference -> R.string.error_preference
+        is Failure.Logic.NotFound -> R.string.error_not_found
+        is Failure.Logic.Business -> R.string.error_unknown
+        else -> R.string.error_unknown
+    }
 
     init {
         loadDashboardUrls()
@@ -117,14 +115,13 @@ public class OnboardingViewModel(
                 }
                 postSideEffect(OnboardingSideEffect.ShowError(mapError(failure)))
             }
-        }
+        },
     )
-
 
     public fun onCameraPermission(granted: Boolean): Job = intent {
         reduce {
             state.copy(
-                isCameraPermissionGranted = granted
+                isCameraPermissionGranted = granted,
             )
         }
     }
@@ -132,7 +129,7 @@ public class OnboardingViewModel(
     public fun onOverlayPermission(granted: Boolean): Job = intent {
         reduce {
             state.copy(
-                isOverlayPermissionGranted = granted
+                isOverlayPermissionGranted = granted,
             )
         }
     }
@@ -140,7 +137,7 @@ public class OnboardingViewModel(
     public fun onPostNotificationPermission(granted: Boolean): Job = intent {
         reduce {
             state.copy(
-                isPostNotificationPermissionGranted = granted
+                isPostNotificationPermissionGranted = granted,
             )
         }
     }
@@ -148,7 +145,7 @@ public class OnboardingViewModel(
     public fun onDeviceAdminPermission(granted: Boolean): Job = intent {
         reduce {
             state.copy(
-                isDeviceAdminGranted = granted
+                isDeviceAdminGranted = granted,
             )
         }
     }
@@ -156,11 +153,10 @@ public class OnboardingViewModel(
     public fun onWriteSettingsPermission(granted: Boolean): Job = intent {
         reduce {
             state.copy(
-                isWriteSettingsGranted = granted
+                isWriteSettingsGranted = granted,
             )
         }
     }
-
 
     public fun handleIntent(intent: OnboardingIntent) {
         when (intent) {

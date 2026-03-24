@@ -25,7 +25,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.unit.LayoutDirection
-import presentation.core.ui.source.kit.atom.shape.util.clampedSmoothing
 import presentation.core.ui.source.kit.atom.shape.GentleSquircleShape
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
 import presentation.core.ui.source.kit.atom.shape.gentleSquircleShapePath
@@ -58,18 +57,19 @@ internal fun createSquircleShapeOutline(
     bottomEnd: Float,
     bottomStart: Float,
     smoothing: Int,
-    layoutDirection: LayoutDirection
+    layoutDirection: LayoutDirection,
 ): Outline {
     val isRtl = layoutDirection == LayoutDirection.Rtl
     return Outline.Generic(
-        path = squircleShapePath(
+        path =
+        squircleShapePath(
             size = size,
             topLeftCorner = if (isRtl) topEnd else topStart,
             topRightCorner = if (isRtl) topStart else topEnd,
             bottomLeftCorner = if (isRtl) bottomEnd else bottomStart,
             bottomRightCorner = if (isRtl) bottomStart else bottomEnd,
-            smoothing = clampedSmoothing(smoothing)
-        )
+            smoothing = clampedSmoothing(smoothing),
+        ),
     )
 }
 
@@ -97,16 +97,17 @@ internal fun createGentleSquircleShapeOutline(
     topEnd: Float,
     bottomEnd: Float,
     bottomStart: Float,
-    layoutDirection: LayoutDirection
+    layoutDirection: LayoutDirection,
 ): Outline {
     val isRtl = layoutDirection == LayoutDirection.Rtl
     return Outline.Generic(
-        path = gentleSquircleShapePath(
+        path =
+        gentleSquircleShapePath(
             size = size,
             topLeftCorner = if (isRtl) topEnd else topStart,
             topRightCorner = if (isRtl) topStart else topEnd,
             bottomLeftCorner = if (isRtl) bottomEnd else bottomStart,
             bottomRightCorner = if (isRtl) bottomStart else bottomEnd,
-        )
+        ),
     )
 }

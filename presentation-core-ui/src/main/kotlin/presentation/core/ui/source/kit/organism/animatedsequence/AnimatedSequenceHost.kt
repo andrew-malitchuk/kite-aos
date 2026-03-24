@@ -40,15 +40,19 @@ private data class AnimationItem(
     val exitTransition: ExitTransition,
     val delay: Long, // Custom delay in milliseconds
     val enterDuration: Long, // Pre-calculated enter duration
-    val exitDuration: Long // Pre-calculated exit duration
+    val exitDuration: Long, // Pre-calculated exit duration
 )
 
 /** Interface defining the operations that can be performed on a sequence of animations */
 public interface SequentialAnimationScope {
     public suspend fun enter()
+
     public suspend fun exit(all: Boolean = false)
+
     public suspend fun enter(index: Int): Boolean
+
     public suspend fun exit(index: Int): Boolean
+
     public fun isAnimating(): Boolean
 }
 
@@ -94,7 +98,7 @@ private class SequentialAnimationHost : SequentialAnimationScope {
         index: Int,
         enterTransition: EnterTransition,
         exitTransition: ExitTransition,
-        delay: Long
+        delay: Long,
     ): MutableTransitionState<Boolean> {
         // Check if this index is already registered
         if (items.containsKey(index)) {
@@ -102,7 +106,9 @@ private class SequentialAnimationHost : SequentialAnimationScope {
 
             // If the item exists with the same parameters, just return its visibility state
             if (existingItem != null &&
-                existingItem.enterTransition == enterTransition &&
+                @Suppress("ComplexCondition")
+                existingItem.enterTransition
+                == enterTransition &&
                 existingItem.exitTransition == exitTransition &&
                 existingItem.delay == delay
             ) {
@@ -111,7 +117,7 @@ private class SequentialAnimationHost : SequentialAnimationScope {
 
             // Otherwise, throw an exception
             throw IllegalArgumentException(
-                "Animation with index $index is already registered. Each index must be unique."
+                "Animation with index $index is already registered. Each index must be unique.",
             )
         }
 
@@ -125,7 +131,7 @@ private class SequentialAnimationHost : SequentialAnimationScope {
                 exitTransition = exitTransition,
                 delay = delay,
                 enterDuration = calculateTransitionDuration(enterTransition),
-                exitDuration = calculateTransitionDuration(exitTransition)
+                exitDuration = calculateTransitionDuration(exitTransition),
             )
         items[index] = newItem
         return visibilityState
@@ -302,7 +308,7 @@ private class SequentialAnimationHost : SequentialAnimationScope {
 public fun AnimationSequenceHost(
     modifier: Modifier = Modifier,
     startByDefault: Boolean = true,
-    content: @Composable BoxScope.(scope: SequentialAnimationScope) -> Unit
+    content: @Composable BoxScope.(scope: SequentialAnimationScope) -> Unit,
 ) {
     val parent = LocalSequentialAnimationHost.current
 
@@ -346,7 +352,7 @@ public fun AnimatedItem(
     delayAfterAnimation: Long = AnimationDefaults.DEFAULT_DELAY,
     enter: EnterTransition = fadeIn(tween(AnimationDefaults.DEFAULT_DURATION.toInt())),
     exit: ExitTransition = fadeOut(tween(AnimationDefaults.DEFAULT_DURATION.toInt())),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     // Get the animation host from the composition local
     val host =
@@ -360,7 +366,7 @@ public fun AnimatedItem(
                 index = index,
                 enterTransition = enter,
                 exitTransition = exit,
-                delay = delayAfterAnimation
+                delay = delayAfterAnimation,
             )
         }
 
@@ -374,7 +380,7 @@ public fun AnimatedItem(
                 index = index,
                 enterTransition = enter,
                 exitTransition = exit,
-                delay = delayAfterAnimation
+                delay = delayAfterAnimation,
             )
         } catch (e: IllegalArgumentException) {
             // Already registered with this index, ignore
@@ -386,6 +392,6 @@ public fun AnimatedItem(
         modifier = modifier,
         visibleState = visibilityState,
         enter = enter,
-        exit = exit
+        exit = exit,
     ) { content() }
 }

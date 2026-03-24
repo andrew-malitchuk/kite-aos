@@ -41,7 +41,7 @@ internal fun DrawBaseButton(
     isLoading: Boolean,
     loadingSize: Dp,
     horizontalArrangement: Alignment = Alignment.Center,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie_loading))
     val progress by animateLottieCompositionAsState(
@@ -50,9 +50,11 @@ internal fun DrawBaseButton(
     )
 
     Box(
-        modifier = modifier
+        modifier =
+        modifier
             .animateContentSize(
-                animationSpec = tween(
+                animationSpec =
+                tween(
                     durationMillis = AnimationConfiguration.Duration.DEFAULT,
                     easing = LinearOutSlowInEasing,
                 ),
@@ -76,10 +78,11 @@ internal fun DrawBaseButton(
         ) { loading ->
             if (loading) {
                 Box(
-                    modifier = Modifier
+                    modifier =
+                    Modifier
                         .wrapContentWidth()
                         .wrapContentHeight(),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     LottieAnimation(
                         modifier = Modifier.size(loadingSize),

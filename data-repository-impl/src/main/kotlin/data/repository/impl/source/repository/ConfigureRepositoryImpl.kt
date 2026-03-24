@@ -1,8 +1,8 @@
 package data.repository.impl.source.repository
 
-import data.preferences.api.source.datasource.LanguagePreferenceSource
 import data.preferences.api.source.datasource.DashboardPreferenceSource
 import data.preferences.api.source.datasource.DockPositionPreferenceSource
+import data.preferences.api.source.datasource.LanguagePreferenceSource
 import data.preferences.api.source.datasource.MoveDetectorPreferenceSource
 import data.preferences.api.source.datasource.OnboardingPreferenceSource
 import data.preferences.api.source.datasource.ThemePreferenceSource
@@ -39,9 +39,8 @@ internal class ConfigureRepositoryImpl(
     private val dashboardPreferenceSource: DashboardPreferenceSource,
     private val dockPositionPreferenceSource: DockPositionPreferenceSource,
     private val moveDetectorPreferenceSource: MoveDetectorPreferenceSource,
-    private val languagePreferenceSource: LanguagePreferenceSource
+    private val languagePreferenceSource: LanguagePreferenceSource,
 ) : ConfigureRepository {
-
     override suspend fun getTheme(): ThemeModel? {
         return themePreferenceProvider.getData()?.let(ThemePreferenceMapper.toModel::map)
     }

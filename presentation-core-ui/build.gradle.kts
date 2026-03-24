@@ -6,7 +6,6 @@ android {
     namespace = "presentation.core.ui"
 }
 
-
 dependencies {
 
     implementation(libs.core.ktx)

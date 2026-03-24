@@ -10,22 +10,24 @@ import domain.core.source.model.MoveDetectorModel
  */
 internal object MoveDetectorPreferenceMapper :
     ModelResourceMapper<MoveDetectorModel, MoveDetectorPreference> {
-    override val toModel: Mapper<MoveDetectorPreference, MoveDetectorModel> = Mapper { input ->
-        MoveDetectorModel(
-            enabled = input.enabled,
-            sensitivity = input.sensitivity,
-            dimDelay = input.dimDelay,
-            screenTimeout = input.screenTimeout,
-            fabDelay = input.fabDelay
-        )
-    }
-    override val toResource: Mapper<MoveDetectorModel, MoveDetectorPreference> = Mapper { input ->
-        MoveDetectorPreference(
-            enabled = input.enabled,
-            sensitivity = input.sensitivity,
-            dimDelay = input.dimDelay,
-            screenTimeout = input.screenTimeout,
-            fabDelay = input.fabDelay
-        )
-    }
+    override val toModel: Mapper<MoveDetectorPreference, MoveDetectorModel> =
+        Mapper { input ->
+            MoveDetectorModel(
+                enabled = input.enabled,
+                sensitivity = input.sensitivity,
+                dimDelay = input.dimDelay,
+                screenTimeout = input.screenTimeout,
+                fabDelay = input.fabDelay,
+            )
+        }
+    override val toResource: Mapper<MoveDetectorModel, MoveDetectorPreference> =
+        Mapper { input ->
+            MoveDetectorPreference(
+                enabled = input.enabled,
+                sensitivity = input.sensitivity,
+                dimDelay = input.dimDelay,
+                screenTimeout = input.screenTimeout,
+                fabDelay = input.fabDelay,
+            )
+        }
 }

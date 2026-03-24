@@ -11,12 +11,11 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [GetOnboardingStatusUseCase::class])
 internal class GetOnboardingStatusUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : GetOnboardingStatusUseCase {
     override suspend fun invoke(): Result<Boolean> = resultLauncher(
-        errorMapper = Failure.Technical::Preference
+        errorMapper = Failure.Technical::Preference,
     ) {
         configureRepository.getOnboarding()?.isCompleted ?: throw Failure.Logic.NotFound
     }
 }
-

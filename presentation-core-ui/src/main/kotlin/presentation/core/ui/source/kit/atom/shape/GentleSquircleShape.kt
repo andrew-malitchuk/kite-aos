@@ -38,13 +38,11 @@ import presentation.core.ui.source.kit.atom.shape.util.createGentleSquircleShape
  *  @param percent The corner radius percent from 0 to 100.
  *
  **/
-public fun GentleSquircleShape(
-    percent: Int = 100
-): GentleSquircleShape = GentleSquircleShape(
+public fun GentleSquircleShape(percent: Int = 100): GentleSquircleShape = GentleSquircleShape(
     topStartCorner = CornerSize(percent),
     topEndCorner = CornerSize(percent),
     bottomStartCorner = CornerSize(percent),
-    bottomEndCorner = CornerSize(percent)
+    bottomEndCorner = CornerSize(percent),
 )
 
 /**
@@ -55,13 +53,11 @@ public fun GentleSquircleShape(
  *  @param radius The corner radius.
  *
  **/
-public fun GentleSquircleShape(
-    radius: Dp
-): GentleSquircleShape = GentleSquircleShape(
+public fun GentleSquircleShape(radius: Dp): GentleSquircleShape = GentleSquircleShape(
     topStartCorner = CornerSize(radius),
     topEndCorner = CornerSize(radius),
     bottomStartCorner = CornerSize(radius),
-    bottomEndCorner = CornerSize(radius)
+    bottomEndCorner = CornerSize(radius),
 )
 
 /**
@@ -72,13 +68,11 @@ public fun GentleSquircleShape(
  *  @param radius The corner radius in pixels.
  *
  **/
-public fun GentleSquircleShape(
-    radius: Float
-): GentleSquircleShape = GentleSquircleShape(
+public fun GentleSquircleShape(radius: Float): GentleSquircleShape = GentleSquircleShape(
     topStartCorner = CornerSize(radius),
     topEndCorner = CornerSize(radius),
     bottomStartCorner = CornerSize(radius),
-    bottomEndCorner = CornerSize(radius)
+    bottomEndCorner = CornerSize(radius),
 )
 
 /**
@@ -96,12 +90,12 @@ public fun GentleSquircleShape(
     topStart: Int = 0,
     topEnd: Int = 0,
     bottomStart: Int = 0,
-    bottomEnd: Int = 0
+    bottomEnd: Int = 0,
 ): GentleSquircleShape = GentleSquircleShape(
     topStartCorner = CornerSize(topStart),
     topEndCorner = CornerSize(topEnd),
     bottomStartCorner = CornerSize(bottomStart),
-    bottomEndCorner = CornerSize(bottomEnd)
+    bottomEndCorner = CornerSize(bottomEnd),
 )
 
 /**
@@ -119,12 +113,12 @@ public fun GentleSquircleShape(
     topStart: Dp = 0.dp,
     topEnd: Dp = 0.dp,
     bottomStart: Dp = 0.dp,
-    bottomEnd: Dp = 0.dp
+    bottomEnd: Dp = 0.dp,
 ): GentleSquircleShape = GentleSquircleShape(
     topStartCorner = CornerSize(topStart),
     topEndCorner = CornerSize(topEnd),
     bottomStartCorner = CornerSize(bottomStart),
-    bottomEndCorner = CornerSize(bottomEnd)
+    bottomEndCorner = CornerSize(bottomEnd),
 )
 
 /**
@@ -142,12 +136,12 @@ public fun GentleSquircleShape(
     topStart: Float = 0f,
     topEnd: Float = 0f,
     bottomStart: Float = 0f,
-    bottomEnd: Float = 0f
+    bottomEnd: Float = 0f,
 ): GentleSquircleShape = GentleSquircleShape(
     topStartCorner = CornerSize(topStart),
     topEndCorner = CornerSize(topEnd),
     bottomStartCorner = CornerSize(bottomStart),
-    bottomEndCorner = CornerSize(bottomEnd)
+    bottomEndCorner = CornerSize(bottomEnd),
 )
 
 /**
@@ -164,24 +158,23 @@ public class GentleSquircleShape(
     topStartCorner: CornerSize,
     topEndCorner: CornerSize,
     bottomStartCorner: CornerSize,
-    bottomEndCorner: CornerSize
+    bottomEndCorner: CornerSize,
 ) : GentleSquircleBasedShape(
     topStart = topStartCorner,
     topEnd = topEndCorner,
     bottomStart = bottomStartCorner,
-    bottomEnd = bottomEndCorner
+    bottomEnd = bottomEndCorner,
 ) {
-
     override fun copy(
         topStart: CornerSize,
         topEnd: CornerSize,
         bottomEnd: CornerSize,
-        bottomStart: CornerSize
+        bottomStart: CornerSize,
     ): CornerBasedShape = GentleSquircleShape(
         topStartCorner = topStart,
         topEndCorner = topEnd,
         bottomStartCorner = bottomStart,
-        bottomEndCorner = bottomEnd
+        bottomEndCorner = bottomEnd,
     )
 
     override fun createOutline(
@@ -190,23 +183,23 @@ public class GentleSquircleShape(
         topEnd: Float,
         bottomEnd: Float,
         bottomStart: Float,
-        layoutDirection: LayoutDirection
+        layoutDirection: LayoutDirection,
     ): Outline = createGentleSquircleShapeOutline(
         size = size,
         topStart = topStart,
         topEnd = topEnd,
         bottomEnd = bottomEnd,
         bottomStart = bottomStart,
-        layoutDirection = layoutDirection
+        layoutDirection = layoutDirection,
     )
 
     override fun toString(): String {
         return "GentleSquircleShape(" +
-                "topStart = $topStart, " +
-                "topEnd = $topEnd, " +
-                "bottomStart = $bottomStart, " +
-                "bottomEnd = $bottomEnd" +
-                ")"
+            "topStart = $topStart, " +
+            "topEnd = $topEnd, " +
+            "bottomStart = $bottomStart, " +
+            "bottomEnd = $bottomEnd" +
+            ")"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -226,5 +219,4 @@ public class GentleSquircleShape(
         result = 31 * result + bottomEnd.hashCode()
         return result
     }
-
 }

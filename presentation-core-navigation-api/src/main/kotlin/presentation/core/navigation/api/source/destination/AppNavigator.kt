@@ -30,9 +30,11 @@ public interface AppNavigator {
     public enum class NavOptions {
         /** Default navigation behavior (adds to backstack). */
         Default,
+
         /** If the destination is already at the top of the backstack, do nothing. */
         SingleTop,
+
         /** Clear the entire backstack before navigating. */
-        ClearTask
+        ClearTask,
     }
 }

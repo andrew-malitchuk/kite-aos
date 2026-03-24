@@ -14,9 +14,8 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [ApplicationDatabaseSource::class])
 internal class ApplicationDatabaseSourceImpl(
-    private val dao: ApplicationDao
+    private val dao: ApplicationDao,
 ) : ApplicationDatabaseSource() {
-
     override suspend fun save(value: ApplicationDatabase) {
         dao.insert(value)
     }
@@ -36,5 +35,4 @@ internal class ApplicationDatabaseSourceImpl(
     override suspend fun deleteAll() {
         dao.deleteAll()
     }
-
 }

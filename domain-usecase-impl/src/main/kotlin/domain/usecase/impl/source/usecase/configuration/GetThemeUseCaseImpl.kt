@@ -12,10 +12,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [GetThemeUseCase::class])
 internal class GetThemeUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : GetThemeUseCase {
     override suspend fun invoke(): Result<ThemeModel> = resultLauncher(
-        errorMapper = Failure.Technical::Preference
+        errorMapper = Failure.Technical::Preference,
     ) {
         configureRepository.getTheme() ?: throw Failure.Logic.NotFound
     }

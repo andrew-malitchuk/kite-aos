@@ -7,7 +7,6 @@ android {
     namespace = "presentation.core.application"
 }
 
-
 dependencies {
     // region Core Libraries
     implementation(libs.core.ktx)

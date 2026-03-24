@@ -38,6 +38,7 @@ import domain.core.source.model.base.Model
  * }
  * ```
  */
+
 /**
  * A bidirectional mapper interface for converting between domain models and data transfer objects (DTOs).
  *

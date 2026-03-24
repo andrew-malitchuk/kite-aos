@@ -12,15 +12,13 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.ProvidableCompositionLocal
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -38,14 +36,13 @@ import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHost
  * with the actual system settings on every initialization via [LaunchedEffect].
  */
 @Composable
-public fun OnboardingScreen(
-    viewModel: OnboardingViewModel = koinViewModel(),
-) {
+public fun OnboardingScreen(viewModel: OnboardingViewModel = koinViewModel()) {
     val context = LocalContext.current
     val appNavigator = LocalAppNavigator.current
     val state by viewModel.collectAsState()
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
 
     val snackbarHostState = rememberStackedSnackbarHostState()
 
@@ -82,17 +79,19 @@ public fun OnboardingScreen(
         }
 
     LaunchedEffect(Unit) {
-        val cameraGranted = ContextCompat.checkSelfPermission(
-            context, Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
-
-        val notificationGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val cameraGranted =
             ContextCompat.checkSelfPermission(
-                context, Manifest.permission.POST_NOTIFICATIONS
+                context, Manifest.permission.CAMERA,
             ) == PackageManager.PERMISSION_GRANTED
-        } else {
-            true
-        }
+
+        val notificationGranted =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ContextCompat.checkSelfPermission(
+                    context, Manifest.permission.POST_NOTIFICATIONS,
+                ) == PackageManager.PERMISSION_GRANTED
+            } else {
+                true
+            }
 
         val overlayGranted = Settings.canDrawOverlays(context)
 
@@ -113,7 +112,6 @@ public fun OnboardingScreen(
         }
     }
 
-
     // Side Effect handling
     viewModel.collectSideEffect { effect ->
         when (effect) {
@@ -126,43 +124,51 @@ public fun OnboardingScreen(
                 }
             }
             OnboardingSideEffect.AskOverlayPermissionEffect -> {
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:${context.packageName}")
-                )
+                val intent =
+                    Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:${context.packageName}"),
+                    )
                 overlayLauncher.launch(intent)
             }
 
             OnboardingSideEffect.AskDeviceAdminEffect -> {
-                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
-                    putExtra(
-                        DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-                        ComponentName(context, ApplicationDeviceAdminReceiver::class.java)
-                    )
-                    putExtra(
-                        DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                        context.getString(R.string.permission_device_admin_explanation)
-                    )
-                }
+                val intent =
+                    Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+                        putExtra(
+                            DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+                            ComponentName(context, ApplicationDeviceAdminReceiver::class.java),
+                        )
+                        putExtra(
+                            DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                            context.getString(R.string.permission_device_admin_explanation),
+                        )
+                    }
                 adminLauncher.launch(intent)
             }
 
             OnboardingSideEffect.AskWriteSettingsEffect -> {
-                val intent = Intent(
-                    Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                    Uri.parse("package:${context.packageName}")
-                )
+                val intent =
+                    Intent(
+                        Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                        Uri.parse("package:${context.packageName}"),
+                    )
                 writeLauncher.launch(intent)
             }
 
             OnboardingSideEffect.GoToMainEffect -> {
-                keyboardController?.hide() // Hide keyboard when navigating to main screen
+                keyboardController?.hide()
                 focusManager.clearFocus()
-                appNavigator?.navigate(Destination.Main)
+                // Small delay to let the system hide the keyboard before navigation
+                // This is crucial for older Android versions (API 26-28)
+                scope.launch {
+                    kotlinx.coroutines.delay(100)
+                    appNavigator?.navigate(Destination.Main)
+                }
             }
             is OnboardingSideEffect.ShowError -> {
                 snackbarHostState.showSnackbar(
-                    title = context.getString(effect.messageId)
+                    title = context.getString(effect.messageId),
                 )
             }
         }
@@ -171,6 +177,6 @@ public fun OnboardingScreen(
     OnboardingContent(
         state = state,
         onIntent = viewModel::handleIntent,
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
     )
 }

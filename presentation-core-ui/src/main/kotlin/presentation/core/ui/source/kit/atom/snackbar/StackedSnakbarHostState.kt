@@ -9,18 +9,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import presentation.core.ui.source.kit.atom.snackbar.internal.StackedSnackbar
-import presentation.core.ui.source.kit.atom.snackbar.internal.StackedSnackbarData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import presentation.core.ui.source.kit.atom.snackbar.internal.StackedSnackbar
+import presentation.core.ui.source.kit.atom.snackbar.internal.StackedSnackbarData
 
 @Composable
-public fun StackedSnackbarHost(
-    hostState: StackedSnakbarHostState,
-    modifier: Modifier = Modifier,
-) {
+public fun StackedSnackbarHost(hostState: StackedSnakbarHostState, modifier: Modifier = Modifier) {
     val firstItemVisible by hostState.newSnackbarHosted.collectAsState()
     val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(hostState.currentSnackbarData) {
@@ -78,13 +75,13 @@ public class StackedSnakbarHostState(
     ) {
         showSnackbar(
             data =
-                StackedSnackbarData.Normal(
-                    title,
-                    description,
-                    actionTitle,
-                    action,
-                    duration,
-                ),
+            StackedSnackbarData.Normal(
+                title,
+                description,
+                actionTitle,
+                action,
+                duration,
+            ),
         )
     }
 
@@ -105,6 +102,7 @@ public class StackedSnakbarHostState(
                     add(data)
                 }
             }
+        @Suppress("MagicNumber")
         coroutinesScope.launch {
             delay(1_00)
             newSnackbarHosted.value = true
@@ -112,9 +110,9 @@ public class StackedSnakbarHostState(
     }
 }
 
-private fun StackedSnackbarDuration.toMillis(): Long =
-    when (this) {
-        StackedSnackbarDuration.Short -> 4000L
-        StackedSnackbarDuration.Long -> 10000L
-        StackedSnackbarDuration.Indefinite -> Long.MAX_VALUE
-    }
+@Suppress("MagicNumber")
+private fun StackedSnackbarDuration.toMillis(): Long = when (this) {
+    StackedSnackbarDuration.Short -> 4000L
+    StackedSnackbarDuration.Long -> 10000L
+    StackedSnackbarDuration.Indefinite -> Long.MAX_VALUE
+}

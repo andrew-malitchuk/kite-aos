@@ -17,7 +17,7 @@ internal object DockProtobufPreferenceMapper :
     override val toPreference: Mapper<DockDataProto.DockProtoModel, DockPreference> =
         Mapper { input ->
             DockPreference(
-                position = input.position
+                position = input.position,
             )
         }
 }

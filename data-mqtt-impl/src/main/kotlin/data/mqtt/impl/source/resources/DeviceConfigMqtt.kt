@@ -27,8 +27,7 @@ internal data class DeviceConfigMqtt(
     @SerialName("payload_on")
     val payloadOn: String = "ON",
     @SerialName("state_topic")
-    val stateTopic: String ,
+    val stateTopic: String,
     @SerialName("unique_id")
-    val uniqueId: String
+    val uniqueId: String,
 )
-

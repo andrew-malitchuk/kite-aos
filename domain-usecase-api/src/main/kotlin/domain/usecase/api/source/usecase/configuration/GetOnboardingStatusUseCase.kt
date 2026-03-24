@@ -9,4 +9,3 @@ public interface GetOnboardingStatusUseCase {
      */
     public suspend operator fun invoke(): Result<Boolean>
 }
-

@@ -38,12 +38,11 @@ import androidx.core.view.WindowInsetsControllerCompat
 import domain.core.source.model.DockPositionModel
 import presentation.core.platform.source.service.MotionService
 import presentation.core.styling.core.Theme
-import presentation.core.ui.source.kit.atom.icon.IcApp24
+import presentation.core.ui.source.kit.atom.container.SafeContainer
 import presentation.core.ui.source.kit.atom.icon.IcLogo48
 import presentation.core.ui.source.kit.atom.icon.IcOpen24
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
 import presentation.core.ui.source.kit.atom.shimmer.ShimmerImage
-import presentation.core.ui.source.kit.atom.container.SafeContainer
 import presentation.core.ui.source.kit.atom.snackbar.StackedSnakbarHostState
 import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHostState
 import presentation.feature.main.core.components.SideBar
@@ -67,7 +66,7 @@ import kotlin.math.roundToInt
 internal fun MainContent(
     state: MainState,
     onIntent: (MainIntent) -> Unit = {},
-    snackbarHostState: StackedSnakbarHostState = rememberStackedSnackbarHostState()
+    snackbarHostState: StackedSnakbarHostState = rememberStackedSnackbarHostState(),
 ) {
     val context = LocalContext.current
 
@@ -101,9 +100,10 @@ internal fun MainContent(
 
     if (window != null) {
         // Manage system UI visibility for an immersive kiosk experience.
-        val controller = remember(window) {
-            WindowCompat.getInsetsController(window, window.decorView)
-        }
+        val controller =
+            remember(window) {
+                WindowCompat.getInsetsController(window, window.decorView)
+            }
 
         LaunchedEffect(Unit) {
             // Hide both status bar and navigation bar to maximize screen real estate.
@@ -115,141 +115,150 @@ internal fun MainContent(
     }
 
     SafeContainer(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxSize(),
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
     ) {
         SideBar(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxSize(),
             isBottom = isBottom,
             isDrawerOpen = isOpened,
-        onDismiss = {
-            isOpened = false
-        },
-        drawer = {
-            val sideModifier = Modifier.then(
-                when (isBottom) {
-                    true -> Modifier.fillMaxWidth()
-                    false -> Modifier.fillMaxSize()
-                }
-            )
-
-            Box(
-                modifier = Modifier
-                    .then(sideModifier)
-            ) {
-                ControlDrawer(
-                    isBottom = isBottom,
-                    applications = state.chosenApps,
-                    canGoBack = webViewState.canGoBack,
-                    canGoForward = webViewState.canGoForward
-                ) { action ->
-                    when (action) {
-                        ControlAction.OnReloadAction -> {
-                            isOpened = false
-                            webViewState.reload()
-                        }
-
-                        ControlAction.OnSettingAction -> onIntent(MainIntent.OnSettingsClickAction)
-                        ControlAction.OnBackAction -> {
-                            isOpened = false
-                            webViewState.goBack()
-                        }
-
-                        ControlAction.OnForwardAction -> {
-                            isOpened = false
-                            webViewState.goForward()
-                        }
-
-                        is ControlAction.OnApplicationAction -> {
-                            isOpened = false
-                            onIntent(MainIntent.OnOpenApplicationIntent(action.packageName))
-                        }
-                    }
-
-                }
-            }
-        },
-        content = {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(if (webViewState.isLoading) 0f else 1f)
-                ) {
-                    KioskWebView(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        state = webViewState
+            onDismiss = {
+                isOpened = false
+            },
+            drawer = {
+                val sideModifier =
+                    Modifier.then(
+                        when (isBottom) {
+                            true -> Modifier.fillMaxWidth()
+                            false -> Modifier.fillMaxSize()
+                        },
                     )
 
-                    // Track the drag offset of the FAB to allow user repositioning.
-                    var fabOffset by rememberSaveable(stateSaver = IntOffsetSaver) {
-                        mutableStateOf(
-                            IntOffset.Zero
+                Box(
+                    modifier =
+                    Modifier
+                        .then(sideModifier),
+                ) {
+                    ControlDrawer(
+                        isBottom = isBottom,
+                        applications = state.chosenApps,
+                        canGoBack = webViewState.canGoBack,
+                        canGoForward = webViewState.canGoForward,
+                    ) { action ->
+                        when (action) {
+                            ControlAction.OnReloadAction -> {
+                                isOpened = false
+                                webViewState.reload()
+                            }
+
+                            ControlAction.OnSettingAction -> onIntent(MainIntent.OnSettingsClickAction)
+                            ControlAction.OnBackAction -> {
+                                isOpened = false
+                                webViewState.goBack()
+                            }
+
+                            ControlAction.OnForwardAction -> {
+                                isOpened = false
+                                webViewState.goForward()
+                            }
+
+                            is ControlAction.OnApplicationAction -> {
+                                isOpened = false
+                                onIntent(MainIntent.OnOpenApplicationIntent(action.packageName))
+                            }
+                        }
+                    }
+                }
+            },
+            content = {
+                Box(
+                    modifier =
+                    Modifier
+                        .fillMaxSize(),
+                ) {
+                    Box(
+                        modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .alpha(if (webViewState.isLoading) 0f else 1f),
+                    ) {
+                        KioskWebView(
+                            modifier =
+                            Modifier
+                                .fillMaxSize(),
+                            state = webViewState,
                         )
+
+                        // Track the drag offset of the FAB to allow user repositioning.
+                        var fabOffset by rememberSaveable(stateSaver = IntOffsetSaver) {
+                            mutableStateOf(
+                                IntOffset.Zero,
+                            )
+                        }
+
+                        AnimatedVisibility(
+                            visible = state.isFabVisible,
+                            enter = fadeIn(),
+                            exit = fadeOut(),
+                            modifier =
+                            Modifier
+                                .align(
+                                    when (isBottom) {
+                                        true -> Alignment.BottomEnd
+                                        false -> Alignment.CenterStart
+                                    },
+                                )
+                                .offset { fabOffset }
+                                .padding(Theme.spacing.sizeL),
+                        ) {
+                            FloatingActionButton(
+                                shape = SquircleShape(Theme.size.sizeXL),
+                                onClick = {
+                                    isOpened = true
+                                },
+                                containerColor = Theme.color.canvas,
+                                modifier =
+                                Modifier
+                                    .pointerInput(Unit) {
+                                        // Handle drag gestures to move the FAB across the screen.
+                                        detectDragGestures { change, dragAmount ->
+                                            change.consume()
+                                            fabOffset +=
+                                                IntOffset(
+                                                    dragAmount.x.roundToInt(),
+                                                    dragAmount.y.roundToInt(),
+                                                )
+                                        }
+                                    },
+                            ) {
+                                Icon(
+                                    imageVector = IcOpen24,
+                                    contentDescription = "main_fab",
+                                    tint = Theme.color.inkMain,
+                                )
+                            }
+                        }
                     }
 
                     AnimatedVisibility(
-                        visible = state.isFabVisible,
+                        visible = webViewState.isLoading,
                         enter = fadeIn(),
                         exit = fadeOut(),
-                        modifier = Modifier
-                            .align(
-                                when (isBottom) {
-                                    true -> Alignment.BottomEnd
-                                    false -> Alignment.CenterStart
-                                }
-                            )
-                            .offset { fabOffset }
-                            .padding(Theme.spacing.sizeL)
+                        modifier = Modifier.align(Alignment.Center),
                     ) {
-                        FloatingActionButton(
-                            shape = SquircleShape(Theme.size.sizeXL),
-                            onClick = {
-                                isOpened = true
-                            },
-                            containerColor = Theme.color.canvas,
-                            modifier = Modifier
-                                .pointerInput(Unit) {
-                                    // Handle drag gestures to move the FAB across the screen.
-                                    detectDragGestures { change, dragAmount ->
-                                        change.consume()
-                                        fabOffset += IntOffset(
-                                            dragAmount.x.roundToInt(),
-                                            dragAmount.y.roundToInt()
-                                        )
-                                    }
-                                }
-                        ) {
-                            Icon(
-                                imageVector = IcOpen24,
-                                contentDescription = "main_fab",
-                                tint = Theme.color.inkMain
-                            )
-                        }
+                        ShimmerImage(
+                            modifier = Modifier.size(256.dp),
+                            imageVector = IcLogo48,
+                        )
                     }
                 }
-
-                AnimatedVisibility(
-                    visible = webViewState.isLoading,
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                    modifier = Modifier.align(Alignment.Center)
-                ) {
-                    ShimmerImage(
-                        modifier = Modifier.size(256.dp),
-                        imageVector = IcLogo48,
-                    )
-                }
-            }
-        }
-    )
-}
+            },
+        )
+    }
 }
 
 private fun startSelectedService(context: Context) {
@@ -266,7 +275,8 @@ private fun stopSelectedService(context: Context) {
     context.stopService(intent)
 }
 
-private val IntOffsetSaver = Saver<IntOffset, Pair<Int, Int>>(
-    save = { it.x to it.y },
-    restore = { IntOffset(it.first, it.second) }
-)
+private val IntOffsetSaver =
+    Saver<IntOffset, Pair<Int, Int>>(
+        save = { it.x to it.y },
+        restore = { IntOffset(it.first, it.second) },
+    )

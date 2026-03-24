@@ -55,36 +55,38 @@ public fun squircleShapePath(
     topRightCorner: Float,
     bottomLeftCorner: Float,
     bottomRightCorner: Float,
-    smoothing: Int = CornerSmoothing.Medium
+    smoothing: Int = CornerSmoothing.Medium,
 ): Path {
+    val topLeft =
+        clampedCornerRadius(
+            size = size,
+            cornerSize = topLeftCorner,
+            smoothing = smoothing,
+        )
 
-    val topLeft = clampedCornerRadius(
-        size = size,
-        cornerSize = topLeftCorner,
-        smoothing = smoothing
-    )
+    val topRight =
+        clampedCornerRadius(
+            size = size,
+            cornerSize = topRightCorner,
+            smoothing = smoothing,
+        )
 
-    val topRight = clampedCornerRadius(
-        size = size,
-        cornerSize = topRightCorner,
-        smoothing = smoothing
-    )
+    val bottomLeft =
+        clampedCornerRadius(
+            size = size,
+            cornerSize = bottomLeftCorner,
+            smoothing = smoothing,
+        )
 
-    val bottomLeft = clampedCornerRadius(
-        size = size,
-        cornerSize = bottomLeftCorner,
-        smoothing = smoothing
-    )
-
-    val bottomRight = clampedCornerRadius(
-        size = size,
-        cornerSize = bottomRightCorner,
-        smoothing = smoothing
-    )
+    val bottomRight =
+        clampedCornerRadius(
+            size = size,
+            cornerSize = bottomRightCorner,
+            smoothing = smoothing,
+        )
 
     val smoothingFactor = 1f - convertIntBasedSmoothingToFloat(smoothing)
     return Path().apply {
-
         // Extract the shape width & height
         val width = size.width
         val height = size.height
@@ -92,13 +94,13 @@ public fun squircleShapePath(
         // Set the starting point at the coordinate of (x = topLeft corner, y = 0).
         moveTo(
             x = topLeft,
-            y = 0f
+            y = 0f,
         )
 
         // Draw a Line to the coordinate of (x = the width - the top right corner).
         lineTo(
             x = width - topRight,
-            y = 0f
+            y = 0f,
         )
 
         // Draw a Cubic from the coordinate of (x1 = the width - the top right corner * (1 - the corner smoothing), y1 = 0)
@@ -110,13 +112,13 @@ public fun squircleShapePath(
             x2 = width,
             y2 = topRight * smoothingFactor,
             x3 = width,
-            y3 = topRight
+            y3 = topRight,
         )
 
         // Draw a Line to the coordinate of (x = the width, y = the height - the bottom right corner).
         lineTo(
             x = width,
-            y = height - bottomRight
+            y = height - bottomRight,
         )
 
         // Draw a Cubic from the coordinate of (x1 = the width, y1 = the height - the bottom right corner * (1 - the corner smoothing))
@@ -128,13 +130,13 @@ public fun squircleShapePath(
             x2 = width - bottomRight * smoothingFactor,
             y2 = height,
             x3 = width - bottomRight,
-            y3 = height
+            y3 = height,
         )
 
         // Draw a Line to the coordinate of (x = the bottom left corner, y = the height).
         lineTo(
             x = bottomLeft,
-            y = height
+            y = height,
         )
 
         // Draw a Cubic from the coordinate of (x1 = the bottom left corner * (1 - the corner smoothing), y1 = the height)
@@ -146,13 +148,13 @@ public fun squircleShapePath(
             x2 = 0f,
             y2 = height - bottomLeft * smoothingFactor,
             x3 = 0f,
-            y3 = height - bottomLeft
+            y3 = height - bottomLeft,
         )
 
         // Draw a Line to the coordinate of (x = 0, y = the top left corner).
         lineTo(
             x = 0f,
-            y = topLeft
+            y = topLeft,
         )
 
         // Draw a Cubic from the coordinate of (x1 = 0, y1 = the top left corner * (1 - the corner smoothing))
@@ -164,14 +166,12 @@ public fun squircleShapePath(
             x2 = topLeft * smoothingFactor,
             y2 = 0f,
             x3 = topLeft,
-            y3 = 0f
+            y3 = 0f,
         )
 
         // Close the [Path].
         close()
-
     }
-
 }
 
 /**
@@ -205,35 +205,32 @@ public fun DrawScope.drawSquircle(
     style: DrawStyle = Fill,
     alpha: Float = 1.0f,
     colorFilter: ColorFilter? = null,
-    blendMode: BlendMode = DrawScope.DefaultBlendMode
+    blendMode: BlendMode = DrawScope.DefaultBlendMode,
 ) {
-
     val isRtl = this.layoutDirection == LayoutDirection.Rtl
-    val path = squircleShapePath(
-        size = size,
-        topLeftCorner = if (isRtl) topRightCorner else topLeftCorner,
-        topRightCorner = if (isRtl) topLeftCorner else topRightCorner,
-        bottomLeftCorner = if (isRtl) bottomRightCorner else bottomLeftCorner,
-        bottomRightCorner = if (isRtl) bottomLeftCorner else bottomRightCorner,
-        smoothing = smoothing
-    )
+    val path =
+        squircleShapePath(
+            size = size,
+            topLeftCorner = if (isRtl) topRightCorner else topLeftCorner,
+            topRightCorner = if (isRtl) topLeftCorner else topRightCorner,
+            bottomLeftCorner = if (isRtl) bottomRightCorner else bottomLeftCorner,
+            bottomRightCorner = if (isRtl) bottomLeftCorner else bottomRightCorner,
+            smoothing = smoothing,
+        )
 
     translate(
         left = topLeft.x,
-        top = topLeft.y
+        top = topLeft.y,
     ) {
-
         drawPath(
             path = path,
             color = color,
             alpha = alpha,
             style = style,
             colorFilter = colorFilter,
-            blendMode = blendMode
+            blendMode = blendMode,
         )
-
     }
-
 }
 
 /**
@@ -267,33 +264,30 @@ public fun DrawScope.drawSquircle(
     style: DrawStyle = Fill,
     alpha: Float = 1.0f,
     colorFilter: ColorFilter? = null,
-    blendMode: BlendMode = DrawScope.DefaultBlendMode
+    blendMode: BlendMode = DrawScope.DefaultBlendMode,
 ) {
-
     val isRtl = this.layoutDirection == LayoutDirection.Rtl
-    val path = squircleShapePath(
-        size = size,
-        topLeftCorner = if (isRtl) topRightCorner else topLeftCorner,
-        topRightCorner = if (isRtl) topLeftCorner else topRightCorner,
-        bottomLeftCorner = if (isRtl) bottomRightCorner else bottomLeftCorner,
-        bottomRightCorner = if (isRtl) bottomLeftCorner else bottomRightCorner,
-        smoothing = smoothing
-    )
+    val path =
+        squircleShapePath(
+            size = size,
+            topLeftCorner = if (isRtl) topRightCorner else topLeftCorner,
+            topRightCorner = if (isRtl) topLeftCorner else topRightCorner,
+            bottomLeftCorner = if (isRtl) bottomRightCorner else bottomLeftCorner,
+            bottomRightCorner = if (isRtl) bottomLeftCorner else bottomRightCorner,
+            smoothing = smoothing,
+        )
 
     translate(
         left = topLeft.x,
-        top = topLeft.y
+        top = topLeft.y,
     ) {
-
         drawPath(
             path = path,
             brush = brush,
             alpha = alpha,
             style = style,
             colorFilter = colorFilter,
-            blendMode = blendMode
+            blendMode = blendMode,
         )
-
     }
-
 }

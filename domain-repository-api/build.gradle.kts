@@ -2,7 +2,7 @@ plugins {
     id("dev.yahk.convention.library")
 }
 
-dependencies{
+dependencies {
     implementation(projects.commonCore)
     implementation(projects.domainCore)
 }

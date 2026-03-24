@@ -26,16 +26,16 @@ import org.koin.core.annotation.Single
  * and publishing telemetry data for motion and battery states.
  */
 @Single(binds = [TelemetryMqttSource::class])
-internal class TelemetryMqttSourceImpl() : TelemetryMqttSource {
-
+internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
     private var client: MQTTClient? = null
     private var connectionJob: Job? = null
     private var isConnecting = false
     private var clientId: String? = null
 
-    private val json = Json {
-        encodeDefaults = true
-    }
+    private val json =
+        Json {
+            encodeDefaults = true
+        }
 
     private companion object {
         /**
@@ -50,40 +50,42 @@ internal class TelemetryMqttSourceImpl() : TelemetryMqttSource {
         clientId: String,
         username: String,
         password: String,
-        friendlyName: String
+        friendlyName: String,
     ) {
         disconnect()
 
         this.clientId = clientId
 
-        connectionJob = CoroutineScope(Dispatchers.IO).launch {
-            isConnecting = true
-            while (isConnecting) {
-                try {
-                    if (client == null || client?.isRunning() == false) {
-                        client = MQTTClient(
-                            mqttVersion = MQTTVersion.MQTT5,
-                            address = server,
-                            clientId = clientId,
-                            port = port,
-                            tls = null,
-                            userName = username,
-                            password = password.encodeToByteArray().toUByteArray(),
-                            debugLog = false,
-                            publishReceived = { _ -> }
-                        )
+        connectionJob =
+            CoroutineScope(Dispatchers.IO).launch {
+                isConnecting = true
+                while (isConnecting) {
+                    try {
+                        if (client == null || client?.isRunning() == false) {
+                            client =
+                                MQTTClient(
+                                    mqttVersion = MQTTVersion.MQTT5,
+                                    address = server,
+                                    clientId = clientId,
+                                    port = port,
+                                    tls = null,
+                                    userName = username,
+                                    password = password.encodeToByteArray().toUByteArray(),
+                                    debugLog = false,
+                                    publishReceived = { _ -> },
+                                )
 
-                        registerMotion(clientId = clientId, friendlyName = friendlyName)
-                        registerBattery(clientId = clientId, friendlyName = friendlyName)
+                            registerMotion(clientId = clientId, friendlyName = friendlyName)
+                            registerBattery(clientId = clientId, friendlyName = friendlyName)
+                        }
+
+                        client?.step()
+                    } catch (e: Exception) {
+                        client = null
                     }
-
-                    client?.step()
-                } catch (e: Exception) {
-                    client = null
+                    delay(RECONNECT_DELAY)
                 }
-                delay(RECONNECT_DELAY)
             }
-        }
     }
 
     override suspend fun disconnect(): Unit = withContext(Dispatchers.IO) {
@@ -121,22 +123,21 @@ internal class TelemetryMqttSourceImpl() : TelemetryMqttSource {
      * @param payload The message payload as a string.
      */
     @OptIn(ExperimentalUnsignedTypes::class)
-    private suspend fun publish(retain: Boolean, topic: String, payload: String): Unit =
-        withContext(Dispatchers.IO) {
-            val mqttClient = client
-            if (mqttClient == null || !mqttClient.isRunning()) {
-                return@withContext
-            }
-            try {
-                mqttClient.publish(
-                    retain,
-                    Qos.AT_MOST_ONCE,
-                    topic,
-                    payload.encodeToByteArray().toUByteArray()
-                )
-            } catch (_: Exception) {
-            }
+    private suspend fun publish(retain: Boolean, topic: String, payload: String): Unit = withContext(Dispatchers.IO) {
+        val mqttClient = client
+        if (mqttClient == null || !mqttClient.isRunning()) {
+            return@withContext
         }
+        try {
+            mqttClient.publish(
+                retain,
+                Qos.AT_MOST_ONCE,
+                topic,
+                payload.encodeToByteArray().toUByteArray(),
+            )
+        } catch (_: Exception) {
+        }
+    }
 
     /**
      * Registers a binary sensor for motion detection with Home Assistant.
@@ -146,14 +147,16 @@ internal class TelemetryMqttSourceImpl() : TelemetryMqttSource {
      */
     private suspend fun registerMotion(clientId: String, friendlyName: String) {
         val topic = "homeassistant/binary_sensor/${clientId}_motion/config"
-        val config = DeviceConfigMqtt(
-            device = DeviceMqtt(
-                name = friendlyName,
-                identifiers = listOf(clientId)
-            ),
-            uniqueId = "${clientId}_motion",
-            stateTopic = "${clientId}_motion/motion/state"
-        )
+        val config =
+            DeviceConfigMqtt(
+                device =
+                DeviceMqtt(
+                    name = friendlyName,
+                    identifiers = listOf(clientId),
+                ),
+                uniqueId = "${clientId}_motion",
+                stateTopic = "${clientId}_motion/motion/state",
+            )
 
         val payload = json.encodeToString(config)
         publish(true, topic, payload)
@@ -167,14 +170,16 @@ internal class TelemetryMqttSourceImpl() : TelemetryMqttSource {
      */
     private suspend fun registerBattery(clientId: String, friendlyName: String) {
         val batteryTopic = "homeassistant/sensor/${clientId}_battery/config"
-        val batteryConfig = BatteryConfigMqtt(
-            device = DeviceMqtt(
-                name = friendlyName,
-                identifiers = listOf(clientId)
-            ),
-            uniqueId = "${clientId}_battery",
-            stateTopic = "${clientId}_battery/battery/state"
-        )
+        val batteryConfig =
+            BatteryConfigMqtt(
+                device =
+                DeviceMqtt(
+                    name = friendlyName,
+                    identifiers = listOf(clientId),
+                ),
+                uniqueId = "${clientId}_battery",
+                stateTopic = "${clientId}_battery/battery/state",
+            )
 
         val payload = json.encodeToString(batteryConfig)
         publish(true, batteryTopic, payload)

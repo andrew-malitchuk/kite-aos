@@ -12,10 +12,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [MqttSendMotionUseCase::class])
 internal class MqttSendMotionUseCaseImpl(
-    private val mqttRepository: MqttRepository
+    private val mqttRepository: MqttRepository,
 ) : MqttSendMotionUseCase {
     override suspend operator fun invoke(isDetected: Boolean): Optional = resultLauncher(
-        errorMapper = Failure.Technical::Network
+        errorMapper = Failure.Technical::Network,
     ) {
         mqttRepository.sendMotion(isDetected)
     }

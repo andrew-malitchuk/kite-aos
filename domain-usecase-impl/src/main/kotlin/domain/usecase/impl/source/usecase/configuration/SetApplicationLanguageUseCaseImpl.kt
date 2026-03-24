@@ -12,10 +12,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [SetApplicationLanguageUseCase::class])
 internal class SetApplicationLanguageUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : SetApplicationLanguageUseCase {
     override suspend fun invoke(localeCode: String): Optional = resultLauncher(
-        errorMapper = Failure.Technical::Preference
+        errorMapper = Failure.Technical::Preference,
     ) {
         configureRepository.setApplicationLanguage(localeCode)
     }

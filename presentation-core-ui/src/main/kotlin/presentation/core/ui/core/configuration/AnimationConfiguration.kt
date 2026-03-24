@@ -44,14 +44,13 @@ public object AnimationConfiguration {
          *
          * @return A lambda function defining the content transform for the transition.
          */
-        public fun <T> default(): AnimatedContentTransitionScope<T>.() -> ContentTransform =
-            {
-                fadeIn(
+        public fun <T> default(): AnimatedContentTransitionScope<T>.() -> ContentTransform = {
+            fadeIn(
+                animationSpec = tween(DEFAULT),
+            ) togetherWith
+                fadeOut(
                     animationSpec = tween(DEFAULT),
-                ) togetherWith
-                    fadeOut(
-                        animationSpec = tween(DEFAULT),
-                    )
-            }
+                )
+        }
     }
 }

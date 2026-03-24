@@ -20,7 +20,7 @@ public data class MainState(
     val dockPosition: DockPositionModel? = null,
     val isMoveDetectorEnabled: Boolean = false,
     val isFabVisible: Boolean = true,
-    val fabDelay: Long = 60L
+    val fabDelay: Long = 60L,
 )
 
 /**
@@ -29,8 +29,10 @@ public data class MainState(
 public sealed class MainSideEffect {
     /** Navigates to the Settings screen. */
     public data object GoToSettingsEffect : MainSideEffect()
+
     /** Launches an external application by its package name. */
     public data class OpenApplicationEffect(val packageName: String) : MainSideEffect()
+
     /** Displays an error message via the snackbar system. */
     public data class ShowError(val messageId: Int) : MainSideEffect()
 }

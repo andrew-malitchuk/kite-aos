@@ -12,10 +12,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [MqttDisconnectUseCase::class])
 internal class MqttDisconnectUseCaseImpl(
-    private val mqttRepository: MqttRepository
+    private val mqttRepository: MqttRepository,
 ) : MqttDisconnectUseCase {
     override suspend operator fun invoke(): Optional = resultLauncher(
-        errorMapper = Failure.Technical::Network
+        errorMapper = Failure.Technical::Network,
     ) {
         mqttRepository.disconnect()
     }

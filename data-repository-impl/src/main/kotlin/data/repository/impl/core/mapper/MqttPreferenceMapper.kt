@@ -18,7 +18,7 @@ internal object MqttPreferenceMapper : ModelResourceMapper<MqttModel, MqttPrefer
                 username = model.username,
                 password = model.password,
                 enabled = model.enabled,
-                friendlyName = model.friendlyName
+                friendlyName = model.friendlyName,
             )
         }
     override val toModel: Mapper<MqttPreference, MqttModel> =
@@ -30,7 +30,7 @@ internal object MqttPreferenceMapper : ModelResourceMapper<MqttModel, MqttPrefer
                 username = preference.username,
                 password = preference.password,
                 enabled = preference.enabled,
-                friendlyName = preference.friendlyName
+                friendlyName = preference.friendlyName,
             )
         }
 }

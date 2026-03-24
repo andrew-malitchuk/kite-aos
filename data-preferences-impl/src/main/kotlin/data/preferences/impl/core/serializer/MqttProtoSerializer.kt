@@ -8,7 +8,6 @@ import java.io.InputStream
 import java.io.OutputStream
 
 internal class MqttProtoSerializer : Serializer<MqttDataProto.MqttProtoModel> {
-
     override suspend fun readFrom(input: InputStream): MqttDataProto.MqttProtoModel {
         try {
             return MqttDataProto.MqttProtoModel.parseFrom(input)
@@ -17,10 +16,7 @@ internal class MqttProtoSerializer : Serializer<MqttDataProto.MqttProtoModel> {
         }
     }
 
-    override suspend fun writeTo(
-        t: MqttDataProto.MqttProtoModel,
-        output: OutputStream,
-    ) {
+    override suspend fun writeTo(t: MqttDataProto.MqttProtoModel, output: OutputStream) {
         t.writeTo(output)
     }
 

@@ -14,4 +14,5 @@ internal class DashboardPreferenceSourceImpl(
 ) : BasePreferenceSourceImpl<DashboardDataProto.DashboardProtoModel, DashboardPreference>(
     storage = storage,
     mapper = DashboardProtobufPreferenceMapper,
-), DashboardPreferenceSource
+),
+    DashboardPreferenceSource

@@ -10,8 +10,7 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [ObserveMoveDetectorMotionUseCase::class])
 internal class ObserveMoveDetectorMotionUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : ObserveMoveDetectorMotionUseCase {
-    override fun invoke(): Flow<Unit> =
-        configureRepository.observeMoveDetectorMotion()
+    override fun invoke(): Flow<Unit> = configureRepository.observeMoveDetectorMotion()
 }

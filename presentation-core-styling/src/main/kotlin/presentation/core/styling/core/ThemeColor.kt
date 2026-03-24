@@ -40,7 +40,6 @@ public data class ThemeColor(
      */
     val brandVariant: Color,
     //endregion 1. Brand (Accent colors for primary actions)
-
     //region 2. Surface (Backgrounds and layers)
     /**
      * Main background of the application (lowest layer).
@@ -55,7 +54,6 @@ public data class ThemeColor(
      */
     val surfaceVariant: Color,
     //endregion 2. Surface (Backgrounds and layers)
-
     //region 3. Ink (Typography and icons)
     /**
      * Primary text color with highest contrast.
@@ -70,7 +68,6 @@ public data class ThemeColor(
      */
     val inkOnBrand: Color,
     //endregion 3. Ink (Typography and icons)
-
     //region 4. Outline (Borders and dividers)
     /**
      * Subtle dividers and separators.
@@ -81,7 +78,6 @@ public data class ThemeColor(
      */
     val outlineHigh: Color,
     //endregion 4. Outline (Borders and dividers)
-
     //region 5. Status (Functional feedback)
     /**
      * Success states and confirmations.
@@ -96,9 +92,8 @@ public data class ThemeColor(
      */
     val warning: Color,
     //endregion 5. Status (Functional feedback)
-
     //region 6. Interaction (Special states)
-    val disabled: Color,      // Background/Text for inactive elements
-    val scrim: Color          // Darkening overlay for modal backgrounds
+    val disabled: Color, // Background/Text for inactive elements
+    val scrim: Color, // Darkening overlay for modal backgrounds
     //endregion 6. Interaction (Special states)
 )

@@ -19,4 +19,3 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(projects.dataDatabaseApi)
 }
-    

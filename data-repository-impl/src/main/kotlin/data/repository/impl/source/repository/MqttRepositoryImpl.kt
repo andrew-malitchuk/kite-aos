@@ -13,6 +13,7 @@ import org.koin.core.annotation.Single
  * Implementation of [MqttRepository] that delegates to [TelemetryMqttSource].
  * This acts as a bridge between the domain and data layers for MQTT operations.
  */
+
 /**
  * Implementation of [MqttRepository] that delegates to [TelemetryMqttSource] and [MqttPreferenceSource].
  *
@@ -22,7 +23,7 @@ import org.koin.core.annotation.Single
 @Single(binds = [MqttRepository::class])
 internal class MqttRepositoryImpl(
     private val telemetryMqttSource: TelemetryMqttSource,
-    private val mqttPreferenceSource: MqttPreferenceSource
+    private val mqttPreferenceSource: MqttPreferenceSource,
 ) : MqttRepository {
     override suspend fun connect(
         server: String,
@@ -30,9 +31,9 @@ internal class MqttRepositoryImpl(
         clientId: String,
         username: String,
         password: String,
-        friendlyName: String
+        friendlyName: String,
     ) {
-        telemetryMqttSource.connect(server, port, clientId, username, password,  friendlyName)
+        telemetryMqttSource.connect(server, port, clientId, username, password, friendlyName)
     }
 
     override suspend fun disconnect() {
@@ -52,7 +53,6 @@ internal class MqttRepositoryImpl(
 
     override suspend fun getMqttConfiguration(): MqttModel? =
         mqttPreferenceSource.getData()?.let(MqttPreferenceMapper.toModel::map)
-
 
     override suspend fun setMqttConfiguration(configuration: MqttModel) {
         mqttPreferenceSource.setData(configuration.let(MqttPreferenceMapper.toResource::map))

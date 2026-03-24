@@ -46,5 +46,4 @@ internal class ApplicationRepositoryImpl(
     override suspend fun getApplication(packageName: String): ApplicationModel? {
         return platformSource.getApplication(packageName)?.let(ApplicationPlatformMapper.toModel::map)
     }
-
 }

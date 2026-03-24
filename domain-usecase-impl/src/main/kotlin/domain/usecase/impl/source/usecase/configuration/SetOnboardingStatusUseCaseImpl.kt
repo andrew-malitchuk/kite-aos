@@ -13,13 +13,12 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [SetOnboardingStatusUseCase::class])
 internal class SetOnboardingStatusUseCaseImpl(
-    private val configureRepository: ConfigureRepository
+    private val configureRepository: ConfigureRepository,
 ) : SetOnboardingStatusUseCase {
     override suspend fun invoke(value: Boolean): Optional = resultLauncher(
-        errorMapper =Failure.Technical::Preference
+        errorMapper = Failure.Technical::Preference,
     ) {
         val onboardingModel = OnboardingModel(isCompleted = value)
         configureRepository.setOnboarding(onboardingModel)
     }
 }
-

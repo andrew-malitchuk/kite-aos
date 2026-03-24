@@ -10,15 +10,18 @@ import domain.core.source.model.DockPositionModel
  */
 internal object DockPositionPreferenceMapper :
     ModelResourceMapper<DockPositionModel, DockPreference> {
-    override val toModel: Mapper<DockPreference, DockPositionModel> = Mapper { input ->
-        DockPositionModel(
-            position = DockPositionModel.Position.entries.firstOrNull { it.position == input.position }
-                ?: DockPositionModel.Position.Left
-        )
-    }
-    override val toResource: Mapper<DockPositionModel, DockPreference> = Mapper { input ->
-        DockPreference(
-            position = input.position.position
-        )
-    }
+    override val toModel: Mapper<DockPreference, DockPositionModel> =
+        Mapper { input ->
+            DockPositionModel(
+                position =
+                DockPositionModel.Position.entries.firstOrNull { it.position == input.position }
+                    ?: DockPositionModel.Position.Left,
+            )
+        }
+    override val toResource: Mapper<DockPositionModel, DockPreference> =
+        Mapper { input ->
+            DockPreference(
+                position = input.position.position,
+            )
+        }
 }

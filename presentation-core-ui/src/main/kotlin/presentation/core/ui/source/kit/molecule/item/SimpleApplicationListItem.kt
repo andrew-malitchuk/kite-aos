@@ -1,6 +1,5 @@
 package presentation.core.ui.source.kit.molecule.item
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -11,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
@@ -39,43 +37,45 @@ import presentation.core.ui.source.kit.atom.shape.SquircleShape
 public fun SimpleApplicationListItem(
     modifier: Modifier = Modifier,
     applicationModel: ApplicationModel,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
-
     Box(
-        modifier = Modifier
+        modifier =
+        Modifier
             .size(56.dp)
             .clip(SquircleShape(Theme.size.sizeXL))
             .background(Theme.color.surfaceVariant)
             .noRippleClickable(onClick),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         val context = LocalContext.current
-        val iconPainter = remember(applicationModel.packageName, applicationModel.icon) {
-            val drawable = try {
-                context.packageManager.getApplicationIcon(applicationModel.packageName)
-            } catch (e: Exception) {
-                null
-            }
+        val iconPainter =
+            remember(applicationModel.packageName, applicationModel.icon) {
+                val drawable =
+                    try {
+                        context.packageManager.getApplicationIcon(applicationModel.packageName)
+                    } catch (e: Exception) {
+                        null
+                    }
 
-            if (drawable != null) {
-                BitmapPainter(drawable.toBitmap().asImageBitmap())
-            } else {
-                null
+                if (drawable != null) {
+                    BitmapPainter(drawable.toBitmap().asImageBitmap())
+                } else {
+                    null
+                }
             }
-        }
 
         if (iconPainter != null) {
             Image(
                 modifier = Modifier.size(Theme.size.size3XL),
                 painter = iconPainter,
-                contentDescription = null
+                contentDescription = null,
             )
         } else if (applicationModel.icon != 0) {
             Image(
                 modifier = Modifier.size(Theme.size.size3XL),
                 painter = painterResource(id = applicationModel.icon),
-                contentDescription = null
+                contentDescription = null,
             )
         }
     }
@@ -86,14 +86,15 @@ public fun SimpleApplicationListItem(
 private fun SimpleApplicationListItemSelectedPreview() {
     AppTheme {
         SimpleApplicationListItem(
-            applicationModel = ApplicationModel(
+            applicationModel =
+            ApplicationModel(
                 id = 1,
                 name = "Example App",
                 packageName = "com.example.app",
                 icon = presentation.core.ui.R.drawable.ic_launcher_foreground,
-                chosen = true
+                chosen = true,
             ),
-            onClick = {}
+            onClick = {},
         )
     }
 }
@@ -103,14 +104,15 @@ private fun SimpleApplicationListItemSelectedPreview() {
 private fun SimpleApplicationListItemDefaultPreview() {
     AppTheme {
         SimpleApplicationListItem(
-            applicationModel = ApplicationModel(
+            applicationModel =
+            ApplicationModel(
                 id = 1,
                 name = "Example App",
                 packageName = "com.example.app",
                 icon = presentation.core.ui.R.drawable.ic_launcher_foreground,
-                chosen = false
+                chosen = false,
             ),
-            onClick = {}
+            onClick = {},
         )
     }
 }

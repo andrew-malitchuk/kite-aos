@@ -17,7 +17,7 @@ internal object LanguageProtobufPreferenceMapper :
     override val toPreference: Mapper<LanguagePreferenceProto, LanguagePreference> =
         Mapper { input ->
             LanguagePreference(
-                localeCode = input.localeCode.ifBlank { null }
+                localeCode = input.localeCode.ifBlank { null },
             )
         }
 }

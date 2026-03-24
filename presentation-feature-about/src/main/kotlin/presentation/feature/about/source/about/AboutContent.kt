@@ -47,59 +47,60 @@ import presentation.feature.about.core.composable.shape.AnimatedCookieShape
  * @param onIntent Callback for dispatching user intents back to the ViewModel.
  */
 @Composable
-internal fun AboutContent(
-    state: AboutState,
-    onIntent: (AboutIntent) -> Unit,
-) {
+internal fun AboutContent(state: AboutState, onIntent: (AboutIntent) -> Unit) {
     SafeContainer(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier =
+        Modifier
+            .fillMaxSize(),
     ) {
         AnimationSequenceHost {
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxSize()
                     .background(backgroundGradient())
                     .padding(Theme.spacing.sizeL),
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = Alignment.Start,
             ) {
                 AnimatedItem(
                     index = 0,
-                    enter = slideInVertically(
+                    enter =
+                    slideInVertically(
                         tween(
                             durationMillis = 250,
-                        )
-                    ) { fullHeight -> -fullHeight }
+                        ),
+                    ) { fullHeight -> -fullHeight },
                 ) {
                     IconButton(
                         icon = IcArrowLeft24,
                         onClick = { onIntent(AboutIntent.OnBackIntent) },
                         sizes = IconButtonDefault.buttonSizeSet().buttonSize48(),
-                        colors = IconButtonDefault.buttonColor() // Default is Primary (Brand)
+                        colors = IconButtonDefault.buttonColor(), // Default is Primary (Brand)
                     )
                 }
                 AnimatedItem(
                     modifier = Modifier,
                     index = 1,
-                    enter = slideInVertically(
+                    enter =
+                    slideInVertically(
                         tween(
                             durationMillis = 250,
-                        )
-                    ) { fullHeight -> +fullHeight }
+                        ),
+                    ) { fullHeight -> +fullHeight },
                 ) {
                     Column {
                         BoxWithConstraints(
                             modifier = Modifier.weight(1f).fillMaxWidth(),
-                            contentAlignment = Alignment.Center
+                            contentAlignment = Alignment.Center,
                         ) {
                             AnimatedCookieShape(
                                 modifier = Modifier.fillMaxSquare(maxWidth, maxHeight),
-                                color = Theme.color.brandVariant
+                                color = Theme.color.brandVariant,
                             )
                             Image(
                                 modifier = Modifier.fillMaxSquare(maxWidth, maxHeight),
                                 painter = painterResource(presentation.core.ui.R.drawable.ic_launcher_foreground),
-                                contentDescription = null
+                                contentDescription = null,
                             )
                         }
 
@@ -108,7 +109,7 @@ internal fun AboutContent(
                             style = Theme.typography.title,
                             color = Theme.color.inkMain,
                             textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
 
                         Spacer(modifier = Modifier.height(Theme.spacing.sizeS))
@@ -120,36 +121,37 @@ internal fun AboutContent(
                             textAlign = TextAlign.Start,
                             minLines = 3,
                             maxLines = 3,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
 
                         Spacer(modifier = Modifier.height(Theme.spacing.sizeL))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(
+                            horizontalArrangement =
+                            Arrangement.spacedBy(
                                 Theme.spacing.sizeL,
-                                Alignment.Start
+                                Alignment.Start,
                             ),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             IconButton(
                                 icon = IcGitHub24,
                                 onClick = { onIntent(AboutIntent.OnGitHubIntent) },
                                 sizes = IconButtonDefault.buttonSizeSet().buttonSize48(),
-                                colors = IconButtonDefault.buttonColor()
+                                colors = IconButtonDefault.buttonColor(),
                             )
                             IconButton(
                                 icon = IcLinkedIn24,
                                 onClick = { onIntent(AboutIntent.OnLinkedInIntent) },
                                 sizes = IconButtonDefault.buttonSizeSet().buttonSize48(),
-                                colors = IconButtonDefault.buttonColor()
+                                colors = IconButtonDefault.buttonColor(),
                             )
                             IconButton(
                                 icon = IcTwitter24,
                                 onClick = { onIntent(AboutIntent.OnTwitterIntent) },
                                 sizes = IconButtonDefault.buttonSizeSet().buttonSize48(),
-                                colors = IconButtonDefault.buttonColor()
+                                colors = IconButtonDefault.buttonColor(),
                             )
                         }
                         Spacer(modifier = Modifier.height(Theme.spacing.sizeL))
@@ -165,9 +167,10 @@ internal fun AboutContent(
 private fun AboutContentPreview() {
     AppTheme {
         AboutContent(
-            state = AboutState(
-                isLoading = false
-            )
+            state =
+            AboutState(
+                isLoading = false,
+            ),
         ) { }
     }
 }

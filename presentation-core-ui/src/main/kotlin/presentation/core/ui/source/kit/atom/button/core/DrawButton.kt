@@ -1,23 +1,14 @@
 package presentation.core.ui.source.kit.atom.button.core
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,14 +21,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import com.airbnb.lottie.compose.LottieAnimation
-import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
-import com.airbnb.lottie.compose.rememberLottieComposition
-import presentation.core.ui.R
-import presentation.core.ui.core.configuration.AnimationConfiguration
-import presentation.core.ui.source.kit.atom.shape.SquircleShape
 
 /**
  * A composable function that represents a button with optional icons, text, and loading animation.
@@ -98,10 +81,11 @@ internal fun DrawButton(
         paddings = paddings,
         isLoading = isLoading,
         loadingSize = loadingSize,
-        horizontalArrangement = horizontalArrangement
+        horizontalArrangement = horizontalArrangement,
     ) {
         Row(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .wrapContentWidth()
                 .wrapContentHeight(),
             verticalAlignment = Alignment.CenterVertically,
@@ -117,7 +101,8 @@ internal fun DrawButton(
                 Spacer(modifier = Modifier.width(spacing))
             }
             Text(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .defaultMinSize(minHeight = loadingSize)
                     .wrapContentHeight(align = Alignment.CenterVertically),
                 text = text,
@@ -139,4 +124,3 @@ internal fun DrawButton(
         }
     }
 }
-

@@ -16,15 +16,14 @@ internal class MqttPreferenceStorage(
     @Named("mqttDataStore")
     private val preference: DataStore<MqttDataProto.MqttProtoModel>,
 ) : BasePreferenceStorage<MqttDataProto.MqttProtoModel> {
-    override fun subscribeToData(): Flow<MqttDataProto.MqttProtoModel?> =
-        preference.data.catch { exception ->
-            if (exception is IOException) {
-                Log.e("Error", exception.message.toString())
-                emit(MqttDataProto.MqttProtoModel.getDefaultInstance())
-            } else {
-                throw exception
-            }
+    override fun subscribeToData(): Flow<MqttDataProto.MqttProtoModel?> = preference.data.catch { exception ->
+        if (exception is IOException) {
+            Log.e("Error", exception.message.toString())
+            emit(MqttDataProto.MqttProtoModel.getDefaultInstance())
+        } else {
+            throw exception
         }
+    }
 
     override suspend fun getData(): MqttDataProto.MqttProtoModel? = preference.data.firstOrNull()
 

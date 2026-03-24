@@ -14,4 +14,5 @@ internal class LanguagePreferenceSourceImpl(
 ) : BasePreferenceSourceImpl<LanguagePreferenceProto, LanguagePreference>(
     storage = languagePreferenceDao,
     mapper = LanguageProtobufPreferenceMapper,
-), LanguagePreferenceSource
+),
+    LanguagePreferenceSource

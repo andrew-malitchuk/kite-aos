@@ -21,53 +21,53 @@ public enum class StackedSnackbarAnimation(
 ) {
     Bounce(
         paddingAnimationSpec =
-            spring(
-                stiffness = Spring.StiffnessLow,
-                dampingRatio = Spring.DampingRatioHighBouncy,
-            ),
+        spring(
+            stiffness = Spring.StiffnessLow,
+            dampingRatio = Spring.DampingRatioHighBouncy,
+        ),
         scaleAnimationSpec =
-            spring(
-                stiffness = Spring.StiffnessLow,
-                dampingRatio = Spring.DampingRatioHighBouncy,
-            ),
+        spring(
+            stiffness = Spring.StiffnessLow,
+            dampingRatio = Spring.DampingRatioHighBouncy,
+        ),
         enterAnimationSpec =
-            spring(
-                stiffness = Spring.StiffnessLow,
-                dampingRatio = Spring.DampingRatioHighBouncy,
-                visibilityThreshold = IntOffset.VisibilityThreshold,
-            ),
+        spring(
+            stiffness = Spring.StiffnessLow,
+            dampingRatio = Spring.DampingRatioHighBouncy,
+            visibilityThreshold = IntOffset.VisibilityThreshold,
+        ),
         exitAnimationSpec =
-            spring(
-                stiffness = Spring.StiffnessLow,
-                dampingRatio = Spring.DampingRatioHighBouncy,
-                visibilityThreshold = IntOffset.VisibilityThreshold,
-            ),
+        spring(
+            stiffness = Spring.StiffnessLow,
+            dampingRatio = Spring.DampingRatioHighBouncy,
+            visibilityThreshold = IntOffset.VisibilityThreshold,
+        ),
     ),
     Slide(
         paddingAnimationSpec =
-            tween(
-                TWEEN_ANIMATION_DURATION,
-                0,
-                FastOutSlowInEasing,
-            ),
+        tween(
+            TWEEN_ANIMATION_DURATION,
+            0,
+            FastOutSlowInEasing,
+        ),
         scaleAnimationSpec =
-            tween(
-                TWEEN_ANIMATION_DURATION,
-                0,
-                FastOutSlowInEasing,
-            ),
+        tween(
+            TWEEN_ANIMATION_DURATION,
+            0,
+            FastOutSlowInEasing,
+        ),
         enterAnimationSpec =
-            tween(
-                TWEEN_ANIMATION_DURATION,
-                0,
-                FastOutSlowInEasing,
-            ),
+        tween(
+            TWEEN_ANIMATION_DURATION,
+            0,
+            FastOutSlowInEasing,
+        ),
         exitAnimationSpec =
-            tween(
-                TWEEN_ANIMATION_DURATION,
-                0,
-                FastOutSlowInEasing,
-            ),
+        tween(
+            TWEEN_ANIMATION_DURATION,
+            0,
+            FastOutSlowInEasing,
+        ),
     ),
 }
 

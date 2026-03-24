@@ -26,7 +26,6 @@ public class HostViewModel(
     private val getOnboardingStatusUseCase: GetOnboardingStatusUseCase,
     private val observeThemeUseCase: ObserveThemeUseCase,
 ) : ContainerHost<HostState, HostSideEffect>, ViewModel() {
-
     override val container: Container<HostState, HostSideEffect> = container(HostState())
 
     init {
@@ -53,11 +52,12 @@ public class HostViewModel(
         request = { getOnboardingStatusUseCase() },
         result = { isOnboardingCompleted ->
             intent {
-                val startDestination = if (isOnboardingCompleted == true) {
-                    Destination.Main
-                } else {
-                    Destination.Onboarding
-                }
+                val startDestination =
+                    if (isOnboardingCompleted == true) {
+                        Destination.Main
+                    } else {
+                        Destination.Onboarding
+                    }
                 reduce { state.copy(startDestination = startDestination) }
                 postSideEffect(HostSideEffect.DismissSplashEffect)
             }
@@ -67,6 +67,6 @@ public class HostViewModel(
                 reduce { state.copy(startDestination = Destination.Onboarding) }
                 postSideEffect(HostSideEffect.DismissSplashEffect)
             }
-        }
+        },
     )
 }

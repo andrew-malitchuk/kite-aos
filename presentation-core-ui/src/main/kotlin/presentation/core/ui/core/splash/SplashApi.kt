@@ -1,9 +1,7 @@
 package presentation.core.ui.core.splash
 
-
 import android.animation.ObjectAnimator
 import android.app.Activity
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.runtime.Composable
@@ -14,7 +12,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.splashscreen.SplashScreenViewProvider
-import androidx.core.view.children
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -22,22 +19,20 @@ import kotlin.time.Duration.Companion.milliseconds
  * This decorator injects custom Composables into the splash flow because users expect
  * animated branding during app startup, not static images.
  */
+@Suppress("Indentation")
 public class SplashScreenDecorator private constructor(
     activity: Activity,
-    private val config: SplashScreenConfig
+    private val config: SplashScreenConfig,
 ) {
-
     public companion object {
         /** Factory method because constructors with builders feel awkward. */
-        public fun create(
-            activity: Activity,
-            builder: SplashScreenConfigBuilder.() -> Unit
-        ): SplashScreenDecorator = SplashScreenDecorator(
-            activity,
-            SplashScreenConfigBuilder()
-                .apply(builder)
-                .build()
-        )
+        public fun create(activity: Activity, builder: SplashScreenConfigBuilder.() -> Unit): SplashScreenDecorator =
+            SplashScreenDecorator(
+                activity,
+                SplashScreenConfigBuilder()
+                    .apply(builder)
+                    .build(),
+            )
     }
 
     /** Composables need to know when to start their exit animations. */
@@ -46,12 +41,12 @@ public class SplashScreenDecorator private constructor(
     /** AndroidX requires this callback to control dismissal timing. */
     public var shouldKeepOnScreen: Boolean = true
 
-    @Suppress("UNUSED")
-    private val splashScreen: androidx.core.splashscreen.SplashScreen =
+    init {
         activity.installSplashScreen().apply {
             setOnExitAnimationListener(::handleExitAnimation)
             setKeepOnScreenCondition { shouldKeepOnScreen }
         }
+    }
 
     /** System splash ends → inject our Compose content for custom animations. */
     private fun handleExitAnimation(splashScreenViewProvider: SplashScreenViewProvider) {
@@ -63,13 +58,12 @@ public class SplashScreenDecorator private constructor(
 
         // 2. Add the view first
         parentViewGroup.addView(composeView)
-
     }
 
     /** Wraps user's Composable in a View because AndroidX works with View hierarchy. */
     private fun createComposeView(
         splashScreenViewProvider: SplashScreenViewProvider,
-        parentViewGroup: ViewGroup
+        parentViewGroup: ViewGroup,
     ): ComposeView = ComposeView(splashScreenViewProvider.view.context).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
 
@@ -78,17 +72,19 @@ public class SplashScreenDecorator private constructor(
                 SplashScreenController(
                     decorator = this@SplashScreenDecorator,
                     onStartExitAnimation = {
+                        @Suppress("MagicNumber")
                         performExitAnimation(
-                            systemSplashView = splashScreenViewProvider.view.also {
+                            systemSplashView =
+                            splashScreenViewProvider.view.also {
                                 it.translationZ = 10f
                                 it.elevation = 10f
                             },
                             composeView = this@apply,
                             parentViewGroup = parentViewGroup,
-                            splashScreenViewProvider = splashScreenViewProvider
+                            splashScreenViewProvider = splashScreenViewProvider,
                         )
-                    }
-                )
+                    },
+                ),
             )
         }
     }
@@ -101,7 +97,7 @@ public class SplashScreenDecorator private constructor(
         systemSplashView: View,
         composeView: ComposeView,
         parentViewGroup: ViewGroup,
-        splashScreenViewProvider: SplashScreenViewProvider
+        splashScreenViewProvider: SplashScreenViewProvider,
     ) {
         val baseDuration = config.exitAnimationDuration
 
@@ -138,7 +134,7 @@ public class SplashScreenDecorator private constructor(
 /** API for Composables to observe state and trigger animations. */
 public data class SplashScreenController(
     private val decorator: SplashScreenDecorator,
-    private val onStartExitAnimation: () -> Unit
+    private val onStartExitAnimation: () -> Unit,
 ) {
     /** For triggering custom Compose animations when splash should exit. */
     val isVisible: MutableState<Boolean> get() = decorator.isVisible
@@ -151,7 +147,7 @@ public data class SplashScreenController(
 public data class SplashScreenConfig(
     val content: @Composable (SplashScreenController) -> Unit,
     val exitAnimationDuration: Long,
-    val composeViewFadeDurationOffset: Long
+    val composeViewFadeDurationOffset: Long,
 )
 
 /** DSL builder because configuration objects with 7+ fields become unwieldy. */
@@ -176,7 +172,7 @@ public class SplashScreenConfigBuilder {
         return SplashScreenConfig(
             content = requireNotNull(content) { "Composable content must be provided for splash screen" },
             exitAnimationDuration = exitAnimationDuration,
-            composeViewFadeDurationOffset = composeViewFadeDurationOffset
+            composeViewFadeDurationOffset = composeViewFadeDurationOffset,
         )
     }
 }
@@ -203,7 +199,5 @@ public class SplashScreenConfigBuilder {
  * splashScreen.shouldKeepOnScreen = false
  * splashScreen.dismiss()
  */
-public fun Activity.splash(
-    builder: SplashScreenConfigBuilder.() -> Unit
-): SplashScreenDecorator = SplashScreenDecorator.create(this, builder)
-
+public fun Activity.splash(builder: SplashScreenConfigBuilder.() -> Unit): SplashScreenDecorator =
+    SplashScreenDecorator.create(this, builder)

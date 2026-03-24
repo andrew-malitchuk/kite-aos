@@ -8,7 +8,6 @@ import java.io.InputStream
 import java.io.OutputStream
 
 internal class DashboardProtoSerializer : Serializer<DashboardDataProto.DashboardProtoModel> {
-
     override suspend fun readFrom(input: InputStream): DashboardDataProto.DashboardProtoModel {
         try {
             return DashboardDataProto.DashboardProtoModel.parseFrom(input)
@@ -17,10 +16,7 @@ internal class DashboardProtoSerializer : Serializer<DashboardDataProto.Dashboar
         }
     }
 
-    override suspend fun writeTo(
-        t: DashboardDataProto.DashboardProtoModel,
-        output: OutputStream,
-    ) {
+    override suspend fun writeTo(t: DashboardDataProto.DashboardProtoModel, output: OutputStream) {
         t.writeTo(output)
     }
 

@@ -13,10 +13,10 @@ import org.koin.core.annotation.Single
  */
 @Single(binds = [RemoveApplicationUseCase::class])
 internal class RemoveApplicationUseCaseImpl(
-    private val applicationRepository: ApplicationRepository
+    private val applicationRepository: ApplicationRepository,
 ) : RemoveApplicationUseCase {
     override suspend fun invoke(applicationModel: ApplicationModel): Optional = resultLauncher(
-        errorMapper = Failure.Technical::Database
+        errorMapper = Failure.Technical::Database,
     ) {
         applicationRepository.removeApplication(applicationModel)
     }

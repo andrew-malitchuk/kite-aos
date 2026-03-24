@@ -12,7 +12,7 @@ import domain.core.source.model.ApplicationModel
 public data class ApplicationState(
     val isLoading: Boolean = false,
     val isError: Boolean = false,
-    val data: List<ApplicationModel> = emptyList()
+    val data: List<ApplicationModel> = emptyList(),
 )
 
 /**
@@ -21,6 +21,7 @@ public data class ApplicationState(
 public sealed class ApplicationSideEffect {
     /** Navigates back to the previous screen. */
     public data object BackClick : ApplicationSideEffect()
+
     /** Displays an error message using a string resource ID. */
     public data class ShowError(val messageId: Int) : ApplicationSideEffect()
 }

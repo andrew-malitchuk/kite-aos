@@ -7,8 +7,6 @@ android {
     namespace = "presentation.feature.settings"
 }
 
-
-
 dependencies {
     implementation(libs.core.ktx)
     implementation(libs.androidx.appcompat)

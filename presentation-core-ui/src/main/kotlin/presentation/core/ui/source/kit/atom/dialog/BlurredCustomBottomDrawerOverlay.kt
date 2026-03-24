@@ -2,8 +2,6 @@ package presentation.core.ui.source.kit.atom.dialog
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -60,9 +58,10 @@ public fun BlurredCustomBottomDrawerOverlay(
     // State for Haze blur
     val hazeState = remember { HazeState() }
 
-    val offsetY = remember {
-        Animatable(if (isDrawerOpen) 0f else drawerHeightPx )
-    }
+    val offsetY =
+        remember {
+            Animatable(if (isDrawerOpen) 0f else drawerHeightPx)
+        }
 
     LaunchedEffect(isDrawerOpen) {
         val targetOffsetY =
@@ -74,7 +73,6 @@ public fun BlurredCustomBottomDrawerOverlay(
     }
 
     var isExpanded by remember { mutableStateOf(false) }
-    val baseHeight = Theme.spacing.size4XL
 
     // Optimization: Use derivedStateOf to prevent excessive recompositions during animation
     val progress by remember(drawerHeightPx) {
@@ -88,9 +86,10 @@ public fun BlurredCustomBottomDrawerOverlay(
     Box(modifier = modifier.fillMaxSize()) {
         // 1. Source content
         Box(
-            modifier = Modifier
+            modifier =
+            Modifier
                 .fillMaxSize()
-                .hazeSource(state = hazeState)
+                .hazeSource(state = hazeState),
         ) {
             content()
         }
@@ -98,14 +97,16 @@ public fun BlurredCustomBottomDrawerOverlay(
         if (isDrawerOpen || offsetY.value < drawerHeightPx) {
             // Full-screen Blur Overlay
             Box(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxSize()
                     .hazeEffect(
                         state = hazeState,
-                        style = HazeDefaults.style(
+                        style =
+                        HazeDefaults.style(
                             blurRadius = 6.dp * progress,
-                            backgroundColor = Color.Transparent
-                        )
+                            backgroundColor = Color.Transparent,
+                        ),
                     )
                     // Optimization: Draw the mask color in the Draw phase to avoid recomposition
                     .drawBehind {
@@ -118,12 +119,13 @@ public fun BlurredCustomBottomDrawerOverlay(
 
             // Drawer Panel
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxWidth()
                     .height(drawerHeight)
                     .offset { IntOffset(x = 0, y = offsetY.value.roundToInt()) }
                     .align(Alignment.BottomCenter)
-                    .padding( Theme.spacing.sizeL )
+                    .padding(Theme.spacing.sizeL)
                     .clip(SquircleShape(Theme.size.sizeL))
                     .drawBehind {
                         drawRect(color)
@@ -139,7 +141,7 @@ public fun BlurredCustomBottomDrawerOverlay(
                                         offsetY.animateTo(target, tween(animationDuration))
                                         if (shouldClose) onDismiss()
                                     }
-                                }
+                                },
                             ) { change, dragAmount ->
                                 change.consume()
                                 scope.launch {
@@ -148,7 +150,7 @@ public fun BlurredCustomBottomDrawerOverlay(
                                 }
                             }
                         }
-                    }
+                    },
             ) {
                 drawerContent()
             }

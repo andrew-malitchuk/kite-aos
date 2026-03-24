@@ -3,10 +3,10 @@ package presentation.core.application
 import android.app.Application
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.core.content.ContextCompat
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
-import androidx.core.content.ContextCompat
 import presentation.core.application.di.appModule
 import presentation.core.platform.source.receiver.BatteryReceiver
 import presentation.core.platform.source.service.MqttService
@@ -20,7 +20,6 @@ import presentation.core.platform.source.service.MqttService
  * 3. Bootstrapping critical background services like [MqttService].
  */
 public class YahkApplication : Application() {
-
     override fun onCreate() {
         super.onCreate()
 

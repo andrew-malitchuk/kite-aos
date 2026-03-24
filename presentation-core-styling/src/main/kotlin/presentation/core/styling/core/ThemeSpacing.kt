@@ -13,7 +13,6 @@ public data class ThemeSpacing(
     /** Very small spacing. */
     val sizeXS: Dp,
     //endregion small range
-
     //region medium range
     /** Small spacing. */
     val sizeS: Dp,
@@ -22,7 +21,6 @@ public data class ThemeSpacing(
     /** Standard large spacing, common for outer container paddings. */
     val sizeL: Dp,
     //endregion medium range
-
     //region large range
     /** Extra large spacing. */
     val sizeXL: Dp,
@@ -33,6 +31,6 @@ public data class ThemeSpacing(
     /** Quadruple extra-large spacing. */
     val size4XL: Dp,
     /** Quintuple extra-large spacing. */
-    val size5XL: Dp
+    val size5XL: Dp,
     //region large range
 )

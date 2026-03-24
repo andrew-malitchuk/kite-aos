@@ -3,7 +3,6 @@ package presentation.core.platform.source.receiver
 import android.app.admin.DeviceAdminReceiver
 import android.content.Context
 import android.content.Intent
-
 import android.util.Log
 
 /**
@@ -13,7 +12,6 @@ import android.util.Log
  * for advanced kiosk features such as programmatic screen locking and disabling the keyguard.
  */
 public class ApplicationDeviceAdminReceiver : DeviceAdminReceiver() {
-
     private companion object {
         private const val TAG = "DeviceAdmin"
     }

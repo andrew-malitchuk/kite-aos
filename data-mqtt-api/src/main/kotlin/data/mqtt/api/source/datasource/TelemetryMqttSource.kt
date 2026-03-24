@@ -23,7 +23,7 @@ public interface TelemetryMqttSource {
         clientId: String,
         username: String,
         password: String,
-        friendlyName: String
+        friendlyName: String,
     )
 
     /**

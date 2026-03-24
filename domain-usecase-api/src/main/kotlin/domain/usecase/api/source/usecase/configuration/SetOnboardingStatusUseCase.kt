@@ -12,4 +12,3 @@ public interface SetOnboardingStatusUseCase {
      */
     public suspend operator fun invoke(value: Boolean): Optional
 }
-

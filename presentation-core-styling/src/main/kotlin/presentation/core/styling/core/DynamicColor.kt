@@ -5,7 +5,6 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import presentation.core.styling.source.attribute.color.attributeDarkColorPalette
 
 /**
  * Provides a [ThemeColor] palette based on the system's dynamic color scheme (Material You).
@@ -41,7 +40,7 @@ internal fun provideDynamicThemeColor(isDark: Boolean): ThemeColor {
             error = dynamicScheme.error,
             warning = dynamicScheme.tertiary,
             disabled = dynamicScheme.onSurface.copy(alpha = 0.38f),
-            scrim = dynamicScheme.scrim
+            scrim = dynamicScheme.scrim,
         )
     }
 }

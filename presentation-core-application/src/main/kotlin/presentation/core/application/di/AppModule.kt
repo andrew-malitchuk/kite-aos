@@ -9,13 +9,12 @@ import domain.usecase.impl.di.DomainUseCaseImplModule
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.koin.ksp.generated.module
-import presentation.feature.main.di.PresentationFeatureMainModule
-import presentation.feature.onboarding.di.PresentationFeatureOnboardingModule
-import presentation.feature.settings.di.PresentationFeatureSettingsModule
-import org.koin.ksp.generated.*
 import presentation.feature.about.di.PresentationFeatureAboutModule
 import presentation.feature.application.di.PresentationFeatureApplicationModule
 import presentation.feature.host.di.PresentationFeatureHostModule
+import presentation.feature.main.di.PresentationFeatureMainModule
+import presentation.feature.onboarding.di.PresentationFeatureOnboardingModule
+import presentation.feature.settings.di.PresentationFeatureSettingsModule
 
 /**
  * The main Koin module that acts as the **Composition Root** for the entire application.

@@ -10,21 +10,23 @@ import domain.core.source.model.ApplicationModel
  */
 internal object ApplicationDatabaseMapper :
     ModelResourceMapper<ApplicationModel, ApplicationDatabase> {
-    override val toModel: Mapper<ApplicationDatabase, ApplicationModel> = Mapper { input ->
-        ApplicationModel(
-            id = input.id,
-            name = input.name,
-            packageName = input.packageName,
-            icon = input.icon,
-            chosen = true
-        )
-    }
-    override val toResource: Mapper<ApplicationModel, ApplicationDatabase> = Mapper { input ->
-        ApplicationDatabase(
-            id = input.id,
-            name = input.name,
-            packageName = input.packageName,
-            icon = input.icon,
-        )
-    }
+    override val toModel: Mapper<ApplicationDatabase, ApplicationModel> =
+        Mapper { input ->
+            ApplicationModel(
+                id = input.id,
+                name = input.name,
+                packageName = input.packageName,
+                icon = input.icon,
+                chosen = true,
+            )
+        }
+    override val toResource: Mapper<ApplicationModel, ApplicationDatabase> =
+        Mapper { input ->
+            ApplicationDatabase(
+                id = input.id,
+                name = input.name,
+                packageName = input.packageName,
+                icon = input.icon,
+            )
+        }
 }

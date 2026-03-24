@@ -22,23 +22,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import presentation.core.styling.core.Theme
 import presentation.core.ui.source.kit.atom.icon.IcOutline1
 import presentation.core.ui.source.kit.atom.icon.IcOutline2
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
-import presentation.core.styling.core.Theme
 import kotlin.math.sqrt
 
 @Composable
 public fun SplashLoading(
     isVisible: Boolean = true,
     exitAnimationDuration: Int = 1000,
-    onStartExitAnimation: () -> Unit = {}
+    onStartExitAnimation: () -> Unit = {},
 ) {
     var isEntered by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -48,7 +47,7 @@ public fun SplashLoading(
     val enterAlpha by animateFloatAsState(
         targetValue = if (isEntered) 1f else 0f,
         animationSpec = tween(durationMillis = 1500, easing = FastOutSlowInEasing),
-        label = "enterAlpha"
+        label = "enterAlpha",
     )
 
     var isExitAnimationStarted by remember { mutableStateOf(false) }
@@ -62,20 +61,24 @@ public fun SplashLoading(
     }
 
     val configuration = LocalConfiguration.current
-    val screenDiagonal = remember {
-        sqrt(
-            (configuration.screenWidthDp * configuration.screenWidthDp +
-                    configuration.screenHeightDp * configuration.screenHeightDp).toFloat()
-        )
-    }
+    val screenDiagonal =
+        remember {
+            sqrt(
+                (
+                    configuration.screenWidthDp * configuration.screenWidthDp +
+                        configuration.screenHeightDp * configuration.screenHeightDp
+                    ).toFloat(),
+            )
+        }
 
     val exitAnimationScale by animateFloatAsState(
         targetValue = if (isExitAnimationStarted) (screenDiagonal / baseSize.value) * 1.5f else 0f,
-        animationSpec = tween(
+        animationSpec =
+        tween(
             durationMillis = exitAnimationDuration,
-            easing = CubicBezierEasing(0.2f, 0.0f, 0.2f, 1.0f)
+            easing = CubicBezierEasing(0.2f, 0.0f, 0.2f, 1.0f),
         ),
-        label = "exitScale"
+        label = "exitScale",
     )
 
     var animState by remember { mutableIntStateOf(0) }
@@ -88,44 +91,48 @@ public fun SplashLoading(
 
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         if (!isExitAnimationStarted) {
             Box(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .wrapContentSize()
                     .graphicsLayer { alpha = enterAlpha },
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 val icons = listOf(IcOutline1, IcOutline2, IcOutline3)
-                val colors = listOf(
-                    Theme.color.outlineLow,
-                    Theme.color.error,
-                    Theme.color.warning
-                )
+                val colors =
+                    listOf(
+                        Theme.color.outlineLow,
+                        Theme.color.error,
+                        Theme.color.warning,
+                    )
                 val sizes = listOf(2.7, 3.7, 5.0)
                 val alphas = listOf(1f, 0.7f, 0.4f)
 
                 icons.forEachIndexed { index, icon ->
                     val rotation by animateFloatAsState(
                         targetValue = animState * 360f,
-                        animationSpec = tween(
+                        animationSpec =
+                        tween(
                             5000,
                             delayMillis = 800 + (index * 100),
-                            easing = FastOutSlowInEasing
+                            easing = FastOutSlowInEasing,
                         ),
-                        label = "rotation"
+                        label = "rotation",
                     )
 
                     Image(
-                        modifier = Modifier
+                        modifier =
+                        Modifier
                             .graphicsLayer { rotationZ = rotation }
                             .requiredSize((8 * 16 * sizes[index]).dp)
                             .padding(16.dp)
                             .alpha(alphas[index]),
                         imageVector = icon,
                         contentDescription = null,
-                        colorFilter = ColorFilter.tint(colors[index])
+                        colorFilter = ColorFilter.tint(colors[index]),
                     )
                 }
             }
@@ -134,7 +141,8 @@ public fun SplashLoading(
         if (isExitAnimationStarted) {
             val circleColor = Theme.color.brandVariant
             Box(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .size(baseSize)
                     .graphicsLayer {
                         scaleX = exitAnimationScale
@@ -144,7 +152,7 @@ public fun SplashLoading(
                         onDrawBehind {
                             drawCircle(color = circleColor)
                         }
-                    }
+                    },
             )
         }
     }

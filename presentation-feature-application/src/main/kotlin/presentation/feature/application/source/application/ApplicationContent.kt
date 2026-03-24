@@ -50,59 +50,63 @@ internal fun ApplicationContent(
 ) {
     val lazyColumnState = rememberLazyListState()
 
-
     SafeContainer(
-        modifier = Modifier
+        modifier =
+        Modifier
             .fillMaxSize(),
-        snackbarHostState = snackbarHostState
+        snackbarHostState = snackbarHostState,
     ) {
         AnimationSequenceHost {
-
             Column(
-                modifier = Modifier
+                modifier =
+                Modifier
                     .fillMaxSize()
                     .background(backgroundGradient())
                     .padding(top = Theme.spacing.sizeL),
-                horizontalAlignment = Alignment.Start
+                horizontalAlignment = Alignment.Start,
             ) {
                 AnimatedItem(
                     index = 0,
-                    enter = slideInVertically(
+                    enter =
+                    slideInVertically(
                         tween(
                             durationMillis = 250,
-                        )
-                    ) { fullHeight -> -fullHeight }
+                        ),
+                    ) { fullHeight -> -fullHeight },
                 ) {
                     IconButton(
-                        modifier = Modifier
+                        modifier =
+                        Modifier
                             .padding(horizontal = Theme.spacing.sizeL),
                         icon = IcArrowLeft24,
                         onClick = { onIntent(ApplicationIntent.OnBackClick) },
                         sizes = IconButtonDefault.buttonSizeSet().buttonSize48(),
-                        colors = IconButtonDefault.buttonColor()
+                        colors = IconButtonDefault.buttonColor(),
                     )
                 }
                 AnimatedItem(
                     modifier = Modifier,
                     index = 1,
-                    enter = slideInVertically(
+                    enter =
+                    slideInVertically(
                         tween(
                             durationMillis = 250,
-                        )
-                    ) { fullHeight -> +fullHeight }
+                        ),
+                    ) { fullHeight -> +fullHeight },
                 ) {
                     Column {
                         Spacer(modifier = Modifier.height(Theme.spacing.sizeM))
                         HorizontalAnimatedDivider(
-                            isVisible = lazyColumnState.canScrollBackward
+                            isVisible = lazyColumnState.canScrollBackward,
                         )
                         LazyColumn(
-                            modifier = Modifier
+                            modifier =
+                            Modifier
                                 .fillMaxSize()
                                 .padding(horizontal = Theme.spacing.sizeL),
                             state = lazyColumnState,
                             verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeS),
-                            contentPadding = PaddingValues(bottom = Theme.spacing.sizeL)
+                            contentPadding = PaddingValues(bottom = Theme.spacing.sizeL),
                         ) {
                             items(state.data) { app ->
                                 ApplicationListItem(
@@ -113,7 +117,7 @@ internal fun ApplicationContent(
                                         } else {
                                             onIntent(ApplicationIntent.SaveApplication(app))
                                         }
-                                    }
+                                    },
                                 )
                             }
                         }
@@ -129,9 +133,10 @@ internal fun ApplicationContent(
 private fun ApplicationContentPreview() {
     AppTheme {
         ApplicationContent(
-            state = ApplicationState(
-                isLoading = false
-            )
+            state =
+            ApplicationState(
+                isLoading = false,
+            ),
         ) { }
     }
 }

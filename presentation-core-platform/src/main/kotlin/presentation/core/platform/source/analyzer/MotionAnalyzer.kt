@@ -1,7 +1,7 @@
 package presentation.core.platform.source.analyzer
 
-import androidx.camera.core.ImageProxy
 import android.util.Log
+import androidx.camera.core.ImageProxy
 import kotlin.math.abs
 
 /**
@@ -10,8 +10,8 @@ import kotlin.math.abs
  * This class uses a combination of frame-to-frame luma difference and a decaying motion score
  * to identify movement while ignoring minor noise or illumination changes.
  */
+@Suppress("MagicNumber")
 public class MotionAnalyzer {
-
     private var lastAverageLuma = -1.0
     private var motionScore = 0.0
     private var frameCounter = 0
@@ -58,7 +58,7 @@ public class MotionAnalyzer {
             }
 
             val currentAvg = sum.toDouble() / pixelCount
-            
+
             // Initialization case
             if (lastAverageLuma < 0) {
                 lastAverageLuma = currentAvg
@@ -67,7 +67,7 @@ public class MotionAnalyzer {
 
             // Calculate difference from previous frame
             val frameDiff = abs(currentAvg - lastAverageLuma)
-            
+
             // Update baseline with a low-pass filter
             lastAverageLuma = (lastAverageLuma * 0.9) + (currentAvg * 0.1)
 

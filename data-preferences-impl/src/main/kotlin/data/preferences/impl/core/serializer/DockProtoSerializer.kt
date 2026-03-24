@@ -8,7 +8,6 @@ import java.io.InputStream
 import java.io.OutputStream
 
 internal class DockProtoSerializer : Serializer<DockDataProto.DockProtoModel> {
-
     override suspend fun readFrom(input: InputStream): DockDataProto.DockProtoModel {
         try {
             return DockDataProto.DockProtoModel.parseFrom(input)
@@ -17,10 +16,7 @@ internal class DockProtoSerializer : Serializer<DockDataProto.DockProtoModel> {
         }
     }
 
-    override suspend fun writeTo(
-        t: DockDataProto.DockProtoModel,
-        output: OutputStream,
-    ) {
+    override suspend fun writeTo(t: DockDataProto.DockProtoModel, output: OutputStream) {
         t.writeTo(output)
     }
 

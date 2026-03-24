@@ -18,15 +18,12 @@ import presentation.core.styling.source.theme.AppTheme
  * @param modifier The modifier to be applied to the text.
  */
 @Composable
-public fun SectionItem(
-    title: String,
-    modifier: Modifier = Modifier
-) {
+public fun SectionItem(title: String, modifier: Modifier = Modifier) {
     Text(
         text = title,
         style = Theme.typography.title,
         color = Theme.color.inkMain,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
     )
 }
 

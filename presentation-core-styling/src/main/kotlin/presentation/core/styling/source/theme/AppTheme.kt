@@ -3,7 +3,6 @@ package presentation.core.styling.source.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import domain.core.source.model.ThemeModel
 import presentation.core.styling.core.provideDynamicThemeColor
 import presentation.core.styling.source.attribute.AttributeTypography
@@ -31,16 +30,14 @@ import presentation.core.styling.source.provider.LocalThemeTypography
  * @param content The UI content that will consume the theme.
  */
 @Composable
-public fun AppTheme(
-    mode: ThemeModel = ThemeModel.Light,
-    content: @Composable () -> Unit,
-) {
+public fun AppTheme(mode: ThemeModel = ThemeModel.Light, content: @Composable () -> Unit) {
     val isSystemDark = isSystemInDarkTheme()
-    val currentColorPalette = when (mode) {
-        ThemeModel.Light -> attributeLightColorPalette
-        ThemeModel.Dark -> attributeDarkColorPalette
-        ThemeModel.MaterialU -> provideDynamicThemeColor(isSystemDark)
-    }
+    val currentColorPalette =
+        when (mode) {
+            ThemeModel.Light -> attributeLightColorPalette
+            ThemeModel.Dark -> attributeDarkColorPalette
+            ThemeModel.MaterialU -> provideDynamicThemeColor(isSystemDark)
+        }
 
     val typography = AttributeTypography()
 
