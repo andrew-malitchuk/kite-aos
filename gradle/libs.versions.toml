@@ -4,7 +4,7 @@
 applicationId = "dev.kite.aos"
 
 versionCode = "1"
-versionName = "1.0.0"
+versionName = "0.0.1"
 
 compileSdk = "36"
 minSdk = "26"

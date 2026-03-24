@@ -17,7 +17,7 @@ public class AndroidApplicationConventionPlugin : Plugin<Project> {
 
     override fun apply(target: Project): Unit = with(target) {
         plugins {
-            apply("co1m.android.application")
+            apply("com.android.application")
             apply("org.jetbrains.kotlin.android")
             apply("org.jetbrains.kotlin.plugin.compose")
             apply("dev.yahk.convention.quality")
