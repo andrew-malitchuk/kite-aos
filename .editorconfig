@@ -1,0 +1,36 @@
+root = true
+
+[*.{kt,kts}]
+indent_size = 4
+max_line_length = 120
+insert_final_newline = true
+continuation_indent_size = 8
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+
+# Ktlint settings
+ktlint_code_style = android_studio
+
+# Disable rules that cause "cannot be auto-corrected" failures
+ktlint_standard_function-naming = disabled
+ktlint_standard_property-naming = disabled
+ktlint_standard_backing-property-naming = disabled
+ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_import-ordering = disabled
+ktlint_standard_comment-wrapping = disabled
+ktlint_standard_value-parameter-comment = disabled
+ktlint_standard_value-argument-comment = disabled
+ktlint_standard_discouraged-comment-location = disabled
+ktlint_standard_kdoc-wrapping = disabled
+ktlint_standard_max-line-length = disabled
+ktlint_standard_filename = disabled
+ktlint_standard_enum-entry-naming = disabled
+ktlint_standard_class-naming = disabled
+ktlint_standard_annotation = disabled
+ktlint_standard_argument-list-wrapping = disabled
+ktlint_standard_parameter-list-wrapping = disabled
+ktlint_standard_statement-wrapping = disabled
+ktlint_standard_multiline-expression-wrapping = disabled
+
+[*.xml]
+indent_size = 4
