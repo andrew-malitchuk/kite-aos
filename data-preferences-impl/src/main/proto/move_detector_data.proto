@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package move_detector;
+
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "MoveDetectorDataProto";
+
+message MoveDetectorProtoModel {
+  bool enabled = 1;
+  int32 sensitivity = 2;
+  int64 dim_delay = 3;
+  int64 screen_timeout = 4;
+  int64 fab_delay = 5;
+}

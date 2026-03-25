@@ -1,0 +1,2 @@
+Kite AOS is a modern, open-source Android kiosk application designed to transform tablets into dedicated smart home dashboards. While optimized for Home Assistant, it is designed for any use case requiring a persistent, locked-down web-view interface (e.g., industrial panels, information kiosks, or dedicated web-resource controllers).
+

@@ -1,0 +1,86 @@
+<resources>
+    <!-- Onboarding Slide 1 -->
+    <string name="onboarding_slide_1_title">Керуйте всім в одному місці</string>
+    <string name="onboarding_slide_1_description">Ваш професійний дешборд.</string>
+
+    <!-- Onboarding Slide 2 -->
+    <string name="onboarding_slide_2_title">Дозволи системи</string>
+    <string name="onboarding_slide_2_description">Надайте доступ для стабільної роботи кіоску.</string>
+
+    <!-- Onboarding Slide 3 -->
+    <string name="onboarding_slide_3_title">Конфігурація URL</string>
+    <string name="onboarding_slide_3_description">Введіть Dashboard URL та налаштуйте White list.</string>
+
+    <!-- Onboarding Slide 4 -->
+    <string name="onboarding_slide_4_title">Готово до роботи</string>
+    <string name="onboarding_slide_4_description">Тепер все під вашим повним контролем.</string>
+
+    <!-- Wizard Pager Buttons -->
+    <string name="wizard_button_previous">Назад</string>
+    <string name="wizard_button_next">Далі</string>
+    <string name="wizard_button_finish">Завершити</string>
+
+    <!-- Permissions -->
+    <string name="permission_camera_access">Доступ до камери</string>
+    <string name="permission_overlay_access">Доступ до накладання</string>
+    <string name="permission_device_admin">Адміністратор пристрою</string>
+    <string name="permission_system_settings">Системні налаштування</string>
+    <string name="permission_post_notifications">Сповіщення</string>
+
+
+    <!-- URL Configuration Placeholders -->
+    <string name="url_configuration_dashboard_url_placeholder">URL-адреса панелі приладів</string>
+    <string name="url_configuration_whitelist_placeholder">Білий список</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Налаштування</string>
+    <string name="settings_ui_ux">UI &amp; UX</string>
+    <string name="settings_web_kiosk">Веб кіоск</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_lang">Мова</string>
+    <string name="settings_application">Застосунки</string>
+    <string name="settings_sensitivity">Чутливість</string>
+    <string name="settings_dim_delay">Затримка затемнення</string>
+    <string name="settings_fab_delay">Затримка FAB</string>
+    <string name="settings_screen_timeout">Тайм-аут екрану</string>
+    <string name="settings_move_detector">Детектор руху</string>
+    <string name="settings_dock_position">Положення доку</string>
+
+    <!-- MQTT -->
+    <string name="settings_mqtt">MQTT</string>
+    <string name="settings_mqtt_ip">IP-адреса</string>
+    <string name="settings_mqtt_port">Порт</string>
+    <string name="settings_mqtt_client_id">ID клієнта</string>
+    <string name="settings_mqtt_username">Ім\'я користувача</string>
+    <string name="settings_mqtt_password">Пароль</string>
+    <string name="settings_mqtt_topic">Тема (Topic)</string>
+    <string name="settings_mqtt_friendly_name">Зрозуміла назва</string>
+
+    <string name="settings_system">Система</string>
+    <string name="settings_restart">Перезапустити застосунок</string>
+
+    <!-- About -->
+    <string name="about_title">Про застосунок</string>
+    <string name="about_description">Сучасний інструмент для перетворення Android-планшета на інтелектуальну панель керування домом із автоматичним пробудженням за сенсорами.</string>
+
+    <!-- Language Selection -->
+    <string name="settings_lang_select">Виберіть мову</string>
+    <string name="lang_english">Англійська</string>
+    <string name="lang_ukrainian">Українська</string>
+    <string name="cancel">Скасувати</string>
+
+    <!-- Errors -->
+    <string name="error_title">Помилка</string>
+    <string name="error_unknown">Сталася невідома помилка</string>
+    <string name="error_network">Помилка мережі. Перевірте з\'єднання</string>
+    <string name="error_database">Помилка бази даних</string>
+    <string name="error_preference">Помилка сховища налаштувань</string>
+    <string name="error_not_found">Ресурс не знайдено</string>
+
+    <!-- Services -->
+    <string name="motion_service_notification_title">Детекція руху</string>
+    <string name="motion_service_notification_text">Працює у фоновому режимі</string>
+    <string name="mqtt_service_notification_title">MQTT Телеметрія</string>
+    <string name="mqtt_service_notification_text">Передача стану пристрою</string>
+
+</resources>

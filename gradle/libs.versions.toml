@@ -1,0 +1,179 @@
+[versions]
+#region metadata
+# Constants for app versioning and SDK
+applicationId = "dev.kite.aos"
+
+versionCode = "1"
+versionName = "0.0.1"
+
+compileSdk = "36"
+minSdk = "26"
+targetSdk = "36"
+#endregion metadata
+
+kmqtt = "1.0.0"
+
+#region general
+# Build tools and language versions
+gradle = "8.13.2"
+kotlin = "2.3.0"
+java = "21"
+ksp = "2.3.4"
+#endregion general
+
+#region library versions
+# Individual library versions
+coreKtx = "1.17.0"
+appcompat = "1.7.1"
+material = "1.13.0"
+koin = "4.1.1"
+koinAnnotations = "2.3.1"
+composeBom = "2025.12.01"
+activityCompose = "1.12.2"
+lifecycleViewmodelCompose = "2.10.0"
+coroutines = "1.10.2"
+nav3Core = "1.0.0"
+#endregion library versions
+
+detekt = "1.23.8"
+ktlint = "12.1.2"
+
+protobufGradlePlugin = "0.9.6"
+protobufKotlinLite = "4.33.2"
+datastoreVersion = "1.2.0"
+lifecycleRuntimeKtx = "2.10.0"
+kotlinxSerialization = "1.7.3"
+room = "2.8.4"
+
+arrowCore = "1.2.4"
+stately = "2.1.0"
+atomicfu = "0.27.0"
+remoteCreationCore = "1.0.0-alpha01"
+coreSplashscreen = "1.2.0"
+material3 = "1.4.0"
+runtime = "1.10.1"
+cameraCore = "1.5.3"
+cameraCamera2 = "1.5.3"
+lifecycleService = "2.10.0"
+orbitCompose = "11.0.0"
+orbitCore = "11.0.0"
+orbitViewmodel = "11.0.0"
+
+[libraries]
+#region Build Tools & Plugins
+# Android and Kotlin gradle plugins
+android-gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
+detekt-gradle-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+ktlint-gradle-plugin = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlint" }
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCamera2" }
+androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraCore" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraCore" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraCore" }
+androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "lifecycleService" }
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowCore" }
+arrow-fx-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrowCore" }
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+ksp-gradle-plugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+compose-compiler-gradle = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
+
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+
+# https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-serialization
+kotlin-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlinxSerialization" }
+# https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+#endregion Build Tools & Plugins
+
+#region UI & Compose
+# AndroidX and Material libraries
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+
+
+# Compose BOM and its libraries
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+# Note: These don't need versions because they are managed by Compose BOM
+orbit-compose = { module = "org.orbit-mvi:orbit-compose", version.ref = "orbitCompose" }
+orbit-viewmodel = { module = "org.orbit-mvi:orbit-viewmodel", version.ref = "orbitViewmodel" }
+orbit-core = { module = "org.orbit-mvi:orbit-core", version.ref = "orbitCore" }
+ui = { group = "androidx.compose.ui", name = "ui" }
+ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+material3 = { group = "androidx.compose.material3", name = "material3" }
+# https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-runtime-compose?repo=google
+lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose" }
+#endregion UI & Compose
+
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3Core" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3Core" }
+
+#region Di (Koin)
+# Koin DI with BOM management
+koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }
+koin-core = { group = "io.insert-koin", name = "koin-core" }
+koin-android = { group = "io.insert-koin", name = "koin-android" }
+koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose" }
+koin-ktor = { group = "io.insert-koin", name = "koin-ktor" }
+koin-core-coroutines = { group = "io.insert-koin", name = "koin-core-coroutines" }
+koin-core-viewmodel = { group = "io.insert-koin", name = "koin-core-viewmodel" }
+koin-androidx-navigation = { group = "io.insert-koin", name = "koin-androidx-navigation" }
+koin-androidx-workmanager = { group = "io.insert-koin", name = "koin-androidx-workmanager" }
+koin-annotations = { group = "io.insert-koin", name = "koin-annotations", version.ref = "koinAnnotations" }
+koin-ksp-compiler = { group = "io.insert-koin", name = "koin-ksp-compiler", version.ref = "koinAnnotations" }
+#endregion Di
+
+#region Protobuf
+# https://mvnrepository.com/artifact/com.google.protobuf/protobuf-kotlin-lite
+protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobufKotlinLite" }
+# https://mvnrepository.com/artifact/com.google.protobuf/protobuf-gradle-plugin
+protobuf-gradle-plugin = { group = "com.google.protobuf", name = "protobuf-gradle-plugin", version.ref = "protobufGradlePlugin" }
+#endregion Protobuf
+
+# https://mvnrepository.com/artifact/androidx.datastore/datastore
+datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastoreVersion" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+
+stately-collections = { module = "co.touchlab:stately-concurrent-collections", version.ref = "stately" }
+atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
+androidx-remote-creation-core = { group = "androidx.compose.remote", name = "remote-creation-core", version.ref = "remoteCreationCore" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
+
+kmqtt-common = { group = "io.github.davidepianca98", name = "kmqtt-common-jvm", version.ref = "kmqtt" }
+kmqtt-client = { group = "io.github.davidepianca98", name = "kmqtt-client-jvm", version.ref = "kmqtt" }
+
+[bundles]
+# Bundles for easier dependency management in gradle files
+koin = [
+    "koin-core",
+    "koin-android",
+    "koin-androidx-compose",
+    "koin-ktor"
+]
+navigation = ["androidx-navigation3-runtime", "androidx-navigation3-ui"]
+arrow = ["arrow-core", "arrow-fx-coroutines"]
+
+[plugins]
+com-android-application = { id = "com.android.application", version.ref = "gradle" }
+com-android-library = { id = "com.android.library", version.ref = "gradle" }
+org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+org-jetbrains-kotlin-plugin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+com-google-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+io-gitlab-arturbosch-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+org-jlleitschuh-gradle-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+# https://mvnrepository.com/artifact/org.jetbrains.kotlin.plugin.serialization/org.jetbrains.kotlin.plugin.serialization.gradle.plugin
+org-jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

@@ -1,0 +1,71 @@
+build:
+  maxIssues: 0
+  excludeCorrectable: false
+
+config:
+  validation: true
+  warningsAsErrors: false
+  checkExhaustiveness: false
+
+style:
+  active: true
+  MagicNumber:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**']
+    ignoreNumbers: ['-1', '0', '1', '2', '10', '255'] # Added some common hardware constants
+    ignoreHashCodeFunction: true
+    ignorePropertyDeclaration: true
+    ignoreLocalVariableDeclaration: true
+    ignoreConstantDeclaration: true
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignoreAnnotated: ['Composable']
+    ignoreNamedArgument: true
+    ignoreEnums: true
+  MaxLineLength:
+    active: false
+  ReturnCount:
+    active: true
+    max: 10
+  UnusedPrivateMember:
+    active: false
+  UnusedParameter:
+    active: false
+  WildcardImport:
+    active: false
+
+complexity:
+  active: true
+  LongMethod:
+    active: true
+    threshold: 100
+    ignoreAnnotated: ['Composable']
+  LongParameterList:
+    active: true
+    functionThreshold: 15
+    constructorThreshold: 15
+    ignoreAnnotated: ['Composable']
+  TooManyFunctions:
+    active: true
+    thresholdInFiles: 40
+    thresholdInClasses: 40
+    thresholdInInterfaces: 40
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 30
+    ignoreAnnotated: ['Composable']
+  ComplexCondition:
+    active: true
+    threshold: 6 # Increased from 4
+
+naming:
+  active: false
+
+exceptions:
+  active: false
+
+formatting:
+  active: true
+  android: true
+  autoCorrect: true
+  NoUnusedImports:
+    active: false # Let ktlint handle it or ignore

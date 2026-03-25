@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package theme;
+
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "ThemeDataProto";
+
+message ThemeProtoModel {
+  string mode = 1;
+}

@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package dock;
+
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "DockDataProto";
+
+message DockProtoModel {
+  string position = 1;
+}
