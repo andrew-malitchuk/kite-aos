@@ -50,7 +50,7 @@ public class AndroidApplicationConventionPlugin : Plugin<Project> {
                 release {
                     isMinifyEnabled = true
                     isShrinkResources = true
-                    signingConfig = signingConfigs.getByName("release")
+                    signingConfig = signingConfigs.findByName("release")
                     proguardFiles(
                         getDefaultProguardFile("proguard-android-optimize.txt"),
                         rootProject.file("proguard-rules.pro")
