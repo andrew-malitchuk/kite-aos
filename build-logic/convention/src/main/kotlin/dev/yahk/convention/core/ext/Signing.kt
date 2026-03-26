@@ -19,11 +19,11 @@ import java.util.Properties
  */
 internal fun Project.configureSigning(extension: CommonExtension<*, *, *, *, *, *>) {
     extension.apply {
+        val propertiesFile = File(project.rootDir, "./configure/secrets/signing.properties")
+        if (!propertiesFile.exists()) return@apply
+
         val properties = Properties().also {
-            val propertiesFile = File(project.rootDir, "./configure/secrets/signing.properties")
-            if (propertiesFile.exists()) {
-                it.load(FileInputStream(propertiesFile))
-            }
+            it.load(FileInputStream(propertiesFile))
         }
 
         signingConfigs {
