@@ -12,6 +12,12 @@ import org.orbitmvi.orbit.viewmodel.container
  * This ViewModel handles user interactions and manages the screen's state and side effects
  * using the Orbit MVI pattern. It coordinates opening external social links and
  * navigating back to previous screens.
+ *
+ * @see AboutScreen
+ * @see AboutState
+ * @see AboutSideEffect
+ * @see AboutIntent
+ * @since 0.0.1
  */
 @KoinViewModel
 public class AboutViewModel : ContainerHost<AboutState, AboutSideEffect>, ViewModel() {
@@ -59,7 +65,11 @@ public class AboutViewModel : ContainerHost<AboutState, AboutSideEffect>, ViewMo
     /**
      * Main entry point for processing intents (actions) from the UI.
      *
+     * Routes each [AboutIntent] to the corresponding private handler method.
+     *
      * @param intent The specific user intent to be processed.
+     * @see AboutIntent
+     * @since 0.0.1
      */
     public fun handleIntent(intent: AboutIntent) {
         when (intent) {

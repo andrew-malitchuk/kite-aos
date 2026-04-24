@@ -5,6 +5,11 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * Use case for observing real-time changes to the application theme.
+ *
+ * @see GetThemeUseCase
+ * @see SetThemeUseCase
+ * @see ThemeModel
+ * @since 0.0.1
  */
 public interface ObserveThemeUseCase {
     /**

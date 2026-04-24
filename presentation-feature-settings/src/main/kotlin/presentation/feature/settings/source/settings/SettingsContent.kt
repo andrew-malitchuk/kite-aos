@@ -83,14 +83,20 @@ import presentation.core.ui.source.kit.organism.animatedsequence.AnimationSequen
  * The main content of the settings screen.
  *
  * This Composable orchestrates several sections of settings, each handled by its own
- * sub-composable. It also manages the overall layout, scrolling, and theme reveal animations.
+ * sub-composable. It also manages the overall layout, scrolling, and theme reveal animations
+ * via [CircularReveal].
  *
- * @param state The current state of the settings.
- * @param onIntent Callback to handle user actions.
+ * @param state The current [SettingsState] of the settings screen.
+ * @param onIntent Callback to handle user actions. Accepts all [SettingsIntent] subtypes.
  * @param showLanguageDialog Whether the in-app language dialog is visible.
  * @param onShowLanguageDialogChange Callback to toggle language dialog visibility.
  * @param snackbarHostState State for displaying snackbars.
+ * @see SettingsScreen
+ * @see SettingsViewModel
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
+// Suppressed: deeply nested Compose layout makes formatter indentation unreliable.
 @Suppress("Indentation")
 @Composable
 internal fun SettingsContent(
@@ -190,7 +196,14 @@ internal fun SettingsContent(
 
 /**
  * Section for configuring the camera-based motion detector.
+ *
+ * Includes toggle, sensitivity, dim delay, screen timeout, and FAB delay controls.
+ *
+ * @param state The current [SettingsState] for reading motion detector configuration.
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetMoveDetectorIntent] updates.
+ * @since 0.0.1
  */
+// Suppressed: deeply nested Compose layout makes formatter indentation unreliable.
 @Suppress("Indentation")
 @Composable
 private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
@@ -279,6 +292,14 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
 
 /**
  * Section for configuring the MQTT telemetry and control broker connection.
+ *
+ * Includes fields for IP, port, client ID, username, password, and friendly name.
+ * A debounced [LaunchedEffect] auto-saves changes after 1 second of inactivity.
+ *
+ * @param state The current [SettingsState] for reading MQTT configuration.
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetMqttIntent] updates.
+ * @param isDashboardValid Whether the dashboard URL passes validation, used for MQTT toggle eligibility.
+ * @since 0.0.1
  */
 @Composable
 private fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit, isDashboardValid: Boolean) {
@@ -319,6 +340,7 @@ private fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
     }
 
     // Regex patterns for validation (from architectural requirements)
+    // Suppressed: IP/hostname regex pattern necessarily exceeds line length.
     @Suppress("MaximumLineLength")
     val ipRegex =
         remember {
@@ -435,7 +457,16 @@ private fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
 }
 
 /**
- * Section for configuring the web kiosk dashboard and whitelist.
+ * Section for configuring the web kiosk dashboard and whitelist URLs.
+ *
+ * Also provides a link to the application selection screen.
+ *
+ * @param state The current [SettingsState] for reading dashboard configuration.
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetDashboardIntent] and
+ *   [SettingsIntent.OnApplicationIntent].
+ * @param onValidationChange Callback reporting whether the dashboard URL passes validation,
+ *   used by the MQTT section to determine toggle eligibility.
+ * @since 0.0.1
  */
 @Composable
 private fun WebKioskSection(
@@ -517,7 +548,12 @@ private fun WebKioskSection(
 }
 
 /**
- * Section for visual settings like theme and dock position.
+ * Section for visual settings like theme, dock position, and language.
+ *
+ * @param state The current [SettingsState] for reading UI/UX preferences.
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetThemeIntent],
+ *   [SettingsIntent.OnSetDockIntent], and [SettingsIntent.OnLangIntent].
+ * @since 0.0.1
  */
 @Composable
 private fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
@@ -585,6 +621,10 @@ private fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
 
 /**
  * Section for system-level actions like restarting or viewing version info.
+ *
+ * @param state The current [SettingsState] (unused but kept for consistency).
+ * @param onIntent Callback to dispatch [SettingsIntent.OnRestartIntent].
+ * @since 0.0.1
  */
 @Composable
 private fun SystemSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
@@ -619,6 +659,15 @@ private fun SystemSection(state: SettingsState, onIntent: (SettingsIntent) -> Un
 
 /**
  * A dialog for selecting the application language in-app.
+ *
+ * Displays a list of supported languages (English, Ukrainian) as radio button options.
+ *
+ * @param showDialog Whether the dialog is currently visible.
+ * @param currentLanguage The currently selected language code (e.g., "en", "uk"), or null.
+ * @param onLanguageSelected Callback invoked with the chosen locale code when a language is selected.
+ * @param onDismiss Callback invoked when the dialog is dismissed without selection.
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun LanguageSelectionDialog(

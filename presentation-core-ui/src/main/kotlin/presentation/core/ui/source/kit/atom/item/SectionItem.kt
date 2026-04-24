@@ -14,8 +14,12 @@ import presentation.core.styling.source.theme.AppTheme
  * This component is used to display a header or label for a section within a list or a screen.
  * It expands to the full width of its container by default.
  *
- * @param title The text to display as the section title.
- * @param modifier The modifier to be applied to the text.
+ * @param title the text to display as the section title.
+ * @param modifier Modifier to be applied to the [Text].
+ *
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
  */
 @Composable
 public fun SectionItem(title: String, modifier: Modifier = Modifier) {

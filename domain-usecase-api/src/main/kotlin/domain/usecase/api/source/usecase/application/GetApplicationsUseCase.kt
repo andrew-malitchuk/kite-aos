@@ -4,6 +4,9 @@ import domain.core.source.model.ApplicationModel
 
 /**
  * Use case for retrieving all launcher-enabled applications installed on the system.
+ *
+ * @see domain.usecase.impl.source.usecase.application.GetApplicationsUseCaseImpl
+ * @since 0.0.1
  */
 public interface GetApplicationsUseCase {
     /**

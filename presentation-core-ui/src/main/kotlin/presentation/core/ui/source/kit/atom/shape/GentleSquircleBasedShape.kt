@@ -25,15 +25,23 @@ import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
 
 /**
+ * Base class for creating a Gentle Squircle shape derived from a [CornerBasedShape]
+ * defined by four corners.
  *
- *  Base class for creating a Gentle Squircle shape derived from a [CornerBasedShape]
- *  defined by four corners.
+ * Unlike [SquircleBasedShape], this variant does not expose an explicit smoothing parameter.
+ * Instead, it automatically transitions from cubic Bezier squircle corners to circular arcs
+ * as the corner radius approaches or exceeds half the shape's smallest dimension. This
+ * produces a gentle morphing effect from squircle to circle at large radii.
  *
- *  @param topStart The top start corner radius defined as [CornerSize].
- *  @param topEnd The top end corner radius defined as [CornerSize].
- *  @param bottomStart The bottom start corner radius defined as [CornerSize].
- *  @param bottomEnd The bottom end corner radius defined as [CornerSize].
+ * @param topStart The top start corner radius defined as [CornerSize].
+ * @param topEnd The top end corner radius defined as [CornerSize].
+ * @param bottomStart The bottom start corner radius defined as [CornerSize].
+ * @param bottomEnd The bottom end corner radius defined as [CornerSize].
  *
+ * @see GentleSquircleShape
+ * @see SquircleBasedShape
+ * @see CornerBasedShape
+ * @since 0.0.1
  **/
 public abstract class GentleSquircleBasedShape(
     topStart: CornerSize,

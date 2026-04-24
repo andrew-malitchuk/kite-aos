@@ -20,9 +20,9 @@ import presentation.core.ui.source.kit.atom.button.text.core.TextButtonDefault
  * It includes optional support for a loading state, custom colors, and animations. The button displays text and can
  * be enabled or disabled, with a callback invoked when clicked.
  *
- * @param modifier The modifier to be applied to the button. Default is [Modifier].
+ * @param modifier Modifier to be applied to the [TextButton].
  * @param text The [String] to be displayed inside the button.
- * @param onClick The callback to be invoked when the button is clicked. If `null`, the button is not clickable.
+ * @param onClick Callback invoked when the user clicks the button. If `null`, the button is not clickable.
  * @param enabled A boolean indicating whether the button is enabled. Default is `true`, meaning the button is enabled.
  * @param isLoading A boolean indicating whether the button is in a loading state. Default is `false`, meaning no loading state.
  * @param colors The [ButtonColor] instance that provides colors for the button in different states (enabled, disabled, etc.).
@@ -34,6 +34,11 @@ import presentation.core.ui.source.kit.atom.button.text.core.TextButtonDefault
  *                  Default is provided by [TextButtonDefault.animation].
  * @param interactionSource The [MutableInteractionSource] for tracking the button's interaction states.
  *                          Default is a new [MutableInteractionSource] created with [remember].
+ *
+ * @see StateButton
+ * @see TextButtonDefault
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun TextButton(

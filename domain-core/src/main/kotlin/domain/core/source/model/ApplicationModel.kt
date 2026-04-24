@@ -10,6 +10,9 @@ import domain.core.source.model.base.Model
  * @property packageName Android package name (unique identifier on the system).
  * @property icon Resource ID or reference for the application's icon.
  * @property chosen Indicates if the application has been selected for the kiosk dashboard.
+ *
+ * @see Model
+ * @since 0.0.1
  */
 public data class ApplicationModel(
     val id: Int?,

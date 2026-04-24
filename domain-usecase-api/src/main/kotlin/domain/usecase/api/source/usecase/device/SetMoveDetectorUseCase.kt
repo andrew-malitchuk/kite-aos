@@ -5,6 +5,10 @@ import domain.usecase.api.core.common.Optional
 
 /**
  * Use case for updating the motion detector configuration (sensitivity, delays, etc.).
+ *
+ * @see GetMoveDetectorUseCase
+ * @see MoveDetectorModel
+ * @since 0.0.1
  */
 public interface SetMoveDetectorUseCase {
     /**

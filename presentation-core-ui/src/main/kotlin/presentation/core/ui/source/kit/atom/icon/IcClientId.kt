@@ -4,6 +4,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp client ID / identification card icon.
+ *
+ * @since 0.0.1
+ */
 public val IcClientId: ImageVector
     get() {
         if (_IcClientId != null) {

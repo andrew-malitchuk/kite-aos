@@ -5,6 +5,10 @@ import domain.usecase.api.core.common.Optional
 
 /**
  * Use case for updating the dock (sidebar) position preference.
+ *
+ * @see GetDockPositionUseCase
+ * @see DockPositionModel
+ * @since 0.0.1
  */
 public interface SetDockPositionUseCase {
     /**

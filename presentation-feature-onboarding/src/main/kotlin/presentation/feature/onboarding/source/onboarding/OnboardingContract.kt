@@ -3,7 +3,9 @@ package presentation.feature.onboarding.source.onboarding
 import domain.core.source.model.DashboardModel
 
 /**
- * Represents the UI state of the onboarding flow.
+ * Represents the MVI state of the onboarding flow.
+ *
+ * This data class is used as the Orbit container state managed by [OnboardingViewModel].
  *
  * @property isCameraPermissionGranted Status of the Manifest.permission.CAMERA.
  * @property isOverlayPermissionGranted Status of the Settings.canDrawOverlays check.
@@ -11,6 +13,9 @@ import domain.core.source.model.DashboardModel
  * @property isDeviceAdminGranted Status of the Device Administration privilege.
  * @property isWriteSettingsGranted Status of the Settings.System.canWrite check.
  * @property dashboardUrls Initial URLs loaded from persistent storage, if any.
+ * @see OnboardingViewModel
+ * @see OnboardingScreen
+ * @since 0.0.1
  */
 public data class OnboardingState(
     val isCameraPermissionGranted: Boolean,
@@ -23,6 +28,13 @@ public data class OnboardingState(
 
 /**
  * One-off side effects for the onboarding screen.
+ *
+ * Side effects are consumed by [OnboardingScreen] and trigger system permission dialogs,
+ * navigation, or error display events.
+ *
+ * @see OnboardingViewModel
+ * @see OnboardingScreen
+ * @since 0.0.1
  */
 public sealed class OnboardingSideEffect {
     /** Launch system camera permission dialog. */

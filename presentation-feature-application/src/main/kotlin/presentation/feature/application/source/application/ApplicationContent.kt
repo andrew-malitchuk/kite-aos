@@ -40,7 +40,14 @@ import presentation.core.ui.source.kit.organism.animatedsequence.AnimationSequen
  *
  * @param state The current UI state containing the list of applications.
  * @param snackbarHostState State for the Design System snackbar host.
- * @param onIntent Callback to dispatch user actions to the ViewModel.
+ * @param onIntent Callback to dispatch user actions to the ViewModel. Supported actions include:
+ *   [ApplicationIntent.OnBackClick] for navigating back,
+ *   [ApplicationIntent.SaveApplication] for adding an app to the chosen list,
+ *   and [ApplicationIntent.RemoveApplication] for removing an app from the chosen list.
+ * @see ApplicationScreen
+ * @see ApplicationViewModel
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 internal fun ApplicationContent(

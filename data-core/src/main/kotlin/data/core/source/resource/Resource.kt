@@ -5,5 +5,8 @@ package data.core.source.resource
  *
  * All data classes representing persisted entities, settings, or external
  * representations should implement this interface to maintain architectural consistency.
+ *
+ * @see common.core.core.mapper.Mapper
+ * @since 0.0.1
  */
 public interface Resource

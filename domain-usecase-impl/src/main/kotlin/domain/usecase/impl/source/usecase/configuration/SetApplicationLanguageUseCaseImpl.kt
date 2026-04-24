@@ -9,6 +9,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [SetApplicationLanguageUseCase] using [ConfigureRepository].
+ *
+ * @see SetApplicationLanguageUseCase
+ * @since 0.0.1
  */
 @Single(binds = [SetApplicationLanguageUseCase::class])
 internal class SetApplicationLanguageUseCaseImpl(

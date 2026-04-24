@@ -21,8 +21,12 @@ import org.gradle.kotlin.dsl.DependencyHandlerScope
  *
  * @param versionCatalog Version catalog of this project.
  * @param value The library reference as defined in the version catalog.
+ * @see VersionCatalog
+ * @see DependencyHandlerScope
+ * @since 0.0.1
  */
 fun DependencyHandlerScope.implementDependency(versionCatalog: VersionCatalog, value: String) {
+    // Resolve the library from the version catalog and add it to the "implementation" configuration
     add("implementation", versionCatalog.findLibrary(value).get())
 }
 
@@ -42,9 +46,12 @@ fun DependencyHandlerScope.implementDependency(versionCatalog: VersionCatalog, v
  *
  * @param project Project module for dependency to be added.
  * @param value The path to the project module to be added as a dependency.
+ * @see DependencyHandlerScope
+ * @since 0.0.1
  */
 @Suppress("unused")
 fun DependencyHandlerScope.implementProject(project: Project, value: String) {
+    // Resolve the project module by path and add it to the "implementation" configuration
     add("implementation", project.project(value))
 }
 
@@ -66,33 +73,41 @@ fun DependencyHandlerScope.implementProject(project: Project, value: String) {
  *
  * @param versionCatalog Version catalog of this project.
  * @param value The library reference as defined in the version catalog.
+ * @see VersionCatalog
+ * @see DependencyHandlerScope
+ * @since 0.0.1
  */
 @Suppress("unused")
 fun DependencyHandlerScope.implementKapt(versionCatalog: VersionCatalog, value: String) {
+    // Resolve the library from the version catalog and add it to the "kapt" configuration
     add("kapt", versionCatalog.findLibrary(value).get())
 }
 
 /**
- * Adds a dependency to the `kapt` configuration using the version catalog.
+ * Adds a dependency to the `kaptTest` configuration using the version catalog.
  *
- * This extension function allows you to add a dependency to the `kapt` configuration
+ * This extension function allows you to add a dependency to the `kaptTest` configuration
  * of a project by specifying a library reference from the version catalog. It simplifies
- * the addition of annotation processor dependencies by automatically resolving the library version
- * from the catalog.
+ * the addition of test annotation processor dependencies by automatically resolving the library
+ * version from the catalog.
  *
  * Usage:
  *
  * ```kotlin
  * dependencies {
- *     implementKapt("some.annotationProcessor")
+ *     implementKaptTest("some.annotationProcessor")
  * }
  * ```
  *
  * @param versionCatalog Version catalog of this project.
  * @param value The library reference as defined in the version catalog.
+ * @see VersionCatalog
+ * @see DependencyHandlerScope
+ * @since 0.0.1
  */
 @Suppress("unused")
 fun DependencyHandlerScope.implementKaptTest(versionCatalog: VersionCatalog, value: String) {
+    // Resolve the library from the version catalog and add it to the "kaptTest" configuration
     add("kaptTest", versionCatalog.findLibrary(value).get())
 }
 
@@ -115,8 +130,12 @@ fun DependencyHandlerScope.implementKaptTest(versionCatalog: VersionCatalog, val
  *
  * @param versionCatalog Version catalog of this project.
  * @param value The library reference as defined in the version catalog.
+ * @see VersionCatalog
+ * @see DependencyHandlerScope
+ * @since 0.0.1
  */
 fun DependencyHandlerScope.implementKsp(versionCatalog: VersionCatalog, value: String) {
+    // Resolve the library from the version catalog and add it to the "ksp" configuration
     add("ksp", versionCatalog.findLibrary(value).get())
 }
 
@@ -137,12 +156,16 @@ fun DependencyHandlerScope.implementKsp(versionCatalog: VersionCatalog, value: S
  *
  * @param versionCatalog Version catalog of this project.
  * @param value The library reference as defined in the version catalog.
+ * @see VersionCatalog
+ * @see DependencyHandlerScope
+ * @since 0.0.1
  */
 @Suppress("unused")
 fun DependencyHandlerScope.implementAndroidTestDependency(
     versionCatalog: VersionCatalog,
     value: String
 ) {
+    // Resolve the library from the version catalog and add it to the "androidTestImplementation" configuration
     add("androidTestImplementation", versionCatalog.findLibrary(value).get())
 }
 
@@ -163,12 +186,16 @@ fun DependencyHandlerScope.implementAndroidTestDependency(
  *
  * @param versionCatalog Version catalog of this project.
  * @param value The library reference as defined in the version catalog.
+ * @see VersionCatalog
+ * @see DependencyHandlerScope
+ * @since 0.0.1
  */
 @Suppress("unused")
 fun DependencyHandlerScope.implementDebugImplementation(
     versionCatalog: VersionCatalog,
     value: String
 ) {
+    // Resolve the library from the version catalog and add it to the "debugImplementation" configuration
     add("debugImplementation", versionCatalog.findLibrary(value).get())
 }
 
@@ -189,8 +216,12 @@ fun DependencyHandlerScope.implementDebugImplementation(
  *
  * @param versionCatalog Version catalog of this project.
  * @param value The library reference as defined in the version catalog.
+ * @see VersionCatalog
+ * @see DependencyHandlerScope
+ * @since 0.0.1
  */
 fun DependencyHandlerScope.implementTestDependency(versionCatalog: VersionCatalog, value: String) {
+    // Resolve the library from the version catalog and add it to the "testImplementation" configuration
     add("testImplementation", versionCatalog.findLibrary(value).get())
 }
 
@@ -212,7 +243,11 @@ fun DependencyHandlerScope.implementTestDependency(versionCatalog: VersionCatalo
  *
  * @param versionCatalog Version catalog of this project.
  * @param value The library reference as defined in the version catalog.
+ * @see VersionCatalog
+ * @see DependencyHandlerScope
+ * @since 0.0.1
  */
 fun DependencyHandlerScope.implementTestRuntimeOnly(versionCatalog: VersionCatalog, value: String) {
+    // Resolve the library from the version catalog and add it to the "testRuntimeOnly" configuration
     add("testRuntimeOnly", versionCatalog.findLibrary(value).get())
 }

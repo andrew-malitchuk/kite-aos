@@ -31,6 +31,9 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
  * ```
  *
  * @return The [VersionCatalog] instance associated with the name "libs".
+ * @see VersionCatalog
+ * @see VersionCatalogsExtension
+ * @since 0.0.1
  */
 val Project.libs
     get(): VersionCatalog = extensions.getByType<VersionCatalogsExtension>().named("libs")
@@ -48,16 +51,17 @@ val Project.libs
  * ```
  *
  * @param name The exact name of the version entry in the version catalog.
- *
  * @return The version as a [String].
+ * @see VersionCatalog
+ * @since 0.0.1
  */
 fun Project.getVersionAsString(name: String) = libs.findVersion(name).get().requiredVersion
 
 /**
- * Retrieves version as a [Int] from the project's extensions by the given name.
+ * Retrieves version as an [Int] from the project's extensions by the given name.
  *
  * This extension function simplifies the process of accessing specific version
- * from the version catalog.
+ * from the version catalog and converting it to an integer.
  *
  * Usage:
  *
@@ -66,8 +70,9 @@ fun Project.getVersionAsString(name: String) = libs.findVersion(name).get().requ
  * ```
  *
  * @param name The exact name of the version entry in the version catalog.
- *
- * @return The version as a [Int].
+ * @return The version as an [Int].
+ * @see VersionCatalog
+ * @since 0.0.1
  */
 fun Project.getVersionAsInt(name: String) = libs.findVersion(name).get().requiredVersion.toInt()
 
@@ -78,16 +83,21 @@ fun Project.getVersionAsInt(name: String) = libs.findVersion(name).get().require
  * (source and target) based on values defined in the version catalog.
  *
  * @param extension The [CommonExtension] to apply base Android settings to.
+ * @see CommonExtension
+ * @since 0.0.1
  */
 internal fun Project.configureAndroidBase(extension: CommonExtension<*, *, *, *, *, *>) {
     extension.apply {
+        // Set compile SDK from the version catalog
         compileSdk = getVersionAsInt("compileSdk")
 
         defaultConfig {
+            // Set minimum supported SDK version
             minSdk = getVersionAsInt("minSdk")
         }
 
         compileOptions {
+            // Configure Java source and target compatibility from the version catalog
             val javaVersion = JavaVersion.toVersion(getVersionAsInt("java"))
             sourceCompatibility = javaVersion
             targetCompatibility = javaVersion
@@ -101,9 +111,15 @@ internal fun Project.configureAndroidBase(extension: CommonExtension<*, *, *, *,
  * Automatically detects whether the project is an Android or pure JVM module
  * and applies [ExplicitApiMode.Strict]. This ensures that all public declarations
  * have explicit visibility and type specifications, improving API design and maintainability.
+ *
+ * @see ExplicitApiMode
+ * @see KotlinAndroidProjectExtension
+ * @see KotlinProjectExtension
+ * @since 0.0.1
  */
 internal fun Project.configureKotlinBase() {
     val pluginManager = this.pluginManager
+    // Check which Kotlin plugin is applied and configure ExplicitApiMode accordingly
     if (pluginManager.hasPlugin("org.jetbrains.kotlin.android")) {
         extensions.configure<KotlinAndroidProjectExtension> {
             explicitApi = ExplicitApiMode.Strict
@@ -137,6 +153,8 @@ internal fun Project.configureKotlinBase() {
  * ```
  *
  * @param block A lambda expression that configures the [ApplicationExtension] for the project.
+ * @see ApplicationExtension
+ * @since 0.0.1
  */
 @Suppress("unused")
 fun Project.app(block: ApplicationExtension.() -> Unit) {
@@ -168,6 +186,8 @@ fun Project.app(block: ApplicationExtension.() -> Unit) {
  * ```
  *
  * @param block A lambda expression that configures the [LibraryExtension] for the project.
+ * @see LibraryExtension
+ * @since 0.0.1
  */
 @Suppress("unused")
 fun Project.lib(block: LibraryExtension.() -> Unit) {
@@ -192,32 +212,33 @@ fun Project.lib(block: LibraryExtension.() -> Unit) {
  * ```
  *
  * @param block A lambda expression that configures the [PluginManager] for the project.
+ * @see PluginManager
+ * @since 0.0.1
  */
 @Suppress("unused")
 fun Project.plugins(block: PluginManager.() -> Unit) {
     this.pluginManager.block()
 }
 
-
-
-
-
-
 /**
- * Configures the [JavaPluginExtension] for an JVM library project.
+ * Configures the [JavaPluginExtension] for a JVM library project.
  *
- * This extension function allows you to configure the `JavaPluginExtension` for an library project
- * using a lambda expression. It provides a convenient way to set up library-specific configurations.
+ * This extension function allows you to configure the `JavaPluginExtension` for a library project
+ * using a lambda expression. It provides a convenient way to set up JVM-specific configurations
+ * such as source and target compatibility.
  *
  * Usage:
  *
  * ```kotlin
  * project.jvm {
- *      ...
+ *     sourceCompatibility = JavaVersion.VERSION_21
+ *     targetCompatibility = JavaVersion.VERSION_21
  * }
  * ```
  *
- * @param block A lambda expression that configures the [LibraryExtension] for the project.
+ * @param block A lambda expression that configures the [JavaPluginExtension] for the project.
+ * @see JavaPluginExtension
+ * @since 0.0.1
  */
 @Suppress("unused")
 fun Project.jvm(block: JavaPluginExtension.() -> Unit) {

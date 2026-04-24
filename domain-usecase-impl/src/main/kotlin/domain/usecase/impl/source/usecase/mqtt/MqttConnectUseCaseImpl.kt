@@ -13,6 +13,9 @@ import org.koin.core.annotation.Single
  *
  * This implementation first retrieves the saved configuration and only attempts to connect
  * if MQTT is enabled.
+ *
+ * @see MqttConnectUseCase
+ * @since 0.0.1
  */
 @Single(binds = [MqttConnectUseCase::class])
 internal class MqttConnectUseCaseImpl(
@@ -22,10 +25,13 @@ internal class MqttConnectUseCaseImpl(
     override suspend operator fun invoke(): Optional = resultLauncher(
         errorMapper = Failure.Technical::Network,
     ) {
+        // Retrieve persisted MQTT config; propagates NotFound if absent
         val config = getMqttConfigurationUseCase().getOrThrow()
+        // Only attempt connection when the user has explicitly enabled MQTT
         if (config.enabled == true) {
             mqttRepository.connect(
                 server = config.ip ?: "",
+                // Default to standard MQTT port 1883 when port is null or not a valid integer
                 port = config.port?.toIntOrNull() ?: 1883,
                 clientId = config.clientId ?: "",
                 username = config.username ?: "",

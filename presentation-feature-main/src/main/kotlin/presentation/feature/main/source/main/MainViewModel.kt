@@ -26,6 +26,17 @@ import presentation.core.localisation.R
  *
  * It orchestrates the dashboard URL loading, manages the control drawer visibility,
  * and reacts to motion detection events to show/hide navigation controls.
+ *
+ * @param getDashboardUseCase Use case to retrieve the configured dashboard URLs.
+ * @param loadApplicationsUseCase Use case to load chosen applications for the drawer.
+ * @param getDockPositionUseCase Use case to retrieve the dock position preference.
+ * @param getMoveDetectorUseCase Use case to retrieve the motion detector configuration.
+ * @param observeMoveDetectorMotionUseCase Use case to observe real-time motion detection events.
+ * @see MainScreen
+ * @see MainState
+ * @see MainSideEffect
+ * @see MainIntent
+ * @since 0.0.1
  */
 @KoinViewModel
 public class MainViewModel(
@@ -62,6 +73,7 @@ public class MainViewModel(
         }
     }
 
+    // Suppressed: the multiplication factor 1000 converts fabDelay (seconds) to milliseconds.
     @Suppress("MagicNumber")
     private fun onMotionDetected() = intent {
         reduce { state.copy(isFabVisible = true) }
@@ -114,16 +126,35 @@ public class MainViewModel(
         },
     )
 
+    /**
+     * Triggers navigation to the settings screen via [MainSideEffect.GoToSettingsEffect].
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun onGoToSettings(): Job = intent {
         postSideEffect(MainSideEffect.GoToSettingsEffect)
     }
 
+    /**
+     * Triggers launching an external application via [MainSideEffect.OpenApplicationEffect].
+     *
+     * @param packageName The package name of the application to launch.
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun onOpenApplication(packageName: String): Job = intent {
         postSideEffect(MainSideEffect.OpenApplicationEffect(packageName))
     }
 
     /**
      * Entry point for UI intents.
+     *
+     * Routes each [MainIntent] to the corresponding handler method.
+     *
+     * @param intent The user action to process.
+     * @see MainIntent
+     * @since 0.0.1
      */
     public fun handleIntent(intent: MainIntent) {
         when (intent) {

@@ -9,6 +9,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [GetDashboardUseCase] using [ConfigureRepository].
+ *
+ * @see GetDashboardUseCase
+ * @since 0.0.1
  */
 @Single(binds = [GetDashboardUseCase::class])
 internal class GetDashboardUseCaseImpl(
@@ -17,6 +20,7 @@ internal class GetDashboardUseCaseImpl(
     override suspend fun invoke(): Result<DashboardModel> = resultLauncher(
         errorMapper = Failure.Technical::Preference,
     ) {
+        // Throw NotFound if no dashboard configuration has been persisted yet
         configureRepository.getDashboard() ?: throw Failure.Logic.NotFound
     }
 }

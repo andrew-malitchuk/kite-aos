@@ -59,8 +59,15 @@ import kotlin.math.roundToInt
  * It also handles immersive mode management and motion detection service lifecycle.
  *
  * @param state The current [MainState].
- * @param onIntent Callback to dispatch [MainIntent] to the ViewModel.
+ * @param onIntent Callback to dispatch [MainIntent] to the ViewModel. Supported actions include:
+ *   [MainIntent.OnLoadIntent] for initial data loading,
+ *   [MainIntent.OnSettingsClickAction] for navigating to settings,
+ *   and [MainIntent.OnOpenApplicationIntent] for launching an external application.
  * @param snackbarHostState State for the Design System's snackbar.
+ * @see MainScreen
+ * @see MainViewModel
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 internal fun MainContent(
@@ -261,6 +268,12 @@ internal fun MainContent(
     }
 }
 
+/**
+ * Starts the [MotionService] as a foreground service for camera-based motion detection.
+ *
+ * @param context The Android [Context] used to start the service.
+ * @since 0.0.1
+ */
 private fun startSelectedService(context: Context) {
     val intent = Intent(context, MotionService::class.java)
     try {
@@ -270,11 +283,20 @@ private fun startSelectedService(context: Context) {
     }
 }
 
+/**
+ * Stops the [MotionService] foreground service.
+ *
+ * @param context The Android [Context] used to stop the service.
+ * @since 0.0.1
+ */
 private fun stopSelectedService(context: Context) {
     val intent = Intent(context, MotionService::class.java)
     context.stopService(intent)
 }
 
+/**
+ * Custom [Saver] for [IntOffset] to persist the FAB drag position across configuration changes.
+ */
 private val IntOffsetSaver =
     Saver<IntOffset, Pair<Int, Int>>(
         save = { it.x to it.y },

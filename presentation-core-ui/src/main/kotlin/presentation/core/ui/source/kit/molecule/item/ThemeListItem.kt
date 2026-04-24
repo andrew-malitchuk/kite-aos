@@ -21,12 +21,43 @@ import presentation.core.ui.source.kit.atom.icon.IcLight24
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 import presentation.core.ui.source.kit.atom.icon.IcWallpaper24
 
+/**
+ * Represents the available application theme options.
+ *
+ * @since 0.0.1
+ */
 public enum class ThemeOption {
+    /** Light colour scheme. */
     Light,
+
+    /** Dark colour scheme. */
     Dark,
+
+    /** Dynamic Material You colour scheme derived from the device wallpaper. */
     MaterialU,
 }
 
+/**
+ * A list item for selecting the application theme.
+ *
+ * Displays a leading icon, a label, and a trailing row of icon-toggle buttons for each
+ * available [ThemeOption]. The [MaterialU][ThemeOption.MaterialU] button is conditionally
+ * shown based on device support via [isMaterialUAvailable].
+ *
+ * @param modifier Modifier to be applied to the [BaseListItem].
+ * @param text The label text displayed in the item (e.g., "App Theme").
+ * @param textStyle The [TextStyle] for the label text. Defaults to [Theme.typography.body].
+ * @param icon The [ImageVector] icon to display on the leading side.
+ * @param iconBackgroundColor Background [Color] for the icon container.
+ * @param iconForegroundColor Foreground [Color] for the icon.
+ * @param selectedTheme The currently active [ThemeOption].
+ * @param isMaterialUAvailable Whether the device supports Material You dynamic theming.
+ * @param onThemeChange Callback invoked when the user selects a different [ThemeOption].
+ * @see BaseListItem
+ * @see ThemeOption
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
+ */
 @Composable
 public fun ThemeListItem(
     modifier: Modifier = Modifier,

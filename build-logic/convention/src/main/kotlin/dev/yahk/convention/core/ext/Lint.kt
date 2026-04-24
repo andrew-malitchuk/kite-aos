@@ -17,7 +17,10 @@ import com.android.build.api.dsl.Lint
  * ```
  *
  * @param ruleId The ID of the lint rule to disable.
+ * @see Lint
+ * @since 0.0.1
  */
 public fun Lint.removeFromCheck(ruleId: String) {
+    // Append the rule ID to the set of disabled lint checks
     disable.add(ruleId)
 }

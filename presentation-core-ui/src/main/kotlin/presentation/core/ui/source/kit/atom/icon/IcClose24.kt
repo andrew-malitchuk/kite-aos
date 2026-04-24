@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp close/dismiss (X) icon.
+ *
+ * @since 0.0.1
+ */
 public val IcClose24: ImageVector
     get() {
         if (_IcClose24 != null) {

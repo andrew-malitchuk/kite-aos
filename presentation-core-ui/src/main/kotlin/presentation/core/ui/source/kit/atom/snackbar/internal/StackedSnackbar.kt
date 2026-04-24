@@ -45,6 +45,21 @@ import presentation.core.ui.source.kit.atom.snackbar.StackedSnackbarAnimation
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+/**
+ * Internal composable that renders the stacked snackbar list with scaling, padding, and
+ * enter/exit animations.
+ *
+ * Each snackbar in the stack is scaled down and offset with increasing bottom padding to
+ * create a visual stacking effect. The topmost (newest) snackbar supports horizontal
+ * drag-to-dismiss gestures.
+ *
+ * @param snackbarData the list of snackbar data items to display.
+ * @param maxStack the maximum number of visible stacked items.
+ * @param animation the animation preset for transitions.
+ * @param onSnackbarRemoved callback invoked when a snackbar is dismissed via swipe or timeout.
+ * @param firstItemVisibility whether the topmost snackbar is visible (controls enter animation).
+ * @param modifier Modifier to be applied to the root [Box].
+ */
 @Composable
 internal fun StackedSnackbar(
     snackbarData: List<StackedSnackbarData>,

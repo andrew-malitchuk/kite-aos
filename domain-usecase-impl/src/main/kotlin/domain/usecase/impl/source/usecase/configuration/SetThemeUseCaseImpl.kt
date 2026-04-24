@@ -10,6 +10,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [SetThemeUseCase] using [ConfigureRepository].
+ *
+ * @see SetThemeUseCase
+ * @since 0.0.1
  */
 @Single(binds = [SetThemeUseCase::class])
 internal class SetThemeUseCaseImpl(

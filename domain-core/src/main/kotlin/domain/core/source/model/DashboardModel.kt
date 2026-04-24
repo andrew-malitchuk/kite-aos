@@ -7,6 +7,9 @@ import domain.core.source.model.base.Model
  *
  * @property dashboardUrl The main URL to be displayed in the kiosk WebView.
  * @property whitelistUrl A pattern or URL used to restrict navigation within the WebView.
+ *
+ * @see Model
+ * @since 0.0.1
  */
 public data class DashboardModel(
     val dashboardUrl: String,

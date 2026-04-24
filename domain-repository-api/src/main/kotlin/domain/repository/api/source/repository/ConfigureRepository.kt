@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * Repository for managing various system and UI configurations.
+ *
+ * @see data.repository.impl.source.repository.ConfigureRepositoryImpl
+ * @since 0.0.1
  */
 public interface ConfigureRepository {
     /** Retrieves the current application theme. */

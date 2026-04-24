@@ -21,11 +21,16 @@ import presentation.core.ui.source.kit.atom.button.toggle.Toggle
  * This component displays a section title on the left and a toggle switch on the right.
  * It is useful for sections that can be enabled or disabled as a whole.
  *
- * @param title The text to display as the section title.
- * @param checked Whether the toggle is currently checked.
- * @param enabled Whether the toggle is enabled.
- * @param onCheckedChange Callback invoked when the toggle state changes.
- * @param modifier The modifier to be applied to the container.
+ * @param title the text to display as the section title.
+ * @param checked whether the toggle is currently checked.
+ * @param enabled whether the toggle is interactive.
+ * @param onCheckedChange callback invoked when the toggle state changes.
+ * @param modifier Modifier to be applied to the [Row].
+ *
+ * @see SectionItem
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
  */
 @Composable
 public fun SectionToggleItem(

@@ -1,14 +1,16 @@
 package presentation.core.ui.source.kit.atom.button.core
 
 /**
- * Interface representing a set of predefined button sizes.
+ * Interface representing a set of predefined icon button sizes.
  *
- * This interface defines functions to obtain different button size configurations.
+ * This interface defines functions to obtain different icon button size configurations.
  *
  * References:
  *
  * - https://proandroiddev.com/compose-a-compose-button-by-composing-composable-functions-9f275772bd23
  * - https://github.com/aoriani/ComposeButton/tree/main
+ *
+ * @since 0.0.1
  */
 public interface IconButtonSizeSet {
     /**

@@ -5,6 +5,10 @@ import domain.usecase.api.core.common.Optional
 
 /**
  * Use case for updating the kiosk dashboard configuration.
+ *
+ * @see GetDashboardUseCase
+ * @see DashboardModel
+ * @since 0.0.1
  */
 public interface SetDashboardUseCase {
     /**

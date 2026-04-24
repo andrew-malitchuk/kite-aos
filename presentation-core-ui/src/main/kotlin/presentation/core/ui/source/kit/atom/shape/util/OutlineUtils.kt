@@ -31,23 +31,32 @@ import presentation.core.ui.source.kit.atom.shape.gentleSquircleShapePath
 import presentation.core.ui.source.kit.atom.shape.squircleShapePath
 
 /**
- * Creates an outline for a [SquircleShape], considering corner radii, smoothing, and layout direction.
+ * Creates an [Outline] for a [SquircleShape], considering corner radii, smoothing, and
+ * layout direction.
+ *
+ * This function serves as the bridge between the Compose shape system and the squircle
+ * path builder. It handles RTL mirroring of corners and delegates to [squircleShapePath]
+ * for the actual path construction.
  *
  * @param size The overall size of the shape as a [Size] object.
- * @param topStart The radius of the top-start corner in pixels. In left-to-right layouts, this corresponds to the top-left corner.
- * @param topEnd The radius of the top-end corner in pixels. In left-to-right layouts, this corresponds to the top-right corner.
- * @param bottomEnd The radius of the bottom-end corner in pixels. In left-to-right layouts, this corresponds to the bottom-right corner.
- * @param bottomStart The radius of the bottom-start corner in pixels. In left-to-right layouts, this corresponds to the bottom-left corner.
- * @param smoothing An Integer value between 0 and 100 that determines the smoothing of the corners.
- * @param layoutDirection The layout direction of the shape, specified as [LayoutDirection.Ltr] or [LayoutDirection.Rtl].
- *                        This affects how the corner radii are applied.
- * @return An [Outline] object representing the shape's boundary:
- *         - Returns a generic path representing the squircle shape.
+ * @param topStart The radius of the top-start corner in pixels. In LTR layouts, this
+ *   corresponds to the top-left corner.
+ * @param topEnd The radius of the top-end corner in pixels. In LTR layouts, this
+ *   corresponds to the top-right corner.
+ * @param bottomEnd The radius of the bottom-end corner in pixels. In LTR layouts, this
+ *   corresponds to the bottom-right corner.
+ * @param bottomStart The radius of the bottom-start corner in pixels. In LTR layouts, this
+ *   corresponds to the bottom-left corner.
+ * @param smoothing An integer value between 0 and 100 that determines the corner smoothing.
+ * @param layoutDirection The layout direction ([LayoutDirection.Ltr] or [LayoutDirection.Rtl])
+ *   that controls how corner radii are mapped to physical corners.
+ * @return An [Outline.Generic] containing the squircle path.
  *
- * ##### Behavior:
- * - Clamps the corner radii to ensure they fit within the size of the shape.
- * - Adjusts corner radii based on the layout direction, swapping left and right corners in RTL layouts.
- * - Applies corner smoothing using the provided `smoothing` parameter to create a squircle-like effect.
+ * @see SquircleShape
+ * @see squircleShapePath
+ * @see createGentleSquircleShapeOutline
+ * @see clampedSmoothing
+ * @since 0.0.1
  */
 @Stable
 internal fun createSquircleShapeOutline(
@@ -59,6 +68,7 @@ internal fun createSquircleShapeOutline(
     smoothing: Int,
     layoutDirection: LayoutDirection,
 ): Outline {
+    // Mirror start/end corners for RTL layout direction.
     val isRtl = layoutDirection == LayoutDirection.Rtl
     return Outline.Generic(
         path =
@@ -74,21 +84,29 @@ internal fun createSquircleShapeOutline(
 }
 
 /**
- * Creates an outline for a [GentleSquircleShape], considering corner radii and layout direction.
+ * Creates an [Outline] for a [GentleSquircleShape], considering corner radii and layout direction.
+ *
+ * This function serves as the bridge between the Compose shape system and the gentle squircle
+ * path builder. It handles RTL mirroring of corners and delegates to [gentleSquircleShapePath]
+ * for the actual path construction.
  *
  * @param size The overall size of the shape as a [Size] object.
- * @param topStart The radius of the top-start corner in pixels. In left-to-right layouts, this corresponds to the top-left corner.
- * @param topEnd The radius of the top-end corner in pixels. In left-to-right layouts, this corresponds to the top-right corner.
- * @param bottomEnd The radius of the bottom-end corner in pixels. In left-to-right layouts, this corresponds to the bottom-right corner.
- * @param bottomStart The radius of the bottom-start corner in pixels. In left-to-right layouts, this corresponds to the bottom-left corner.
- * @param layoutDirection The layout direction of the shape, specified as [LayoutDirection.Ltr] or [LayoutDirection.Rtl].
- *                        This affects how the corner radii are applied.
- * @return An [Outline] object representing the shape's boundary:
- *         - Returns a generic path representing the gentle squircle shape.
+ * @param topStart The radius of the top-start corner in pixels. In LTR layouts, this
+ *   corresponds to the top-left corner.
+ * @param topEnd The radius of the top-end corner in pixels. In LTR layouts, this
+ *   corresponds to the top-right corner.
+ * @param bottomEnd The radius of the bottom-end corner in pixels. In LTR layouts, this
+ *   corresponds to the bottom-right corner.
+ * @param bottomStart The radius of the bottom-start corner in pixels. In LTR layouts, this
+ *   corresponds to the bottom-left corner.
+ * @param layoutDirection The layout direction ([LayoutDirection.Ltr] or [LayoutDirection.Rtl])
+ *   that controls how corner radii are mapped to physical corners.
+ * @return An [Outline.Generic] containing the gentle squircle path.
  *
- * ##### Behavior:
- * - Clamps the corner radii to ensure they fit within the size of the shape.
- * - Adjusts corner radii based on the layout direction, swapping left and right corners in RTL layouts.
+ * @see GentleSquircleShape
+ * @see gentleSquircleShapePath
+ * @see createSquircleShapeOutline
+ * @since 0.0.1
  */
 @Stable
 internal fun createGentleSquircleShapeOutline(
@@ -99,6 +117,7 @@ internal fun createGentleSquircleShapeOutline(
     bottomStart: Float,
     layoutDirection: LayoutDirection,
 ): Outline {
+    // Mirror start/end corners for RTL layout direction.
     val isRtl = layoutDirection == LayoutDirection.Rtl
     return Outline.Generic(
         path =

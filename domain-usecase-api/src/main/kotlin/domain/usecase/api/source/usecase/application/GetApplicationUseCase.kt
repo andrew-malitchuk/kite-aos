@@ -4,6 +4,9 @@ import domain.core.source.model.ApplicationModel
 
 /**
  * Use case for retrieving details of a specific application by its package name.
+ *
+ * @see domain.usecase.impl.source.usecase.application.GetApplicationUseCaseImpl
+ * @since 0.0.1
  */
 public interface GetApplicationUseCase {
     /**

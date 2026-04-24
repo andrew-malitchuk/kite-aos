@@ -7,7 +7,9 @@ import domain.core.source.model.MqttModel
 import domain.core.source.model.ThemeModel
 
 /**
- * Represents the state of the settings screen.
+ * Represents the MVI state of the settings screen.
+ *
+ * This data class is used as the Orbit container state managed by [SettingsViewModel].
  *
  * @property theme The current visual theme selected by the user.
  * @property dock The current position of the control dock.
@@ -16,6 +18,9 @@ import domain.core.source.model.ThemeModel
  * @property mqtt The configuration for the MQTT telemetry connection.
  * @property isLoading Whether initial data is still being loaded from repositories.
  * @property currentLanguage The current application language code (e.g., "en", "uk").
+ * @see SettingsViewModel
+ * @see SettingsScreen
+ * @since 0.0.1
  */
 public data class SettingsState(
     val theme: ThemeModel? = null,
@@ -29,6 +34,13 @@ public data class SettingsState(
 
 /**
  * One-off side effects that can occur on the settings screen.
+ *
+ * Side effects are consumed by [SettingsScreen] and trigger navigation,
+ * system settings, or error display events.
+ *
+ * @see SettingsViewModel
+ * @see SettingsScreen
+ * @since 0.0.1
  */
 public sealed class SettingsSideEffect {
     /** Navigates back to the previous screen. */
@@ -55,6 +67,13 @@ public sealed class SettingsSideEffect {
 
 /**
  * User intents (actions) that can be performed on the settings screen.
+ *
+ * Intents are dispatched from [SettingsContent] and processed by
+ * [SettingsViewModel.handleIntent].
+ *
+ * @see SettingsViewModel
+ * @see SettingsContent
+ * @since 0.0.1
  */
 public sealed class SettingsIntent {
     /** Sets the application's visual theme. */

@@ -10,6 +10,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [SetDockPositionUseCase] using [ConfigureRepository].
+ *
+ * @see SetDockPositionUseCase
+ * @since 0.0.1
  */
 @Single(binds = [SetDockPositionUseCase::class])
 internal class SetDockPositionUseCaseImpl(

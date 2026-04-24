@@ -15,6 +15,29 @@ import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 import presentation.core.ui.source.kit.molecule.stepper.ValueStepper
 
+/**
+ * A list item with an integrated [ValueStepper] for numeric input.
+ *
+ * Combines a leading icon, a label, and a trailing [ValueStepper] that lets the user
+ * increment or decrement an integer value within a bounded range.
+ *
+ * @param modifier Modifier to be applied to the [BaseListItem].
+ * @param text The label text displayed in the item (e.g., "Font Size").
+ * @param textStyle The [TextStyle] for the label text. Defaults to [Theme.typography.body].
+ * @param icon The [ImageVector] icon to display on the leading side.
+ * @param iconBackgroundColor Background [Color] for the icon container.
+ * @param iconForegroundColor Foreground [Color] for the icon.
+ * @param value The current integer value displayed in the stepper.
+ * @param onValueChange Callback invoked when the user changes the numeric value.
+ * @param range The allowed [IntRange] for the value. Defaults to `0..100`.
+ * @param step The increment/decrement step size. Defaults to `1`.
+ * @param suffix An optional suffix string appended after the numeric value (e.g., "s" for seconds).
+ * @param enabled Whether the item is interactive. When `false`, the stepper and item are disabled.
+ * @see BaseListItem
+ * @see ValueStepper
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
+ */
 @Composable
 public fun NumberInputListItem(
     modifier: Modifier = Modifier,

@@ -9,6 +9,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [GetMqttConfigurationUseCase] using [MqttRepository].
+ *
+ * @see GetMqttConfigurationUseCase
+ * @since 0.0.1
  */
 @Single(binds = [GetMqttConfigurationUseCase::class])
 internal class GetMqttConfigurationUseCaseImpl(
@@ -17,6 +20,7 @@ internal class GetMqttConfigurationUseCaseImpl(
     override suspend fun invoke(): Result<MqttModel> = resultLauncher(
         errorMapper = Failure.Technical::Preference,
     ) {
+        // Throw NotFound if no MQTT configuration has been stored yet
         mqttRepository.getMqttConfiguration() ?: throw Failure.Logic.NotFound
     }
 }

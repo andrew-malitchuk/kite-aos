@@ -13,7 +13,15 @@ import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHost
  * Entry point for the Application Selection feature.
  *
  * This screen provides a list of installed applications and allows the user
- * to select which ones should be available in the kiosk dashboard.
+ * to select which ones should be available in the kiosk dashboard. It connects
+ * the [ApplicationViewModel] with [ApplicationContent] and handles
+ * [ApplicationSideEffect] events such as navigation and error display.
+ *
+ * @param viewModel The Koin-provided ViewModel managing the application selection logic.
+ * @see ApplicationViewModel
+ * @see ApplicationContent
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun ApplicationScreen(viewModel: ApplicationViewModel = koinViewModel()) {

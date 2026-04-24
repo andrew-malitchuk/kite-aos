@@ -6,6 +6,9 @@ import domain.core.source.model.base.Model
  * Domain model representing the physical position of the control dock (sidebar).
  *
  * @property position The selected dock position.
+ *
+ * @see Model
+ * @since 0.0.1
  */
 public data class DockPositionModel(
     val position: Position,

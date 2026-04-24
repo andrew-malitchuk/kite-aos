@@ -21,6 +21,15 @@ import presentation.core.localisation.R
  * It uses the [executeResult] utility to interact with domain use cases for reading/writing
  * configuration and onboarding status. It tracks the real-time status of various system
  * permissions and enables/disables navigation in the wizard accordingly.
+ *
+ * @param setOnboardingStatusUseCase Use case to persist the onboarding completion flag.
+ * @param setDashboardUseCase Use case to persist the dashboard and whitelist URLs.
+ * @param getDashboardUseCase Use case to retrieve previously saved dashboard URLs.
+ * @see OnboardingScreen
+ * @see OnboardingState
+ * @see OnboardingSideEffect
+ * @see OnboardingIntent
+ * @since 0.0.1
  */
 @KoinViewModel
 public class OnboardingViewModel(
@@ -54,30 +63,75 @@ public class OnboardingViewModel(
         loadDashboardUrls()
     }
 
+    /**
+     * Requests the camera permission by posting the corresponding side effect.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun askCameraPermission(): Job = intent {
         postSideEffect(OnboardingSideEffect.AskCameraPermissionEffect)
     }
 
+    /**
+     * Requests the overlay (draw-over-apps) permission by posting the corresponding side effect.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun askOverlayPermission(): Job = intent {
         postSideEffect(OnboardingSideEffect.AskOverlayPermissionEffect)
     }
 
+    /**
+     * Requests the POST_NOTIFICATIONS permission by posting the corresponding side effect.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun askPostNotificationPermission(): Job = intent {
         postSideEffect(OnboardingSideEffect.AskPostNotificationPermissionEffect)
     }
 
+    /**
+     * Requests the Device Administrator privilege by posting the corresponding side effect.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun askDeviceAdminPermission(): Job = intent {
         postSideEffect(OnboardingSideEffect.AskDeviceAdminEffect)
     }
 
+    /**
+     * Requests the WRITE_SETTINGS permission by posting the corresponding side effect.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun askWriteSettingsPermission(): Job = intent {
         postSideEffect(OnboardingSideEffect.AskWriteSettingsEffect)
     }
 
+    /**
+     * Navigates to the main dashboard by posting the [OnboardingSideEffect.GoToMainEffect].
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun onGoToMain(): Job = intent {
         postSideEffect(OnboardingSideEffect.GoToMainEffect)
     }
 
+    /**
+     * Completes the onboarding flow by persisting the dashboard configuration
+     * and marking onboarding as completed, then navigates to the main screen.
+     *
+     * @param dashboardUrl The Home Assistant dashboard URL entered by the user.
+     * @param whitelistUrl The whitelist domain(s) for WebView navigation.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
+     */
     public fun onFinish(dashboardUrl: String, whitelistUrl: String): Job = executeResult(
         scope = viewModelScope,
         request = {
@@ -118,6 +172,13 @@ public class OnboardingViewModel(
         },
     )
 
+    /**
+     * Updates the state with the camera permission result.
+     *
+     * @param granted Whether the camera permission was granted.
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun onCameraPermission(granted: Boolean): Job = intent {
         reduce {
             state.copy(
@@ -126,6 +187,13 @@ public class OnboardingViewModel(
         }
     }
 
+    /**
+     * Updates the state with the overlay permission result.
+     *
+     * @param granted Whether the overlay permission was granted.
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun onOverlayPermission(granted: Boolean): Job = intent {
         reduce {
             state.copy(
@@ -134,6 +202,13 @@ public class OnboardingViewModel(
         }
     }
 
+    /**
+     * Updates the state with the POST_NOTIFICATIONS permission result.
+     *
+     * @param granted Whether the notification permission was granted.
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun onPostNotificationPermission(granted: Boolean): Job = intent {
         reduce {
             state.copy(
@@ -142,6 +217,13 @@ public class OnboardingViewModel(
         }
     }
 
+    /**
+     * Updates the state with the Device Administrator permission result.
+     *
+     * @param granted Whether the device admin privilege was granted.
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun onDeviceAdminPermission(granted: Boolean): Job = intent {
         reduce {
             state.copy(
@@ -150,6 +232,13 @@ public class OnboardingViewModel(
         }
     }
 
+    /**
+     * Updates the state with the WRITE_SETTINGS permission result.
+     *
+     * @param granted Whether the write settings permission was granted.
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
     public fun onWriteSettingsPermission(granted: Boolean): Job = intent {
         reduce {
             state.copy(
@@ -158,6 +247,15 @@ public class OnboardingViewModel(
         }
     }
 
+    /**
+     * Entry point for user actions from the UI.
+     *
+     * Routes each [OnboardingIntent] to the corresponding handler method.
+     *
+     * @param intent The user action to process.
+     * @see OnboardingIntent
+     * @since 0.0.1
+     */
     public fun handleIntent(intent: OnboardingIntent) {
         when (intent) {
             is OnboardingIntent.OnAskCameraPermissionIntent -> askCameraPermission()

@@ -9,6 +9,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [MqttSendMotionUseCase] using [MqttRepository].
+ *
+ * @see MqttSendMotionUseCase
+ * @since 0.0.1
  */
 @Single(binds = [MqttSendMotionUseCase::class])
 internal class MqttSendMotionUseCaseImpl(

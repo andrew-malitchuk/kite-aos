@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * Decorative squircle outline shape variant 1.
+ *
+ * @since 0.0.1
+ */
 public val IcOutline1: ImageVector
     get() {
         if (_IcOutline1 != null) {

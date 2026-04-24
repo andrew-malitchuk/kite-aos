@@ -22,17 +22,35 @@ import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 
-// Configuration constants moved to a single place
+/**
+ * Default timing constants for sequential animations.
+ *
+ * @since 0.0.1
+ */
 private object AnimationDefaults {
+    /** Default animation duration in milliseconds. */
     const val DEFAULT_DURATION = 300L
+
+    /** Default delay between consecutive animation items in milliseconds. */
     const val DEFAULT_DELAY = 400L
 }
 
-// Composition local to provide the animation host
+// CompositionLocal providing the nearest SequentialAnimationHost to child composables.
 private val LocalSequentialAnimationHost =
     staticCompositionLocalOf<SequentialAnimationHost?> { null }
 
-/** Data class to represent an animation item in the sequence */
+/**
+ * Data class to represent an animation item in the sequence.
+ *
+ * @param index Unique identifier and position in the animation sequence.
+ * @param visibilityState The mutable transition state controlling visibility.
+ * @param enterTransition The transition played when the item enters.
+ * @param exitTransition The transition played when the item exits.
+ * @param delay Time in milliseconds to wait after this item before starting the next.
+ * @param enterDuration Pre-calculated enter transition duration in milliseconds.
+ * @param exitDuration Pre-calculated exit transition duration in milliseconds.
+ * @since 0.0.1
+ */
 private data class AnimationItem(
     val index: Int,
     val visibilityState: MutableTransitionState<Boolean>,
@@ -43,20 +61,67 @@ private data class AnimationItem(
     val exitDuration: Long, // Pre-calculated exit duration
 )
 
-/** Interface defining the operations that can be performed on a sequence of animations */
+/**
+ * Scope interface defining the operations that can be performed on a sequence of animations.
+ *
+ * Implementations orchestrate enter and exit transitions for a collection of indexed items,
+ * allowing both batch and single-item control.
+ *
+ * @see AnimationSequenceHost
+ * @since 0.0.1
+ */
 public interface SequentialAnimationScope {
+    /**
+     * Plays the enter animation for all registered items in index order.
+     *
+     * Items are first hidden (exit), then revealed one by one with their configured delays.
+     *
+     * @since 0.0.1
+     */
     public suspend fun enter()
 
+    /**
+     * Plays the exit animation for all registered items.
+     *
+     * @param all When `true`, all items are hidden simultaneously without staggered delays.
+     *   When `false`, items exit in reverse index order with their configured delays.
+     * @since 0.0.1
+     */
     public suspend fun exit(all: Boolean = false)
 
+    /**
+     * Plays the enter animation for a single item identified by [index].
+     *
+     * @param index The unique index of the item to animate.
+     * @return `true` if the item was found and animated, `false` otherwise.
+     * @since 0.0.1
+     */
     public suspend fun enter(index: Int): Boolean
 
+    /**
+     * Plays the exit animation for a single item identified by [index].
+     *
+     * @param index The unique index of the item to animate.
+     * @return `true` if the item was found and animated, `false` otherwise.
+     * @since 0.0.1
+     */
     public suspend fun exit(index: Int): Boolean
 
+    /**
+     * Checks whether an animation sequence is currently in progress.
+     *
+     * @return `true` if an animation is running, `false` otherwise.
+     * @since 0.0.1
+     */
     public fun isAnimating(): Boolean
 }
 
-/** Class that manages a sequence of animations with custom delays between them */
+/**
+ * Internal implementation of [SequentialAnimationScope] that manages a sequence of animations
+ * with custom delays between them. Supports parent-child nesting for cascading exit calls.
+ *
+ * @since 0.0.1
+ */
 private class SequentialAnimationHost : SequentialAnimationScope {
     // Using ConcurrentHashMap for thread safety
     private val items = ConcurrentMutableMap<Int, AnimationItem>()
@@ -146,12 +211,12 @@ private class SequentialAnimationHost : SequentialAnimationScope {
         items.remove(index)
     }
 
-    /** Clears all items from the host */
+    /** Clears all items from the host. */
     fun clearItems() {
         items.clear()
     }
 
-    /** Plays the enter animation for all items in sequence based on their index */
+    /** Plays the enter animation for all items in sequence based on their index. */
     override suspend fun enter() {
         if (isAnimationInProgress.value) return
         try {
@@ -192,7 +257,7 @@ private class SequentialAnimationHost : SequentialAnimationScope {
         }
     }
 
-    /** Plays the exit animation for all items simultaneously */
+    /** Plays the exit animation for all items, either simultaneously or in reverse order. */
     override suspend fun exit(all: Boolean) {
         if (isAnimationInProgress.value) return
         try {
@@ -292,7 +357,7 @@ private class SequentialAnimationHost : SequentialAnimationScope {
      */
     private fun calculateTransitionDuration(transition: Any): Long {
         if (transition is Transition<*>) {
-            // Convert nanoseconds to milliseconds (and handle potential overflow)
+            // Convert nanoseconds to milliseconds (1_000_000 ns = 1 ms) and guard against overflow
             val millis = (transition.totalDurationNanos / 1_000_000L).coerceAtMost(Long.MAX_VALUE)
             return millis
         }
@@ -303,7 +368,20 @@ private class SequentialAnimationHost : SequentialAnimationScope {
     }
 }
 
-/** Composable function that creates and manages a sequential animation host */
+/**
+ * A composable container that orchestrates sequential enter/exit animations for its children.
+ *
+ * Child composables register themselves via [AnimatedItem] and are animated in index order when
+ * the host starts. Hosts can be nested; a parent host will cascade exit calls to its children.
+ *
+ * @param modifier Modifier to be applied to the [Box].
+ * @param startByDefault When `true`, the enter sequence starts automatically on first composition.
+ * @param content The content block receiving a [SequentialAnimationScope] for manual control.
+ * @see AnimatedItem
+ * @see SequentialAnimationScope
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
+ */
 @Composable
 public fun AnimationSequenceHost(
     modifier: Modifier = Modifier,
@@ -344,7 +422,28 @@ public fun AnimationSequenceHost(
     }
 }
 
-/** Composable for individual animated items that participate in a sequence */
+/**
+ * A composable wrapper that registers its content as an animated item in the nearest
+ * [AnimationSequenceHost].
+ *
+ * Each item is identified by a unique [index] that determines its position in the animation
+ * sequence. The item is hidden by default and becomes visible when the host triggers
+ * its enter sequence.
+ *
+ * @param modifier Modifier to be applied to the [AnimatedVisibility].
+ * @param index The unique index that determines the item's position in the animation sequence.
+ *   Must be unique within the enclosing [AnimationSequenceHost].
+ * @param delayAfterAnimation The delay in milliseconds to wait after this item's enter animation
+ *   before the next item starts. Defaults to [AnimationDefaults.DEFAULT_DELAY] (400 ms).
+ * @param enter The [EnterTransition] to apply when the item becomes visible.
+ *   Defaults to a 300 ms fade-in.
+ * @param exit The [ExitTransition] to apply when the item becomes hidden.
+ *   Defaults to a 300 ms fade-out.
+ * @param content The composable content to animate.
+ * @see AnimationSequenceHost
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
+ */
 @Composable
 public fun AnimatedItem(
     modifier: Modifier = Modifier,

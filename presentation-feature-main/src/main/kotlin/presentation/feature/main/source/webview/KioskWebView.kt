@@ -19,6 +19,13 @@ import androidx.compose.ui.viewinterop.AndroidView
  * State holder for the [KioskWebView].
  *
  * It manages the URL, whitelist, loading state, and navigation history.
+ * Marked as [Stable] to allow Compose to skip recomposition when the reference is unchanged.
+ *
+ * @param initialUrl The default URL to load when the WebView is first created.
+ * @param initialWhitelist The default list of allowed domains for navigation.
+ * @see KioskWebView
+ * @see rememberKioskWebViewState
+ * @since 0.0.1
  */
 @Stable
 public class KioskWebViewState(
@@ -58,7 +65,14 @@ public class KioskWebViewState(
 }
 
 /**
- * Creates and remembers a [KioskWebViewState].
+ * Creates and remembers a [KioskWebViewState] instance across recompositions.
+ *
+ * @param url The initial URL to load in the WebView.
+ * @param whitelist The list of allowed domains for URL navigation.
+ * @return A remembered [KioskWebViewState] instance.
+ * @see KioskWebViewState
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun rememberKioskWebViewState(
@@ -73,9 +87,14 @@ public fun rememberKioskWebViewState(
  *
  * It features a restricted navigation system (whitelisting) and exposes its
  * state (loading status, navigation history) via [KioskWebViewState].
+ * JavaScript and DOM storage are enabled. Third-party cookies are accepted
+ * to support Home Assistant authentication flows.
  *
- * @param state The [KioskWebViewState] to be used.
- * @param modifier The modifier for the WebView container.
+ * @param state The [KioskWebViewState] managing URL, whitelist, and navigation.
+ * @param modifier Modifier to be applied to the [Box] root composable.
+ * @see KioskWebViewState
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun KioskWebView(state: KioskWebViewState, modifier: Modifier = Modifier) {

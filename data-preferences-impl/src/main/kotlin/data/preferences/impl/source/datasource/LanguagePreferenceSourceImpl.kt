@@ -8,6 +8,20 @@ import data.preferences.impl.source.datasource.base.BasePreferenceSourceImpl
 import data.preferences.impl.source.storage.LanguagePreferenceStorage
 import org.koin.core.annotation.Single
 
+/**
+ * Implementation of [LanguagePreferenceSource] backed by Proto DataStore.
+ *
+ * Delegates persistence to [LanguagePreferenceStorage] and uses
+ * [LanguageProtobufPreferenceMapper] for converting between the Protobuf model and the
+ * [LanguagePreference] resource.
+ *
+ * @param languagePreferenceDao the [LanguagePreferenceStorage] providing DataStore access.
+ * @see LanguagePreferenceSource
+ * @see LanguagePreferenceStorage
+ * @see LanguageProtobufPreferenceMapper
+ * @see BasePreferenceSourceImpl
+ * @since 0.0.1
+ */
 @Single(binds = [LanguagePreferenceSource::class])
 internal class LanguagePreferenceSourceImpl(
     languagePreferenceDao: LanguagePreferenceStorage,

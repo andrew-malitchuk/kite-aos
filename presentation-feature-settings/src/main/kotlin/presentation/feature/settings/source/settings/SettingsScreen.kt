@@ -19,7 +19,14 @@ import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHost
  * Entry point for the settings feature.
  *
  * This Composable connects the [SettingsViewModel] to the [SettingsContent] and handles
- * side effects like navigation, opening system settings, and displaying errors.
+ * side effects like navigation, opening system settings, displaying errors, and
+ * triggering application restarts.
+ *
+ * @param viewModel The Koin-provided ViewModel managing the settings screen logic.
+ * @see SettingsViewModel
+ * @see SettingsContent
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {

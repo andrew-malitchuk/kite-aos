@@ -34,6 +34,12 @@ import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHost
  * This screen manages several [rememberLauncherForActivityResult] to interact with the
  * Android system for permissions and administrative tasks. It synchronizes the local UI state
  * with the actual system settings on every initialization via [LaunchedEffect].
+ *
+ * @param viewModel The Koin-provided ViewModel managing the onboarding wizard logic.
+ * @see OnboardingViewModel
+ * @see OnboardingContent
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun OnboardingScreen(viewModel: OnboardingViewModel = koinViewModel()) {

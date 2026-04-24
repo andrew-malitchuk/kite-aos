@@ -5,6 +5,11 @@ import domain.usecase.api.core.common.Optional
 
 /**
  * Use case for saving the MQTT broker configuration.
+ *
+ * @see GetMqttConfigurationUseCase
+ * @see ObserveMqttConfigurationUseCase
+ * @see MqttModel
+ * @since 0.0.1
  */
 public interface SetMqttConfigurationUseCase {
     /**

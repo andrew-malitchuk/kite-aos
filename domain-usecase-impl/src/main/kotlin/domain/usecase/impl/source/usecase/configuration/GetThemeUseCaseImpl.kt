@@ -9,6 +9,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [GetThemeUseCase] using [ConfigureRepository].
+ *
+ * @see GetThemeUseCase
+ * @since 0.0.1
  */
 @Single(binds = [GetThemeUseCase::class])
 internal class GetThemeUseCaseImpl(
@@ -17,6 +20,7 @@ internal class GetThemeUseCaseImpl(
     override suspend fun invoke(): Result<ThemeModel> = resultLauncher(
         errorMapper = Failure.Technical::Preference,
     ) {
+        // Throw NotFound if no theme preference has been stored yet
         configureRepository.getTheme() ?: throw Failure.Logic.NotFound
     }
 }

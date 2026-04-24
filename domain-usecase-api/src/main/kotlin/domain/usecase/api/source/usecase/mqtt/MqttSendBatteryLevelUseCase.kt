@@ -4,6 +4,8 @@ import domain.usecase.api.core.common.Optional
 
 /**
  * Use case for reporting the current battery level to the MQTT broker.
+ *
+ * @since 0.0.1
  */
 public interface MqttSendBatteryLevelUseCase {
     /**

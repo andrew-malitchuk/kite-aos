@@ -4,11 +4,16 @@ import domain.core.source.model.ThemeModel
 import presentation.core.navigation.api.source.destination.Destination
 
 /**
- * State for the application's host activity.
+ * Represents the MVI state for the application's host activity.
+ *
+ * This data class is used as the Orbit container state managed by [HostViewModel].
  *
  * @property startDestination The initial navigation destination (Main or Onboarding)
- * determined during bootstrapping. Null if not yet decided.
+ *   determined during bootstrapping. Null if not yet decided.
  * @property theme The current application theme observed from user preferences.
+ * @see HostViewModel
+ * @see HostActivity
+ * @since 0.0.1
  */
 public data class HostState(
     val startDestination: Destination? = null,
@@ -18,6 +23,10 @@ public data class HostState(
 /**
  * Side effects for the host activity, primarily used for lifecycle-dependent
  * UI transitions like dismissing the splash screen.
+ *
+ * @see HostViewModel
+ * @see HostActivity
+ * @since 0.0.1
  */
 public sealed class HostSideEffect {
     /**
@@ -29,6 +38,10 @@ public sealed class HostSideEffect {
 
 /**
  * User intents for the host activity.
+ *
+ * @see HostViewModel
+ * @see HostActivity
+ * @since 0.0.1
  */
 public sealed class HostIntent {
     /**

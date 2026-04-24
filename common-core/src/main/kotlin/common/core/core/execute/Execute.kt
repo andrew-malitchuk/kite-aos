@@ -23,6 +23,9 @@ import kotlin.coroutines.CoroutineContext
  * @param errorBlock Callback triggered when an exception occurs during execution.
  * @param request The suspendable operation to perform.
  * @return The [Job] representing the launched coroutine.
+ *
+ * @see executeResult
+ * @since 0.0.1
  */
 public fun <T> executeCoroutine(
     context: CoroutineContext = Dispatchers.Default,
@@ -64,6 +67,9 @@ public fun <T> executeCoroutine(
  * @param errorBlock Callback triggered when the [Result] is a failure or an exception occurs.
  * @param request The suspendable operation returning a [Result].
  * @return The [Job] representing the launched coroutine.
+ *
+ * @see executeCoroutine
+ * @since 0.0.1
  */
 public fun <T> executeResult(
     context: CoroutineContext = Dispatchers.Default,

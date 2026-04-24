@@ -10,6 +10,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [RemoveApplicationUseCase] using [ApplicationRepository].
+ *
+ * @see RemoveApplicationUseCase
+ * @since 0.0.1
  */
 @Single(binds = [RemoveApplicationUseCase::class])
 internal class RemoveApplicationUseCaseImpl(

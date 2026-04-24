@@ -10,6 +10,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [SaveApplicationUseCase] using [ApplicationRepository].
+ *
+ * @see SaveApplicationUseCase
+ * @since 0.0.1
  */
 @Single(binds = [SaveApplicationUseCase::class])
 internal class SaveApplicationUseCaseImpl(

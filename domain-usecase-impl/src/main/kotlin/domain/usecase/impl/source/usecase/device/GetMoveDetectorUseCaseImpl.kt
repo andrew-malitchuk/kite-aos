@@ -9,6 +9,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [GetMoveDetectorUseCase] using [ConfigureRepository].
+ *
+ * @see GetMoveDetectorUseCase
+ * @since 0.0.1
  */
 @Single(binds = [GetMoveDetectorUseCase::class])
 internal class GetMoveDetectorUseCaseImpl(
@@ -17,6 +20,7 @@ internal class GetMoveDetectorUseCaseImpl(
     override suspend fun invoke(): Result<MoveDetectorModel> = resultLauncher(
         errorMapper = Failure.Technical::Preference,
     ) {
+        // Throw NotFound if no move-detector settings have been persisted yet
         configureRepository.getMoveDetector() ?: throw Failure.Logic.NotFound
     }
 }

@@ -45,6 +45,29 @@ import presentation.core.ui.source.kit.atom.icon.IcClose24
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
 
+/**
+ * A list item with an inline text-input field and optional regex validation.
+ *
+ * Renders a leading icon, a [BasicTextField] for free-form text entry, and a trailing clear
+ * button. When [validationRegex] is supplied and the current input does not match, the item
+ * border animates to the error color. The keyboard is configurable via [keyboardOptions].
+ *
+ * @param modifier Modifier to be applied to the [BaseListItem].
+ * @param initialText The initial text to populate the field with. Defaults to empty.
+ * @param onTextChanged Callback invoked each time the text value changes.
+ * @param placeholder The hint text displayed when the field is empty.
+ * @param textStyle The [TextStyle] for the input and placeholder text. Defaults to [Theme.typography.body].
+ * @param icon The [ImageVector] icon to display on the leading side.
+ * @param iconBackgroundColor Background [Color] for the icon container.
+ * @param iconForegroundColor Foreground [Color] for the icon.
+ * @param validationRegex An optional [Regex] used to validate the input. A non-matching, non-empty
+ *   value triggers the error border.
+ * @param keyboardOptions The [KeyboardOptions] applied to the text field.
+ * @param enabled Whether the input field and clear button are interactive.
+ * @see BaseListItem
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 public fun TextInputListItem(
@@ -66,10 +89,12 @@ public fun TextInputListItem(
         ),
     enabled: Boolean = true,
 ) {
+    // Custom selection handle and highlight colors derived from the brand palette
     val handleColor = Theme.color.brand
-    val backgroundColor = Theme.color.brand.copy(alpha = 0.4f)
+    val backgroundColor = Theme.color.brand.copy(alpha = 0.4f) // 40% opacity for selection highlight
 
     var text by remember(initialText) { mutableStateOf(initialText) }
+    // Evaluate validation whenever the text changes; error state is only set for non-empty input
     var isError by remember(text) {
         mutableStateOf(validationRegex?.let { !it.matches(text) && text.isNotEmpty() } ?: false)
     }
@@ -77,6 +102,7 @@ public fun TextInputListItem(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    // Dismiss focus automatically when the software keyboard is hidden
     val isImeVisible = WindowInsets.isImeVisible
     LaunchedEffect(isImeVisible) {
         if (!isImeVisible) {
@@ -84,6 +110,7 @@ public fun TextInputListItem(
         }
     }
 
+    // Animate the border color to red when the input fails validation
     val borderColor by animateColorAsState(
         targetValue = if (isError && enabled) Theme.color.error else Color.Transparent,
         label = "BorderColor",

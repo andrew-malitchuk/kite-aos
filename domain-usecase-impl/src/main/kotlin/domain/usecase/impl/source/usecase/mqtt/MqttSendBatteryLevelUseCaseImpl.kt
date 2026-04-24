@@ -9,6 +9,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [MqttSendBatteryLevelUseCase] using [MqttRepository].
+ *
+ * @see MqttSendBatteryLevelUseCase
+ * @since 0.0.1
  */
 @Single(binds = [MqttSendBatteryLevelUseCase::class])
 internal class MqttSendBatteryLevelUseCaseImpl(

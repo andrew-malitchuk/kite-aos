@@ -9,6 +9,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [GetApplicationsUseCase] using [ApplicationRepository].
+ *
+ * @see GetApplicationsUseCase
+ * @since 0.0.1
  */
 @Single(binds = [GetApplicationsUseCase::class])
 internal class GetApplicationsUseCaseImpl(

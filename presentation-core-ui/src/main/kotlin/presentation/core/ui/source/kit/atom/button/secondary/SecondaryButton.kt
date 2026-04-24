@@ -19,9 +19,9 @@ import presentation.core.ui.source.kit.atom.button.secondary.core.SecondaryButto
  * This function creates a secondary button with predefined styles and supports customizations for
  * appearance, size, and interactions. It includes optional support for loading indicators and icons.
  *
- * @param modifier The modifier to be applied to the button.
+ * @param modifier Modifier to be applied to the [SecondaryButton].
  * @param text The text to display on the button.
- * @param onClick The callback to be invoked when the button is clicked. If `null`, the button is not clickable.
+ * @param onClick Callback invoked when the user clicks the button. If `null`, the button is not clickable.
  * @param startIcon The resource ID of the icon to display at the start of the button, or `null` if no icon is needed.
  * @param endIcon The resource ID of the icon to display at the end of the button, or `null` if no icon is needed.
  * @param enabled A boolean indicating whether the button is enabled. Default is `true`.
@@ -35,6 +35,11 @@ import presentation.core.ui.source.kit.atom.button.secondary.core.SecondaryButto
  *                  Default is provided by [SecondaryButtonDefault.animation].
  * @param interactionSource The [MutableInteractionSource] for the button to track interaction states.
  *                          Default is a new [MutableInteractionSource] created with [remember].
+ *
+ * @see StateButton
+ * @see SecondaryButtonDefault
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun SecondaryButton(

@@ -25,14 +25,18 @@ import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
 
 /**
- * A list item representing an application.
+ * A list item representing an installed application.
  *
- * Displays application icon, name and package name.
- * Highlights the item with a brand-colored border if it is chosen.
+ * Displays the application icon (resolved from the package manager at runtime), the application
+ * name, and its package name. When the application is marked as chosen, a brand-colored border
+ * animates around the item to indicate the selection.
  *
- * @param modifier The modifier to be applied to the item.
- * @param applicationModel The data model of the application.
- * @param onClick Callback when the item is clicked.
+ * @param modifier Modifier to be applied to the [BaseListItem].
+ * @param applicationModel The [ApplicationModel] containing the application metadata to display.
+ * @param onClick Callback invoked when the user taps this list item.
+ * @see BaseListItem
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun ApplicationListItem(
@@ -40,7 +44,9 @@ public fun ApplicationListItem(
     applicationModel: ApplicationModel,
     onClick: () -> Unit,
 ) {
+    // Default to not-chosen when the chosen flag is null
     val isChosen = applicationModel.chosen ?: false
+    // Animate the border color between transparent and brand to indicate selection
     val borderColor by animateColorAsState(
         targetValue = if (isChosen) Theme.color.brand else Color.Transparent,
         label = "ApplicationListItemBorderColor",
@@ -65,6 +71,8 @@ public fun ApplicationListItem(
                 contentAlignment = Alignment.Center,
             ) {
                 val context = LocalContext.current
+                // Resolve the application icon from the package manager; fall back to null
+                // if the package is not found or the icon cannot be loaded.
                 val iconPainter =
                     remember(applicationModel.packageName, applicationModel.icon) {
                         val drawable =
@@ -81,6 +89,7 @@ public fun ApplicationListItem(
                         }
                     }
 
+                // Prefer the runtime-resolved icon; fall back to the resource ID if available
                 if (iconPainter != null) {
                     Image(
                         modifier = Modifier.size(Theme.size.sizeXL),

@@ -3,7 +3,14 @@ package presentation.feature.application.source.application
 import domain.core.source.model.ApplicationModel
 
 /**
- * User actions that can be performed on the Application Selection screen.
+ * User actions (intents) that can be performed on the Application Selection screen.
+ *
+ * Intents are dispatched from [ApplicationContent] and processed by
+ * [ApplicationViewModel.handleIntent].
+ *
+ * @see ApplicationViewModel
+ * @see ApplicationContent
+ * @since 0.0.1
  */
 public sealed class ApplicationIntent {
     /** Triggered when the user clicks the back button. */

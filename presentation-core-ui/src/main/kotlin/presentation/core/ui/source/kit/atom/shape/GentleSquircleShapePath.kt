@@ -39,17 +39,28 @@ import presentation.core.ui.source.kit.atom.shape.util.clampedCornerRadius
 import presentation.core.ui.source.kit.atom.shape.util.clampedSmoothing
 
 /**
+ * Builds a [Path] for drawing a Gentle Squircle shape that gently morphs from a squircle
+ * into a circle when applying larger corner radii.
  *
- *  The path used for drawing a Gentle Squircle shape that gently
- *  morphs from a squircle into a circle when applying larger corner radii.
+ * The algorithm works as follows for each corner:
+ * 1. The raw corner radius is scaled by a 1.2x multiplier to match the visual size of
+ *    standard rounded corners, then clamped to half the smallest dimension.
+ * 2. If the clamped radius reaches or exceeds the corner threshold (half of [Size.minDimension]),
+ *    a circular arc is used instead of a cubic Bezier curve.
+ * 3. Otherwise, a cubic Bezier is drawn with a smoothing factor computed by [clampedSmoothing],
+ *    which gradually reduces the squircle effect as the radius approaches the threshold.
  *
- *  @param size The size of the shape in pixels.
- *  @param topLeftCorner The top left corner radius in pixels.
- *  @param topRightCorner The top right corner radius in pixels.
- *  @param bottomLeftCorner The bottom left corner radius in pixels.
- *  @param bottomRightCorner The bottom right corner radius in pixels.
- *  @param smoothing The corner smoothing from 0 to 100.
+ * @param size The size of the shape in pixels.
+ * @param topLeftCorner The top left corner radius in pixels.
+ * @param topRightCorner The top right corner radius in pixels.
+ * @param bottomLeftCorner The bottom left corner radius in pixels.
+ * @param bottomRightCorner The bottom right corner radius in pixels.
+ * @return A closed [Path] representing the gentle squircle outline.
  *
+ * @see squircleShapePath
+ * @see clampedCornerRadius
+ * @see clampedSmoothing
+ * @since 0.0.1
  **/
 @Suppress("LongMethod")
 public fun gentleSquircleShapePath(
@@ -62,18 +73,25 @@ public fun gentleSquircleShapePath(
     val width = size.width
     val height = size.height
     val minDimension = size.minDimension
+    // The threshold at which corners switch from cubic Bezier to circular arcs.
     val cornerThreshold = minDimension / 2
 
+    // Scale each corner radius by 1.2x to visually match the size of standard rounded corners,
+    // then clamp to prevent overflow beyond half the smallest axis.
     val topLeft = clampedCornerRadius(topLeftCorner * 1.2f, size)
     val topRight = clampedCornerRadius(topRightCorner * 1.2f, size)
     val bottomRight = clampedCornerRadius(bottomRightCorner * 1.2f, size)
     val bottomLeft = clampedCornerRadius(bottomLeftCorner * 1.2f, size)
 
+    // When the radius reaches the threshold, switch to a true circular arc for that corner.
     val useArcAtTopLeft = topLeft >= cornerThreshold
     val useArcAtTopRight = topRight >= cornerThreshold
     val useArcAtBottomRight = bottomRight >= cornerThreshold
     val useArcAtBottomLeft = bottomLeft >= cornerThreshold
 
+    // Compute per-corner smoothing factors that control the cubic Bezier control point offset.
+    // The factor gradually reduces the squircle effect as radius approaches the threshold,
+    // producing the "gentle" morphing behavior.
     val topLeftSmoothingFactor = clampedSmoothing(topLeft, cornerThreshold)
     val topRightSmoothingFactor = clampedSmoothing(topRight, cornerThreshold)
     val bottomRightSmoothingFactor = clampedSmoothing(bottomRight, cornerThreshold)
@@ -218,9 +236,10 @@ public fun gentleSquircleShapePath(
 }
 
 /**
- *
  * Draws a Gentle Squircle with the given [Color]. Whether the Gentle Squircle is
  * filled or stroked (or both) is controlled by [Paint.style].
+ *
+ * Corner radii are automatically swapped for right-to-left layout directions.
  *
  * @param color The color to be applied to the Squircle.
  * @param topLeft Offset from the local origin of 0, 0 relative to the current translation.
@@ -229,11 +248,15 @@ public fun gentleSquircleShapePath(
  * @param topRightCorner The top right corner radius in pixels.
  * @param bottomLeftCorner The bottom left corner radius in pixels.
  * @param bottomRightCorner The bottom right corner radius in pixels.
- * @param alpha Opacity to be applied to Squircle from 0.0f to 1.0f representing fully transparent to fully opaque respectively.
  * @param style Specifies whether the Squircle is stroked or filled in.
- * @param colorFilter ColorFilter to apply to the [color] when drawn into the destination.
+ * @param alpha Opacity to be applied to Squircle from 0.0f to 1.0f representing
+ *   fully transparent to fully opaque respectively.
+ * @param colorFilter [ColorFilter] to apply to the [color] when drawn into the destination.
  * @param blendMode Blending algorithm to be applied to the color.
  *
+ * @see gentleSquircleShapePath
+ * @see drawSquircle
+ * @since 0.0.1
  */
 public fun DrawScope.drawGentleSquircle(
     color: Color,
@@ -248,6 +271,7 @@ public fun DrawScope.drawGentleSquircle(
     colorFilter: ColorFilter? = null,
     blendMode: BlendMode = DrawScope.DefaultBlendMode,
 ) {
+    // Mirror corners horizontally for right-to-left layouts.
     val isRtl = this.layoutDirection == LayoutDirection.Rtl
     val path =
         gentleSquircleShapePath(
@@ -258,6 +282,7 @@ public fun DrawScope.drawGentleSquircle(
             bottomRightCorner = if (isRtl) bottomRightCorner else bottomLeftCorner,
         )
 
+    // Translate the canvas to the requested offset before drawing the path.
     translate(
         left = topLeft.x,
         top = topLeft.y,
@@ -274,22 +299,27 @@ public fun DrawScope.drawGentleSquircle(
 }
 
 /**
- *
  * Draws a Gentle Squircle with the given [Brush]. Whether the Gentle Squircle is
  * filled or stroked (or both) is controlled by [Paint.style].
  *
- * @param brush The brush to be applied to the Squircle.
+ * Corner radii are automatically swapped for right-to-left layout directions.
+ *
+ * @param brush The brush (gradient or shader) to be applied to the Squircle.
  * @param topLeft Offset from the local origin of 0, 0 relative to the current translation.
  * @param size Dimensions of the Squircle to draw.
  * @param topLeftCorner The top left corner radius in pixels.
  * @param topRightCorner The top right corner radius in pixels.
  * @param bottomLeftCorner The bottom left corner radius in pixels.
  * @param bottomRightCorner The bottom right corner radius in pixels.
- * @param alpha Opacity to be applied to Squircle from 0.0f to 1.0f representing fully transparent to fully opaque respectively.
  * @param style Specifies whether the Squircle is stroked or filled in.
- * @param colorFilter ColorFilter to apply to the [brush] when drawn into the destination.
- * @param blendMode Blending algorithm to be applied to the color.
+ * @param alpha Opacity to be applied to Squircle from 0.0f to 1.0f representing
+ *   fully transparent to fully opaque respectively.
+ * @param colorFilter [ColorFilter] to apply to the [brush] when drawn into the destination.
+ * @param blendMode Blending algorithm to be applied to the brush.
  *
+ * @see gentleSquircleShapePath
+ * @see drawSquircle
+ * @since 0.0.1
  */
 public fun DrawScope.drawGentleSquircle(
     brush: Brush,
@@ -304,6 +334,7 @@ public fun DrawScope.drawGentleSquircle(
     colorFilter: ColorFilter? = null,
     blendMode: BlendMode = DrawScope.DefaultBlendMode,
 ) {
+    // Mirror corners horizontally for right-to-left layouts.
     val isRtl = this.layoutDirection == LayoutDirection.Rtl
     val path =
         gentleSquircleShapePath(
@@ -314,6 +345,7 @@ public fun DrawScope.drawGentleSquircle(
             bottomRightCorner = if (isRtl) bottomRightCorner else bottomLeftCorner,
         )
 
+    // Translate the canvas to the requested offset before drawing the path.
     translate(
         left = topLeft.x,
         top = topLeft.y,

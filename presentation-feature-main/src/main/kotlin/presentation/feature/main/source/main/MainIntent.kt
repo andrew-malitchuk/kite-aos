@@ -1,7 +1,13 @@
 package presentation.feature.main.source.main
 
 /**
- * User actions that can be performed on the Main screen.
+ * User actions (intents) that can be performed on the Main screen.
+ *
+ * Intents are dispatched from [MainContent] and processed by [MainViewModel.handleIntent].
+ *
+ * @see MainViewModel
+ * @see MainContent
+ * @since 0.0.1
  */
 public sealed class MainIntent {
     /** Initial load of kiosk configuration and state. */

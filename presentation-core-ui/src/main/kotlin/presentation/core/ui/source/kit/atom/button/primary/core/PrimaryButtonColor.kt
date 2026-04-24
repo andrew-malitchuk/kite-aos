@@ -9,7 +9,27 @@ import presentation.core.ui.core.ext.has
 import presentation.core.ui.source.kit.atom.button.core.ButtonColor
 import presentation.core.ui.source.kit.atom.button.core.ButtonInteractionState
 
+/**
+ * [ButtonColor] implementation for primary buttons.
+ *
+ * Resolves border, foreground (text/icon), and background colors based on the current
+ * interaction state and enabled flag. The background is always transparent; the button
+ * relies on its border and foreground to convey state.
+ *
+ * @see ButtonColor
+ * @since 0.0.1
+ */
 public class PrimaryButtonColor : ButtonColor {
+    /**
+     * Resolves the border color for the primary button.
+     *
+     * @param interactionState Bitmask of active [ButtonInteractionState] flags.
+     * @param enabled Whether the button is enabled.
+     * @param loading Whether the button is in a loading state.
+     * @return A [State] of [Color] representing the resolved border color.
+     *
+     * @since 0.0.1
+     */
     @Composable
     override fun borderColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
         rememberUpdatedState(
@@ -20,6 +40,16 @@ public class PrimaryButtonColor : ButtonColor {
             },
         )
 
+    /**
+     * Resolves the foreground (text and icon) color for the primary button.
+     *
+     * @param interactionState Bitmask of active [ButtonInteractionState] flags.
+     * @param enabled Whether the button is enabled.
+     * @param loading Whether the button is in a loading state.
+     * @return A [State] of [Color] representing the resolved foreground color.
+     *
+     * @since 0.0.1
+     */
     @Composable
     override fun foregroundColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
         rememberUpdatedState(
@@ -30,6 +60,16 @@ public class PrimaryButtonColor : ButtonColor {
             },
         )
 
+    /**
+     * Returns a transparent background color for primary buttons.
+     *
+     * @param interactionState Bitmask of active [ButtonInteractionState] flags.
+     * @param enabled Whether the button is enabled.
+     * @param loading Whether the button is in a loading state.
+     * @return A [State] of [Color] that is always [Color.Transparent].
+     *
+     * @since 0.0.1
+     */
     @Composable
     override fun backgroundColor(interactionState: Int, enabled: Boolean, loading: Boolean): State<Color> =
         rememberUpdatedState(Color.Transparent) // Always transparent background

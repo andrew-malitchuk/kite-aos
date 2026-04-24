@@ -4,15 +4,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 
 /**
- * Interface representing the default configuration for a button.
+ * Interface representing the default configuration for an icon button.
  *
  * This interface defines composable functions to obtain the default color,
- * size set, animation, and shape configurations for a button.
+ * size set, animation, and shape configurations for an icon button.
  *
  * References:
  *
  * - https://proandroiddev.com/compose-a-compose-button-by-composing-composable-functions-9f275772bd23
  * - https://github.com/aoriani/ComposeButton/tree/main
+ *
+ * @since 0.0.1
  */
 public interface IconButtonDefault {
     /**

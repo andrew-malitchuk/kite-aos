@@ -15,6 +15,24 @@ import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.source.kit.atom.button.toggle.Toggle
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 
+/**
+ * A list item with a trailing toggle switch.
+ *
+ * Combines a leading icon, a label, and a [Toggle] switch at the trailing edge. This is the
+ * standard component for boolean settings entries.
+ *
+ * @param modifier Modifier to be applied to the [BaseListItem].
+ * @param text The label text displayed in the item (e.g., "Enable notifications").
+ * @param textStyle The [TextStyle] for the label text. Defaults to [Theme.typography.body].
+ * @param icon The [ImageVector] icon to display on the leading side.
+ * @param iconBackgroundColor Background [Color] for the icon container.
+ * @param iconForegroundColor Foreground [Color] for the icon.
+ * @param isChecked The current checked state of the toggle.
+ * @param onCheckedChange Callback invoked when the user toggles the switch, receiving the new state.
+ * @see BaseListItem
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
+ */
 @Composable
 public fun ToggleListItem(
     modifier: Modifier = Modifier,

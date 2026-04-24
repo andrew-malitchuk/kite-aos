@@ -5,6 +5,10 @@ import domain.usecase.api.core.common.Optional
 
 /**
  * Use case for updating the application theme.
+ *
+ * @see GetThemeUseCase
+ * @see ThemeModel
+ * @since 0.0.1
  */
 public interface SetThemeUseCase {
     /**

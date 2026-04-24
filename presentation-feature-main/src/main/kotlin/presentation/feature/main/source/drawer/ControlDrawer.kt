@@ -36,13 +36,22 @@ import presentation.core.ui.source.kit.molecule.item.SimpleApplicationListItem
  *
  * It dynamically switches between a [Row] (horizontal) and a [Column] (vertical)
  * layout based on the [isBottom] parameter, reflecting the current dock position.
+ * The layout transition is animated using [AnimatedContent] with a fade effect.
  *
- * @param modifier The modifier for the drawer layout.
+ * @param modifier Modifier to be applied to the [AnimatedContent] root composable.
  * @param isBottom Whether the drawer is positioned at the bottom of the screen.
- * @param applications The list of allowed applications to display.
- * @param canGoBack Whether the WebView can navigate backward.
- * @param canGoForward Whether the WebView can navigate forward.
- * @param onAction Callback for handling drawer actions.
+ * @param applications The list of allowed applications to display in the drawer.
+ * @param canGoBack Whether the WebView can navigate backward in its history.
+ * @param canGoForward Whether the WebView can navigate forward in its history.
+ * @param onAction Callback for handling drawer actions. Supported actions include:
+ *   [ControlAction.OnSettingAction] for opening settings,
+ *   [ControlAction.OnReloadAction] for reloading the dashboard,
+ *   [ControlAction.OnBackAction] for WebView back navigation,
+ *   [ControlAction.OnForwardAction] for WebView forward navigation,
+ *   and [ControlAction.OnApplicationAction] for launching an external application.
+ * @see ControlAction
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun ControlDrawer(
@@ -172,6 +181,9 @@ public fun ControlDrawer(
 
 /**
  * Represents the possible actions within the [ControlDrawer].
+ *
+ * @see ControlDrawer
+ * @since 0.0.1
  */
 public sealed interface ControlAction {
     /** Reload the current kiosk dashboard. */

@@ -7,6 +7,10 @@ import kotlinx.coroutines.flow.Flow
  * Repository interface for MQTT telemetry operations.
  * This interface defines the contract for interacting with MQTT functionality
  * at the domain layer, abstracting the underlying data source implementation.
+ *
+ * @see MqttModel
+ * @see data.repository.impl.source.repository.MqttRepositoryImpl
+ * @since 0.0.1
  */
 public interface MqttRepository {
     /**
@@ -46,9 +50,27 @@ public interface MqttRepository {
      */
     public suspend fun sendBatteryLevel(level: Int)
 
+    /**
+     * Observes changes to the MQTT configuration stored in preferences.
+     *
+     * @return A [Flow] emitting the current [MqttModel] on every configuration change, or null if not configured.
+     * @since 0.0.1
+     */
     public fun observeMqttConfiguration(): Flow<MqttModel?>
 
+    /**
+     * Retrieves the current MQTT configuration from preferences.
+     *
+     * @return The current [MqttModel], or null if not configured.
+     * @since 0.0.1
+     */
     public suspend fun getMqttConfiguration(): MqttModel?
 
+    /**
+     * Persists the provided MQTT [configuration] to preferences.
+     *
+     * @param configuration The MQTT configuration to save.
+     * @since 0.0.1
+     */
     public suspend fun setMqttConfiguration(configuration: MqttModel)
 }

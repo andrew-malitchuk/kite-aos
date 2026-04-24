@@ -48,23 +48,30 @@ import presentation.core.styling.core.Theme
 import presentation.core.ui.source.kit.atom.tween.cupertinoTween
 
 /**
- *  Design Toggle.
+ * Design system Toggle (switch) component.
  *
- * Togglees toggle the state of a single item on or off.
+ * Toggles switch the state of a single item on or off. The thumb slides horizontally and supports
+ * both tap and drag gestures. Color transitions and aspect-ratio changes are animated using
+ * Cupertino-style tweens.
  *
- * @param checked whether or not this Toggle is checked
- * @param onCheckedChange called when this Toggle is clicked. If `null`, then this Toggle will not
- * be interactable, unless something else handles its input events and updates its state.
- * @param modifier the [Modifier] to be applied to this Toggle
- * @param thumbContent content that will be drawn inside the thumb
- * @param enabled controls the enabled state of this Toggle. When `false`, this component will not
- * respond to user input, and it will appear visually disabled and disabled to accessibility
- * services.
+ * @param checked Whether or not this Toggle is checked.
+ * @param onCheckedChange Callback invoked when the user toggles the switch. Receives the new
+ *   checked state. If `null`, the Toggle will not be interactable unless something else handles
+ *   its input events and updates its state.
+ * @param modifier Modifier to be applied to the [Column].
+ * @param thumbContent Optional composable content drawn inside the thumb.
  * @param colors [ToggleColors] that will be used to resolve the colors used for this Toggle in
- * different states. See [ToggleDefaults.colors].
- * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
- * for this Toggle. You can create and pass in your own `remember`ed instance to observe
- * [Interaction]s and customize the appearance / behavior of this Toggle in different states.
+ *   different states. See [ToggleDefaults.colors].
+ * @param enabled Controls the enabled state of this Toggle. When `false`, this component will not
+ *   respond to user input and will appear visually disabled and disabled to accessibility services.
+ * @param interactionSource The [MutableInteractionSource] representing the stream of [Interaction]s
+ *   for this Toggle. You can create and pass in your own `remember`ed instance to observe
+ *   [Interaction]s and customize the appearance / behavior of this Toggle in different states.
+ *
+ * @see ToggleDefaults
+ * @see ToggleColors
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun Toggle(
@@ -95,6 +102,7 @@ public fun Toggle(
     val isPressed by interactionSource.collectIsPressedAsState()
     val isHovered by interactionSource.collectIsHoveredAsState()
 
+    // Stretch the thumb horizontally when pressed/hovered for tactile feedback (1.25x aspect ratio)
     val animatedAspectRatio by animateFloatAsState(
         targetValue = if (isPressed || isHovered) 1.25f else 1f,
         animationSpec = AspectRationAnimationSpec,
@@ -103,11 +111,13 @@ public fun Toggle(
         targetValue = colors.trackColor(enabled, checked).value,
         animationSpec = ColorAnimationSpec,
     )
+    // Animate thumb position: 1f = end (checked), -1f = start (unchecked)
     val animatedAlignment by animateFloatAsState(
         targetValue = if (checked) 1f else -1f,
         animationSpec = AlignmentAnimationSpec,
     )
 
+    // Calculate the drag distance required to trigger a toggle (track width minus thumb diameter)
     val positionalThreshold =
         remember {
             (ToggleDefaults.Width - ThumbPadding * 2) -
@@ -127,6 +137,7 @@ public fun Toggle(
 
     val updatedChecked by rememberUpdatedState(checked)
 
+    // Emit checked/unchecked when the accumulated drag crosses the positional threshold
     LaunchedEffect(dragThreshold) {
         snapshotFlow {
             when {
@@ -198,10 +209,24 @@ public fun Toggle(
 }
 
 /**
- * Represents the colors used by a [Toggle] in different states
+ * Represents the colors used by a [Toggle] in different states.
  *
- * See [ToggleDefaults.colors] for the default implementation that follows Material
+ * See [ToggleDefaults.colors] for the default implementation that follows the design system
  * specifications.
+ *
+ * @param thumbColor The thumb color when the toggle is enabled.
+ * @param disabledThumbColor The thumb color when the toggle is disabled.
+ * @param checkedTrackColor The track color when the toggle is checked and enabled.
+ * @param checkedIconColor The icon color inside the thumb when checked and enabled.
+ * @param uncheckedTrackColor The track color when the toggle is unchecked and enabled.
+ * @param uncheckedIconColor The icon color inside the thumb when unchecked and enabled.
+ * @param disabledCheckedTrackColor The track color when checked and disabled.
+ * @param disabledCheckedIconColor The icon color when checked and disabled.
+ * @param disabledUncheckedTrackColor The track color when unchecked and disabled.
+ * @param disabledUncheckedIconColor The icon color when unchecked and disabled.
+ *
+ * @see ToggleDefaults.colors
+ * @since 0.0.1
  */
 @Immutable
 public class ToggleColors internal constructor(
@@ -217,9 +242,12 @@ public class ToggleColors internal constructor(
     private val disabledUncheckedIconColor: Color,
 ) {
     /**
-     * Represents the color used for the Toggle's thumb, depending on [enabled] and [checked].
+     * Represents the color used for the Toggle's thumb, depending on [enabled].
      *
-     * @param enabled whether the Toggle is enabled or not
+     * @param enabled Whether the Toggle is enabled or not.
+     * @return A [State] of [Color] for the thumb.
+     *
+     * @since 0.0.1
      */
     @Composable
     internal fun thumbColor(enabled: Boolean): State<Color> = rememberUpdatedState(
@@ -233,8 +261,11 @@ public class ToggleColors internal constructor(
     /**
      * Represents the color used for the Toggle's track, depending on [enabled] and [checked].
      *
-     * @param enabled whether the Toggle is enabled or not
-     * @param checked whether the Toggle is checked or not
+     * @param enabled Whether the Toggle is enabled or not.
+     * @param checked Whether the Toggle is checked or not.
+     * @return A [State] of [Color] for the track.
+     *
+     * @since 0.0.1
      */
     @Composable
     internal fun trackColor(enabled: Boolean, checked: Boolean): State<Color> = rememberUpdatedState(
@@ -246,10 +277,13 @@ public class ToggleColors internal constructor(
     )
 
     /**
-     * Represents the content color passed to the icon if used
+     * Represents the content color passed to the icon if used.
      *
-     * @param enabled whether the Toggle is enabled or not
-     * @param checked whether the Toggle is checked or not
+     * @param enabled Whether the Toggle is enabled or not.
+     * @param checked Whether the Toggle is checked or not.
+     * @return A [State] of [Color] for the icon content.
+     *
+     * @since 0.0.1
      */
     @Composable
     internal fun iconColor(enabled: Boolean, checked: Boolean): State<Color> = rememberUpdatedState(
@@ -293,16 +327,50 @@ public class ToggleColors internal constructor(
     }
 }
 
+/**
+ * Contains default values and factory methods for the [Toggle] component.
+ *
+ * @since 0.0.1
+ */
 @Immutable
 public object ToggleDefaults {
+    // Elevation applied to the thumb when the toggle is enabled
     internal val EnabledThumbElevation = 4.dp
 
+    /**
+     * The default width of the toggle track.
+     *
+     * @since 0.0.1
+     */
     public val Width: Dp = 51.dp
 
+    /**
+     * The default height of the toggle track.
+     *
+     * @since 0.0.1
+     */
     public val Height: Dp = 31.dp
 
+    // Pill shape for the track and thumb
     internal val Shape: CornerBasedShape = CircleShape
 
+    /**
+     * Creates a [ToggleColors] instance with the given color overrides.
+     *
+     * @param thumbColor The thumb color when the toggle is enabled.
+     * @param disabledThumbColor The thumb color when the toggle is disabled.
+     * @param checkedTrackColor The track color when the toggle is checked and enabled.
+     * @param checkedIconColor The icon color when the toggle is checked and enabled.
+     * @param uncheckedTrackColor The track color when the toggle is unchecked and enabled.
+     * @param uncheckedIconColor The icon color when the toggle is unchecked and enabled.
+     * @param disabledCheckedTrackColor The track color when checked and disabled.
+     * @param disabledCheckedIconColor The icon color when checked and disabled.
+     * @param disabledUncheckedTrackColor The track color when unchecked and disabled.
+     * @param disabledUncheckedIconColor The icon color when unchecked and disabled.
+     * @return A [ToggleColors] instance configured with the provided colors.
+     *
+     * @since 0.0.1
+     */
     @Composable
     @ReadOnlyComposable
     public fun colors(
@@ -331,8 +399,10 @@ public object ToggleDefaults {
         )
 }
 
+// Inset between the track edge and the thumb
 private val ThumbPadding = 2.dp
 
+// 300ms Cupertino-style tween shared across toggle animations
 private val AspectRationAnimationSpec = cupertinoTween<Float>(durationMillis = 300)
 private val ColorAnimationSpec = cupertinoTween<Color>(durationMillis = 300)
 private val AlignmentAnimationSpec = AspectRationAnimationSpec

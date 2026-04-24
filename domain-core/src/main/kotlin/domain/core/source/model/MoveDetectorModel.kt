@@ -10,6 +10,9 @@ import domain.core.source.model.base.Model
  * @property dimDelay The delay in milliseconds before the screen dims due to inactivity.
  * @property screenTimeout The delay in milliseconds before the screen turns off due to inactivity.
  * @property fabDelay The delay in milliseconds before the Floating Action Button is hidden.
+ *
+ * @see Model
+ * @since 0.0.1
  */
 public data class MoveDetectorModel(
     val enabled: Boolean?,

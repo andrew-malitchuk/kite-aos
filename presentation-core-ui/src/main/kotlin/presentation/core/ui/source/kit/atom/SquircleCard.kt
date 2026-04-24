@@ -19,6 +19,24 @@ import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
 
+/**
+ * A card composable with a squircle (superellipse) shape that provides press-state color
+ * feedback and optional click handling.
+ *
+ * When [enabled], the card background animates between the surface color and surface variant
+ * on press. When disabled, the card renders with a semi-transparent canvas overlay and
+ * intercepts all touch events to prevent interaction with child content.
+ *
+ * @param modifier Modifier to be applied to the [Box].
+ * @param onClick callback invoked when the card is clicked. No-op by default.
+ * @param enabled whether the card is interactive. When `false`, clicks are blocked and the
+ *        card appearance is dimmed.
+ * @param content the composable content displayed inside the card.
+ *
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
+ */
 @Composable
 public fun SquircleCard(
     modifier: Modifier = Modifier,
@@ -54,6 +72,8 @@ public fun SquircleCard(
     ) {
         content()
 
+        // Overlay that intercepts all touch events when the card is disabled,
+        // preventing child composables from receiving clicks
         if (!enabled) {
             Box(
                 modifier =

@@ -4,6 +4,10 @@ import domain.core.source.model.DashboardModel
 
 /**
  * Use case for retrieving the kiosk dashboard configuration (URL and whitelist).
+ *
+ * @see SetDashboardUseCase
+ * @see DashboardModel
+ * @since 0.0.1
  */
 public interface GetDashboardUseCase {
     /**

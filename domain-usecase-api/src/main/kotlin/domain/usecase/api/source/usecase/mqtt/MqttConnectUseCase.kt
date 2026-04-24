@@ -4,6 +4,9 @@ import domain.usecase.api.core.common.Optional
 
 /**
  * Use case for initiating a connection to the configured MQTT broker.
+ *
+ * @see MqttDisconnectUseCase
+ * @since 0.0.1
  */
 public interface MqttConnectUseCase {
     /**

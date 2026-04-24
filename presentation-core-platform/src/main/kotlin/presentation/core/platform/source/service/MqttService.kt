@@ -20,28 +20,59 @@ import presentation.core.platform.R
 /**
  * Foreground service that maintains the MQTT connection for the application.
  *
- * It reactively observes the MQTT configuration from the domain layer and
- * automatically connects or disconnects the client based on the current settings.
+ * This service reactively observes the MQTT configuration from the domain layer via
+ * [ObserveMqttConfigurationUseCase] and automatically connects or disconnects the MQTT client
+ * whenever the configuration changes. Using [collectLatest] ensures that if a new configuration
+ * arrives while a connection attempt is in progress, the previous attempt is cancelled.
+ *
+ * Foreground service lifecycle:
+ * - [onCreate]: Sets up the notification channel, starts the foreground notification, and begins
+ *   observing the MQTT configuration.
+ * - [onStartCommand]: Returns [START_STICKY] so the system restarts the service if killed.
+ * - [onDestroy]: Disconnects the MQTT client to release broker resources.
+ *
+ * @see ObserveMqttConfigurationUseCase
+ * @see MqttConnectUseCase
+ * @see MqttDisconnectUseCase
+ * @see MotionService
+ * @since 0.0.1
  */
 public class MqttService : LifecycleService() {
     private val observeMqttConfigurationUseCase: ObserveMqttConfigurationUseCase by inject()
     private val mqttConnectUseCase: MqttConnectUseCase by inject()
     private val mqttDisconnectUseCase: MqttDisconnectUseCase by inject()
 
+    /**
+     * Companion constants for [MqttService].
+     *
+     * @since 0.0.1
+     */
     public companion object {
         private const val TAG = "MqttService"
         private const val NOTIFICATION_CHANNEL_ID = "Mqtt Service"
         private const val NOTIFICATION_CHANNEL_NAME = "Mqtt Connection"
+
+        /**
+         * Foreground notification ID. Must be unique across all foreground services in the app
+         * (distinct from [MotionService.NOTIFICATION_ID]).
+         */
         private const val NOTIFICATION_ID = 2
     }
 
     /**
-     * Initializes the service, sets up the notification channel, and starts observing
-     * the MQTT configuration from the domain layer.
+     * Initializes the service, sets up the notification channel, starts the foreground
+     * notification, and begins observing the MQTT configuration from the domain layer.
+     *
+     * [startForeground] must be called within 5 seconds of the service being started,
+     * otherwise the system throws a `ForegroundServiceDidNotStartInTimeException`.
+     *
+     * @see observeConfiguration
+     * @since 0.0.1
      */
     override fun onCreate() {
         super.onCreate()
         setupNotificationChannel()
+        // Start foreground immediately to satisfy the Android foreground service timing contract.
         startForeground(NOTIFICATION_ID, createNotification())
         observeConfiguration()
     }
@@ -49,6 +80,14 @@ public class MqttService : LifecycleService() {
     /**
      * Listens for changes in the MQTT configuration and manages the connection lifecycle
      * (connect/disconnect) accordingly.
+     *
+     * [collectLatest] is used so that if the configuration changes rapidly, only the latest
+     * emission is fully processed — earlier connection/disconnection attempts are cancelled.
+     *
+     * @see ObserveMqttConfigurationUseCase
+     * @see MqttConnectUseCase
+     * @see MqttDisconnectUseCase
+     * @since 0.0.1
      */
     private fun observeConfiguration() {
         lifecycleScope.launch {
@@ -72,6 +111,11 @@ public class MqttService : LifecycleService() {
 
     /**
      * Creates the mandatory notification channel for the foreground service.
+     *
+     * Notification channels are required on Android 8.0 (API 26, Oreo) and above. The channel
+     * is created with [NotificationManager.IMPORTANCE_LOW] to minimize user disruption.
+     *
+     * @since 0.0.1
      */
     private fun setupNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -86,7 +130,10 @@ public class MqttService : LifecycleService() {
     }
 
     /**
-     * Creates the notification shown while the MQTT service is running.
+     * Creates the persistent notification displayed while the MQTT service is running.
+     *
+     * @return A low-priority [Notification] with a title and description from localised resources.
+     * @since 0.0.1
      */
     private fun createNotification(): Notification {
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
@@ -98,7 +145,16 @@ public class MqttService : LifecycleService() {
     }
 
     /**
-     * Ensures the service remains sticky.
+     * Handles the start command and ensures the service remains sticky.
+     *
+     * Returning [START_STICKY] instructs the system to recreate the service after a low-memory
+     * kill, ensuring the MQTT connection is re-established.
+     *
+     * @param intent The [Intent] supplied to [android.content.Context.startService].
+     * @param flags Additional data about the start request.
+     * @param startId A unique integer representing the start request.
+     * @return [START_STICKY] to ensure the service is restarted if killed.
+     * @since 0.0.1
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
@@ -107,6 +163,12 @@ public class MqttService : LifecycleService() {
 
     /**
      * Cleans up the MQTT connection when the service is destroyed.
+     *
+     * A disconnect attempt is launched in [lifecycleScope]. Note that because the lifecycle is
+     * ending, this coroutine may be cancelled before completion if the process is being killed.
+     * The MQTT broker will eventually clean up the session via its keep-alive timeout.
+     *
+     * @since 0.0.1
      */
     override fun onDestroy() {
         super.onDestroy()

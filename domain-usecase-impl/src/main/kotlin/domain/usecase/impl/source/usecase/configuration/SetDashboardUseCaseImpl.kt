@@ -10,6 +10,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [SetDashboardUseCase] using [ConfigureRepository].
+ *
+ * @see SetDashboardUseCase
+ * @since 0.0.1
  */
 @Single(binds = [SetDashboardUseCase::class])
 internal class SetDashboardUseCaseImpl(

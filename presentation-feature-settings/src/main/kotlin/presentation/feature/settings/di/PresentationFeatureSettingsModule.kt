@@ -8,6 +8,9 @@ import org.koin.core.annotation.Module
  *
  * This module uses component scanning to automatically register ViewModels and other
  * components within the settings feature package.
+ *
+ * @see SettingsViewModel
+ * @since 0.0.1
  */
 @Module
 @ComponentScan("presentation.feature.settings")

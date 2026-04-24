@@ -1,7 +1,14 @@
 package presentation.feature.onboarding.source.onboarding
 
 /**
- * User actions that can be performed during onboarding.
+ * User actions (intents) that can be performed during onboarding.
+ *
+ * Intents are dispatched from [OnboardingContent] and processed by
+ * [OnboardingViewModel.handleIntent].
+ *
+ * @see OnboardingViewModel
+ * @see OnboardingContent
+ * @since 0.0.1
  */
 public sealed class OnboardingIntent {
     /** User requested camera permission. */

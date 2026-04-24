@@ -18,8 +18,10 @@ import androidx.compose.ui.unit.Dp
  *
  * @param onClick An optional lambda function that defines the action to be performed when the
  *        user clicks on the composable. Can be null if click behavior is not desired.
- * @return A new `Modifier` instance with the clickable behavior applied (if `onClick` is not
- *         null) or the original modifier unchanged (if `onClick` is null).
+ * @return A new [Modifier] instance with the clickable behavior applied (if [onClick] is not
+ *         null) or the original modifier unchanged (if [onClick] is null).
+ *
+ * @since 0.0.1
  */
 public fun Modifier.noRippleClickable(onClick: (() -> Unit)? = null): Modifier = composed {
     if (onClick != null) {
@@ -34,6 +36,17 @@ public fun Modifier.noRippleClickable(onClick: (() -> Unit)? = null): Modifier =
     }
 }
 
+/**
+ * Creates a new modifier that applies a long-press clickable behavior to the composable
+ * without the default ripple effect.
+ *
+ * @param onClick An optional lambda function that defines the action to be performed when the
+ *        user long-presses on the composable. Can be null if long-press behavior is not desired.
+ * @return A new [Modifier] instance with the long-press clickable behavior applied (if [onClick]
+ *         is not null) or the original modifier unchanged (if [onClick] is null).
+ *
+ * @since 0.0.1
+ */
 public fun Modifier.noRippleLongClickable(onClick: (() -> Unit)? = null): Modifier = composed {
     if (onClick != null) {
         this.pointerInput(Unit) {
@@ -47,8 +60,17 @@ public fun Modifier.noRippleLongClickable(onClick: (() -> Unit)? = null): Modifi
 }
 
 /**
- * Extension to automatically fill the maximum available side
- * while maintaining a square aspect ratio.
+ * Extension to automatically fill the maximum available side while maintaining the specified
+ * aspect ratio. Chooses between [fillMaxWidth] and [fillMaxHeight] based on which dimension
+ * is smaller, ensuring the composable fits within the available space.
+ *
+ * @param maxWidth the maximum available width constraint.
+ * @param maxHeight the maximum available height constraint.
+ * @param aspectRatio the desired aspect ratio (width / height). Defaults to 1f (square).
+ * @param fraction the fraction of the chosen dimension to fill. Defaults to 1f (full).
+ * @return A new [Modifier] that fills the constrained dimension with the given aspect ratio.
+ *
+ * @since 0.0.1
  */
 public fun Modifier.fillMaxSquare(
     maxWidth: Dp,

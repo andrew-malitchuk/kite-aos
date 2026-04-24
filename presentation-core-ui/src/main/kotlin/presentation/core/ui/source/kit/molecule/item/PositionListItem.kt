@@ -21,11 +21,39 @@ import presentation.core.ui.source.kit.atom.icon.IcArrowUp24
 import presentation.core.ui.source.kit.atom.icon.IcDock24
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 
+/**
+ * Represents the available dock positions for layout placement.
+ *
+ * @since 0.0.1
+ */
 public enum class DockPosition {
+    /** Dock is positioned at the top of the screen. */
     Up,
+
+    /** Dock is positioned at the left side of the screen. */
     Left,
 }
 
+/**
+ * A list item for selecting a dock position.
+ *
+ * Displays a leading icon, a label, and a trailing row of icon-toggle buttons that allow the
+ * user to choose between [DockPosition.Up] and [DockPosition.Left]. The currently selected
+ * position is highlighted.
+ *
+ * @param modifier Modifier to be applied to the [BaseListItem].
+ * @param text The label text displayed in the item (e.g., "Dock Position").
+ * @param textStyle The [TextStyle] for the label text. Defaults to [Theme.typography.body].
+ * @param icon The [ImageVector] icon to display on the leading side. Defaults to [IcDock24].
+ * @param iconBackgroundColor Background [Color] for the icon container.
+ * @param iconForegroundColor Foreground [Color] for the icon.
+ * @param selectedSide The currently selected [DockPosition].
+ * @param onSideSelected Callback invoked when the user selects a different [DockPosition].
+ * @see BaseListItem
+ * @see DockPosition
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
+ */
 @Composable
 public fun PositionListItem(
     modifier: Modifier = Modifier,

@@ -4,6 +4,9 @@ import domain.usecase.api.core.common.Optional
 
 /**
  * Use case for updating the onboarding completion status.
+ *
+ * @see GetOnboardingStatusUseCase
+ * @since 0.0.1
  */
 public interface SetOnboardingStatusUseCase {
     /**

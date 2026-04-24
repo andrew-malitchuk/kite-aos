@@ -25,19 +25,19 @@ import androidx.compose.ui.unit.Dp
  * @param backgroundColor The background color of the button.
  * @param foregroundColor The foreground color (text and icon color) of the button.
  * @param borderColor The border color of the button.
- * @param corner The corners of the button.
+ * @param corner The corner radius applied to the button shape.
  * @param iconSize The size of the icons within the button.
  * @param borderSize The size of the border around the button.
- * @param spacing The spacing within the button.
+ * @param spacing The spacing between elements within the button.
  * @param minHeight The minimum height of the button.
  * @param paddings The padding values for the content within the button.
  * @param textStyle The style of the text displayed on the button.
  * @param animationDuration The duration of the color animation in milliseconds.
  * @param animationEasing The easing function used for the color animation.
  * @param isLoading A boolean indicating whether the button is in a loading state.
- * @param modifier The modifier to be applied to the button.
+ * @param modifier Modifier to be applied to the [AnimateButton].
  * @param loadingSize The size of the loading indicator within the button.
- * @param horizontalArrangement The horizontal arrangement of the layout's children.
+ * @param horizontalArrangement The horizontal alignment of the button content.
  *
  * References:
  *
@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.Dp
  *
  * @see StateButton
  * @see DrawButton
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 internal fun AnimateButton(
@@ -70,9 +72,11 @@ internal fun AnimateButton(
     horizontalArrangement: Alignment = Alignment.Center,
 ) {
     //region core
+    // Shared tween spec for all color transitions so they stay in sync
     val colorAnimationSpec =
         tween<Color>(durationMillis = animationDuration, easing = animationEasing)
 
+    // Animate border, background, and foreground colors independently
     val animationBorderColor by animateColorAsState(
         animationSpec = colorAnimationSpec,
         targetValue = borderColor,
@@ -89,6 +93,7 @@ internal fun AnimateButton(
         label = "AnimateButton: animationForegroundColor",
     )
 
+    // Apply content-size animation so the button smoothly resizes (e.g. during loading transitions)
     val localModifier =
         modifier.animateContentSize(
             animationSpec =

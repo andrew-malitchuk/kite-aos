@@ -13,6 +13,9 @@ import org.koin.core.annotation.Single
  * This use case combines data from system-installed applications and the local database
  * to provide a complete view of which applications are available and which have been
  * selected (chosen) by the user.
+ *
+ * @see LoadApplicationsUseCase
+ * @since 0.0.1
  */
 @Single(binds = [LoadApplicationsUseCase::class])
 internal class LoadApplicationsUseCaseImpl(
@@ -24,6 +27,8 @@ internal class LoadApplicationsUseCaseImpl(
         val installedApps = applicationRepository.getApplications()
         val savedApps = applicationRepository.loadApplications()
 
+        // NOTE: Merge installed apps with saved state — mark each installed app as "chosen"
+        // if it exists in the local database, and carry over its persisted ID.
         val apps =
             installedApps.map { installedApp ->
                 val savedApp =

@@ -57,6 +57,22 @@ import presentation.feature.onboarding.core.composable.pager.WizardPager
 import presentation.feature.onboarding.core.composable.pager.WizardPagerAction
 import presentation.feature.onboarding.core.composable.shape.AnimatedCookieShape
 
+/**
+ * The main UI content for the Onboarding screen.
+ *
+ * This Composable orchestrates the multi-step wizard, including permission requests,
+ * URL configuration fields, and a final confirmation slide. It manages immersive mode
+ * and delegates navigation logic to the [WizardPager].
+ *
+ * @param state The current [OnboardingState] providing permission statuses and dashboard URLs.
+ * @param onIntent Callback for dispatching user intents back to the ViewModel. Supported
+ *   actions include all [OnboardingIntent] subtypes for permission requests and finish actions.
+ * @param snackbarHostState State for the Design System snackbar host.
+ * @see OnboardingScreen
+ * @see OnboardingViewModel
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
+ */
 @Composable
 internal fun OnboardingContent(
     state: OnboardingState,
@@ -85,7 +101,7 @@ internal fun OnboardingContent(
     val focusManager = LocalFocusManager.current
     val pagerState = rememberPagerState(pageCount = { 4 })
 
-    // Force hide keyboard when moving to the last slide
+    // Force hide keyboard when moving to the last slide (index 3 = final confirmation page)
     LaunchedEffect(pagerState.currentPage) {
         if (pagerState.currentPage == 3) {
             keyboardController?.hide()
@@ -105,6 +121,7 @@ internal fun OnboardingContent(
         }
     }
 
+    // Validate URL: must match http(s)://... pattern and be longer than the bare "http://" prefix (7 chars)
     val isUrlsValid =
         remember(dashboardUrl, whitelistUrl) {
             urlRegex.matches(dashboardUrl) && dashboardUrl.length > 7

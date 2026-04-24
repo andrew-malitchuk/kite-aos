@@ -11,9 +11,12 @@ import org.gradle.kotlin.dsl.dependencies
  * A convention plugin for configuring Koin dependency injection in Android projects.
  *
  * This plugin sets up:
- * - KSP plugin.
- * - Koin BOM and core dependencies for Android and Compose.
- * - Koin annotations and compiler.
+ * - KSP plugin for compile-time annotation processing.
+ * - Koin BOM for consistent dependency versions.
+ * - Koin core, Android, Compose, Ktor, coroutines, ViewModel, and navigation dependencies.
+ * - Koin annotations and KSP compiler for annotation-driven module generation.
+ *
+ * Registered as `dev.yahk.convention.di.android` in the Gradle plugin registry.
  *
  * Usage:
  *
@@ -23,24 +26,31 @@ import org.gradle.kotlin.dsl.dependencies
  * }
  * ```
  *
+ * @see Plugin
  * @see org.gradle.api.Project
+ * @since 0.0.1
  */
 public class DiAndroidConventionPlugin : Plugin<Project> {
 
     /**
-     * Applies the plugin to the given target project.
+     * Applies the Android Koin DI convention to the given [target] project.
      *
      * @param target The target project to which the plugin is applied.
+     * @since 0.0.1
      */
     override fun apply(target: Project): Unit = with(target) {
+        // Apply KSP for compile-time annotation processing of Koin modules
         pluginManager.apply("com.google.devtools.ksp")
 
         dependencies {
+            // Use Koin BOM to align all Koin dependency versions
             val koinBom = libs.findLibrary("koin-bom").get()
             add("implementation", platform(koinBom))
 
+            // KSP compiler for processing Koin annotations at compile time
             implementKsp(versionCatalog = libs, value = "koin.ksp.compiler")
 
+            // Core Koin dependencies
             implementDependency(versionCatalog = libs, value = "koin.core")
             implementDependency(versionCatalog = libs, value = "koin.android")
             implementDependency(versionCatalog = libs, value = "koin.androidx.compose")
@@ -49,6 +59,7 @@ public class DiAndroidConventionPlugin : Plugin<Project> {
             implementDependency(versionCatalog = libs, value = "koin.core.viewmodel")
             implementDependency(versionCatalog = libs, value = "koin.androidx.navigation")
             // koin-androidx-workmanager is removed as it's not resolved in Koin 4.0.0 BOM
+            // Koin annotations for @Single, @KoinViewModel, @Module, etc.
             implementDependency(versionCatalog = libs, value = "koin.annotations")
         }
     }

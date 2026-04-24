@@ -8,6 +8,11 @@ import androidx.compose.ui.graphics.vector.group
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp screen dimming / brightness-low icon.
+ *
+ * @since 0.0.1
+ */
 public val IcDim24: ImageVector
     get() {
         if (_IcDim24 != null) {

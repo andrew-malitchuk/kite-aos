@@ -25,8 +25,16 @@ import presentation.core.ui.core.splash.splash
 
 /**
  * The main and single activity of the application.
+ *
  * This activity hosts the entire composable UI and manages the initial setup,
  * including the splash screen and determining the initial navigation route.
+ * It enforces immersive (full-screen) mode for the kiosk experience and blocks
+ * the system back gesture/button.
+ *
+ * @see HostViewModel
+ * @see HostState
+ * @see HostSideEffect
+ * @since 0.0.1
  */
 public class HostActivity : AppCompatActivity() {
     private var splashScreen: SplashScreenDecorator? = null

@@ -8,6 +8,20 @@ import data.preferences.impl.source.datasource.base.BasePreferenceSourceImpl
 import data.preferences.impl.source.storage.DashboardPreferenceStorage
 import org.koin.core.annotation.Single
 
+/**
+ * Implementation of [DashboardPreferenceSource] backed by Proto DataStore.
+ *
+ * Delegates persistence to [DashboardPreferenceStorage] and uses
+ * [DashboardProtobufPreferenceMapper] for converting between the Protobuf model and the
+ * [DashboardPreference] resource.
+ *
+ * @param storage the [DashboardPreferenceStorage] providing DataStore access.
+ * @see DashboardPreferenceSource
+ * @see DashboardPreferenceStorage
+ * @see DashboardProtobufPreferenceMapper
+ * @see BasePreferenceSourceImpl
+ * @since 0.0.1
+ */
 @Single(binds = [DashboardPreferenceSource::class])
 internal class DashboardPreferenceSourceImpl(
     storage: DashboardPreferenceStorage,

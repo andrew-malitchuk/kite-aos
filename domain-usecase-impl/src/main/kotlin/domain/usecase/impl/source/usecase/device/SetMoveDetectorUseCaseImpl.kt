@@ -10,6 +10,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [SetMoveDetectorUseCase] using [ConfigureRepository].
+ *
+ * @see SetMoveDetectorUseCase
+ * @since 0.0.1
  */
 @Single(binds = [SetMoveDetectorUseCase::class])
 internal class SetMoveDetectorUseCaseImpl(

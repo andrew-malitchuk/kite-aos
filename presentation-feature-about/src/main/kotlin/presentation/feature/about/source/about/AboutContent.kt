@@ -42,9 +42,19 @@ import presentation.feature.about.core.composable.shape.AnimatedCookieShape
  *
  * This Composable handles the layout and visual presentation of project information,
  * including animated transitions, project title/description, and social media icons.
+ * It is a stateless composable that receives its state and dispatches user actions
+ * via the [onIntent] callback.
  *
  * @param state The current [AboutState] providing UI information.
- * @param onIntent Callback for dispatching user intents back to the ViewModel.
+ * @param onIntent Callback for dispatching user intents back to the ViewModel. Supported
+ *   actions include: [AboutIntent.OnBackIntent] for navigating back,
+ *   [AboutIntent.OnGitHubIntent] for opening the GitHub link,
+ *   [AboutIntent.OnLinkedInIntent] for opening the LinkedIn link,
+ *   and [AboutIntent.OnTwitterIntent] for opening the Twitter link.
+ * @see AboutScreen
+ * @see AboutViewModel
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 internal fun AboutContent(state: AboutState, onIntent: (AboutIntent) -> Unit) {

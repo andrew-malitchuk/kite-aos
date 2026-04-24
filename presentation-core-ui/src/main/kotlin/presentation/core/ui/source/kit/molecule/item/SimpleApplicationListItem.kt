@@ -24,14 +24,18 @@ import presentation.core.ui.core.ext.noRippleClickable
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
 
 /**
- * A list item representing an application.
+ * A compact application list item that displays only the application icon inside a squircle container.
  *
- * Displays application icon, name and package name.
- * Highlights the item with a brand-colored border if it is chosen.
+ * Unlike [ApplicationListItem], this variant omits the application name and package text, rendering
+ * only the icon at a fixed 56 dp size. The icon is resolved at runtime from the device's package
+ * manager and falls back to a drawable resource when unavailable.
  *
- * @param modifier The modifier to be applied to the item.
- * @param applicationModel The data model of the application.
- * @param onClick Callback when the item is clicked.
+ * @param modifier Modifier to be applied to the [Box].
+ * @param applicationModel The [ApplicationModel] containing the application metadata to display.
+ * @param onClick Callback invoked when the user taps this item.
+ * @see ApplicationListItem
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun SimpleApplicationListItem(
@@ -39,6 +43,7 @@ public fun SimpleApplicationListItem(
     applicationModel: ApplicationModel,
     onClick: () -> Unit,
 ) {
+    // Fixed 56 dp container for the application icon
     Box(
         modifier =
         Modifier
@@ -49,6 +54,8 @@ public fun SimpleApplicationListItem(
         contentAlignment = Alignment.Center,
     ) {
         val context = LocalContext.current
+        // Resolve the application icon from the package manager; fall back to null
+        // if the package is not found or the icon cannot be loaded.
         val iconPainter =
             remember(applicationModel.packageName, applicationModel.icon) {
                 val drawable =
@@ -65,6 +72,7 @@ public fun SimpleApplicationListItem(
                 }
             }
 
+        // Prefer the runtime-resolved icon; fall back to the resource ID if available
         if (iconPainter != null) {
             Image(
                 modifier = Modifier.size(Theme.size.size3XL),

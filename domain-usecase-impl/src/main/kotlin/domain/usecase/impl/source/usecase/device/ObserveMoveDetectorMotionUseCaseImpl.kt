@@ -7,6 +7,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [ObserveMoveDetectorMotionUseCase] using [ConfigureRepository].
+ *
+ * @see ObserveMoveDetectorMotionUseCase
+ * @since 0.0.1
  */
 @Single(binds = [ObserveMoveDetectorMotionUseCase::class])
 internal class ObserveMoveDetectorMotionUseCaseImpl(

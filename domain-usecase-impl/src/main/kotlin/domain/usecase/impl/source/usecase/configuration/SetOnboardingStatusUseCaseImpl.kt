@@ -10,6 +10,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [SetOnboardingStatusUseCase] using [ConfigureRepository].
+ *
+ * @see SetOnboardingStatusUseCase
+ * @since 0.0.1
  */
 @Single(binds = [SetOnboardingStatusUseCase::class])
 internal class SetOnboardingStatusUseCaseImpl(
@@ -18,6 +21,7 @@ internal class SetOnboardingStatusUseCaseImpl(
     override suspend fun invoke(value: Boolean): Optional = resultLauncher(
         errorMapper = Failure.Technical::Preference,
     ) {
+        // Wrap the raw boolean into an OnboardingModel before persisting
         val onboardingModel = OnboardingModel(isCompleted = value)
         configureRepository.setOnboarding(onboardingModel)
     }

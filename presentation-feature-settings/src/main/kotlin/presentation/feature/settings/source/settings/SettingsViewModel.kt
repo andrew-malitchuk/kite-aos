@@ -38,8 +38,27 @@ import presentation.core.localisation.R
  * This component orchestrates the loading and saving of various settings, including
  * theme, dock position, kiosk URLs, motion detector parameters, and MQTT connectivity.
  * It uses the Orbit MVI framework to manage state and side effects.
+ *
+ * @param getThemeUseCase Use case to retrieve the current visual theme.
+ * @param setThemeUseCase Use case to persist the selected theme.
+ * @param setDashboardUseCase Use case to persist dashboard and whitelist URLs.
+ * @param getDashboardUseCase Use case to retrieve configured dashboard URLs.
+ * @param getDockPositionUseCase Use case to retrieve the dock position preference.
+ * @param setDockPositionUseCase Use case to persist the dock position preference.
+ * @param getMoveDetectorUseCase Use case to retrieve motion detector configuration.
+ * @param setMoveDetectorUseCase Use case to persist motion detector configuration.
+ * @param getMqttConfigurationUseCase Use case to retrieve MQTT broker configuration.
+ * @param setMqttConfigurationUseCase Use case to persist MQTT broker configuration.
+ * @param setApplicationLanguageUseCase Use case to persist the application language preference.
+ * @param getApplicationLanguageUseCase Use case to retrieve the application language preference.
+ * @see SettingsScreen
+ * @see SettingsState
+ * @see SettingsSideEffect
+ * @see SettingsIntent
+ * @since 0.0.1
  */
 @KoinViewModel
+// Suppressed: MagicNumber for debounce delays (500ms); MaxLineLength for regex patterns.
 @Suppress("MagicNumber", "MaxLineLength")
 public class SettingsViewModel(
     private val getThemeUseCase: GetThemeUseCase,
@@ -94,6 +113,11 @@ public class SettingsViewModel(
      * Validates the complete MQTT configuration including dependent Dashboard fields.
      * Mandatory: IP, Port, ClientID, Username, Password, FriendlyName, DashboardURL.
      * Optional: Whitelist (must be valid if not empty).
+     *
+     * @param mqtt The [MqttModel] to validate.
+     * @param dashboard The [DashboardModel] whose URL is a prerequisite for MQTT.
+     * @return `true` if all mandatory fields pass their respective regex validations.
+     * @since 0.0.1
      */
     private fun isMqttConfigurationValid(mqtt: MqttModel, dashboard: DashboardModel?): Boolean {
         val isIpValid = mqtt.ip?.let { ipRegex.matches(it) } ?: false
@@ -123,6 +147,9 @@ public class SettingsViewModel(
 
     /**
      * Loads the current application language from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadApplicationLanguage(): Job = executeResult(
         scope = viewModelScope,
@@ -141,6 +168,9 @@ public class SettingsViewModel(
 
     /**
      * Loads the current theme configuration.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadTheme(): Job = executeResult(
         scope = viewModelScope,
@@ -154,6 +184,9 @@ public class SettingsViewModel(
 
     /**
      * Loads the control dock position configuration.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadDockPosition(): Job = executeResult(
         scope = viewModelScope,
@@ -172,6 +205,9 @@ public class SettingsViewModel(
 
     /**
      * Loads the configured dashboard and whitelist URLs.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadDashboardUrls(): Job = executeResult(
         scope = viewModelScope,
@@ -196,6 +232,9 @@ public class SettingsViewModel(
 
     /**
      * Loads the motion detector configuration.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadMoveDetector(): Job = executeResult(
         scope = viewModelScope,
@@ -209,6 +248,9 @@ public class SettingsViewModel(
 
     /**
      * Loads the MQTT telemetry configuration.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadMqtt(): Job = executeResult(
         scope = viewModelScope,
@@ -222,6 +264,10 @@ public class SettingsViewModel(
 
     /**
      * Updates and persists the visual theme.
+     *
+     * @param theme The [ThemeModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     public fun onSetTheme(theme: ThemeModel): Job = executeResult(
         scope = viewModelScope,
@@ -238,6 +284,10 @@ public class SettingsViewModel(
 
     /**
      * Updates and persists the dock position.
+     *
+     * @param dock The [DockPositionModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     public fun onSetDockPosition(dock: DockPositionModel): Job = executeResult(
         scope = viewModelScope,
@@ -253,6 +303,11 @@ public class SettingsViewModel(
     /**
      * Updates and persists the dashboard configuration.
      * Re-validates MQTT configuration based on the new dashboard URL.
+     *
+     * @param dashboardUrl The Home Assistant dashboard URL.
+     * @param whitelistUrl The comma-separated whitelist domain(s) for WebView navigation.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     public fun onSetDashboard(dashboardUrl: String, whitelistUrl: String): Job = executeResult(
         scope = viewModelScope,
@@ -287,6 +342,9 @@ public class SettingsViewModel(
     /**
      * Updates and persists the motion detector configuration.
      * Automatically disables the detector if any delay or sensitivity parameter is zero.
+     *
+     * @param moveDetector The [MoveDetectorModel] configuration to apply and persist.
+     * @since 0.0.1
      */
     public fun onSetMoveDetector(moveDetector: MoveDetectorModel) {
         val isDisabledLogic =
@@ -324,6 +382,9 @@ public class SettingsViewModel(
     /**
      * Updates and persists the MQTT configuration with strict validation.
      * Automatically disables MQTT if any field (including Dashboard URL) is invalid.
+     *
+     * @param mqtt The [MqttModel] configuration to validate, apply, and persist.
+     * @since 0.0.1
      */
     public fun onSetMqtt(mqtt: MqttModel) {
         val trimmedMqtt =
@@ -361,6 +422,10 @@ public class SettingsViewModel(
 
     /**
      * Updates the application language and applies the locale change globally.
+     *
+     * @param localeCode The IETF BCP 47 language tag (e.g., "en", "uk").
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     public fun onSetApplicationLanguage(localeCode: String): Job = executeResult(
         scope = viewModelScope,
@@ -378,6 +443,9 @@ public class SettingsViewModel(
 
     /**
      * Triggers the side effect to open system language settings.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onLang(): Job = intent {
         postSideEffect(SettingsSideEffect.OpenLangSettingsEffect)
@@ -386,6 +454,10 @@ public class SettingsViewModel(
     /**
      * Handles the result of opening system language settings.
      * Shows in-app switcher if system settings were not opened.
+     *
+     * @param wasSystemSettingsOpened Whether the system language settings were successfully opened.
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onLangResult(wasSystemSettingsOpened: Boolean): Job = intent {
         if (!wasSystemSettingsOpened) {
@@ -395,6 +467,9 @@ public class SettingsViewModel(
 
     /**
      * Triggers the side effect to navigate to the About screen.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onMore(): Job = intent {
         postSideEffect(SettingsSideEffect.GoMoreEffect)
@@ -402,6 +477,9 @@ public class SettingsViewModel(
 
     /**
      * Triggers the side effect to navigate back.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onBack(): Job = intent {
         postSideEffect(SettingsSideEffect.GoBackEffect)
@@ -409,6 +487,9 @@ public class SettingsViewModel(
 
     /**
      * Triggers the side effect to navigate to the application selection screen.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onApplication(): Job = intent {
         postSideEffect(SettingsSideEffect.GoApplicationEffect)
@@ -416,6 +497,9 @@ public class SettingsViewModel(
 
     /**
      * Triggers the side effect to restart the application.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onRestart(): Job = intent {
         postSideEffect(SettingsSideEffect.RestartApplicationEffect)
@@ -425,6 +509,8 @@ public class SettingsViewModel(
      * Handles incoming user intents and routes them to the appropriate logic.
      *
      * @param intent The user action to process.
+     * @see SettingsIntent
+     * @since 0.0.1
      */
     public fun handleIntent(intent: SettingsIntent) {
         when (intent) {

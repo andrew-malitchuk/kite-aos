@@ -5,6 +5,14 @@ import androidx.compose.ui.text.TextStyle
 import presentation.core.styling.core.Theme
 import presentation.core.ui.source.kit.atom.button.core.ButtonTypographySet
 
+/**
+ * Default [ButtonTypographySet] implementation for primary buttons.
+ *
+ * All button sizes use [Theme.typography.action] as the text style.
+ *
+ * @see ButtonTypographySet
+ * @since 0.0.1
+ */
 public class PrimaryButtonTypographySet : ButtonTypographySet {
     @Composable
     override fun buttonSize32(): TextStyle = Theme.typography.action

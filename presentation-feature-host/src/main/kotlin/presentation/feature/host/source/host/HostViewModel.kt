@@ -20,6 +20,11 @@ import presentation.core.navigation.api.source.destination.Destination
  *
  * @param getOnboardingStatusUseCase Use case to check if onboarding has been completed.
  * @param observeThemeUseCase Use case to observe real-time changes to the application theme.
+ * @see HostActivity
+ * @see HostState
+ * @see HostSideEffect
+ * @see HostIntent
+ * @since 0.0.1
  */
 @KoinViewModel
 public class HostViewModel(

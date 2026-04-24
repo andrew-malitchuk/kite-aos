@@ -16,16 +16,21 @@ import presentation.core.ui.source.kit.atom.icon.IcOutline3
 /**
  * A list item for language selection.
  *
- * This component displays a label and a list of language options as text buttons.
+ * Displays a leading icon, a label, and the currently selected language code (uppercased)
+ * at the trailing edge. Tapping the item triggers the language-change callback so the host
+ * can present a language picker.
  *
- * @param modifier The modifier to be applied to the item.
- * @param text The label text (e.g., "Language").
- * @param textStyle The style for the label text.
- * @param icon The icon to display on the left.
- * @param iconBackgroundColor Background color for the icon container.
- * @param iconForegroundColor Foreground color for the icon.
- * @param selectedLanguageCode The ISO code of the currently selected language.
- * @param onLanguageChange Callback when a language is selected.
+ * @param modifier Modifier to be applied to the [BaseListItem].
+ * @param text The label text displayed in the item (e.g., "Language").
+ * @param textStyle The [TextStyle] for the label text. Defaults to [Theme.typography.body].
+ * @param icon The [ImageVector] icon to display on the leading side.
+ * @param iconBackgroundColor Background [Color] for the icon container.
+ * @param iconForegroundColor Foreground [Color] for the icon.
+ * @param selectedLanguageCode The ISO 639-1 code of the currently selected language (e.g., "en").
+ * @param onLanguageChange Callback invoked when the user taps the item to change the language.
+ * @see BaseListItem
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun LanguageListItem(

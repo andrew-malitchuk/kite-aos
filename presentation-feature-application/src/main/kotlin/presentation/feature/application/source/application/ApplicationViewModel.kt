@@ -19,7 +19,17 @@ import presentation.core.localisation.R
  * ViewModel for the Application selection screen.
  *
  * It manages the loading, saving, and removing of "chosen" applications
- * that will be available in the kiosk's sidebar.
+ * that will be available in the kiosk's sidebar. Uses the Orbit MVI framework
+ * to manage [ApplicationState] and [ApplicationSideEffect].
+ *
+ * @param loadApplicationsUseCase Use case to load installed applications from the system.
+ * @param saveApplicationUseCase Use case to persist an application as "chosen".
+ * @param removeApplicationUseCase Use case to remove an application from the "chosen" list.
+ * @see ApplicationScreen
+ * @see ApplicationState
+ * @see ApplicationSideEffect
+ * @see ApplicationIntent
+ * @since 0.0.1
  */
 @KoinViewModel
 public class ApplicationViewModel(
@@ -98,6 +108,12 @@ public class ApplicationViewModel(
 
     /**
      * Entry point for user actions from the UI.
+     *
+     * Routes each [ApplicationIntent] to the corresponding private handler method.
+     *
+     * @param intent The user action to process.
+     * @see ApplicationIntent
+     * @since 0.0.1
      */
     public fun handleIntent(intent: ApplicationIntent) {
         when (intent) {

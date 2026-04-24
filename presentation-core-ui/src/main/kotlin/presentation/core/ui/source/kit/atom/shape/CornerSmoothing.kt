@@ -23,35 +23,69 @@ package presentation.core.ui.source.kit.atom.shape
 
 /**
  * A collection of commonly used corner smoothing [Int] values for a [SquircleShape].
+ *
+ * Corner smoothing controls how aggressively the superellipse curve is applied to each
+ * corner. A value of 0 produces standard rounded corners (circular arcs), while 100
+ * produces fully pronounced squircle corners with maximum curvature continuity.
+ *
+ * These preset values are intended to be passed as the `smoothing` parameter when
+ * constructing a [SquircleShape] or [SquircleBasedShape].
+ *
+ * @see SquircleShape
+ * @see SquircleBasedShape
+ * @see GentleSquircleShape
+ * @since 0.0.1
  */
 public object CornerSmoothing {
     /**
      * Does not apply corner smoothing.
-     * The result will be similar to a [RoundedCornerShape].
+     * The result will be similar to a [RoundedCornerShape] with standard circular arc corners.
+     *
+     * @see SquircleShape
+     * @since 0.0.1
      */
+    // 0% smoothing -- corners are plain circular arcs with no superellipse blending.
     public val None: Int get() = 0
 
     /**
      * Applies a small amount of corner smoothing,
-     * resulting slightly pronounced [SquircleShape].
+     * resulting in a slightly pronounced [SquircleShape].
+     *
+     * @see SquircleShape
+     * @since 0.0.1
      */
+    // 20% smoothing -- subtle squircle effect, close to rounded rectangles.
     public val Small: Int get() = 20
 
     /**
      * Applies a medium amount of corner smoothing,
-     * resulting quite pronounced [SquircleShape].
+     * resulting in a quite pronounced [SquircleShape].
+     *
+     * This is the default smoothing value used by [SquircleShape] factory functions.
+     *
+     * @see SquircleShape
+     * @since 0.0.1
      */
+    // 48% smoothing -- balanced midpoint between rounded and fully squircled corners.
     public val Medium: Int get() = 48
 
     /**
      * Applies a high amount of corner smoothing,
-     * resulting highly pronounced [SquircleShape].
+     * resulting in a highly pronounced [SquircleShape].
+     *
+     * @see SquircleShape
+     * @since 0.0.1
      */
+    // 67% smoothing -- strong superellipse curvature, close to iOS-style corners.
     public val High: Int get() = 67
 
     /**
      * Applies a full amount of corner smoothing,
-     * resulting fully pronounced [SquircleShape].
+     * resulting in a fully pronounced [SquircleShape].
+     *
+     * @see SquircleShape
+     * @since 0.0.1
      */
+    // 100% smoothing -- maximum superellipse effect for the most continuous curvature.
     public val Full: Int get() = 100
 }

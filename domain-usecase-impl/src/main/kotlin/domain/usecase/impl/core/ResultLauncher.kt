@@ -15,6 +15,9 @@ import kotlin.coroutines.cancellation.CancellationException
  * @param errorMapper A lambda that converts a generic exception into a technical [Failure].
  * @param block The suspendable logic to execute.
  * @return A [Result] containing either the success value or a [Failure].
+ *
+ * @see Failure
+ * @since 0.0.1
  */
 internal suspend fun <T> resultLauncher(errorMapper: (Throwable) -> Failure, block: suspend () -> T): Result<T> {
     return try {

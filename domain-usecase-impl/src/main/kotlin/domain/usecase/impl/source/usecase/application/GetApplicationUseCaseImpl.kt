@@ -11,6 +11,9 @@ import org.koin.core.annotation.Single
  * Implementation of [GetApplicationUseCase] using [ApplicationRepository].
  *
  * @property applicationRepository The repository to retrieve application info from.
+ *
+ * @see GetApplicationUseCase
+ * @since 0.0.1
  */
 @Single(binds = [GetApplicationUseCase::class])
 internal class GetApplicationUseCaseImpl(

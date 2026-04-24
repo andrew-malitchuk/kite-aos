@@ -32,6 +32,28 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+/**
+ * A bottom drawer overlay that slides up from the bottom of the screen with a drag handle indicator.
+ *
+ * The drawer animates in/out with a vertical offset and displays a semi-transparent mask over
+ * the main content. It supports swipe-to-dismiss gestures with a 50% threshold and includes
+ * an animated drag handle at the top of the drawer panel.
+ *
+ * @param isDrawerOpen whether the drawer is currently open.
+ * @param onDismiss callback invoked when the drawer should be dismissed (tap on mask or swipe).
+ * @param drawerContent composable content displayed inside the drawer panel.
+ * @param content composable content of the main screen behind the drawer.
+ * @param modifier Modifier to be applied to the [Box].
+ * @param drawerHeight the height of the drawer panel.
+ * @param animationDuration duration of the open/close slide animation in milliseconds.
+ * @param maskColor the color of the semi-transparent overlay mask.
+ * @param enableSwipe whether swipe-to-dismiss gestures are enabled on the drawer.
+ *
+ * @see BlurredCustomBottomDrawerOverlay
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
+ */
 @Composable
 public fun CustomBottomDrawerOverlay(
     isDrawerOpen: Boolean,
@@ -90,6 +112,7 @@ public fun CustomBottomDrawerOverlay(
                         detectDragGestures(
                             onDragEnd = {
                                 scope.launch {
+                                    // Close if dragged past 50% of drawer height
                                     val shouldClose = offsetY.value > drawerHeightPx * 0.5f
                                     val target = if (shouldClose) drawerHeightPx else 0f
                                     offsetY.animateTo(target, tween(animationDuration))

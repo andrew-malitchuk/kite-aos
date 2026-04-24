@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp open / external link icon.
+ *
+ * @since 0.0.1
+ */
 public val IcOpen24: ImageVector
     get() {
         if (_IcOpen24 != null) {

@@ -9,6 +9,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [MqttDisconnectUseCase] using [MqttRepository].
+ *
+ * @see MqttDisconnectUseCase
+ * @since 0.0.1
  */
 @Single(binds = [MqttDisconnectUseCase::class])
 internal class MqttDisconnectUseCaseImpl(

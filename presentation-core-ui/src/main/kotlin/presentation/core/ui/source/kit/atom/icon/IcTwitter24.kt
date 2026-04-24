@@ -8,6 +8,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp Twitter / X logo icon.
+ *
+ * @since 0.0.1
+ */
 public val IcTwitter24: ImageVector
     get() {
         if (_IcTwitter24 != null) {

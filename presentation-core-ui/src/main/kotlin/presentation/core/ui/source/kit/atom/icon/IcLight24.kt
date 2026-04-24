@@ -8,6 +8,11 @@ import androidx.compose.ui.graphics.vector.group
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp light mode (sun) icon.
+ *
+ * @since 0.0.1
+ */
 public val IcLight24: ImageVector
     get() {
         if (_IcLight24 != null) {

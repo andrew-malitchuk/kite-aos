@@ -33,6 +33,24 @@ import presentation.core.ui.source.kit.atom.icon.IcOutline2
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 import kotlin.math.sqrt
 
+/**
+ * Animated splash loading screen that displays rotating concentric outline icons with a
+ * circular reveal exit animation.
+ *
+ * The composable renders three layered [Image] icons that continuously rotate. When [isVisible]
+ * becomes `false`, it transitions into an expanding circle animation that fills the screen,
+ * providing a smooth transition to the main content.
+ *
+ * @param isVisible whether the splash loading animation is currently visible. When set to `false`,
+ *        the exit animation begins.
+ * @param exitAnimationDuration duration of the circular reveal exit animation in milliseconds.
+ * @param onStartExitAnimation callback invoked when the exit animation starts.
+ *
+ * @see SplashScreenDecorator
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
+ */
 @Composable
 public fun SplashLoading(
     isVisible: Boolean = true,
@@ -51,6 +69,7 @@ public fun SplashLoading(
     )
 
     var isExitAnimationStarted by remember { mutableStateOf(false) }
+    // Base size of the expanding circle used for the exit reveal animation
     val baseSize = 144.dp
 
     LaunchedEffect(isVisible) {
@@ -60,6 +79,8 @@ public fun SplashLoading(
         }
     }
 
+    // Calculate screen diagonal to determine the scale factor needed for the circle
+    // to fully cover the screen during the exit reveal animation
     val configuration = LocalConfiguration.current
     val screenDiagonal =
         remember {
@@ -71,6 +92,7 @@ public fun SplashLoading(
             )
         }
 
+    // Scale factor of 1.5x ensures the circle overflows screen edges for a clean reveal
     val exitAnimationScale by animateFloatAsState(
         targetValue = if (isExitAnimationStarted) (screenDiagonal / baseSize.value) * 1.5f else 0f,
         animationSpec =
@@ -81,6 +103,8 @@ public fun SplashLoading(
         label = "exitScale",
     )
 
+    // Incrementing counter that drives the continuous rotation animation;
+    // each increment triggers a 360-degree rotation cycle over 6 seconds
     var animState by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
         while (true) {
@@ -101,6 +125,7 @@ public fun SplashLoading(
                     .graphicsLayer { alpha = enterAlpha },
                 contentAlignment = Alignment.Center,
             ) {
+                // Three concentric icon layers with decreasing opacity and increasing size
                 val icons = listOf(IcOutline1, IcOutline2, IcOutline3)
                 val colors =
                     listOf(
@@ -108,7 +133,9 @@ public fun SplashLoading(
                         Theme.color.error,
                         Theme.color.warning,
                     )
+                // Size multipliers applied to the base unit (8 * 16) for each layer
                 val sizes = listOf(2.7, 3.7, 5.0)
+                // Outer layers are progressively more transparent
                 val alphas = listOf(1f, 0.7f, 0.4f)
 
                 icons.forEachIndexed { index, icon ->

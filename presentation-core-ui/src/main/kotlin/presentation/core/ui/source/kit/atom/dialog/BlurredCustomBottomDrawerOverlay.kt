@@ -39,6 +39,28 @@ import presentation.core.ui.source.kit.atom.shape.SquircleShape
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+/**
+ * A bottom drawer overlay with a blurred background effect powered by Haze.
+ *
+ * The drawer slides up from the bottom of the screen with an animated offset. While open,
+ * the background content is blurred and overlaid with a semi-transparent mask. The drawer
+ * supports swipe-to-dismiss gestures and tap-on-mask dismissal.
+ *
+ * @param isDrawerOpen whether the drawer is currently open.
+ * @param onDismiss callback invoked when the drawer should be dismissed (tap on mask or swipe).
+ * @param drawerContent composable content displayed inside the drawer panel.
+ * @param content composable content of the main screen behind the drawer.
+ * @param modifier Modifier to be applied to the [Box].
+ * @param drawerHeight the height of the drawer panel.
+ * @param animationDuration duration of the open/close slide animation in milliseconds.
+ * @param maskColor the color of the semi-transparent overlay mask.
+ * @param enableSwipe whether swipe-to-dismiss gestures are enabled on the drawer.
+ *
+ * @see CustomBottomDrawerOverlay
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
+ */
 @Composable
 public fun BlurredCustomBottomDrawerOverlay(
     isDrawerOpen: Boolean,
@@ -55,7 +77,7 @@ public fun BlurredCustomBottomDrawerOverlay(
     val density = LocalDensity.current
     val drawerHeightPx = remember(density, drawerHeight) { with(density) { drawerHeight.toPx() } }
 
-    // State for Haze blur
+    // Haze state drives the background blur effect; shared between source and effect modifiers
     val hazeState = remember { HazeState() }
 
     val offsetY =
@@ -136,7 +158,8 @@ public fun BlurredCustomBottomDrawerOverlay(
                                 onDragStart = { isExpanded = true },
                                 onDragEnd = {
                                     scope.launch {
-                                        val shouldClose = offsetY.value > drawerHeightPx * 0.4f
+                                        // Close if dragged past 40% of drawer height
+                        val shouldClose = offsetY.value > drawerHeightPx * 0.4f
                                         val target = if (shouldClose) drawerHeightPx else 0f
                                         offsetY.animateTo(target, tween(animationDuration))
                                         if (shouldClose) onDismiss()

@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp upward arrow icon.
+ *
+ * @since 0.0.1
+ */
 public val IcArrowUp24: ImageVector
     get() {
         if (_IcArrowUp24 != null) {
