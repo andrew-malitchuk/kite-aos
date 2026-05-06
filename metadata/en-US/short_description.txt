@@ -1,1 +1,1 @@
-Modern, open-source Android kiosk application designed to transform tablets into dedicated smart home dashboards.
+Modern Android kiosk app for smart home dashboards.
