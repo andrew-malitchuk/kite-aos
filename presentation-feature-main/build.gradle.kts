@@ -1,14 +1,21 @@
 plugins {
-    id("dev.yahk.convention.feature")
-    id("dev.yahk.convention.di.android")
+    id("convention.feature")
+    id("convention.di.android")
 }
 
 android {
     namespace = "presentation.feature.main"
+
+    // AGP 9 disables BuildConfig generation for library modules by default.
+    // Re-enable here because KioskWebView uses BuildConfig.DEBUG to gate debug logging.
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
     implementation(libs.core.ktx)
+    implementation(libs.androidx.webkit)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 

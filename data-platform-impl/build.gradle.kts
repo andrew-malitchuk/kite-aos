@@ -1,6 +1,6 @@
 plugins {
-    id("dev.yahk.convention.feature")
-    id("dev.yahk.convention.di")
+    id("convention.feature")
+    id("convention.di")
 }
 
 android {
