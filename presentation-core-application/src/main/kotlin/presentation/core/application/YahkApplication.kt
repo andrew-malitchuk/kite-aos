@@ -53,5 +53,7 @@ public class YahkApplication : Application() {
         // Start the MQTT foreground service so that telemetry stays alive independently of the UI.
         val intent = Intent(this, MqttService::class.java)
         ContextCompat.startForegroundService(this, intent)
+
+        CrashlyticsInitializer.init()
     }
 }
