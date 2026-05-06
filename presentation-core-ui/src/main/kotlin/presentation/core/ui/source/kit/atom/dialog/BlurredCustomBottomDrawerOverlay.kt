@@ -159,7 +159,7 @@ public fun BlurredCustomBottomDrawerOverlay(
                                 onDragEnd = {
                                     scope.launch {
                                         // Close if dragged past 40% of drawer height
-                        val shouldClose = offsetY.value > drawerHeightPx * 0.4f
+                                        val shouldClose = offsetY.value > drawerHeightPx * 0.4f
                                         val target = if (shouldClose) drawerHeightPx else 0f
                                         offsetY.animateTo(target, tween(animationDuration))
                                         if (shouldClose) onDismiss()

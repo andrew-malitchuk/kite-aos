@@ -107,20 +107,28 @@ public enum class StackedSnackbarDuration {
 internal object Constant {
     /** Scale reduction per stacked snackbar level (5% smaller per level). */
     const val SCALE_DECREMENT = 0.05f
+
     /** Bottom padding increment in dp per stacked snackbar level. */
     const val PADDING_INCREMENT = 16
+
     /** Vertical offset (in px) for the enter slide-in animation origin. */
     const val Y_TARGET_ENTER = 100
+
     /** Vertical offset (in px) for the exit slide-out animation target. */
     const val Y_TARGET_EXIT = 750
+
     /** Horizontal offset (in px) for the rightward swipe-exit animation target. */
     const val X_TARGET_EXIT_RIGHT = 1000
+
     /** Horizontal offset (in px) for the leftward swipe-exit animation target. */
     const val X_TARGET_EXIT_LEFT = -1000
+
     /** Horizontal drag threshold (in px) to trigger a leftward swipe-exit. */
     const val OFFSET_THRESHOLD_EXIT_LEFT = -350
+
     /** Horizontal drag threshold (in px) to trigger a rightward swipe-exit. */
     const val OFFSET_THRESHOLD_EXIT_RIGHT = 350
+
     /** Duration in milliseconds for tween-based slide animations. */
     const val TWEEN_ANIMATION_DURATION = 100
 }
