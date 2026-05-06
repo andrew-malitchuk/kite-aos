@@ -58,6 +58,12 @@ public fun OnboardingScreen(viewModel: OnboardingViewModel = koinViewModel()) {
             viewModel.onCameraPermission(it)
         }
 
+    // 1.1 Audio Launcher (RECORD_AUDIO — required for WebRTC camera streams)
+    val audioLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+            viewModel.onAudioPermission(it)
+        }
+
     // 2. Overlay Launcher
     val overlayLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -90,6 +96,11 @@ public fun OnboardingScreen(viewModel: OnboardingViewModel = koinViewModel()) {
                 context, Manifest.permission.CAMERA,
             ) == PackageManager.PERMISSION_GRANTED
 
+        val audioGranted =
+            ContextCompat.checkSelfPermission(
+                context, Manifest.permission.RECORD_AUDIO,
+            ) == PackageManager.PERMISSION_GRANTED
+
         val notificationGranted =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 ContextCompat.checkSelfPermission(
@@ -111,6 +122,7 @@ public fun OnboardingScreen(viewModel: OnboardingViewModel = koinViewModel()) {
         // Update ViewModel with actual values
         with(viewModel) {
             onCameraPermission(cameraGranted)
+            onAudioPermission(audioGranted)
             onPostNotificationPermission(notificationGranted)
             onOverlayPermission(overlayGranted)
             onDeviceAdminPermission(adminGranted)
@@ -122,6 +134,7 @@ public fun OnboardingScreen(viewModel: OnboardingViewModel = koinViewModel()) {
     viewModel.collectSideEffect { effect ->
         when (effect) {
             OnboardingSideEffect.AskCameraPermissionEffect -> cameraLauncher.launch(Manifest.permission.CAMERA)
+            OnboardingSideEffect.AskAudioPermissionEffect -> audioLauncher.launch(Manifest.permission.RECORD_AUDIO)
             OnboardingSideEffect.AskPostNotificationPermissionEffect -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)

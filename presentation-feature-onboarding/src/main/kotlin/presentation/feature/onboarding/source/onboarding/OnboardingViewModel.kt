@@ -42,6 +42,7 @@ public class OnboardingViewModel(
         container(
             OnboardingState(
                 isCameraPermissionGranted = false,
+                isAudioPermissionGranted = false,
                 isOverlayPermissionGranted = false,
                 isPostNotificationPermissionGranted = false,
                 isDeviceAdminGranted = false,
@@ -71,6 +72,19 @@ public class OnboardingViewModel(
      */
     public fun askCameraPermission(): Job = intent {
         postSideEffect(OnboardingSideEffect.AskCameraPermissionEffect)
+    }
+
+    /**
+     * Requests the microphone (RECORD_AUDIO) permission by posting the corresponding side effect.
+     *
+     * RECORD_AUDIO is required for WebRTC camera streams: even receive-only streams negotiate
+     * audio tracks in SDP, causing RTCPeerConnection to fail silently without this permission.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
+    public fun askAudioPermission(): Job = intent {
+        postSideEffect(OnboardingSideEffect.AskAudioPermissionEffect)
     }
 
     /**
@@ -188,6 +202,21 @@ public class OnboardingViewModel(
     }
 
     /**
+     * Updates the state with the RECORD_AUDIO permission result.
+     *
+     * @param granted Whether the audio permission was granted.
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
+     */
+    public fun onAudioPermission(granted: Boolean): Job = intent {
+        reduce {
+            state.copy(
+                isAudioPermissionGranted = granted,
+            )
+        }
+    }
+
+    /**
      * Updates the state with the overlay permission result.
      *
      * @param granted Whether the overlay permission was granted.
@@ -259,6 +288,7 @@ public class OnboardingViewModel(
     public fun handleIntent(intent: OnboardingIntent) {
         when (intent) {
             is OnboardingIntent.OnAskCameraPermissionIntent -> askCameraPermission()
+            is OnboardingIntent.OnAskAudioPermissionIntent -> askAudioPermission()
             is OnboardingIntent.OnAskOverlayPermissionIntent -> askOverlayPermission()
             is OnboardingIntent.OnAskPostNotificationPermissionIntent -> askPostNotificationPermission()
             is OnboardingIntent.OnAskDeviceAdminPermissionIntent -> askDeviceAdminPermission()

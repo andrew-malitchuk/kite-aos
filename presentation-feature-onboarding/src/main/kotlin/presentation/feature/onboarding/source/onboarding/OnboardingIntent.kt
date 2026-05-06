@@ -14,6 +14,9 @@ public sealed class OnboardingIntent {
     /** User requested camera permission. */
     public data object OnAskCameraPermissionIntent : OnboardingIntent()
 
+    /** User requested microphone (RECORD_AUDIO) permission. */
+    public data object OnAskAudioPermissionIntent : OnboardingIntent()
+
     /** User requested overlay permission. */
     public data object OnAskOverlayPermissionIntent : OnboardingIntent()
 

@@ -42,6 +42,7 @@ import presentation.core.ui.source.kit.atom.icon.IcCamera24
 import presentation.core.ui.source.kit.atom.icon.IcLogo48
 import presentation.core.ui.source.kit.atom.icon.IcNotification24
 import presentation.core.ui.source.kit.atom.icon.IcOverlay24
+import presentation.core.ui.source.kit.atom.icon.IcSensor24
 import presentation.core.ui.source.kit.atom.icon.IcSuccess24
 import presentation.core.ui.source.kit.atom.icon.IcSystemSettings24
 import presentation.core.ui.source.kit.atom.icon.IcWeb24
@@ -129,6 +130,7 @@ internal fun OnboardingContent(
 
     val allPermissionsGranted =
         state.isCameraPermissionGranted &&
+            state.isAudioPermissionGranted &&
             state.isOverlayPermissionGranted &&
             state.isPostNotificationPermissionGranted &&
             state.isDeviceAdminGranted &&
@@ -270,6 +272,13 @@ private fun PermissionsList(state: OnboardingState, onIntent: (OnboardingIntent)
             state.isCameraPermissionGranted,
         ) {
             onIntent(OnboardingIntent.OnAskCameraPermissionIntent)
+        }
+        PermissionItem(
+            stringResource(R.string.permission_audio_access),
+            IcSensor24,
+            state.isAudioPermissionGranted,
+        ) {
+            onIntent(OnboardingIntent.OnAskAudioPermissionIntent)
         }
         PermissionItem(
             stringResource(R.string.permission_post_notifications),

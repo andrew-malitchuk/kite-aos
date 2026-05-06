@@ -22,6 +22,7 @@
 
     <!-- Permissions -->
     <string name="permission_camera_access">Camera Access</string>
+    <string name="permission_audio_access">Microphone Access</string>
     <string name="permission_overlay_access">Overlay Access</string>
     <string name="permission_device_admin">Device Admin</string>
     <string name="permission_device_admin_explanation">Required for programmatic screen locking and stable kiosk operation.</string>

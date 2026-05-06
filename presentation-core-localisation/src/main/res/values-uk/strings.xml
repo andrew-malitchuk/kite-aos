@@ -22,6 +22,7 @@
 
     <!-- Permissions -->
     <string name="permission_camera_access">Доступ до камери</string>
+    <string name="permission_audio_access">Доступ до мікрофону</string>
     <string name="permission_overlay_access">Доступ до накладання</string>
     <string name="permission_device_admin">Адміністратор пристрою</string>
     <string name="permission_system_settings">Системні налаштування</string>
