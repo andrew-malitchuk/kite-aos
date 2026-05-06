@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +36,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import domain.core.source.model.DockPositionModel
 import presentation.core.platform.source.service.MotionService
 import presentation.core.styling.core.Theme
@@ -102,6 +106,13 @@ internal fun MainContent(
         }
     }
 
+    // Publish the URL to MQTT whenever the WebView finishes loading a new page.
+    LaunchedEffect(webViewState.currentUrl) {
+        if (webViewState.currentUrl.isNotEmpty()) {
+            onIntent(MainIntent.OnPageLoadedIntent(webViewState.currentUrl))
+        }
+    }
+
     val activity = LocalActivity.current
     val window = (activity)?.window
 
@@ -118,6 +129,18 @@ internal fun MainContent(
             // Configure the system to show bars temporarily when the user swipes from edges.
             controller.systemBarsBehavior =
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+
+        // Re-apply immersive mode when returning from an external app (auto-return behaviour).
+        val lifecycleOwner = LocalLifecycleOwner.current
+        DisposableEffect(lifecycleOwner) {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    controller.hide(WindowInsetsCompat.Type.systemBars())
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
         }
     }
 

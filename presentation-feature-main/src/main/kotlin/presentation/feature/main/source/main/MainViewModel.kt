@@ -13,6 +13,7 @@ import domain.usecase.api.source.usecase.configuration.GetDashboardUseCase
 import domain.usecase.api.source.usecase.device.GetDockPositionUseCase
 import domain.usecase.api.source.usecase.device.GetMoveDetectorUseCase
 import domain.usecase.api.source.usecase.device.ObserveMoveDetectorMotionUseCase
+import domain.usecase.api.source.usecase.mqtt.MqttSendUrlUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import org.koin.android.annotation.KoinViewModel
@@ -32,6 +33,7 @@ import presentation.core.localisation.R
  * @param getDockPositionUseCase Use case to retrieve the dock position preference.
  * @param getMoveDetectorUseCase Use case to retrieve the motion detector configuration.
  * @param observeMoveDetectorMotionUseCase Use case to observe real-time motion detection events.
+ * @param mqttSendUrlUseCase Use case to publish the current WebView URL to the MQTT broker.
  * @see MainScreen
  * @see MainState
  * @see MainSideEffect
@@ -45,6 +47,7 @@ public class MainViewModel(
     private val getDockPositionUseCase: GetDockPositionUseCase,
     private val getMoveDetectorUseCase: GetMoveDetectorUseCase,
     private val observeMoveDetectorMotionUseCase: ObserveMoveDetectorMotionUseCase,
+    private val mqttSendUrlUseCase: MqttSendUrlUseCase,
 ) : ContainerHost<MainState, MainSideEffect>,
     ViewModel() {
     public override val container: Container<MainState, MainSideEffect> =
@@ -148,6 +151,18 @@ public class MainViewModel(
     }
 
     /**
+     * Publishes the [url] of the most recently loaded WebView page to the MQTT broker.
+     *
+     * Failures are silently ignored — MQTT is a best-effort telemetry channel.
+     *
+     * @param url The fully-loaded page URL.
+     * @since 0.0.2
+     */
+    public fun onPageLoaded(url: String): Job = intent {
+        mqttSendUrlUseCase(url)
+    }
+
+    /**
      * Entry point for UI intents.
      *
      * Routes each [MainIntent] to the corresponding handler method.
@@ -162,6 +177,7 @@ public class MainViewModel(
             MainIntent.OnReloadIntent -> onLoad()
             MainIntent.OnSettingsClickAction -> onGoToSettings()
             is MainIntent.OnOpenApplicationIntent -> onOpenApplication(intent.packageName)
+            is MainIntent.OnPageLoadedIntent -> onPageLoaded(intent.url)
         }
     }
 

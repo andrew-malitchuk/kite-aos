@@ -21,4 +21,7 @@ public sealed class MainIntent {
 
     /** User clicked an application icon in the drawer. */
     public data class OnOpenApplicationIntent(val packageName: String) : MainIntent()
+
+    /** WebView finished loading a page; the [url] is the fully-loaded URL. */
+    public data class OnPageLoadedIntent(val url: String) : MainIntent()
 }
