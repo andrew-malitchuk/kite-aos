@@ -28,16 +28,6 @@ internal class MqttRepositoryImpl(
     private val mqttPreferenceSource: MqttPreferenceSource,
 ) : MqttRepository {
 
-    /**
-     * Establishes a connection to the MQTT broker with the given credentials.
-     *
-     * @param server the MQTT broker hostname or IP address.
-     * @param port the MQTT broker port number.
-     * @param clientId the unique client identifier for this connection.
-     * @param username the authentication username.
-     * @param password the authentication password.
-     * @param friendlyName a human-readable name for this device in MQTT discovery.
-     */
     override suspend fun connect(
         server: String,
         port: Int,
@@ -49,53 +39,43 @@ internal class MqttRepositoryImpl(
         telemetryMqttSource.connect(server, port, clientId, username, password, friendlyName)
     }
 
-    /**
-     * Disconnects from the MQTT broker.
-     */
     override suspend fun disconnect() {
         telemetryMqttSource.disconnect()
     }
 
-    /**
-     * Publishes a motion detection event to the MQTT broker.
-     *
-     * @param isDetected `true` if motion was detected, `false` otherwise.
-     */
     override suspend fun sendMotion(isDetected: Boolean) {
         telemetryMqttSource.sendMotion(isDetected)
     }
 
-    /**
-     * Publishes the current battery level to the MQTT broker.
-     *
-     * @param level the battery level percentage (0-100).
-     */
     override suspend fun sendBatteryLevel(level: Int) {
         telemetryMqttSource.sendBatteryLevel(level)
     }
 
-    /**
-     * Observes changes to the stored MQTT configuration.
-     *
-     * @return a [Flow] emitting the current [MqttModel] whenever the configuration changes,
-     *   or `null` if not yet configured.
-     */
+    override suspend fun sendVolume(level: Int) {
+        telemetryMqttSource.sendVolume(level)
+    }
+
+    override suspend fun sendBrightness(level: Int) {
+        telemetryMqttSource.sendBrightness(level)
+    }
+
+    override suspend fun sendUrl(url: String) {
+        telemetryMqttSource.sendUrl(url)
+    }
+
+    override suspend fun sendScreenState(isOn: Boolean) {
+        telemetryMqttSource.sendScreenState(isOn)
+    }
+
+    override fun observeCommands(): Flow<Pair<String, String>> =
+        telemetryMqttSource.observeCommands()
+
     override fun observeMqttConfiguration(): Flow<MqttModel?> =
         mqttPreferenceSource.observeData().map { it?.let(MqttPreferenceMapper.toModel::map) }
 
-    /**
-     * Retrieves the current MQTT broker configuration.
-     *
-     * @return the stored [MqttModel], or `null` if not yet configured.
-     */
     override suspend fun getMqttConfiguration(): MqttModel? =
         mqttPreferenceSource.getData()?.let(MqttPreferenceMapper.toModel::map)
 
-    /**
-     * Persists the given MQTT broker configuration.
-     *
-     * @param configuration the [MqttModel] containing broker connection details to store.
-     */
     override suspend fun setMqttConfiguration(configuration: MqttModel) {
         mqttPreferenceSource.setData(configuration.let(MqttPreferenceMapper.toResource::map))
     }

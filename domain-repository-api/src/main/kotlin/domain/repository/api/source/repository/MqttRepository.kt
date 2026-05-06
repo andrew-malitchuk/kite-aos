@@ -21,6 +21,7 @@ public interface MqttRepository {
      * @param clientId The client ID to use for the MQTT connection.
      * @param username The username for authentication.
      * @param password The password for authentication.
+     * @param friendlyName Human-readable name for the device used in Home Assistant discovery.
      */
     public suspend fun connect(
         server: String,
@@ -46,9 +47,44 @@ public interface MqttRepository {
     /**
      * Sends the current battery percentage to the MQTT broker.
      *
-     * @param level The current battery level as a percentage (0-100).
+     * @param level The current battery level as a percentage (0–100).
      */
     public suspend fun sendBatteryLevel(level: Int)
+
+    /**
+     * Sends the current media volume level to the MQTT broker.
+     *
+     * @param level The volume level as a percentage (0–100).
+     */
+    public suspend fun sendVolume(level: Int)
+
+    /**
+     * Sends the current screen brightness level to the MQTT broker.
+     *
+     * @param level The brightness level (0–255, matching Android's brightness scale).
+     */
+    public suspend fun sendBrightness(level: Int)
+
+    /**
+     * Sends the current WebView URL to the MQTT broker.
+     *
+     * @param url The URL of the currently displayed page.
+     */
+    public suspend fun sendUrl(url: String)
+
+    /**
+     * Sends the current screen power state to the MQTT broker.
+     *
+     * @param isOn True if the screen is currently on (interactive), false otherwise.
+     */
+    public suspend fun sendScreenState(isOn: Boolean)
+
+    /**
+     * Returns a [Flow] that emits every inbound MQTT command as a [Pair] of (topic, payload).
+     *
+     * @return A [Flow] of (topic, payload) pairs for all subscribed command topics.
+     */
+    public fun observeCommands(): Flow<Pair<String, String>>
 
     /**
      * Observes changes to the MQTT configuration stored in preferences.
