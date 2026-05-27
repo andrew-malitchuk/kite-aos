@@ -28,15 +28,6 @@ public data class MainState(
     val isFabVisible: Boolean = true,
     val fabDelay: Long = 60L,
     val webEngine: WebEngineModel = WebEngineModel.AndroidWebView,
-    /** Number of consecutive watchdog / WebView failures. Resets to 0 on a successful load. */
-    val watchdogFailureCount: Int = 0,
-    /** Whether the recovery overlay should be shown to the user. */
-    val isWatchdogRecovering: Boolean = false,
-    /**
-     * Monotonically-increasing counter used to trigger a WebView reload from the ViewModel.
-     * [MainContent] observes this value and calls [KioskEngineState.reload] when it changes.
-     */
-    val reloadTrigger: Int = 0,
     /** Whether the device currently has internet connectivity. */
     val isNetworkAvailable: Boolean = true,
 )

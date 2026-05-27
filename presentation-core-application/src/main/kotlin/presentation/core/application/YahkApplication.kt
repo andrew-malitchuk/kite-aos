@@ -1,8 +1,11 @@
 package presentation.core.application
 
+import android.app.ActivityManager
 import android.app.Application
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
+import android.os.Process
 import androidx.core.content.ContextCompat
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -41,11 +44,10 @@ public class YahkApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Pre-warm the GeckoView runtime as early as possible so the GPU compositor process
-        // has time to stabilise before any Activity receives window focus. Without this,
-        // GeckoRuntime.create() runs during Compose composition on the main thread, and if the
-        // device is under memory pressure the 5-second ANR timeout can be hit while waiting
-        // for the GPU process to respond to SyncResumeResizeCompositor.
+        // GeckoView spawns child processes that also trigger Application.onCreate().
+        // Skip full initialization in those processes — only the main process needs DI, receivers, and services.
+        if (!isMainProcess()) return
+
         preWarmGeckoRuntime(applicationContext)
 
         // Initialise the Koin dependency injection container with logging and the Android context.
@@ -63,5 +65,15 @@ public class YahkApplication : Application() {
         ContextCompat.startForegroundService(this, intent)
 
         CrashlyticsInitializer.init()
+    }
+
+    private fun isMainProcess(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            getProcessName() == packageName
+        } else {
+            val pid = Process.myPid()
+            val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+            manager.runningAppProcesses?.any { it.pid == pid && it.processName == packageName } ?: false
+        }
     }
 }
