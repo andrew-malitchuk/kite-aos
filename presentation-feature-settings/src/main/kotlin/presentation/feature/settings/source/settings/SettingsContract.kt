@@ -2,9 +2,11 @@ package presentation.feature.settings.source.settings
 
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
+import domain.core.source.model.HomeAssistantInstanceModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.MqttModel
 import domain.core.source.model.ThemeModel
+import domain.core.source.model.WebEngineModel
 
 /**
  * Represents the MVI state of the settings screen.
@@ -30,6 +32,9 @@ public data class SettingsState(
     val mqtt: MqttModel? = null,
     val isLoading: Boolean = true,
     val currentLanguage: String? = null,
+    val webEngine: WebEngineModel = WebEngineModel.AndroidWebView,
+    val isAutoReturnEnabled: Boolean = true,
+    val isDiscovering: Boolean = false,
 )
 
 /**
@@ -61,8 +66,30 @@ public sealed class SettingsSideEffect {
     /** Triggers a complete restart of the application process. */
     public data object RestartApplicationEffect : SettingsSideEffect()
 
+    /** Prompts the user to set Kite as the default home launcher. */
+    public data object RequestDefaultLauncherEffect : SettingsSideEffect()
+
     /** Displays an error message to the user. */
     public data class ShowError(val message: String) : SettingsSideEffect()
+
+    /**
+     * Triggers the SAF "Create Document" picker to save the config JSON.
+     *
+     * @param json The serialized configuration to write into the file.
+     */
+    public data class ExportConfigEffect(val json: String) : SettingsSideEffect()
+
+    /** Triggers the SAF "Open Document" picker to select a config JSON file for import. */
+    public data object ImportConfigEffect : SettingsSideEffect()
+
+    /**
+     * Delivers the list of discovered Home Assistant instances to display in a selection dialog.
+     *
+     * @param instances Discovered instances. May be empty if nothing was found.
+     */
+    public data class ShowDiscoveryResultEffect(
+        val instances: List<HomeAssistantInstanceModel>,
+    ) : SettingsSideEffect()
 }
 
 /**
@@ -111,4 +138,36 @@ public sealed class SettingsIntent {
 
     /** Request to restart the application. */
     public data object OnRestartIntent : SettingsIntent()
+
+    /** Sets the browser engine for the kiosk WebView. */
+    public data class OnSetWebEngineIntent(val engine: WebEngineModel) : SettingsIntent()
+
+    /** Request to set Kite as the default home launcher. */
+    public data object OnSetDefaultLauncherIntent : SettingsIntent()
+
+    /** Sets the auto-return to kiosk preference. */
+    public data class OnSetAutoReturnIntent(val enabled: Boolean) : SettingsIntent()
+
+    /** Request to export the current configuration to a JSON file. */
+    public data object OnExportConfigIntent : SettingsIntent()
+
+    /** Request to import configuration from a user-selected JSON file. */
+    public data object OnImportConfigIntent : SettingsIntent()
+
+    /**
+     * Delivers the raw JSON content read from the import file.
+     *
+     * @param json The raw JSON string from the user-selected file.
+     */
+    public data class OnImportConfigContentIntent(val json: String) : SettingsIntent()
+
+    /** Request to scan the local network for Home Assistant instances. */
+    public data object OnDiscoverHomeAssistantIntent : SettingsIntent()
+
+    /**
+     * Populates the dashboard URL with the URL selected from the discovery result dialog.
+     *
+     * @param url The base URL of the selected Home Assistant instance.
+     */
+    public data class OnSelectDiscoveredInstanceIntent(val url: String) : SettingsIntent()
 }

@@ -37,6 +37,9 @@
     <string name="settings_title">Налаштування</string>
     <string name="settings_ui_ux">UI &amp; UX</string>
     <string name="settings_web_kiosk">Веб кіоск</string>
+    <string name="settings_web_engine_title">Рушій браузера</string>
+    <string name="settings_web_engine_android">Android WebView (за замовчуванням)</string>
+    <string name="settings_web_engine_gecko">GeckoView (Firefox, кращий WebRTC)</string>
     <string name="settings_theme">Тема</string>
     <string name="settings_lang">Мова</string>
     <string name="settings_application">Застосунки</string>
@@ -59,6 +62,8 @@
 
     <string name="settings_system">Система</string>
     <string name="settings_restart">Перезапустити застосунок</string>
+    <string name="settings_default_launcher">Встановити лаунчером за замовчуванням</string>
+    <string name="settings_auto_return">Автоповернення до кіоску</string>
 
     <!-- About -->
     <string name="about_title">Про застосунок</string>
@@ -77,6 +82,22 @@
     <string name="error_database">Помилка бази даних</string>
     <string name="error_preference">Помилка сховища налаштувань</string>
     <string name="error_not_found">Ресурс не знайдено</string>
+
+    <!-- Watchdog / Network Recovery -->
+    <string name="watchdog_recovering">Перепідключення…</string>
+
+    <!-- Settings → Web Kiosk — HA Discovery -->
+    <string name="settings_discover_ha">Сканувати Home Assistant</string>
+    <string name="settings_discovering">Сканування…</string>
+    <string name="settings_discover_ha_dialog_title">Знайдені інстанси</string>
+    <string name="settings_discover_ha_empty">Інстанси Home Assistant не знайдено в мережі</string>
+    <string name="settings_discover_ha_source_quick">mDNS</string>
+    <string name="settings_discover_ha_source_scan">Сканування мережі</string>
+
+    <!-- Settings → Advanced -->
+    <string name="settings_advanced">Розширені</string>
+    <string name="settings_export_config">Експорт конфігурації</string>
+    <string name="settings_import_config">Імпорт конфігурації</string>
 
     <!-- Services -->
     <string name="motion_service_notification_title">Детекція руху</string>

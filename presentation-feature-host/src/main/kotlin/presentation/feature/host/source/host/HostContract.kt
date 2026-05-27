@@ -18,6 +18,7 @@ import presentation.core.navigation.api.source.destination.Destination
 public data class HostState(
     val startDestination: Destination? = null,
     val theme: ThemeModel = ThemeModel.Light,
+    val isAutoReturnEnabled: Boolean = true,
 )
 
 /**

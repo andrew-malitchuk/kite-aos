@@ -1,6 +1,6 @@
 package domain.usecase.api.source.usecase.mqtt
 
-import domain.usecase.api.core.common.Optional
+import domain.usecase.api.source.common.Optional
 
 /**
  * Use case for initiating a connection to the configured MQTT broker.

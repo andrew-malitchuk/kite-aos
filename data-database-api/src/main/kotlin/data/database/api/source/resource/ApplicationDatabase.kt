@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import data.core.source.resource.Resource
-import data.database.api.core.configure.DatabaseConfigure
+import data.database.api.source.configure.DatabaseConfigure
 
 /**
  * Database entity representing an installed application on the device.

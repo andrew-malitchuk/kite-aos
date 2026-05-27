@@ -200,6 +200,17 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
         publish(false, "${currentClientId}_screen/screen/state", payload)
     }
 
+    override suspend fun sendWatchdogState(state: String): Unit = withContext(Dispatchers.IO) {
+        val currentClientId = clientId ?: return@withContext
+        publish(false, "${currentClientId}_watchdog/state", state)
+    }
+
+    override suspend fun sendNetworkState(isOnline: Boolean): Unit = withContext(Dispatchers.IO) {
+        val currentClientId = clientId ?: return@withContext
+        val payload = if (isOnline) "online" else "offline"
+        publish(false, "${currentClientId}_network/state", payload)
+    }
+
     override fun observeCommands(): Flow<Pair<String, String>> = commandFlow.asSharedFlow()
 
     /**

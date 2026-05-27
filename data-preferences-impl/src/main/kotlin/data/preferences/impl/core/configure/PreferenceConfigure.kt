@@ -56,5 +56,15 @@ internal object PreferenceConfigure {
          * The filename for storing the language/locale preferences.
          */
         internal const val LANGUAGE = "language.pb"
+
+        /**
+         * The filename for storing the browser engine selection.
+         */
+        internal const val WEB_ENGINE = "web_engine.pb"
+
+        /**
+         * The filename for storing the auto-return kiosk setting.
+         */
+        internal const val AUTO_RETURN = "auto_return.pb"
     }
 }

@@ -7,15 +7,19 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -25,11 +29,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -43,6 +49,7 @@ import domain.core.source.model.DockPositionModel
 import presentation.core.platform.source.service.MotionService
 import presentation.core.styling.core.Theme
 import presentation.core.ui.source.kit.atom.container.SafeContainer
+import presentation.core.localisation.R
 import presentation.core.ui.source.kit.atom.icon.IcLogo48
 import presentation.core.ui.source.kit.atom.icon.IcOpen24
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
@@ -53,7 +60,7 @@ import presentation.feature.main.core.components.SideBar
 import presentation.feature.main.source.drawer.ControlAction
 import presentation.feature.main.source.drawer.ControlDrawer
 import presentation.feature.main.source.webview.KioskWebView
-import presentation.feature.main.source.webview.rememberKioskWebViewState
+import presentation.feature.main.source.webview.rememberKioskEngineState
 import kotlin.math.roundToInt
 
 /**
@@ -85,7 +92,19 @@ internal fun MainContent(
 
     val isBottom = state.dockPosition?.position == DockPositionModel.Position.Up
 
-    val webViewState = rememberKioskWebViewState()
+    val webViewState = rememberKioskEngineState()
+
+    // Debounce the loading-hidden transition to suppress flicker caused by rapid
+    // onPageStart / onPageStop cycles during auth redirects (especially GeckoView).
+    var isPageLoading by remember { mutableStateOf(true) }
+    LaunchedEffect(webViewState.isLoading) {
+        if (webViewState.isLoading) {
+            isPageLoading = true
+        } else {
+            delay(400)
+            isPageLoading = false
+        }
+    }
 
     LaunchedEffect(Unit) {
         onIntent(MainIntent.OnLoadIntent)
@@ -110,6 +129,27 @@ internal fun MainContent(
     LaunchedEffect(webViewState.currentUrl) {
         if (webViewState.currentUrl.isNotEmpty()) {
             onIntent(MainIntent.OnPageLoadedIntent(webViewState.currentUrl))
+        }
+    }
+
+    // Dispatch error/recovery intents based on WebView error state.
+    LaunchedEffect(webViewState.isError) {
+        if (webViewState.isError) {
+            onIntent(MainIntent.OnWebViewErrorIntent)
+        }
+    }
+    LaunchedEffect(webViewState.isLoading) {
+        if (!webViewState.isLoading && !webViewState.isError && webViewState.currentUrl.isNotEmpty()) {
+            onIntent(MainIntent.OnWebViewRecoveredIntent)
+        }
+    }
+
+    // Trigger a WebView reload when the ViewModel increments reloadTrigger.
+    var previousReloadTrigger by remember { mutableStateOf(state.reloadTrigger) }
+    LaunchedEffect(state.reloadTrigger) {
+        if (state.reloadTrigger != previousReloadTrigger) {
+            previousReloadTrigger = state.reloadTrigger
+            webViewState.reload()
         }
     }
 
@@ -214,13 +254,14 @@ internal fun MainContent(
                         modifier =
                         Modifier
                             .fillMaxSize()
-                            .alpha(if (webViewState.isLoading) 0f else 1f),
+                            .alpha(if (isPageLoading) 0f else 1f),
                     ) {
                         KioskWebView(
                             modifier =
                             Modifier
                                 .fillMaxSize(),
                             state = webViewState,
+                            engineType = state.webEngine,
                         )
 
                         // Track the drag offset of the FAB to allow user repositioning.
@@ -275,7 +316,7 @@ internal fun MainContent(
                     }
 
                     AnimatedVisibility(
-                        visible = webViewState.isLoading,
+                        visible = isPageLoading,
                         enter = fadeIn(),
                         exit = fadeOut(),
                         modifier = Modifier.align(Alignment.Center),
@@ -284,6 +325,39 @@ internal fun MainContent(
                             modifier = Modifier.size(256.dp),
                             imageVector = IcLogo48,
                         )
+                    }
+
+                    // Recovery overlay — shown when the watchdog or WebView detects a failure.
+                    AnimatedVisibility(
+                        visible = state.isWatchdogRecovering,
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.Center),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .alpha(0.85f),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                ShimmerImage(
+                                    modifier = Modifier.size(128.dp),
+                                    imageVector = IcLogo48,
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = androidx.compose.ui.res.stringResource(R.string.watchdog_recovering),
+                                    style = Theme.typography.body,
+                                    color = Theme.color.inkMain,
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+                        }
                     }
                 }
             },

@@ -80,6 +80,20 @@ public interface MqttRepository {
     public suspend fun sendScreenState(isOn: Boolean)
 
     /**
+     * Sends the watchdog health state to the MQTT broker.
+     *
+     * @param state One of `"ok"`, `"fail(N)"`, or `"recovering"`.
+     */
+    public suspend fun sendWatchdogState(state: String)
+
+    /**
+     * Sends the device network connectivity state to the MQTT broker.
+     *
+     * @param isOnline `true` when the network is available, `false` when lost.
+     */
+    public suspend fun sendNetworkState(isOnline: Boolean)
+
+    /**
      * Returns a [Flow] that emits every inbound MQTT command as a [Pair] of (topic, payload).
      *
      * @return A [Flow] of (topic, payload) pairs for all subscribed command topics.

@@ -24,7 +24,7 @@ dependencies {
     implementation(projects.presentationCoreStyling)
     implementation(projects.presentationCoreUi)
 
-    implementation("org.orbit-mvi:orbit-core:11.0.0")
-    implementation("org.orbit-mvi:orbit-viewmodel:11.0.0")
-    implementation("org.orbit-mvi:orbit-compose:11.0.0")
+    implementation(libs.orbit.core)
+    implementation(libs.orbit.viewmodel)
+    implementation(libs.orbit.compose)
 }

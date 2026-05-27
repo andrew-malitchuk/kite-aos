@@ -1,7 +1,7 @@
 package domain.usecase.api.source.usecase.application
 
 import domain.core.source.model.ApplicationModel
-import domain.usecase.api.core.common.Optional
+import domain.usecase.api.source.common.Optional
 
 /**
  * Use case for saving an application to the user's selected list.

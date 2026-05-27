@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import common.core.core.execute.executeResult
 import domain.core.source.model.ThemeModel
+import domain.usecase.api.source.usecase.configuration.GetAutoReturnUseCase
 import domain.usecase.api.source.usecase.configuration.GetOnboardingStatusUseCase
 import domain.usecase.api.source.usecase.configuration.ObserveThemeUseCase
 import org.koin.android.annotation.KoinViewModel
@@ -30,13 +31,23 @@ import presentation.core.navigation.api.source.destination.Destination
 public class HostViewModel(
     private val getOnboardingStatusUseCase: GetOnboardingStatusUseCase,
     private val observeThemeUseCase: ObserveThemeUseCase,
+    private val getAutoReturnUseCase: GetAutoReturnUseCase,
 ) : ContainerHost<HostState, HostSideEffect>, ViewModel() {
     override val container: Container<HostState, HostSideEffect> = container(HostState())
 
     init {
         determineStartDestination()
         observeTheme()
+        loadAutoReturn()
     }
+
+    private fun loadAutoReturn() = executeResult(
+        scope = viewModelScope,
+        request = { getAutoReturnUseCase() },
+        result = { enabled ->
+            intent { reduce { state.copy(isAutoReturnEnabled = enabled ?: true) } }
+        },
+    )
 
     /**
      * Subscribes to theme updates and updates the UI state accordingly.

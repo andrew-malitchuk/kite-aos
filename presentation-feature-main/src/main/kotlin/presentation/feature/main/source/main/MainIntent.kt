@@ -24,4 +24,10 @@ public sealed class MainIntent {
 
     /** WebView finished loading a page; the [url] is the fully-loaded URL. */
     public data class OnPageLoadedIntent(val url: String) : MainIntent()
+
+    /** WebView reported a fatal load error (network error, HTTP 5xx, or render-process crash). */
+    public data object OnWebViewErrorIntent : MainIntent()
+
+    /** WebView successfully loaded a page after a previous error — clears the recovery state. */
+    public data object OnWebViewRecoveredIntent : MainIntent()
 }

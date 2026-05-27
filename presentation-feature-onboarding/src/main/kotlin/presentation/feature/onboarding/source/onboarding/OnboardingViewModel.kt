@@ -3,7 +3,7 @@ package presentation.feature.onboarding.source.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import common.core.core.execute.executeResult
-import domain.core.core.monad.Failure
+import domain.core.source.monad.Failure
 import domain.core.source.model.DashboardModel
 import domain.usecase.api.source.usecase.configuration.GetDashboardUseCase
 import domain.usecase.api.source.usecase.configuration.SetDashboardUseCase

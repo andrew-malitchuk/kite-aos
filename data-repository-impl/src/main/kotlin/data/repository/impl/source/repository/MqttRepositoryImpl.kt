@@ -67,6 +67,14 @@ internal class MqttRepositoryImpl(
         telemetryMqttSource.sendScreenState(isOn)
     }
 
+    override suspend fun sendWatchdogState(state: String) {
+        telemetryMqttSource.sendWatchdogState(state)
+    }
+
+    override suspend fun sendNetworkState(isOnline: Boolean) {
+        telemetryMqttSource.sendNetworkState(isOnline)
+    }
+
     override fun observeCommands(): Flow<Pair<String, String>> =
         telemetryMqttSource.observeCommands()
 

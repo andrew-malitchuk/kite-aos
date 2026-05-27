@@ -2,7 +2,7 @@ package data.database.impl.di
 
 import android.content.Context
 import androidx.room.Room
-import data.database.api.core.configure.DatabaseConfigure
+import data.database.api.source.configure.DatabaseConfigure
 import data.database.impl.core.database.RoomDatabase
 import data.database.impl.source.dao.ApplicationDao
 import org.koin.core.annotation.ComponentScan

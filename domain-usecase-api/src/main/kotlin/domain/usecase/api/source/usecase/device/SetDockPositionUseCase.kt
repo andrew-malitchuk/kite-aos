@@ -1,7 +1,7 @@
 package domain.usecase.api.source.usecase.device
 
 import domain.core.source.model.DockPositionModel
-import domain.usecase.api.core.common.Optional
+import domain.usecase.api.source.common.Optional
 
 /**
  * Use case for updating the dock (sidebar) position preference.

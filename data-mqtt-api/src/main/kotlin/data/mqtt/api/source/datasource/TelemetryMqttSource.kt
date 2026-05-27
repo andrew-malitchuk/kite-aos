@@ -105,6 +105,24 @@ public interface TelemetryMqttSource {
     public suspend fun sendScreenState(isOn: Boolean)
 
     /**
+     * Sends the watchdog health state to the broker.
+     *
+     * Published to `{clientId}_watchdog/state`. Expected payloads: `"ok"`, `"fail(N)"`, `"recovering"`.
+     *
+     * @param state The watchdog state string.
+     */
+    public suspend fun sendWatchdogState(state: String)
+
+    /**
+     * Sends the device network connectivity state to the broker.
+     *
+     * Published to `{clientId}_network/state`. Payload is `"online"` or `"offline"`.
+     *
+     * @param isOnline `true` when the network is available, `false` when lost.
+     */
+    public suspend fun sendNetworkState(isOnline: Boolean)
+
+    /**
      * Returns a [Flow] that emits every inbound MQTT command as a [Pair] of (topic, payload).
      *
      * Only topics that the client is subscribed to (command topics for volume, brightness,

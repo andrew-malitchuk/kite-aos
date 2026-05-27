@@ -1,9 +1,9 @@
 package domain.usecase.impl.source.usecase.device
 
-import domain.core.core.monad.Failure
+import domain.core.source.monad.Failure
 import domain.core.source.model.MoveDetectorModel
 import domain.repository.api.source.repository.ConfigureRepository
-import domain.usecase.api.core.common.Optional
+import domain.usecase.api.source.common.Optional
 import domain.usecase.api.source.usecase.device.SetMoveDetectorUseCase
 import domain.usecase.impl.core.resultLauncher
 import org.koin.core.annotation.Single

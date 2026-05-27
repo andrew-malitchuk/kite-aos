@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import data.database.api.core.configure.DatabaseConfigure
+import data.database.api.source.configure.DatabaseConfigure
 import data.database.api.source.resource.ApplicationDatabase
 import kotlinx.coroutines.flow.Flow
 

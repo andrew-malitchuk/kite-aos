@@ -1,6 +1,6 @@
 package domain.usecase.impl.core
 
-import domain.core.core.monad.Failure
+import domain.core.source.monad.Failure
 import kotlin.coroutines.cancellation.CancellationException
 
 /**

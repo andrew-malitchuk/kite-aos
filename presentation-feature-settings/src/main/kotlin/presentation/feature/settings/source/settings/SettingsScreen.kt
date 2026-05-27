@@ -1,6 +1,11 @@
 package presentation.feature.settings.source.settings
 
+import android.app.role.RoleManager
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import org.koin.androidx.compose.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import domain.core.source.model.HomeAssistantInstanceModel
 import presentation.core.navigation.api.core.composition.LocalAppNavigator
 import presentation.core.navigation.api.source.destination.Destination
 import presentation.core.platform.core.extension.openAppLanguageSettings
@@ -35,6 +41,39 @@ public fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
 
     val snackbarHostState = rememberStackedSnackbarHostState()
     var showLanguageDialog by remember { mutableStateOf(false) }
+    var showDiscoveryDialog by remember { mutableStateOf(false) }
+    var discoveryResults by remember { mutableStateOf<List<HomeAssistantInstanceModel>>(emptyList()) }
+
+    // Pending export JSON — cached until the SAF URI is returned.
+    var pendingExportJson by remember { mutableStateOf<String?>(null) }
+
+    val launcherRoleLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult(),
+    ) { /* User made their choice — no further action needed */ }
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/json"),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            val json = pendingExportJson ?: return@rememberLauncherForActivityResult
+            pendingExportJson = null
+            context.contentResolver.openOutputStream(uri)?.use { stream ->
+                stream.write(json.toByteArray(Charsets.UTF_8))
+            }
+        }
+    }
+
+    val importLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument(),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            val json = context.contentResolver.openInputStream(uri)
+                ?.bufferedReader(Charsets.UTF_8)
+                ?.use { it.readText() }
+                ?: return@rememberLauncherForActivityResult
+            viewModel.handleIntent(SettingsIntent.OnImportConfigContentIntent(json))
+        }
+    }
 
     val state by viewModel.collectAsState()
 
@@ -54,10 +93,37 @@ public fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                 context.startActivity(restartIntent)
                 Runtime.getRuntime().exit(0)
             }
+            SettingsSideEffect.RequestDefaultLauncherEffect -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    val roleManager = context.getSystemService(RoleManager::class.java)
+                    if (roleManager.isRoleAvailable(RoleManager.ROLE_HOME)) {
+                        launcherRoleLauncher.launch(
+                            roleManager.createRequestRoleIntent(RoleManager.ROLE_HOME),
+                        )
+                    }
+                } else {
+                    // Pre-API 29: open the Home settings chooser
+                    val homeIntent = Intent(Intent.ACTION_MAIN).apply {
+                        addCategory(Intent.CATEGORY_HOME)
+                    }
+                    context.startActivity(Intent.createChooser(homeIntent, null))
+                }
+            }
             is SettingsSideEffect.ShowError -> {
                 snackbarHostState.showSnackbar(
                     title = context.getString(effect.message.toInt()),
                 )
+            }
+            is SettingsSideEffect.ExportConfigEffect -> {
+                pendingExportJson = effect.json
+                exportLauncher.launch("kite-config.json")
+            }
+            SettingsSideEffect.ImportConfigEffect -> {
+                importLauncher.launch(arrayOf("application/json", "text/plain"))
+            }
+            is SettingsSideEffect.ShowDiscoveryResultEffect -> {
+                discoveryResults = effect.instances
+                showDiscoveryDialog = true
             }
         }
     }
@@ -68,5 +134,8 @@ public fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
         showLanguageDialog = showLanguageDialog,
         onShowLanguageDialogChange = { showLanguageDialog = it },
         snackbarHostState = snackbarHostState,
+        showDiscoveryDialog = showDiscoveryDialog,
+        discoveryResults = discoveryResults,
+        onShowDiscoveryDialogChange = { showDiscoveryDialog = it },
     )
 }

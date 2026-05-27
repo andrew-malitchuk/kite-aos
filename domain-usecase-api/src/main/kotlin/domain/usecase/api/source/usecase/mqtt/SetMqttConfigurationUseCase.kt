@@ -1,7 +1,7 @@
 package domain.usecase.api.source.usecase.mqtt
 
 import domain.core.source.model.MqttModel
-import domain.usecase.api.core.common.Optional
+import domain.usecase.api.source.common.Optional
 
 /**
  * Use case for saving the MQTT broker configuration.

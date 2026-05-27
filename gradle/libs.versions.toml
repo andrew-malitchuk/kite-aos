@@ -12,6 +12,7 @@ targetSdk = "36"
 #endregion metadata
 
 kmqtt = "1.0.0"
+geckoview = "147.0.20260212191108"
 
 #region general
 # Build tools and language versions
@@ -161,6 +162,7 @@ androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", versi
 
 kmqtt-common = { group = "io.github.davidepianca98", name = "kmqtt-common-jvm", version.ref = "kmqtt" }
 kmqtt-client = { group = "io.github.davidepianca98", name = "kmqtt-client-jvm", version.ref = "kmqtt" }
+geckoview = { group = "org.mozilla.geckoview", name = "geckoview", version.ref = "geckoview" }
 
 #region Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }

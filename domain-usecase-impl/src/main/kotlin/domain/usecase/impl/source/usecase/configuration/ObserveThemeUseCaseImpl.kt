@@ -1,6 +1,6 @@
 package domain.usecase.impl.source.usecase.configuration
 
-import domain.core.core.monad.Failure
+import domain.core.source.monad.Failure
 import domain.core.source.model.ThemeModel
 import domain.repository.api.source.repository.ConfigureRepository
 import domain.usecase.api.source.usecase.configuration.ObserveThemeUseCase

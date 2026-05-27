@@ -1,8 +1,8 @@
 package domain.usecase.impl.source.usecase.mqtt
 
-import domain.core.core.monad.Failure
+import domain.core.source.monad.Failure
 import domain.repository.api.source.repository.MqttRepository
-import domain.usecase.api.core.common.Optional
+import domain.usecase.api.source.common.Optional
 import domain.usecase.api.source.usecase.mqtt.GetMqttConfigurationUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttConnectUseCase
 import domain.usecase.impl.core.resultLauncher

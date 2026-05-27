@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import data.preferences.impl.core.configure.PreferenceConfigure
+import data.preferences.impl.core.serializer.AutoReturnProtoSerializer
 import data.preferences.impl.core.serializer.DashboardProtoSerializer
 import data.preferences.impl.core.serializer.DockProtoSerializer
 import data.preferences.impl.core.serializer.LanguageProtoSerializer
@@ -12,6 +13,8 @@ import data.preferences.impl.core.serializer.MoveDetectorProtoSerializer
 import data.preferences.impl.core.serializer.MqttProtoSerializer
 import data.preferences.impl.core.serializer.OnboardingProtoSerializer
 import data.preferences.impl.core.serializer.ThemeProtoSerializer
+import data.preferences.impl.core.serializer.WebEngineProtoSerializer
+import data.preferences.impl.proto.AutoReturnDataProto
 import data.preferences.impl.proto.DashboardDataProto
 import data.preferences.impl.proto.DockDataProto
 import data.preferences.impl.proto.LanguagePreferenceProto
@@ -19,6 +22,7 @@ import data.preferences.impl.proto.MoveDetectorDataProto
 import data.preferences.impl.proto.MqttDataProto
 import data.preferences.impl.proto.OnboardingDataProto
 import data.preferences.impl.proto.ThemeDataProto
+import data.preferences.impl.proto.WebEngineDataProto
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Named
@@ -152,6 +156,38 @@ public class DataPreferencesImplModule {
         return DataStoreFactory.create(
             serializer = LanguageProtoSerializer(),
             produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.LANGUAGE) },
+        )
+    }
+
+    /**
+     * Provides the [DataStore] instance for browser engine preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [WebEngineProtoSerializer] and stored in [PreferenceConfigure.Filename.WEB_ENGINE].
+     * @see WebEngineProtoSerializer
+     */
+    @Single
+    @Named("webEngineDataStore")
+    public fun webEngineDataStore(context: Context): DataStore<WebEngineDataProto.WebEngineProtoModel> {
+        return DataStoreFactory.create(
+            serializer = WebEngineProtoSerializer(),
+            produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.WEB_ENGINE) },
+        )
+    }
+
+    /**
+     * Provides the [DataStore] instance for auto-return kiosk preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [AutoReturnProtoSerializer] and stored in [PreferenceConfigure.Filename.AUTO_RETURN].
+     * @see AutoReturnProtoSerializer
+     */
+    @Single
+    @Named("autoReturnDataStore")
+    public fun autoReturnDataStore(context: Context): DataStore<AutoReturnDataProto.AutoReturnProtoModel> {
+        return DataStoreFactory.create(
+            serializer = AutoReturnProtoSerializer(),
+            produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.AUTO_RETURN) },
         )
     }
 }

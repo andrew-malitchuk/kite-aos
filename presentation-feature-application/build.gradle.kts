@@ -23,9 +23,9 @@ dependencies {
     implementation(projects.domainCore)
     implementation(projects.domainUsecaseApi)
 
-    implementation("org.orbit-mvi:orbit-core:11.0.0")
-    implementation("org.orbit-mvi:orbit-viewmodel:11.0.0")
-    implementation("org.orbit-mvi:orbit-compose:11.0.0")
+    implementation(libs.orbit.core)
+    implementation(libs.orbit.viewmodel)
+    implementation(libs.orbit.compose)
     implementation(libs.androidx.runtime)
 
     implementation(libs.bundles.arrow)
