@@ -3,8 +3,8 @@
 # Constants for app versioning and SDK
 applicationId = "dev.kite.aos"
 
-versionCode = "3"
-versionName = "0.0.3"
+versionCode = "4"
+versionName = "1.0.0"
 
 compileSdk = "36"
 minSdk = "26"
