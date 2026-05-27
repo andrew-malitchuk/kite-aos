@@ -10,6 +10,7 @@ import org.koin.core.context.startKoin
 import presentation.core.application.di.appModule
 import presentation.core.platform.source.receiver.BatteryReceiver
 import presentation.core.platform.source.service.MqttService
+import presentation.feature.main.source.webview.engine.preWarmGeckoRuntime
 
 /**
  * The main [Application] class for the Yahk project.
@@ -39,6 +40,8 @@ public class YahkApplication : Application() {
      */
     override fun onCreate() {
         super.onCreate()
+
+        preWarmGeckoRuntime(applicationContext)
 
         // Initialise the Koin dependency injection container with logging and the Android context.
         startKoin {
