@@ -1,5 +1,9 @@
 # ProGuard rules for kite-aos
 
+# --- GeckoView / ExoPlayer bundled annotations ---
+-dontwarn kotlin.annotations.jvm.MigrationStatus
+-dontwarn kotlin.annotations.jvm.UnderMigration
+
 # --- Project Specific Rules (Fixing "Missing class" errors) ---
 # Prevent R8 from removing navigation, styling, and splash screen classes
 -keep class presentation.core.navigation.impl.source.host.** { *; }
