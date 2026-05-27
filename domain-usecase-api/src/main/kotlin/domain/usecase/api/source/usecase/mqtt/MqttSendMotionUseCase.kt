@@ -1,9 +1,11 @@
 package domain.usecase.api.source.usecase.mqtt
 
-import domain.usecase.api.core.common.Optional
+import domain.usecase.api.source.common.Optional
 
 /**
  * Use case for reporting a motion detection event to the MQTT broker.
+ *
+ * @since 0.0.1
  */
 public interface MqttSendMotionUseCase {
     /**

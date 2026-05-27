@@ -1,6 +1,6 @@
 plugins {
-    id("dev.yahk.convention.library")
-    id("dev.yahk.convention.di")
+    id("convention.library")
+    id("convention.di")
 }
 
 dependencies {

@@ -6,13 +6,19 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Base abstract class for Room Data Access Objects (DAOs).
  *
- * @param DATABASE The resource type this DAO manages.
+ * Defines the standard CRUD operations every concrete DAO must implement.
+ * Concrete subclasses annotate each method with the appropriate Room annotation
+ * (`@Query`, `@Insert`, `@Update`, etc.).
+ *
+ * @param DATABASE The [Resource] type this DAO manages.
+ * @see data.database.impl.source.dao.ApplicationDao
+ * @since 0.0.1
  */
 public abstract class Dao<DATABASE : Resource> {
     /**
      * Retrieves a resource by its [id].
      *
-     * @param id The ID of the resource to find.
+     * @param id The primary-key ID of the resource to find.
      * @return The resource if found, or `null`.
      */
     public abstract suspend fun get(id: Int): DATABASE?
@@ -20,14 +26,14 @@ public abstract class Dao<DATABASE : Resource> {
     /**
      * Retrieves all resources of type [DATABASE].
      *
-     * @return A list of all resources or `null` if the table is empty.
+     * @return A list of all resources, or `null` if the table is empty.
      */
     public abstract suspend fun get(): List<DATABASE>?
 
     /**
      * Returns a [Flow] that emits the list of all resources whenever the table changes.
      *
-     * @return A flow of resource lists.
+     * @return A reactive flow of resource lists; emits `null` when the table is empty.
      */
     public abstract fun subscribe(): Flow<List<DATABASE>?>
 
@@ -39,7 +45,7 @@ public abstract class Dao<DATABASE : Resource> {
     public abstract suspend fun insert(value: DATABASE)
 
     /**
-     * Updates an existing [value] in the database.
+     * Updates an existing [value] in the database, matched by primary key.
      *
      * @param value The resource to update.
      */
@@ -48,7 +54,7 @@ public abstract class Dao<DATABASE : Resource> {
     /**
      * Deletes a resource with the specified [id].
      *
-     * @param id The ID of the resource to delete.
+     * @param id The primary-key ID of the resource to delete.
      */
     public abstract suspend fun delete(id: Int)
 

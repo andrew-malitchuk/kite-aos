@@ -12,6 +12,9 @@ import domain.core.source.model.base.Model
  * @property username Username for broker authentication.
  * @property password Password for broker authentication.
  * @property friendlyName Human-readable name used for device discovery (e.g., in Home Assistant).
+ *
+ * @see Model
+ * @since 0.0.1
  */
 public data class MqttModel(
     val enabled: Boolean? = null,

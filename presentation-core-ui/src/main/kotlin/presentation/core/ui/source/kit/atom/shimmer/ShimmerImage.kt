@@ -21,14 +21,23 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import presentation.core.styling.core.Theme
 
 /**
- * A composable that displays an image with a shimmer effect.
+ * A composable that displays an image with an animated shimmer highlight effect.
  *
- * @param imageVector The ImageVector to be displayed with the shimmer effect.
- * @param modifier The modifier to be applied to the composable.
- * @param baseColor The base color of the shimmer effect.
- * @param highlightColor The highlight color of the shimmer effect.
- * @param shimmerDuration The duration of the shimmer animation in milliseconds.
+ * The shimmer is achieved by drawing the [imageVector] shape first, then overlaying a moving
+ * linear gradient using [BlendMode.SrcAtop] so the shimmer only appears within the icon's
+ * opaque pixels.
+ *
+ * @param imageVector the [ImageVector] to be displayed with the shimmer effect.
+ * @param modifier Modifier to be applied to the [Canvas].
+ * @param baseColor the base color of the shimmer gradient.
+ * @param highlightColor the highlight color at the center of the shimmer gradient.
+ * @param shimmerDuration the duration of one shimmer sweep cycle in milliseconds.
+ *
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
  */
+// Suppressed: shimmer offset values (-300f, 1000f, 500f) are visual tuning constants
 @Suppress("MagicNumber")
 @Composable
 public fun ShimmerImage(
@@ -61,6 +70,7 @@ public fun ShimmerImage(
 
     Canvas(modifier = modifier) {
         with(drawContext.canvas.nativeCanvas) {
+            // Save a layer to isolate the SrcAtop blend mode to this composable only
             val checkpoint = saveLayer(null, null)
             drawIntoCanvas {
                 with(painter) {

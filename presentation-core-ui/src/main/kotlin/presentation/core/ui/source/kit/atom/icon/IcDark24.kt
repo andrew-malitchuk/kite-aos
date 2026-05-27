@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp dark mode (moon) icon.
+ *
+ * @since 0.0.1
+ */
 public val IcDark24: ImageVector
     get() {
         if (_IcDark24 != null) {

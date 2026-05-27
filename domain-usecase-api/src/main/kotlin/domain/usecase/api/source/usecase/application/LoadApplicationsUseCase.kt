@@ -4,6 +4,9 @@ import domain.core.source.model.ApplicationModel
 
 /**
  * Use case for loading applications, optionally merging system-installed apps with user-saved preferences.
+ *
+ * @see domain.usecase.impl.source.usecase.application.LoadApplicationsUseCaseImpl
+ * @since 0.0.1
  */
 public interface LoadApplicationsUseCase {
     /**

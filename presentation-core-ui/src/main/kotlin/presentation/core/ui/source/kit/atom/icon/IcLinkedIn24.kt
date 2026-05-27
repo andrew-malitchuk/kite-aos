@@ -8,6 +8,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp LinkedIn logo icon.
+ *
+ * @since 0.0.1
+ */
 public val IcLinkedIn24: ImageVector
     get() {
         if (_IcLinkedIn24 != null) {

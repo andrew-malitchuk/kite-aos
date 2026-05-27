@@ -7,6 +7,17 @@ import presentation.core.styling.core.Theme
 import presentation.core.ui.source.kit.atom.button.core.ButtonSize
 import presentation.core.ui.source.kit.atom.button.core.IconButtonSizeSet
 
+/**
+ * Default implementation of [IconButtonSizeSet][presentation.core.ui.source.kit.atom.button.core.IconButtonSizeSet]
+ * for icon buttons.
+ *
+ * Provides [ButtonSize] configurations for the five standard button heights (32, 40, 48, 56, 64 dp).
+ * Each size defines the icon dimensions, padding, border, and loading indicator size sourced from the
+ * current [Theme].
+ *
+ * @see presentation.core.ui.source.kit.atom.button.core.IconButtonSizeSet
+ * @since 0.0.1
+ */
 public class IconButtonSizeSet : IconButtonSizeSet {
     override fun buttonSize32(): ButtonSize = object : ButtonSize {
         override val iconSize @Composable get() = Theme.size.sizeL // 16.dp

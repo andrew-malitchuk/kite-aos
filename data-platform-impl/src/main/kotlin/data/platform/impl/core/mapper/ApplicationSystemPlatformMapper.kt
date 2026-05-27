@@ -10,13 +10,19 @@ import data.platform.impl.core.mapper.base.SystemPlatformMapper
  *
  * This mapper acts as a bridge between the raw Android framework data and the application's
  * clean data layer. Note that the application name is usually loaded separately using
- * the [PackageManager] as it requires a system call.
+ * the `PackageManager` as it requires a system call.
+ *
+ * @see ApplicationPlatform
+ * @see SystemPlatformMapper
+ * @since 0.0.1
  */
 public object ApplicationSystemPlatformMapper :
     SystemPlatformMapper<ApplicationInfo, ApplicationPlatform> {
     override val toPlatform: Mapper<ApplicationInfo, ApplicationPlatform> =
         Mapper { input ->
             ApplicationPlatform(
+                // Name is left empty here; callers must populate it via
+                // ApplicationInfo.loadLabel(PackageManager), which requires a system call.
                 name = "",
                 packageName = input.packageName,
                 icon = input.icon,

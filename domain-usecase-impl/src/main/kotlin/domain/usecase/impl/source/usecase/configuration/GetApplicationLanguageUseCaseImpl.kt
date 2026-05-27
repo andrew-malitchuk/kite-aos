@@ -1,6 +1,6 @@
 package domain.usecase.impl.source.usecase.configuration
 
-import domain.core.core.monad.Failure
+import domain.core.source.monad.Failure
 import domain.repository.api.source.repository.ConfigureRepository
 import domain.usecase.api.source.usecase.configuration.GetApplicationLanguageUseCase
 import domain.usecase.impl.core.resultLauncher
@@ -8,6 +8,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [GetApplicationLanguageUseCase] using [ConfigureRepository].
+ *
+ * @see GetApplicationLanguageUseCase
+ * @since 0.0.1
  */
 @Single(binds = [GetApplicationLanguageUseCase::class])
 internal class GetApplicationLanguageUseCaseImpl(

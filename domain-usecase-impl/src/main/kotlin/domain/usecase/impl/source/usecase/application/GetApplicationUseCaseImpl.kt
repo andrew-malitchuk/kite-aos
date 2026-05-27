@@ -1,6 +1,6 @@
 package domain.usecase.impl.source.usecase.application
 
-import domain.core.core.monad.Failure
+import domain.core.source.monad.Failure
 import domain.core.source.model.ApplicationModel
 import domain.repository.api.source.repository.ApplicationRepository
 import domain.usecase.api.source.usecase.application.GetApplicationUseCase
@@ -11,6 +11,9 @@ import org.koin.core.annotation.Single
  * Implementation of [GetApplicationUseCase] using [ApplicationRepository].
  *
  * @property applicationRepository The repository to retrieve application info from.
+ *
+ * @see GetApplicationUseCase
+ * @since 0.0.1
  */
 @Single(binds = [GetApplicationUseCase::class])
 internal class GetApplicationUseCaseImpl(

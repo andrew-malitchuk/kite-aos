@@ -3,7 +3,7 @@ plugins {
     `java-gradle-plugin`
 }
 
-group = "dev.yahk.convention"
+group = "convention"
 
 java {
     val javaVersion = JavaVersion.toVersion(libs.versions.java.get())
@@ -20,6 +20,8 @@ dependencies {
     compileOnly(libs.android.gradle.plugin)
     compileOnly(libs.kotlin.gradle.plugin)
     compileOnly(libs.ksp.gradle.plugin)
+    compileOnly(libs.google.services.plugin)
+    compileOnly(libs.firebase.crashlytics.gradle.plugin)
     implementation(libs.detekt.gradle.plugin)
     implementation(libs.ktlint.gradle.plugin)
     implementation(libs.compose.compiler.gradle)
@@ -29,44 +31,52 @@ gradlePlugin {
 
         //region android
         register("androidApplication") {
-            id = "dev.yahk.convention.application"
+            id = "convention.application"
             implementationClass =
-                "dev.yahk.convention.source.conventionplugin.android.AndroidApplicationConventionPlugin"
+                "convention.source.conventionplugin.android.AndroidApplicationConventionPlugin"
         }
         register("androidFeature") {
-            id = "dev.yahk.convention.feature"
+            id = "convention.feature"
             implementationClass =
-                "dev.yahk.convention.source.conventionplugin.android.AndroidFeatureConventionPlugin"
+                "convention.source.conventionplugin.android.AndroidFeatureConventionPlugin"
         }
 
         //endregion android
 
         //region di
         register("kotlinDi") {
-            id = "dev.yahk.convention.di"
+            id = "convention.di"
             implementationClass =
-                "dev.yahk.convention.source.conventionplugin.di.DiConventionPlugin"
+                "convention.source.conventionplugin.di.DiConventionPlugin"
         }
         register("androidDi") {
-            id = "dev.yahk.convention.di.android"
+            id = "convention.di.android"
             implementationClass =
-                "dev.yahk.convention.source.conventionplugin.di.DiAndroidConventionPlugin"
+                "convention.source.conventionplugin.di.DiAndroidConventionPlugin"
         }
         //endregion di
 
         //region kotlin
         register("kotlinLibrary") {
-            id = "dev.yahk.convention.library"
+            id = "convention.library"
             implementationClass =
-                "dev.yahk.convention.source.conventionplugin.kotlin.KotlinLibraryConventionPlugin"
+                "convention.source.conventionplugin.kotlin.KotlinLibraryConventionPlugin"
         }
         //endregion kotlin
 
         register("codeQuality") {
-            id = "dev.yahk.convention.quality"
+            id = "convention.quality"
             implementationClass =
-                "dev.yahk.convention.source.conventionplugin.core.CodeQualityConventionPlugin"
+                "convention.source.conventionplugin.core.CodeQualityConventionPlugin"
         }
+
+        //region firebase
+        register("firebase") {
+            id = "convention.firebase"
+            implementationClass =
+                "convention.source.conventionplugin.firebase.FirebaseConventionPlugin"
+        }
+        //endregion firebase
     }
 }
 

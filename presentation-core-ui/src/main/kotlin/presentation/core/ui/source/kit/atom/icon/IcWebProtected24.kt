@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp protected web / secure globe icon.
+ *
+ * @since 0.0.1
+ */
 public val IcWebProtected24: ImageVector
     get() {
         if (_IcWebProtected24 != null) {

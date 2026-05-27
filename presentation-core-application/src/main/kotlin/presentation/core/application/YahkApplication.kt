@@ -10,30 +10,58 @@ import org.koin.core.context.startKoin
 import presentation.core.application.di.appModule
 import presentation.core.platform.source.receiver.BatteryReceiver
 import presentation.core.platform.source.service.MqttService
+import presentation.feature.main.source.webview.engine.preWarmGeckoRuntime
 
 /**
  * The main [Application] class for the Yahk project.
  *
  * This class serves as the entry point for the application lifecycle and is responsible for:
- * 1. Initializing the Koin dependency injection framework.
- * 2. Registering global system receivers (e.g., [BatteryReceiver]).
- * 3. Bootstrapping critical background services like [MqttService].
+ * 1. Initialising the Koin dependency injection framework via [appModule].
+ * 2. Registering global system receivers (e.g., [BatteryReceiver] for battery-level telemetry).
+ * 3. Bootstrapping critical background services such as [MqttService].
+ *
+ * @see appModule
+ * @see BatteryReceiver
+ * @see MqttService
+ * @since 0.0.1
  */
 public class YahkApplication : Application() {
+
+    /**
+     * Called when the application is first created.
+     *
+     * Performs three sequential bootstrap steps:
+     * 1. Starts the Koin DI container with all application modules.
+     * 2. Registers the [BatteryReceiver] for `ACTION_BATTERY_CHANGED` broadcasts.
+     * 3. Launches the [MqttService] as a foreground service to maintain an MQTT connection.
+     *
+     * @see Application.onCreate
+     * @since 0.0.1
+     */
     override fun onCreate() {
         super.onCreate()
 
-        // Start Koin
+        // Pre-warm the GeckoView runtime as early as possible so the GPU compositor process
+        // has time to stabilise before any Activity receives window focus. Without this,
+        // GeckoRuntime.create() runs during Compose composition on the main thread, and if the
+        // device is under memory pressure the 5-second ANR timeout can be hit while waiting
+        // for the GPU process to respond to SyncResumeResizeCompositor.
+        preWarmGeckoRuntime(applicationContext)
+
+        // Initialise the Koin dependency injection container with logging and the Android context.
         startKoin {
             androidLogger()
             androidContext(this@YahkApplication)
             modules(appModule)
         }
 
+        // Register the battery broadcast receiver to monitor charge level changes system-wide.
         registerReceiver(BatteryReceiver(), IntentFilter(Intent.ACTION_BATTERY_CHANGED))
 
-        // Start MQTT Service as Foreground
+        // Start the MQTT foreground service so that telemetry stays alive independently of the UI.
         val intent = Intent(this, MqttService::class.java)
         ContextCompat.startForegroundService(this, intent)
+
+        CrashlyticsInitializer.init()
     }
 }

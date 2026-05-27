@@ -3,8 +3,8 @@
 # Constants for app versioning and SDK
 applicationId = "dev.kite.aos"
 
-versionCode = "2"
-versionName = "0.0.2"
+versionCode = "4"
+versionName = "1.0.0"
 
 compileSdk = "36"
 minSdk = "26"
@@ -12,10 +12,11 @@ targetSdk = "36"
 #endregion metadata
 
 kmqtt = "1.0.0"
+geckoview = "147.0.20260212191108"
 
 #region general
 # Build tools and language versions
-gradle = "8.13.2"
+gradle = "9.1.0"
 kotlin = "2.3.0"
 java = "21"
 ksp = "2.3.4"
@@ -24,6 +25,7 @@ ksp = "2.3.4"
 #region library versions
 # Individual library versions
 coreKtx = "1.17.0"
+androidxWebkit = "1.12.1"
 appcompat = "1.7.1"
 material = "1.13.0"
 koin = "4.1.1"
@@ -38,7 +40,7 @@ nav3Core = "1.0.0"
 detekt = "1.23.8"
 ktlint = "12.1.2"
 
-protobufGradlePlugin = "0.9.6"
+protobufGradlePlugin = "0.10.0"
 protobufKotlinLite = "4.33.2"
 datastoreVersion = "1.2.0"
 lifecycleRuntimeKtx = "2.10.0"
@@ -58,6 +60,10 @@ lifecycleService = "2.10.0"
 orbitCompose = "11.0.0"
 orbitCore = "11.0.0"
 orbitViewmodel = "11.0.0"
+
+firebaseBom = "33.15.0"
+googleServices = "4.4.2"
+firebaseCrashlytics = "3.0.3"
 
 [libraries]
 #region Build Tools & Plugins
@@ -93,6 +99,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-webkit = { group = "androidx.webkit", name = "webkit", version.ref = "androidxWebkit" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 
@@ -155,6 +162,16 @@ androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", versi
 
 kmqtt-common = { group = "io.github.davidepianca98", name = "kmqtt-common-jvm", version.ref = "kmqtt" }
 kmqtt-client = { group = "io.github.davidepianca98", name = "kmqtt-client-jvm", version.ref = "kmqtt" }
+geckoview = { group = "org.mozilla.geckoview", name = "geckoview", version.ref = "geckoview" }
+
+#region Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics-ktx" }
+firebase-config = { group = "com.google.firebase", name = "firebase-config-ktx" }
+google-services-plugin = { group = "com.google.gms", name = "google-services", version.ref = "googleServices" }
+firebase-crashlytics-gradle-plugin = { group = "com.google.firebase", name = "firebase-crashlytics-gradle", version.ref = "firebaseCrashlytics" }
+#endregion Firebase
 
 [bundles]
 # Bundles for easier dependency management in gradle files
@@ -177,3 +194,5 @@ io-gitlab-arturbosch-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref 
 org-jlleitschuh-gradle-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin.plugin.serialization/org.jetbrains.kotlin.plugin.serialization.gradle.plugin
 org-jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+com-google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+com-google-firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlytics" }

@@ -16,6 +16,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven("https://maven.mozilla.org/maven2/")
     }
 }
 
@@ -30,8 +31,6 @@ include(":common-core")
 include(":data-core")
 include(":data-database-api")
 include(":data-database-impl")
-include(":data-network-api")
-include(":data-network-impl")
 include(":data-mqtt-api")
 include(":data-mqtt-impl")
 include(":data-platform-api")

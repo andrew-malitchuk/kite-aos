@@ -29,28 +29,32 @@ import androidx.compose.ui.unit.Dp
  * background color, border color, shape, icon size, text style, and spacing.
  * It also supports a loading state that displays a Lottie animation.
  *
- * @param modifier The modifier to be applied to the button.
+ * @param modifier Modifier to be applied to the [DrawButton].
  * @param text The text to display on the button.
  * @param startIcon The resource ID of the icon to display at the start of the button, or `null` if no icon is needed.
  * @param endIcon The resource ID of the icon to display at the end of the button, or `null` if no icon is needed.
  * @param backgroundColor The background color of the button.
  * @param foregroundColor The foreground color (text and icon color) of the button.
  * @param borderColor The border color of the button.
- * @param corner The corners of the button.
+ * @param corner The corner radius applied to the button shape.
  * @param iconSize The size of the icons within the button.
  * @param loadingSize The size of the loading indicator within the button.
- * @param borderSize The size of the border around the button.
- * @param spacing The spacing within the button.
+ * @param borderSize The width of the border around the button.
+ * @param spacing The spacing between elements within the button.
  * @param minHeight The minimum height of the button.
  * @param paddings The padding values for the content within the button.
  * @param textStyle The style of the text displayed on the button.
  * @param isLoading A boolean indicating whether the button is in a loading state.
- * @param horizontalArrangement The horizontal arrangement of the layout's children.
+ * @param horizontalArrangement The horizontal alignment of the button content.
  *
  * References:
  *
  * - https://proandroiddev.com/compose-a-compose-button-by-composing-composable-functions-9f275772bd23
  * - https://github.com/aoriani/ComposeButton/tree/main
+ *
+ * @see DrawBaseButton
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 internal fun DrawButton(

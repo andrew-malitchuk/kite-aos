@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp system settings icon.
+ *
+ * @since 0.0.1
+ */
 public val IcSystemSettings24: ImageVector
     get() {
         if (_IcSystemSettings24 != null) {

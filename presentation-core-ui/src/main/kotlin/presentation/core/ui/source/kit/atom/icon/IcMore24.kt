@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp more options (three dots) icon.
+ *
+ * @since 0.0.1
+ */
 public val IcMore24: ImageVector
     get() {
         if (_IcMore24 != null) {

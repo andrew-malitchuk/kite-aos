@@ -8,6 +8,20 @@ import data.preferences.impl.source.datasource.base.BasePreferenceSourceImpl
 import data.preferences.impl.source.storage.DockPreferenceStorage
 import org.koin.core.annotation.Single
 
+/**
+ * Implementation of [DockPositionPreferenceSource] backed by Proto DataStore.
+ *
+ * Delegates persistence to [DockPreferenceStorage] and uses
+ * [DockProtobufPreferenceMapper] for converting between the Protobuf model and the
+ * [DockPreference] resource.
+ *
+ * @param storage the [DockPreferenceStorage] providing DataStore access.
+ * @see DockPositionPreferenceSource
+ * @see DockPreferenceStorage
+ * @see DockProtobufPreferenceMapper
+ * @see BasePreferenceSourceImpl
+ * @since 0.0.1
+ */
 @Single(binds = [DockPositionPreferenceSource::class])
 internal class DockPositionPreferenceSourceImpl(
     storage: DockPreferenceStorage,

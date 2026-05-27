@@ -3,9 +3,12 @@ package presentation.feature.main.source.main
 import domain.core.source.model.ApplicationModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
+import domain.core.source.model.WebEngineModel
 
 /**
- * Represents the state of the Main (Kiosk) screen.
+ * Represents the MVI state of the Main (Kiosk) screen.
+ *
+ * This data class is used as the Orbit container state managed by [MainViewModel].
  *
  * @property dashboardUrls The primary dashboard and whitelist URLs loaded from configuration.
  * @property chosenApps List of applications selected by the user to be visible in the control drawer.
@@ -13,6 +16,9 @@ import domain.core.source.model.DockPositionModel
  * @property isMoveDetectorEnabled Whether camera-based motion detection is active.
  * @property isFabVisible Whether the "Open Drawer" FAB is currently visible (driven by motion).
  * @property fabDelay The duration in seconds the FAB remains visible after the last motion event.
+ * @see MainViewModel
+ * @see MainScreen
+ * @since 0.0.1
  */
 public data class MainState(
     val dashboardUrls: DashboardModel? = null,
@@ -21,10 +27,29 @@ public data class MainState(
     val isMoveDetectorEnabled: Boolean = false,
     val isFabVisible: Boolean = true,
     val fabDelay: Long = 60L,
+    val webEngine: WebEngineModel = WebEngineModel.AndroidWebView,
+    /** Number of consecutive watchdog / WebView failures. Resets to 0 on a successful load. */
+    val watchdogFailureCount: Int = 0,
+    /** Whether the recovery overlay should be shown to the user. */
+    val isWatchdogRecovering: Boolean = false,
+    /**
+     * Monotonically-increasing counter used to trigger a WebView reload from the ViewModel.
+     * [MainContent] observes this value and calls [KioskEngineState.reload] when it changes.
+     */
+    val reloadTrigger: Int = 0,
+    /** Whether the device currently has internet connectivity. */
+    val isNetworkAvailable: Boolean = true,
 )
 
 /**
  * One-off side effects for the Main screen.
+ *
+ * Side effects are consumed by [MainScreen] and trigger navigation,
+ * application launching, or error display events.
+ *
+ * @see MainViewModel
+ * @see MainScreen
+ * @since 0.0.1
  */
 public sealed class MainSideEffect {
     /** Navigates to the Settings screen. */

@@ -5,18 +5,27 @@ import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import common.core.core.execute.executeResult
-import domain.core.core.monad.Failure
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import domain.core.source.monad.Failure
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.MqttModel
 import domain.core.source.model.ThemeModel
+import domain.core.source.model.WebEngineModel
+import domain.usecase.api.source.usecase.configuration.DiscoverHomeAssistantUseCase
+import domain.usecase.api.source.usecase.configuration.GetAutoReturnUseCase
 import domain.usecase.api.source.usecase.configuration.GetApplicationLanguageUseCase
 import domain.usecase.api.source.usecase.configuration.GetDashboardUseCase
 import domain.usecase.api.source.usecase.configuration.GetThemeUseCase
+import domain.usecase.api.source.usecase.configuration.GetWebEngineUseCase
 import domain.usecase.api.source.usecase.configuration.SetApplicationLanguageUseCase
 import domain.usecase.api.source.usecase.configuration.SetDashboardUseCase
 import domain.usecase.api.source.usecase.configuration.SetThemeUseCase
+import domain.usecase.api.source.usecase.configuration.SetAutoReturnUseCase
+import domain.usecase.api.source.usecase.configuration.SetWebEngineUseCase
 import domain.usecase.api.source.usecase.device.GetDockPositionUseCase
 import domain.usecase.api.source.usecase.device.GetMoveDetectorUseCase
 import domain.usecase.api.source.usecase.device.SetDockPositionUseCase
@@ -38,8 +47,29 @@ import presentation.core.localisation.R
  * This component orchestrates the loading and saving of various settings, including
  * theme, dock position, kiosk URLs, motion detector parameters, and MQTT connectivity.
  * It uses the Orbit MVI framework to manage state and side effects.
+ *
+ * @param getThemeUseCase Use case to retrieve the current visual theme.
+ * @param setThemeUseCase Use case to persist the selected theme.
+ * @param setDashboardUseCase Use case to persist dashboard and whitelist URLs.
+ * @param getDashboardUseCase Use case to retrieve configured dashboard URLs.
+ * @param getDockPositionUseCase Use case to retrieve the dock position preference.
+ * @param setDockPositionUseCase Use case to persist the dock position preference.
+ * @param getMoveDetectorUseCase Use case to retrieve motion detector configuration.
+ * @param setMoveDetectorUseCase Use case to persist motion detector configuration.
+ * @param getMqttConfigurationUseCase Use case to retrieve MQTT broker configuration.
+ * @param setMqttConfigurationUseCase Use case to persist MQTT broker configuration.
+ * @param setApplicationLanguageUseCase Use case to persist the application language preference.
+ * @param getApplicationLanguageUseCase Use case to retrieve the application language preference.
+ * @param getWebEngineUseCase Use case to retrieve the selected browser engine.
+ * @param setWebEngineUseCase Use case to persist the selected browser engine.
+ * @see SettingsScreen
+ * @see SettingsState
+ * @see SettingsSideEffect
+ * @see SettingsIntent
+ * @since 0.0.1
  */
 @KoinViewModel
+// Suppressed: MagicNumber for debounce delays (500ms); MaxLineLength for regex patterns.
 @Suppress("MagicNumber", "MaxLineLength")
 public class SettingsViewModel(
     private val getThemeUseCase: GetThemeUseCase,
@@ -54,6 +84,11 @@ public class SettingsViewModel(
     private val setMqttConfigurationUseCase: SetMqttConfigurationUseCase,
     private val setApplicationLanguageUseCase: SetApplicationLanguageUseCase,
     private val getApplicationLanguageUseCase: GetApplicationLanguageUseCase,
+    private val getWebEngineUseCase: GetWebEngineUseCase,
+    private val setWebEngineUseCase: SetWebEngineUseCase,
+    private val getAutoReturnUseCase: GetAutoReturnUseCase,
+    private val setAutoReturnUseCase: SetAutoReturnUseCase,
+    private val discoverHomeAssistantUseCase: DiscoverHomeAssistantUseCase,
 ) : ContainerHost<SettingsState, SettingsSideEffect>,
     ViewModel() {
     public override val container: Container<SettingsState, SettingsSideEffect> =
@@ -94,6 +129,11 @@ public class SettingsViewModel(
      * Validates the complete MQTT configuration including dependent Dashboard fields.
      * Mandatory: IP, Port, ClientID, Username, Password, FriendlyName, DashboardURL.
      * Optional: Whitelist (must be valid if not empty).
+     *
+     * @param mqtt The [MqttModel] to validate.
+     * @param dashboard The [DashboardModel] whose URL is a prerequisite for MQTT.
+     * @return `true` if all mandatory fields pass their respective regex validations.
+     * @since 0.0.1
      */
     private fun isMqttConfigurationValid(mqtt: MqttModel, dashboard: DashboardModel?): Boolean {
         val isIpValid = mqtt.ip?.let { ipRegex.matches(it) } ?: false
@@ -119,10 +159,15 @@ public class SettingsViewModel(
         loadMoveDetector()
         loadMqtt()
         loadApplicationLanguage()
+        loadWebEngine()
+        loadAutoReturn()
     }
 
     /**
      * Loads the current application language from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadApplicationLanguage(): Job = executeResult(
         scope = viewModelScope,
@@ -141,6 +186,9 @@ public class SettingsViewModel(
 
     /**
      * Loads the current theme configuration.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadTheme(): Job = executeResult(
         scope = viewModelScope,
@@ -154,6 +202,9 @@ public class SettingsViewModel(
 
     /**
      * Loads the control dock position configuration.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadDockPosition(): Job = executeResult(
         scope = viewModelScope,
@@ -172,6 +223,9 @@ public class SettingsViewModel(
 
     /**
      * Loads the configured dashboard and whitelist URLs.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadDashboardUrls(): Job = executeResult(
         scope = viewModelScope,
@@ -196,6 +250,9 @@ public class SettingsViewModel(
 
     /**
      * Loads the motion detector configuration.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadMoveDetector(): Job = executeResult(
         scope = viewModelScope,
@@ -209,6 +266,9 @@ public class SettingsViewModel(
 
     /**
      * Loads the MQTT telemetry configuration.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     private fun loadMqtt(): Job = executeResult(
         scope = viewModelScope,
@@ -222,6 +282,10 @@ public class SettingsViewModel(
 
     /**
      * Updates and persists the visual theme.
+     *
+     * @param theme The [ThemeModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     public fun onSetTheme(theme: ThemeModel): Job = executeResult(
         scope = viewModelScope,
@@ -238,6 +302,10 @@ public class SettingsViewModel(
 
     /**
      * Updates and persists the dock position.
+     *
+     * @param dock The [DockPositionModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     public fun onSetDockPosition(dock: DockPositionModel): Job = executeResult(
         scope = viewModelScope,
@@ -253,6 +321,11 @@ public class SettingsViewModel(
     /**
      * Updates and persists the dashboard configuration.
      * Re-validates MQTT configuration based on the new dashboard URL.
+     *
+     * @param dashboardUrl The Home Assistant dashboard URL.
+     * @param whitelistUrl The comma-separated whitelist domain(s) for WebView navigation.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     public fun onSetDashboard(dashboardUrl: String, whitelistUrl: String): Job = executeResult(
         scope = viewModelScope,
@@ -287,6 +360,9 @@ public class SettingsViewModel(
     /**
      * Updates and persists the motion detector configuration.
      * Automatically disables the detector if any delay or sensitivity parameter is zero.
+     *
+     * @param moveDetector The [MoveDetectorModel] configuration to apply and persist.
+     * @since 0.0.1
      */
     public fun onSetMoveDetector(moveDetector: MoveDetectorModel) {
         val isDisabledLogic =
@@ -324,6 +400,9 @@ public class SettingsViewModel(
     /**
      * Updates and persists the MQTT configuration with strict validation.
      * Automatically disables MQTT if any field (including Dashboard URL) is invalid.
+     *
+     * @param mqtt The [MqttModel] configuration to validate, apply, and persist.
+     * @since 0.0.1
      */
     public fun onSetMqtt(mqtt: MqttModel) {
         val trimmedMqtt =
@@ -361,6 +440,10 @@ public class SettingsViewModel(
 
     /**
      * Updates the application language and applies the locale change globally.
+     *
+     * @param localeCode The IETF BCP 47 language tag (e.g., "en", "uk").
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.1
      */
     public fun onSetApplicationLanguage(localeCode: String): Job = executeResult(
         scope = viewModelScope,
@@ -378,6 +461,9 @@ public class SettingsViewModel(
 
     /**
      * Triggers the side effect to open system language settings.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onLang(): Job = intent {
         postSideEffect(SettingsSideEffect.OpenLangSettingsEffect)
@@ -386,6 +472,10 @@ public class SettingsViewModel(
     /**
      * Handles the result of opening system language settings.
      * Shows in-app switcher if system settings were not opened.
+     *
+     * @param wasSystemSettingsOpened Whether the system language settings were successfully opened.
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onLangResult(wasSystemSettingsOpened: Boolean): Job = intent {
         if (!wasSystemSettingsOpened) {
@@ -395,6 +485,9 @@ public class SettingsViewModel(
 
     /**
      * Triggers the side effect to navigate to the About screen.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onMore(): Job = intent {
         postSideEffect(SettingsSideEffect.GoMoreEffect)
@@ -402,6 +495,9 @@ public class SettingsViewModel(
 
     /**
      * Triggers the side effect to navigate back.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onBack(): Job = intent {
         postSideEffect(SettingsSideEffect.GoBackEffect)
@@ -409,6 +505,9 @@ public class SettingsViewModel(
 
     /**
      * Triggers the side effect to navigate to the application selection screen.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onApplication(): Job = intent {
         postSideEffect(SettingsSideEffect.GoApplicationEffect)
@@ -416,15 +515,79 @@ public class SettingsViewModel(
 
     /**
      * Triggers the side effect to restart the application.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.1
      */
     public fun onRestart(): Job = intent {
         postSideEffect(SettingsSideEffect.RestartApplicationEffect)
     }
 
     /**
+     * Loads the current browser engine selection from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.4
+     */
+    private fun loadWebEngine(): Job = executeResult(
+        scope = viewModelScope,
+        request = { getWebEngineUseCase() },
+        result = { engine ->
+            intent {
+                reduce { state.copy(webEngine = engine ?: WebEngineModel.AndroidWebView) }
+            }
+        },
+        errorBlock = {
+            intent {
+                reduce { state.copy(webEngine = WebEngineModel.AndroidWebView) }
+            }
+        },
+    )
+
+    /**
+     * Updates and persists the browser engine selection.
+     *
+     * @param engine The [WebEngineModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.4
+     */
+    public fun onSetWebEngine(engine: WebEngineModel): Job = executeResult(
+        scope = viewModelScope,
+        request = { setWebEngineUseCase(engine) },
+        result = {
+            intent {
+                reduce { state.copy(webEngine = engine) }
+            }
+        },
+        errorBlock = { handleError(it) },
+    )
+
+    private fun loadAutoReturn(): Job = executeResult(
+        scope = viewModelScope,
+        request = { getAutoReturnUseCase() },
+        result = { enabled ->
+            intent { reduce { state.copy(isAutoReturnEnabled = enabled ?: true) } }
+        },
+        errorBlock = {
+            intent { reduce { state.copy(isAutoReturnEnabled = true) } }
+        },
+    )
+
+    public fun onSetAutoReturn(enabled: Boolean): Job = executeResult(
+        scope = viewModelScope,
+        request = { setAutoReturnUseCase(enabled) },
+        result = {
+            intent { reduce { state.copy(isAutoReturnEnabled = enabled) } }
+        },
+        errorBlock = { handleError(it) },
+    )
+
+    /**
      * Handles incoming user intents and routes them to the appropriate logic.
      *
      * @param intent The user action to process.
+     * @see SettingsIntent
+     * @since 0.0.1
      */
     public fun handleIntent(intent: SettingsIntent) {
         when (intent) {
@@ -445,6 +608,217 @@ public class SettingsViewModel(
             is SettingsIntent.OnSetMoveDetectorIntent -> onSetMoveDetector(intent.moveDetector)
             is SettingsIntent.OnSetMqttIntent -> onSetMqtt(intent.mqtt)
             is SettingsIntent.OnSetApplicationLanguageIntent -> onSetApplicationLanguage(intent.localeCode)
+            is SettingsIntent.OnSetWebEngineIntent -> onSetWebEngine(intent.engine)
+            SettingsIntent.OnSetDefaultLauncherIntent -> onSetDefaultLauncher()
+            is SettingsIntent.OnSetAutoReturnIntent -> onSetAutoReturn(intent.enabled)
+            SettingsIntent.OnExportConfigIntent -> onExportConfig()
+            SettingsIntent.OnImportConfigIntent -> onImportConfig()
+            is SettingsIntent.OnImportConfigContentIntent -> onImportConfigContent(intent.json)
+            SettingsIntent.OnDiscoverHomeAssistantIntent -> onDiscoverHomeAssistant()
+            is SettingsIntent.OnSelectDiscoveredInstanceIntent -> onSelectDiscoveredInstance(intent.url)
         }
     }
+
+    /**
+     * Triggers the side effect to prompt the user to set Kite as the default launcher.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.4
+     */
+    public fun onSetDefaultLauncher(): Job = intent {
+        postSideEffect(SettingsSideEffect.RequestDefaultLauncherEffect)
+    }
+
+    /**
+     * Serializes the current settings state to JSON and posts [SettingsSideEffect.ExportConfigEffect].
+     *
+     * Sensitive fields (MQTT password) are excluded from the export.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.5
+     */
+    public fun onExportConfig(): Job = intent {
+        val snapshot = ConfigSnapshot(
+            dashboardUrl = state.dashboardUrls?.dashboardUrl ?: "",
+            whitelistUrl = state.dashboardUrls?.whitelistUrl ?: "",
+            theme = state.theme?.name ?: "Light",
+            dockPosition = state.dock?.position?.name ?: "Left",
+            isAutoReturnEnabled = state.isAutoReturnEnabled,
+            webEngine = state.webEngine.name,
+            mqttIp = state.mqtt?.ip ?: "",
+            mqttPort = state.mqtt?.port ?: "",
+            mqttClientId = state.mqtt?.clientId ?: "",
+            mqttUsername = state.mqtt?.username ?: "",
+            mqttFriendlyName = state.mqtt?.friendlyName ?: "",
+            isMqttEnabled = state.mqtt?.enabled ?: false,
+            motionSensitivity = state.moveDetector?.sensitivity ?: 50,
+            motionDimDelay = state.moveDetector?.dimDelay ?: 30L,
+            motionScreenTimeout = state.moveDetector?.screenTimeout ?: 60L,
+            motionFabDelay = state.moveDetector?.fabDelay ?: 60L,
+            isMotionEnabled = state.moveDetector?.enabled ?: false,
+        )
+        val json = configJson.encodeToString(snapshot)
+        postSideEffect(SettingsSideEffect.ExportConfigEffect(json))
+    }
+
+    /**
+     * Triggers the SAF file picker for importing a configuration file.
+     *
+     * @return The [Job] associated with the intent coroutine.
+     * @since 0.0.5
+     */
+    public fun onImportConfig(): Job = intent {
+        postSideEffect(SettingsSideEffect.ImportConfigEffect)
+    }
+
+    /**
+     * Parses [json] and applies all recognised fields back to the DataStore preferences.
+     *
+     * Unknown or missing keys are silently ignored.
+     *
+     * @param json Raw JSON string from the imported file.
+     * @return The [Job] associated with the use case executions.
+     * @since 0.0.5
+     */
+    public fun onImportConfigContent(json: String): Job {
+        // Capture mutable state before the suspend lambda to avoid 'state' being unresolvable
+        // inside the CoroutineScope receiver context of executeResult's request block.
+        val currentMqtt = container.stateFlow.value.mqtt ?: MqttModel()
+        return executeResult(
+        scope = viewModelScope,
+        request = {
+            val snapshot = configJson.decodeFromString<ConfigSnapshot>(json)
+
+            val theme = ThemeModel.entries.find { it.name == snapshot.theme } ?: ThemeModel.Light
+            setThemeUseCase(theme)
+
+            val dockPos = DockPositionModel.Position.entries.find { it.name == snapshot.dockPosition }
+                ?: DockPositionModel.Position.Left
+            setDockPositionUseCase(DockPositionModel(dockPos))
+
+            setDashboardUseCase(DashboardModel(snapshot.dashboardUrl, snapshot.whitelistUrl))
+
+            setAutoReturnUseCase(snapshot.isAutoReturnEnabled)
+
+            val engine = WebEngineModel.entries.find { it.name == snapshot.webEngine }
+                ?: WebEngineModel.AndroidWebView
+            setWebEngineUseCase(engine)
+
+            setMqttConfigurationUseCase(
+                currentMqtt.copy(
+                    ip = snapshot.mqttIp,
+                    port = snapshot.mqttPort,
+                    clientId = snapshot.mqttClientId,
+                    username = snapshot.mqttUsername,
+                    friendlyName = snapshot.mqttFriendlyName,
+                    enabled = snapshot.isMqttEnabled,
+                ),
+            )
+
+            setMoveDetectorUseCase(
+                MoveDetectorModel(
+                    enabled = snapshot.isMotionEnabled,
+                    sensitivity = snapshot.motionSensitivity,
+                    dimDelay = snapshot.motionDimDelay,
+                    screenTimeout = snapshot.motionScreenTimeout,
+                    fabDelay = snapshot.motionFabDelay,
+                ),
+            )
+
+            Result.success(Unit)
+        },
+        result = {
+            // Reload all state from persistence to reflect the imported values.
+            loadTheme()
+            loadDashboardUrls()
+            loadDockPosition()
+            loadMoveDetector()
+            loadMqtt()
+            loadWebEngine()
+            loadAutoReturn()
+        },
+        errorBlock = { handleError(it) },
+        )
+    }
+
+    /**
+     * Scans the local network for Home Assistant instances and posts a [SettingsSideEffect.ShowDiscoveryResultEffect].
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
+    public fun onDiscoverHomeAssistant(): Job = executeResult(
+        scope = viewModelScope,
+        request = {
+            intent { reduce { state.copy(isDiscovering = true) } }
+            discoverHomeAssistantUseCase()
+        },
+        result = { instances ->
+            intent {
+                reduce { state.copy(isDiscovering = false) }
+                postSideEffect(SettingsSideEffect.ShowDiscoveryResultEffect(instances ?: emptyList()))
+            }
+        },
+        errorBlock = { failure ->
+            intent { reduce { state.copy(isDiscovering = false) } }
+            handleError(failure)
+        },
+    )
+
+    /**
+     * Applies a URL selected from the discovery result dialog to the dashboard URL field.
+     *
+     * The existing whitelist URL is preserved.
+     *
+     * @param url The base URL of the selected Home Assistant instance.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
+    public fun onSelectDiscoveredInstance(url: String): Job {
+        val whitelist = container.stateFlow.value.dashboardUrls?.whitelistUrl ?: ""
+        return executeResult(
+            scope = viewModelScope,
+            request = { setDashboardUseCase(DashboardModel(url, whitelist)) },
+            result = {
+                intent {
+                    reduce {
+                        state.copy(
+                            dashboardUrls = state.dashboardUrls?.copy(dashboardUrl = url)
+                                ?: DashboardModel(url, ""),
+                        )
+                    }
+                }
+            },
+            errorBlock = { handleError(it) },
+        )
+    }
+
+    private val configJson = Json { ignoreUnknownKeys = true; encodeDefaults = true }
+
+    /**
+     * Internal JSON snapshot model for config import/export.
+     *
+     * Sensitive fields (MQTT password) are intentionally excluded.
+     */
+    @Serializable
+    private data class ConfigSnapshot(
+        val dashboardUrl: String = "",
+        val whitelistUrl: String = "",
+        val theme: String = "Light",
+        val dockPosition: String = "Left",
+        val isAutoReturnEnabled: Boolean = true,
+        val webEngine: String = "AndroidWebView",
+        val mqttIp: String = "",
+        val mqttPort: String = "",
+        val mqttClientId: String = "",
+        val mqttUsername: String = "",
+        val mqttFriendlyName: String = "",
+        val isMqttEnabled: Boolean = false,
+        val motionSensitivity: Int = 50,
+        val motionDimDelay: Long = 30L,
+        val motionScreenTimeout: Long = 60L,
+        val motionFabDelay: Long = 60L,
+        val isMotionEnabled: Boolean = false,
+    )
+
 }

@@ -12,12 +12,16 @@ import presentation.core.ui.source.kit.atom.dialog.BlurredCustomSideDrawerOverla
  * [BlurredCustomBottomDrawerOverlay] or [BlurredCustomSideDrawerOverlay] from
  * the Design System based on the kiosk configuration.
  *
- * @param modifier The modifier for the sidebar container.
+ * @param modifier Modifier to be applied to the root overlay composable.
  * @param isBottom Whether the drawer should appear from the bottom (true) or left side (false).
  * @param isDrawerOpen Visibility state of the drawer.
- * @param onDismiss Callback when the drawer is dismissed (e.g., clicking outside).
+ * @param onDismiss Callback invoked when the drawer is dismissed (e.g., clicking outside).
  * @param drawer The content to display inside the drawer (typically [ControlDrawer]).
  * @param content The primary screen content (the [KioskWebView]).
+ * @see BottomSideBar
+ * @see HorizontalSideBar
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun SideBar(

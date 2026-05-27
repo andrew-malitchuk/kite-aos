@@ -7,8 +7,18 @@ import domain.core.source.model.MqttModel
 
 /**
  * Mapper for converting between [MqttModel] and [MqttPreference].
+ *
+ * Handles bidirectional mapping between the domain representation of MQTT broker
+ * configuration (connection details, credentials, and friendly name) and the
+ * preference storage resource.
+ *
+ * @see MqttModel
+ * @see MqttPreference
+ * @see ModelResourceMapper
+ * @since 0.0.1
  */
 internal object MqttPreferenceMapper : ModelResourceMapper<MqttModel, MqttPreference> {
+
     override val toResource: Mapper<MqttModel, MqttPreference> =
         Mapper { model ->
             MqttPreference(
@@ -21,6 +31,7 @@ internal object MqttPreferenceMapper : ModelResourceMapper<MqttModel, MqttPrefer
                 friendlyName = model.friendlyName,
             )
         }
+
     override val toModel: Mapper<MqttPreference, MqttModel> =
         Mapper { preference ->
             MqttModel(

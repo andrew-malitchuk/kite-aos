@@ -20,20 +20,24 @@ import presentation.core.ui.source.kit.atom.container.IconContainer
 /**
  * A base component for list items in settings or menus.
  *
- * This atom provides a consistent layout with a leading icon, a title text or custom content,
- * and a slot for trailing content (like a toggle, stepper, or action button).
+ * This molecule provides a consistent layout with a leading icon, a title text or custom content,
+ * and a slot for trailing content (like a toggle, stepper, or action button). It serves as the
+ * foundation for all specialised list-item variants in the design system.
  *
- * @param modifier The modifier to be applied to the container.
- * @param icon The icon to display on the left. Optional if [iconContent] is provided.
+ * @param modifier Modifier to be applied to the [SquircleCard].
+ * @param icon The [ImageVector] icon to display on the left. Optional if [iconContent] is provided.
  * @param text The title text of the item. Optional if [content] is provided.
- * @param textStyle The style for the title text. Defaults to [Theme.typography.body].
- * @param iconBackgroundColor Background color for the icon container.
- * @param iconForegroundColor Foreground color for the icon.
- * @param enabled Whether the item is enabled.
- * @param onClick Optional callback for click events.
- * @param trailingContent Optional composable for content on the right side of the item.
- * @param content Optional composable to override the default [text] implementation.
- * @param iconContent Optional composable to override the default [icon] implementation.
+ * @param textStyle The [TextStyle] for the title text. Defaults to [Theme.typography.body].
+ * @param iconBackgroundColor Background [Color] for the icon container.
+ * @param iconForegroundColor Foreground [Color] for the icon.
+ * @param enabled Whether the item is interactive. When `false`, clicks are ignored.
+ * @param onClick Callback invoked when the user taps the item. Pass `null` to disable click handling.
+ * @param trailingContent Optional composable slot rendered at the trailing edge of the row.
+ * @param content Optional composable slot that replaces the default [text] rendering.
+ * @param iconContent Optional composable slot that replaces the default [icon] rendering.
+ * @see SquircleCard
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun BaseListItem(

@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp left arrow icon.
+ *
+ * @since 0.0.1
+ */
 public val IcArrowLeft24: ImageVector
     get() {
         if (_IcArrowLeft24 != null) {

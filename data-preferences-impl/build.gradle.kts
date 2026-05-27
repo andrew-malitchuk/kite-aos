@@ -1,6 +1,6 @@
 plugins {
-    id("dev.yahk.convention.feature")
-    id("dev.yahk.convention.di.android")
+    id("convention.feature")
+    id("convention.di.android")
     id("com.google.protobuf")
 }
 
@@ -10,7 +10,7 @@ android {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.20.1"
+        artifact = "com.google.protobuf:protoc:4.33.2"
     }
     generateProtoTasks {
         all().forEach { task ->

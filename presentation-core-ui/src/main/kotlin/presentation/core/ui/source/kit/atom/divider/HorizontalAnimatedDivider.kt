@@ -13,6 +13,19 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import presentation.core.styling.core.Theme
 
+/**
+ * A horizontal divider that fades in and out based on the [isVisible] flag.
+ *
+ * Uses a [FastOutSlowInEasing] alpha animation over 600ms to smoothly transition the divider
+ * visibility.
+ *
+ * @param modifier Modifier to be applied to the [HorizontalDivider].
+ * @param isVisible whether the divider should be visible. Controls the fade animation target.
+ *
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
+ */
 @Composable
 public fun HorizontalAnimatedDivider(modifier: Modifier = Modifier, isVisible: Boolean) {
     val alpha by animateFloatAsState(

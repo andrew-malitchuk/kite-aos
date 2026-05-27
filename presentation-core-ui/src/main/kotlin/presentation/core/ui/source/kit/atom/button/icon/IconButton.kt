@@ -19,11 +19,11 @@ import presentation.core.ui.source.kit.atom.button.icon.core.IconButtonDefault
  * It includes optional support for a loading state, custom colors, and animations. The button can be enabled or disabled,
  * and provides a callback when clicked.
  *
- * @param modifier The modifier to be applied to the button. Default is [Modifier].
- * @param icon The resource of the icon to be displayed inside the button.
- * @param onClick The callback to be invoked when the button is clicked. If `null`, the button is not clickable.
+ * @param modifier Modifier to be applied to the [IconButton].
+ * @param icon The [ImageVector] to be displayed inside the button.
+ * @param onClick Callback invoked when the user clicks the button. If `null`, the button is not clickable.
  * @param enabled A boolean indicating whether the button is enabled. Default is `true`, meaning the button is enabled.
- * @param isSelected Whether the button is currently selected.
+ * @param isSelected Whether the button is currently in a selected state.
  * @param isLoading A boolean indicating whether the button is in a loading state. Default is `false`, meaning no loading state.
  * @param colors The [ButtonColor] instance that provides colors for the button in different states (enabled, disabled, etc.).
  *               Default is provided by [IconButtonDefault.buttonColor].
@@ -33,6 +33,11 @@ import presentation.core.ui.source.kit.atom.button.icon.core.IconButtonDefault
  *                  Default is provided by [IconButtonDefault.animation].
  * @param interactionSource The [MutableInteractionSource] for tracking the button's interaction states.
  *                          Default is a new [MutableInteractionSource] created with [remember].
+ *
+ * @see StateIconButton
+ * @see IconButtonDefault
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun IconButton(

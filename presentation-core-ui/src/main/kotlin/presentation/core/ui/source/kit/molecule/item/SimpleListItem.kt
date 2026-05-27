@@ -11,17 +11,21 @@ import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 
 /**
- * A list item for language selection.
+ * A simple clickable list item with a leading icon and label.
  *
- * This component displays a label and a list of language options as text buttons.
+ * This is the most basic list-item variant, containing only a leading icon and a single-line
+ * text label. It delegates all layout to [BaseListItem] without any trailing content.
  *
- * @param modifier The modifier to be applied to the item.
- * @param text The label text
- * @param textStyle The style for the label text.
- * @param icon The icon to display on the left.
- * @param iconBackgroundColor Background color for the icon container.
- * @param iconForegroundColor Foreground color for the icon.
- * @param onClick Callback when a language is selected.
+ * @param modifier Modifier to be applied to the [BaseListItem].
+ * @param text The label text displayed in the item.
+ * @param textStyle The [TextStyle] for the label text. Defaults to [Theme.typography.body].
+ * @param icon The [ImageVector] icon to display on the leading side.
+ * @param iconBackgroundColor Background [Color] for the icon container.
+ * @param iconForegroundColor Foreground [Color] for the icon.
+ * @param onClick Callback invoked when the user taps the item.
+ * @see BaseListItem
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun SimpleListItem(

@@ -15,8 +15,14 @@ import presentation.core.navigation.api.core.composition.LocalAppNavigator
  *
  * This Composable connects the [AboutViewModel] with the UI, observing state
  * changes and collecting side effects for navigation and external link handling.
+ * It delegates rendering to [AboutContent] and handles [AboutSideEffect] events
+ * such as opening social links in the browser and navigating back.
  *
  * @param viewModel The Koin-provided ViewModel managing the About screen logic.
+ * @see AboutViewModel
+ * @see AboutContent
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun AboutScreen(viewModel: AboutViewModel = koinViewModel()) {

@@ -29,6 +29,26 @@ import presentation.core.ui.source.kit.atom.shape.SquircleShape
 
 /**
  * An internal base component for drawing buttons with consistent decoration and loading behavior.
+ *
+ * This composable renders a [Box] decorated with a squircle border, background, and content padding.
+ * When [isLoading] is `true`, the [content] is replaced by a Lottie loading animation via an
+ * [AnimatedContent] transition.
+ *
+ * @param modifier Modifier to be applied to the [Box].
+ * @param backgroundColor The background color of the button container.
+ * @param borderColor The border color of the button container.
+ * @param corner The corner radius applied to the [SquircleShape].
+ * @param borderSize The width of the border stroke.
+ * @param paddings The padding values applied inside the button container.
+ * @param isLoading Whether the button displays a loading indicator instead of [content].
+ * @param loadingSize The size of the Lottie loading animation.
+ * @param horizontalArrangement The alignment used to position [content] within the container.
+ * @param content The composable content to display when the button is not loading.
+ *
+ * @see DrawButton
+ * @see DrawIconButton
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 internal fun DrawBaseButton(
@@ -43,12 +63,14 @@ internal fun DrawBaseButton(
     horizontalArrangement: Alignment = Alignment.Center,
     content: @Composable () -> Unit,
 ) {
+    // Pre-load the Lottie composition so it is ready when isLoading flips to true
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie_loading))
     val progress by animateLottieCompositionAsState(
         composition,
         iterations = LottieConstants.IterateForever,
     )
 
+    // Container with squircle shape, border, background, and animated content sizing
     Box(
         modifier =
         modifier

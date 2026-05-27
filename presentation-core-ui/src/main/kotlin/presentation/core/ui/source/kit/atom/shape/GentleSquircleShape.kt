@@ -31,12 +31,19 @@ import androidx.compose.ui.unit.dp
 import presentation.core.ui.source.kit.atom.shape.util.createGentleSquircleShapeOutline
 
 /**
+ * Creates a [GentleSquircleShape] that gently morphs from a squircle
+ * into a circle when applying larger corner radii defined as an [Int] percentage value.
  *
- *  Creates a [GentleSquircleShape] that gently morphs from a squircle
- *  into a circle when applying larger corner radii defined as [Int] value,.
+ * All four corners share the same radius percentage.
  *
- *  @param percent The corner radius percent from 0 to 100.
+ * @param percent The corner radius percentage from 0 to 100, where 0 means no rounding
+ *   and 100 means maximum rounding relative to the shape size.
+ * @return A new [GentleSquircleShape] with uniform corner radii.
  *
+ * @see GentleSquircleShape
+ * @see GentleSquircleBasedShape
+ * @see SquircleShape
+ * @since 0.0.1
  **/
 public fun GentleSquircleShape(percent: Int = 100): GentleSquircleShape = GentleSquircleShape(
     topStartCorner = CornerSize(percent),
@@ -46,12 +53,17 @@ public fun GentleSquircleShape(percent: Int = 100): GentleSquircleShape = Gentle
 )
 
 /**
+ * Creates a [GentleSquircleShape] that gently morphs from a squircle
+ * into a circle when applying larger corner radii defined as a [Dp] value.
  *
- *  Creates a [GentleSquircleShape] that gently morphs from a squircle
- *  into a circle when applying larger corner radii defined as [Dp] value.
+ * All four corners share the same radius.
  *
- *  @param radius The corner radius.
+ * @param radius The corner radius in density-independent pixels.
+ * @return A new [GentleSquircleShape] with uniform corner radii.
  *
+ * @see GentleSquircleShape
+ * @see GentleSquircleBasedShape
+ * @since 0.0.1
  **/
 public fun GentleSquircleShape(radius: Dp): GentleSquircleShape = GentleSquircleShape(
     topStartCorner = CornerSize(radius),
@@ -61,12 +73,17 @@ public fun GentleSquircleShape(radius: Dp): GentleSquircleShape = GentleSquircle
 )
 
 /**
+ * Creates a [GentleSquircleShape] that gently morphs from a squircle
+ * into a circle when applying larger corner radii defined as a [Float] value.
  *
- *  Creates a [GentleSquircleShape] that gently morphs from a squircle
- *  into a circle when applying larger corner radii defined as [Float] value.
+ * All four corners share the same radius.
  *
- *  @param radius The corner radius in pixels.
+ * @param radius The corner radius in pixels.
+ * @return A new [GentleSquircleShape] with uniform corner radii.
  *
+ * @see GentleSquircleShape
+ * @see GentleSquircleBasedShape
+ * @since 0.0.1
  **/
 public fun GentleSquircleShape(radius: Float): GentleSquircleShape = GentleSquircleShape(
     topStartCorner = CornerSize(radius),
@@ -76,15 +93,20 @@ public fun GentleSquircleShape(radius: Float): GentleSquircleShape = GentleSquir
 )
 
 /**
+ * Creates a [GentleSquircleShape] that gently morphs from a squircle
+ * into a circle when applying larger corner radii defined as [Int] percentage values.
  *
- *  Creates a [GentleSquircleShape] that gently morphs from a squircle
- *  into a circle when applying larger corner radii defined as [Int] values.
+ * Each corner can have its own independent radius percentage.
  *
- *  @param topStart The top start corner radius percent from 0 to 100.
- *  @param topEnd The top end corner radius percent from 0 to 100.
- *  @param bottomStart The bottom start corner radius percent from 0 to 100.
- *  @param bottomEnd The bottom end corner radius percent from 0 to 100.
+ * @param topStart The top start corner radius percentage from 0 to 100.
+ * @param topEnd The top end corner radius percentage from 0 to 100.
+ * @param bottomStart The bottom start corner radius percentage from 0 to 100.
+ * @param bottomEnd The bottom end corner radius percentage from 0 to 100.
+ * @return A new [GentleSquircleShape] with the specified per-corner radii.
  *
+ * @see GentleSquircleShape
+ * @see GentleSquircleBasedShape
+ * @since 0.0.1
  **/
 public fun GentleSquircleShape(
     topStart: Int = 0,
@@ -99,15 +121,20 @@ public fun GentleSquircleShape(
 )
 
 /**
+ * Creates a [GentleSquircleShape] that gently morphs from a squircle
+ * into a circle when applying larger corner radii defined as [Dp] values.
  *
- *  Creates a [GentleSquircleShape] that gently morphs from a squircle
- *  into a circle when applying larger corner radii defined as [Dp] values.
+ * Each corner can have its own independent radius.
  *
- *  @param topStart The top start corner radius.
- *  @param topEnd The top end corner radius.
- *  @param bottomStart The bottom start corner radius.
- *  @param bottomEnd The bottom end corner radius.
+ * @param topStart The top start corner radius in density-independent pixels.
+ * @param topEnd The top end corner radius in density-independent pixels.
+ * @param bottomStart The bottom start corner radius in density-independent pixels.
+ * @param bottomEnd The bottom end corner radius in density-independent pixels.
+ * @return A new [GentleSquircleShape] with the specified per-corner radii.
  *
+ * @see GentleSquircleShape
+ * @see GentleSquircleBasedShape
+ * @since 0.0.1
  **/
 public fun GentleSquircleShape(
     topStart: Dp = 0.dp,
@@ -122,15 +149,20 @@ public fun GentleSquircleShape(
 )
 
 /**
+ * Creates a [GentleSquircleShape] that gently morphs from a squircle
+ * into a circle when applying larger corner radii defined as [Float] values.
  *
- *  Creates a [GentleSquircleShape] that gently morphs from a squircle
- *  into a circle when applying larger corner radii defined as [Float] values.
+ * Each corner can have its own independent radius in pixels.
  *
- *  @param topStart The top start corner radius in pixels.
- *  @param topEnd The top end corner radius.
- *  @param bottomStart The bottom start corner radius.
- *  @param bottomEnd The bottom end corner radius.
+ * @param topStart The top start corner radius in pixels.
+ * @param topEnd The top end corner radius in pixels.
+ * @param bottomStart The bottom start corner radius in pixels.
+ * @param bottomEnd The bottom end corner radius in pixels.
+ * @return A new [GentleSquircleShape] with the specified per-corner radii.
  *
+ * @see GentleSquircleShape
+ * @see GentleSquircleBasedShape
+ * @since 0.0.1
  **/
 public fun GentleSquircleShape(
     topStart: Float = 0f,
@@ -145,14 +177,22 @@ public fun GentleSquircleShape(
 )
 
 /**
+ * Concrete implementation of [GentleSquircleBasedShape] that produces a squircle outline
+ * which gently transitions to a circular arc when corner radii become large relative to the
+ * shape dimensions.
  *
- *  Creates a [GentleSquircleBasedShape].
+ * This class delegates outline creation to [createGentleSquircleShapeOutline], which in turn
+ * uses [gentleSquircleShapePath] to build the underlying [Path].
  *
- *  @param topStartCorner The top start corner radius defined as [CornerSize].
- *  @param topEndCorner The top end corner radius defined as [CornerSize].
- *  @param bottomStartCorner The bottom start corner radius defined as [CornerSize].
- *  @param bottomEndCorner The bottom end corner radius defined as [CornerSize].
+ * @param topStartCorner The top start corner radius defined as [CornerSize].
+ * @param topEndCorner The top end corner radius defined as [CornerSize].
+ * @param bottomStartCorner The bottom start corner radius defined as [CornerSize].
+ * @param bottomEndCorner The bottom end corner radius defined as [CornerSize].
  *
+ * @see GentleSquircleBasedShape
+ * @see SquircleShape
+ * @see gentleSquircleShapePath
+ * @since 0.0.1
  **/
 public class GentleSquircleShape(
     topStartCorner: CornerSize,
@@ -165,6 +205,18 @@ public class GentleSquircleShape(
     bottomStart = bottomStartCorner,
     bottomEnd = bottomEndCorner,
 ) {
+    /**
+     * Creates a copy of this shape with optionally different corner sizes.
+     *
+     * @param topStart The new top start corner size.
+     * @param topEnd The new top end corner size.
+     * @param bottomEnd The new bottom end corner size.
+     * @param bottomStart The new bottom start corner size.
+     * @return A new [GentleSquircleShape] with the specified corner sizes.
+     *
+     * @see GentleSquircleBasedShape
+     * @since 0.0.1
+     */
     override fun copy(
         topStart: CornerSize,
         topEnd: CornerSize,
@@ -177,6 +229,20 @@ public class GentleSquircleShape(
         bottomEndCorner = bottomEnd,
     )
 
+    /**
+     * Creates the [Outline] for this shape based on the resolved corner radii and layout direction.
+     *
+     * @param size The size of the shape in pixels.
+     * @param topStart The resolved top start corner radius in pixels.
+     * @param topEnd The resolved top end corner radius in pixels.
+     * @param bottomEnd The resolved bottom end corner radius in pixels.
+     * @param bottomStart The resolved bottom start corner radius in pixels.
+     * @param layoutDirection The current layout direction (LTR or RTL).
+     * @return An [Outline] representing the gentle squircle boundary path.
+     *
+     * @see createGentleSquircleShapeOutline
+     * @since 0.0.1
+     */
     override fun createOutline(
         size: Size,
         topStart: Float,
@@ -193,6 +259,12 @@ public class GentleSquircleShape(
         layoutDirection = layoutDirection,
     )
 
+    /**
+     * Returns a human-readable string representation of this shape including all corner sizes.
+     *
+     * @return A string describing this [GentleSquircleShape] and its corner radii.
+     * @since 0.0.1
+     */
     override fun toString(): String {
         return "GentleSquircleShape(" +
             "topStart = $topStart, " +
@@ -202,6 +274,13 @@ public class GentleSquircleShape(
             ")"
     }
 
+    /**
+     * Checks structural equality by comparing all four corner sizes.
+     *
+     * @param other The object to compare against.
+     * @return `true` if [other] is a [SquircleShape] with identical corner sizes, `false` otherwise.
+     * @since 0.0.1
+     */
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is SquircleShape) return false
@@ -212,8 +291,15 @@ public class GentleSquircleShape(
         return true
     }
 
+    /**
+     * Computes a hash code based on all four corner sizes.
+     *
+     * @return The hash code value for this shape.
+     * @since 0.0.1
+     */
     override fun hashCode(): Int {
         var result = topStart.hashCode()
+        // Multiply by 31 (a prime) to distribute hash codes and reduce collisions.
         result = 31 * result + topEnd.hashCode()
         result = 31 * result + bottomStart.hashCode()
         result = 31 * result + bottomEnd.hashCode()

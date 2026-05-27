@@ -36,6 +36,26 @@ import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.source.kit.atom.icon.IcClose24
 import presentation.core.ui.source.kit.atom.icon.IcOutline3
 
+/**
+ * A list item with a password text-input field.
+ *
+ * Renders a leading icon, an inline [BasicTextField] with [PasswordVisualTransformation] for
+ * masked input, and a trailing clear button that appears when the field is non-empty. The
+ * keyboard is configured for password entry with an IME "Done" action that dismisses focus.
+ *
+ * @param modifier Modifier to be applied to the [BaseListItem].
+ * @param initialText The initial text to populate the password field with. Defaults to empty.
+ * @param onTextChanged Callback invoked each time the password text changes.
+ * @param placeholder The hint text displayed when the field is empty.
+ * @param textStyle The [TextStyle] for the input and placeholder text. Defaults to [Theme.typography.body].
+ * @param icon The [ImageVector] icon to display on the leading side.
+ * @param iconBackgroundColor Background [Color] for the icon container.
+ * @param iconForegroundColor Foreground [Color] for the icon.
+ * @param enabled Whether the input field and clear button are interactive.
+ * @see BaseListItem
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
+ */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 public fun PasswordInputListItem(
@@ -49,12 +69,14 @@ public fun PasswordInputListItem(
     iconForegroundColor: Color,
     enabled: Boolean = true,
 ) {
+    // Custom selection handle and highlight colors derived from the brand palette
     val handleColor = Theme.color.brand
-    val backgroundColor = Theme.color.brand.copy(alpha = 0.4f)
+    val backgroundColor = Theme.color.brand.copy(alpha = 0.4f) // 40% opacity for selection highlight
 
     var text by remember(initialText) { mutableStateOf(initialText) }
     val focusManager = LocalFocusManager.current
 
+    // Dismiss focus automatically when the software keyboard is hidden
     val isImeVisible = WindowInsets.isImeVisible
     LaunchedEffect(isImeVisible) {
         if (!isImeVisible) {

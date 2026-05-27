@@ -7,9 +7,18 @@ import domain.core.source.model.MoveDetectorModel
 
 /**
  * Mapper for converting between [MoveDetectorModel] and [MoveDetectorPreference].
+ *
+ * Handles bidirectional mapping between the domain representation of motion detection
+ * settings (enabled state, sensitivity, delay timings) and the preference storage resource.
+ *
+ * @see MoveDetectorModel
+ * @see MoveDetectorPreference
+ * @see ModelResourceMapper
+ * @since 0.0.1
  */
 internal object MoveDetectorPreferenceMapper :
     ModelResourceMapper<MoveDetectorModel, MoveDetectorPreference> {
+
     override val toModel: Mapper<MoveDetectorPreference, MoveDetectorModel> =
         Mapper { input ->
             MoveDetectorModel(
@@ -20,6 +29,7 @@ internal object MoveDetectorPreferenceMapper :
                 fabDelay = input.fabDelay,
             )
         }
+
     override val toResource: Mapper<MoveDetectorModel, MoveDetectorPreference> =
         Mapper { input ->
             MoveDetectorPreference(

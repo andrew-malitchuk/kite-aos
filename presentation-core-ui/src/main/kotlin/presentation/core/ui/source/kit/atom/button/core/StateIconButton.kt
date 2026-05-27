@@ -21,25 +21,28 @@ import androidx.compose.ui.unit.Dp
  * It supports customizable colors, sizes, shapes, text styles, and animations.
  * The button also supports a loading state.
  *
- * @param onClick The callback to be invoked when the button is clicked.
- * @param icon The resource of the icon to display at the button.
+ * @param onClick Callback invoked when the user clicks the icon button.
+ * @param icon The [ImageVector] to display inside the button.
  * @param colors The [ButtonColor] instance that provides colors for different button states.
  * @param sizes The [ButtonSize] instance that provides size configurations for the button.
- * @param corner The corners of the button.
+ * @param corner The corner radius applied to the button shape.
  * @param animation The [ButtonAnimation] instance that provides animation configurations for the button.
- * @param modifier The modifier to be applied to the button.
+ * @param modifier Modifier to be applied to the [StateIconButton].
  * @param enabled A boolean indicating whether the button is enabled.
+ * @param isSelected Whether the button is currently in a selected state.
  * @param interactionSource The [MutableInteractionSource] for the button to track interaction states.
  * @param isLoading A boolean indicating whether the button is in a loading state.
- * @param horizontalArrangement The horizontal arrangement of the layout's children.
+ * @param horizontalArrangement The horizontal alignment of the button content.
  *
  * References:
  *
  * - https://proandroiddev.com/compose-a-compose-button-by-composing-composable-functions-9f275772bd23
  * - https://github.com/aoriani/ComposeButton/tree/main
  *
- * @see presentation.core.ui.source.kit.atom.button.core.AnimateButton
+ * @see AnimateIconButton
  * @see presentation.core.ui.source.kit.atom.button.icon.IconButton
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 internal fun StateIconButton(
@@ -57,16 +60,19 @@ internal fun StateIconButton(
     horizontalArrangement: Alignment = Alignment.Center,
 ) {
     //region core
+    // Collect current interaction states from the interaction source
     val isHovered by interactionSource.collectIsHoveredAsState()
     val isPressed by interactionSource.collectIsPressedAsState()
     val isFocused by interactionSource.collectIsFocusedAsState()
 
+    // Build a bitmask of active interaction states, including selection, for color resolution
     var interactionState = 0
     if (isHovered) interactionState = interactionState.or(ButtonInteractionState.HOVER)
     if (isPressed) interactionState = interactionState.or(ButtonInteractionState.PRESSED)
     if (isFocused) interactionState = interactionState.or(ButtonInteractionState.FOCUSED)
     if (isSelected) interactionState = interactionState.or(ButtonInteractionState.SELECTED)
 
+    // Attach clickable behavior; suppress clicks while loading to prevent double-action
     val currentModifier =
         modifier.clickable(
             interactionSource = interactionSource,
@@ -80,6 +86,7 @@ internal fun StateIconButton(
             role = Button,
         )
 
+    // Resolve colors based on the current interaction bitmask, enabled, and loading flags
     val backgroundColor = colors.backgroundColor(interactionState, enabled, isLoading).value
     val foregroundColor = colors.foregroundColor(interactionState, enabled, isLoading).value
     val borderColor = colors.borderColor(interactionState, enabled, isLoading).value

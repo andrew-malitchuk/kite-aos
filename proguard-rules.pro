@@ -1,5 +1,9 @@
 # ProGuard rules for kite-aos
 
+# --- GeckoView / ExoPlayer bundled annotations ---
+-dontwarn kotlin.annotations.jvm.MigrationStatus
+-dontwarn kotlin.annotations.jvm.UnderMigration
+
 # --- Project Specific Rules (Fixing "Missing class" errors) ---
 # Prevent R8 from removing navigation, styling, and splash screen classes
 -keep class presentation.core.navigation.impl.source.host.** { *; }
@@ -103,3 +107,38 @@
 -keepattributes Signature, *Annotation*, EnclosingMethod, InnerClasses
 -keep class com.google.protobuf.** { *; }
 -dontwarn com.google.protobuf.**
+
+# --- WebView / androidx.webkit ---
+# androidx.webkit uses reflection internally to query the WebView provider for
+# feature availability (WebViewFeature.isFeatureSupported). R8 strips these
+# reflective paths in full-mode, causing isFeatureSupported() to always return
+# false in release — so WebViewCompat.addDocumentStartJavaScript() is never
+# called, which means the customElements.define() patch that prevents HA from
+# setting allowExoplayer=true (height:0 on video) is silently skipped.
+-keep class androidx.webkit.** { *; }
+-dontwarn androidx.webkit.**
+
+# Keep anonymous WebChromeClient / WebViewClient subclasses intact.
+# The Android framework invokes their overridden callbacks (onPageFinished,
+# shouldOverrideUrlLoading, onPermissionRequest, onCreateWindow, etc.) via
+# reflection / JNI. R8 aggressive optimization renames these when it cannot
+# prove they are called from outside the dex, breaking all WebView callbacks.
+-keepclassmembers class * extends android.webkit.WebChromeClient {
+    public *;
+}
+-keepclassmembers class * extends android.webkit.WebViewClient {
+    public *;
+}
+
+# WebView.WebViewTransport is an inner class instantiated by the framework and
+# retrieved via Message.obj — keep it so the onCreateWindow child-window wiring works.
+-keep class android.webkit.WebView$WebViewTransport { *; }
+
+# --- Firebase Crashlytics ---
+# Firebase uses a component system where ComponentRegistrar class names are declared
+# as meta-data strings in AndroidManifest.xml and instantiated via Class.forName().
+# Without these rules, R8 full-mode (enabled by AGP 9) strips/renames these classes,
+# causing "FirebaseCrashlytics component is not present" in release builds.
+-keep class com.google.firebase.crashlytics.** { *; }
+-dontwarn com.google.firebase.crashlytics.**
+-keep class * implements com.google.firebase.components.ComponentRegistrar { *; }

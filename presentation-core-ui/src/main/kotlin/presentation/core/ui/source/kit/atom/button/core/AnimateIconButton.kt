@@ -15,27 +15,26 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 
 /**
- * A composable function that represents an animated button.
+ * A composable function that represents an animated icon button.
  *
- * This function creates a button with animated color transitions for its background, foreground, and border.
+ * This function creates an icon button with animated color transitions for its background, icon, and border.
  * It also supports loading state and customizable properties for appearance and animation.
  *
- * @param text The text to display on the button.
- * @param icon The resource ID of the icon to display at the start of the button, or `null` if no icon is needed.
+ * @param icon The [ImageVector] to display inside the button.
  * @param backgroundColor The background color of the button.
- * @param iconColor The icon color of the button.
+ * @param iconColor The tint color applied to the icon.
  * @param borderColor The border color of the button.
- * @param corner The corners of the button.
- * @param iconSize The size of the icons within the button.
+ * @param corner The corner radius applied to the button shape.
+ * @param iconSize The size of the icon within the button.
  * @param borderSize The size of the border around the button.
  * @param minHeight The minimum height of the button.
  * @param paddings The padding values for the content within the button.
  * @param animationDuration The duration of the color animation in milliseconds.
  * @param animationEasing The easing function used for the color animation.
  * @param isLoading A boolean indicating whether the button is in a loading state.
- * @param modifier The modifier to be applied to the button.
+ * @param modifier Modifier to be applied to the [AnimateIconButton].
  * @param loadingSize The size of the loading indicator within the button.
- * @param horizontalArrangement The horizontal arrangement of the layout's children.
+ * @param horizontalArrangement The horizontal alignment of the button content.
  *
  * References:
  *
@@ -43,7 +42,9 @@ import androidx.compose.ui.unit.Dp
  * - https://github.com/aoriani/ComposeButton/tree/main
  *
  * @see StateIconButton
- * @see presentation.core.ui.source.kit.atom.button.core.DrawIconButton
+ * @see DrawIconButton
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 internal fun AnimateIconButton(
@@ -64,9 +65,11 @@ internal fun AnimateIconButton(
     horizontalArrangement: Alignment = Alignment.Center,
 ) {
     //region core
+    // Shared tween spec for all color transitions so they stay in sync
     val colorAnimationSpec =
         tween<Color>(durationMillis = animationDuration, easing = animationEasing)
 
+    // Animate border, background, and icon colors independently
     val animationBorderColor by animateColorAsState(
         animationSpec = colorAnimationSpec,
         targetValue = borderColor,
@@ -83,6 +86,7 @@ internal fun AnimateIconButton(
         label = "AnimateButton: animationForegroundColor",
     )
 
+    // Apply content-size animation so the button smoothly resizes (e.g. during loading transitions)
     val localModifier =
         modifier.animateContentSize(
             animationSpec =

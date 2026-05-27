@@ -15,6 +15,8 @@ import androidx.compose.ui.graphics.Color
  *
  * - https://proandroiddev.com/compose-a-compose-button-by-composing-composable-functions-9f275772bd23
  * - https://github.com/aoriani/ComposeButton/tree/main
+ *
+ * @since 0.0.1
  */
 public interface ButtonColor {
     /**

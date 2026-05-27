@@ -4,6 +4,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp password / lock icon.
+ *
+ * @since 0.0.1
+ */
 public val IcPassword24: ImageVector
     get() {
         if (_IcPassword24 != null) {

@@ -30,12 +30,21 @@ import androidx.compose.ui.unit.LayoutDirection
 import kotlin.math.hypot
 
 /**
- * Reveal effect for changing theme which wrap-up content
+ * A circular reveal transition composable that wraps content and animates state changes
+ * with an expanding circle effect, typically used for theme switching.
  *
- * @param modifier
- * @param targetState
- * @param animationSpec
- * @param content
+ * The reveal origin is determined by the user's last touch-down position, creating a natural
+ * radial transition from the interaction point.
+ *
+ * @param T the type of the target state driving the transition.
+ * @param modifier Modifier to be applied to the [Box].
+ * @param targetState the target state that triggers a new reveal animation when changed.
+ * @param animationSpec the [FiniteAnimationSpec] controlling the reveal animation timing.
+ * @param content the composable content to display for each state value.
+ *
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
  */
 @Composable
 public fun <T> CircularReveal(
@@ -49,11 +58,20 @@ public fun <T> CircularReveal(
 }
 
 /**
- * Reveal effect for changing theme
+ * A circular reveal transition composable that animates between states of this [Transition]
+ * with an expanding circle clip effect.
  *
- * @param modifier
- * @param animationSpec
- * @param content
+ * The reveal origin is captured from the user's touch-down event via [pointerInteropFilter].
+ * When no touch is detected, the reveal expands from the center of the composable.
+ *
+ * @param T the type of the transition state.
+ * @param modifier Modifier to be applied to the [Box].
+ * @param animationSpec the [FiniteAnimationSpec] controlling the reveal animation timing.
+ * @param content the composable content to display for each state value.
+ *
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
  */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -125,11 +143,36 @@ private val <T> Transition<T>.started
     get() =
         currentState != targetState || isRunning
 
+/**
+ * Clips the composable using a [CircularRevealShape] based on the given [progress] and optional
+ * [offset] origin.
+ *
+ * @param progress the reveal progress from 0.0 (fully hidden) to 1.0 (fully revealed).
+ * @param offset the optional origin point of the reveal circle. If null, the center of the
+ *        composable is used.
+ * @return a [Modifier] with the circular reveal clip applied.
+ *
+ * @see CircularRevealShape
+ *
+ * @since 0.0.1
+ */
 public fun Modifier.circularReveal(
     @FloatRange(from = 0.0, to = 1.0) progress: Float,
     offset: Offset? = null,
 ): Modifier = clip(CircularRevealShape(progress, offset))
 
+/**
+ * A [Shape] that creates a circular outline for use with circular reveal animations.
+ *
+ * The circle radius is calculated as the longest distance from the [offset] origin to any
+ * corner of the bounding rectangle, scaled by [progress]. This ensures the circle fully
+ * covers the content at progress 1.0.
+ *
+ * @param progress the reveal progress from 0.0 (no circle) to 1.0 (fully revealed).
+ * @param offset the optional origin point of the circle. If null, the center is used.
+ *
+ * @since 0.0.1
+ */
 public class CircularRevealShape(
     @FloatRange(from = 0.0, to = 1.0) private val progress: Float,
     private val offset: Offset? = null,

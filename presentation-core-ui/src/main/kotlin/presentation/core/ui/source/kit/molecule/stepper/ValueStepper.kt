@@ -34,6 +34,23 @@ import kotlinx.coroutines.delay
 import presentation.core.styling.core.Theme
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
 
+/**
+ * A numeric stepper control with decrement and increment buttons and an editable text field.
+ *
+ * The user can tap the "-" / "+" buttons to adjust the value by [step], or type a value directly
+ * into the centre text field. Long-pressing a button triggers auto-repeat with an accelerating
+ * rate (starts at 300 ms, decreases by 40 ms per tick down to a 60 ms floor) and haptic feedback.
+ *
+ * @param value The current integer value.
+ * @param onValueChange Callback invoked when the value changes (via buttons or direct input).
+ * @param modifier Modifier to be applied to the [Column].
+ * @param range The allowed [IntRange] for the value. Defaults to `0..360`.
+ * @param step The increment/decrement amount per button press. Defaults to `1`.
+ * @param label An optional label displayed above the stepper row.
+ * @param suffix An optional suffix string rendered after the numeric value (e.g., "s").
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
+ */
 @Composable
 public fun ValueStepper(
     value: Int,
@@ -65,6 +82,7 @@ public fun ValueStepper(
                 )
                 .padding(4.dp),
         ) {
+            // Decrement button — disabled when the value is already at the minimum
             StepperButton(
                 text = "-",
                 enabled = value > range.first,
@@ -74,6 +92,7 @@ public fun ValueStepper(
                 },
             )
 
+            // 48 dp wide centre slot for the editable numeric text field
             Box(
                 modifier = Modifier.width(48.dp),
                 contentAlignment = Alignment.Center,
@@ -81,6 +100,7 @@ public fun ValueStepper(
                 BasicTextField(
                     value = textValue,
                     onValueChange = { newText: String ->
+                        // Only accept digits or empty input; commit to the model only when within range
                         if (newText.all { it.isDigit() } || newText.isEmpty()) {
                             textValue = newText
                             newText.toIntOrNull()?.let { if (it in range) onValueChange(it) }
@@ -112,6 +132,7 @@ public fun ValueStepper(
                 )
             }
 
+            // Increment button — disabled when the value is already at the maximum
             StepperButton(
                 text = "+",
                 enabled = value < range.last,
@@ -130,16 +151,19 @@ private fun StepperButton(text: String, onAction: () -> Unit, enabled: Boolean) 
     var isPressed by remember { mutableStateOf(false) }
     val currentOnAction by rememberUpdatedState(onAction)
 
+    // Auto-repeat loop: fires the action while the button is held down.
+    // The repeat interval starts at 300 ms and accelerates by 40 ms per tick
+    // until it reaches the 60 ms floor, giving the user finer control over time.
     LaunchedEffect(isPressed) {
         if (isPressed) {
-            var currentDelay = 300L
+            var currentDelay = 300L // Initial delay between repeats in milliseconds
             while (isPressed) {
                 if (enabled) {
                     currentOnAction()
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 }
                 delay(currentDelay)
-                if (currentDelay > 60L) currentDelay -= 40L
+                if (currentDelay > 60L) currentDelay -= 40L // Accelerate repeat rate
             }
         }
     }

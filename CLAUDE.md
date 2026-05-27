@@ -108,6 +108,25 @@ ViewModels use `intent { reduce { ... } }` for state and `postSideEffect()` for 
 - Ktlint: android code style, warnings only (doesn't fail build)
 - Detekt config at `config/detekt/detekt.yml`
 
+## Module Registry
+
+| Category     | Module                             | Role                                                   |
+|:-------------|:-----------------------------------|:-------------------------------------------------------|
+| **App**      | `presentation-core-application`    | Composition root and Android entry point.              |
+| **Feature**  | `presentation-feature-main`        | The primary kiosk dashboard and control drawer.        |
+| **Feature**  | `presentation-feature-settings`    | Comprehensive system and user configuration.           |
+| **Feature**  | `presentation-feature-onboarding`  | Guided first-run setup and permission wizard.          |
+| **Feature**  | `presentation-feature-host`        | Single-activity host and immersive mode controller.    |
+| **Feature**  | `presentation-feature-about`       | Project information and social connectivity.           |
+| **Feature**  | `presentation-feature-application` | Managed application launcher selection.                |
+| **UI Core**  | `presentation-core-styling`        | Central design system and theme management.            |
+| **UI Core**  | `presentation-core-ui`             | Reusable atomic components and design tokens.          |
+| **Platform** | `presentation-core-platform`       | Motion detection, MQTT services, and hardware control. |
+| **Data**     | `data-repository-impl`             | Orchestration of all data sources into domain models.  |
+| **Domain**   | `domain-usecase-impl`              | Concrete implementation of application business rules. |
+
+Each module contains its own `CLAUDE.md` with deep-dive technical documentation.
+
 ## Key Technologies
 
 - **UI**: Jetpack Compose + Material 3, custom Squircle shape system

@@ -22,7 +22,7 @@ issue!
 ## Core Features
 
 * **Versatile Web Kiosk:** Display any web-based interface in a full-screen, locked-down
-  environment.
+  environment. Choose between Android WebView and GeckoView (Firefox) engines.
 * **Motion-Aware Intelligence:** Automatic display wake-up via CameraX (Luma analysis), eliminating
   external hardware requirements.
 * **MQTT & HA Discovery:** Seamless integration with Home Assistant. Device state, battery, and
@@ -34,11 +34,18 @@ issue!
 
 ## Functional Capabilities
 
-| Feature                 | Description                                                                                |
-|:------------------------|:-------------------------------------------------------------------------------------------|
-| **Control Drawer**      | Side panel (Haze blur) for WebView navigation control and a launcher for whitelisted apps. |
-| **Hardware Management** | Automated screen dimming and forced locking after periods of inactivity.                   |
-| **Onboarding Wizard**   | Step-by-step configuration for system permissions and MQTT connectivity.                   |
+| Feature                    | Description                                                                                           |
+|:---------------------------|:------------------------------------------------------------------------------------------------------|
+| **Browser Engine**         | Switchable engine: Android WebView (default) or GeckoView (Firefox) for better WebRTC/camera support. |
+| **Control Drawer**         | Side panel (Haze blur) for WebView navigation control and a launcher for whitelisted apps.            |
+| **Hardware Management**    | Automated screen dimming and forced locking after periods of inactivity.                              |
+| **Onboarding Wizard**      | Step-by-step configuration for system permissions and MQTT connectivity.                              |
+| **Custom Launcher**        | Set Kite as the default Android launcher to prevent users from leaving the kiosk.                     |
+| **Auto-Return to Kiosk**   | Automatically returns to the dashboard 30 s after leaving to an external app.                         |
+| **Watchdog & Auto-Reload** | Monitors the dashboard URL with a 45 s HTTP ping loop; reloads the WebView on detected failures.      |
+| **Network Recovery**       | Detects connectivity loss and automatically reloads the dashboard on restoration.                     |
+| **Config Import / Export** | Back up and restore all settings as a JSON file via the system file picker.                           |
+| **HA Auto-Discovery**      | Scans the local network for Home Assistant instances and populates the dashboard URL automatically.    |
 
 ## Technical Specifications
 
@@ -51,23 +58,33 @@ issue!
 
 ## Installation & Deployment
 
-### Prerequisites
+### Quick Install
+
+Download the latest APK directly from [GitHub Releases](https://github.com/andrew-malitchuk/kite-aos/releases/latest) — no build step required.
+
+1. Download `kite-*.apk` from the latest release.
+2. Enable "Install from unknown sources" on your device.
+3. Install the APK and follow the onboarding wizard.
+
+### Build from Source
+
+#### Prerequisites
 
 * Android Studio Ladybug or newer
 * JDK 21
 * Android Device (API level 26+)
 
-### Build Instructions
+#### Build Instructions
 
 ```bash
 # Clone the repository
-git clone [https://github.com/andrew-malitchuk/kite.git](https://github.com/andrew-malitchuk/kite.git)
+git clone https://github.com/andrew-malitchuk/kite-aos.git
 
 # Generate debug APK
 ./gradlew assembleDebug
 ```
 
-### Setup
+#### Setup
 
 1. Deploy the APK to the target device.
 2. Complete the initial configuration wizard to grant system-level permissions.

@@ -7,6 +7,9 @@ import kotlinx.coroutines.flow.Flow
  *
  * Implementations should provide a reactive stream of [NetworkStatus] updates,
  * allowing features to adapt their behavior based on internet availability.
+ *
+ * @see data.platform.impl.source.connectivity.ConnectivityObserverImpl
+ * @since 0.0.1
  */
 public interface ConnectivityObserver {
     /**
@@ -14,11 +17,15 @@ public interface ConnectivityObserver {
      *
      * Subscribing to this flow should ideally emit the current connectivity state
      * immediately upon collection.
+     *
+     * @return a [Flow] of [NetworkStatus] representing connectivity state transitions.
      */
     public val status: Flow<NetworkStatus>
 
     /**
      * Represents the possible states of network connectivity as seen by the system.
+     *
+     * @since 0.0.1
      */
     public enum class NetworkStatus {
         /** The device has an active internet connection. */

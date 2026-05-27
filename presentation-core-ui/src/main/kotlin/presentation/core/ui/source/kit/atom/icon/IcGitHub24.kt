@@ -10,6 +10,11 @@ import androidx.compose.ui.graphics.vector.group
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp GitHub logo icon.
+ *
+ * @since 0.0.1
+ */
 public val IcGitHub24: ImageVector
     get() {
         if (_IcGitHub24 != null) {

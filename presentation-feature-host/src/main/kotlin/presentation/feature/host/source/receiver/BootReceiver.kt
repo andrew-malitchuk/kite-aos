@@ -12,6 +12,9 @@ import presentation.feature.host.source.host.HostActivity
  *
  * This ensures that the kiosk application remains active and persistent
  * across device restarts, which is a key requirement for kiosk-mode deployment.
+ *
+ * @see HostActivity
+ * @since 0.0.1
  */
 public class BootReceiver : BroadcastReceiver() {
     /**
