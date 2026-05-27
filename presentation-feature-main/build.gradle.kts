@@ -16,7 +16,10 @@ android {
 dependencies {
     implementation(libs.core.ktx)
     implementation(libs.androidx.webkit)
-    implementation(libs.geckoview)
+    // compileOnly: GeckoViewEngine.kt compiles against GeckoView APIs but the library
+    // is NOT bundled. The foss app flavor provides it via fossImplementation in the app module;
+    // the gms flavor omits it entirely — gms/GeckoViewEngine.kt is a no-op stub.
+    compileOnly(libs.geckoview)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 

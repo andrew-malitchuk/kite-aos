@@ -68,4 +68,8 @@ dependencies {
     implementation(libs.androidx.remote.creation.core)
     implementation(libs.androidx.material3)
     // endregion
+
+    // GeckoView native libs bundled only in the foss flavor.
+    // The gms flavor uses the system WebView; GeckoViewEngine.kt is a dead code path there.
+    "fossImplementation"(libs.geckoview)
 }

@@ -1,6 +1,9 @@
 # ProGuard rules for kite-aos
 
-# --- GeckoView / ExoPlayer bundled annotations ---
+# --- GeckoView ---
+# GeckoView is compileOnly in presentation-feature-main and provided only for the foss flavor.
+# In the gms flavor GeckoViewEngine.kt is dead code — suppress missing-class errors for R8.
+-dontwarn org.mozilla.geckoview.**
 -dontwarn kotlin.annotations.jvm.MigrationStatus
 -dontwarn kotlin.annotations.jvm.UnderMigration
 
