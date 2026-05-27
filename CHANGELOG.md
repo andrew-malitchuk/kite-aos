@@ -1,12 +1,24 @@
 # [1.0.0] - 2026-05-27
 
-This release marks the first major version of Kite AOS, introducing pluggable WebView engine support, automatic return, Home Assistant network discovery, and expanded MQTT telemetry for network and watchdog state.
+This release marks the first major version of Kite AOS, introducing pluggable WebView engine support, automatic return, Home Assistant network discovery, expanded MQTT telemetry, and Android 7.1 (API 25) compatibility for the GMS flavor.
 
 ## Added
-- Implement web engine preferences, auto-return, HA discovery, and WebView engine abstraction
+- Pluggable WebView engine support (AndroidWebView / GeckoView) with Proto DataStore preferences
+- Auto-return preference source and implementation
+- Home Assistant network scanner and host discovery
+- GetWebEngineUseCase / SetWebEngineUseCase across all layers
+- DiscoverHomeAssistantUseCase, ObserveNetworkStatus, SetAutoReturn use cases
+- MQTT network state and watchdog telemetry use cases
+- Chrome and Firefox browser icon assets
+
+## Fixed
+- Lower minSdk to 25 (Android 7.1) for GMS flavor — closes #7
+- Scope GeckoView minSdk constraint to FOSS flavor only; add GMS manifest override
+- Fallback to AndroidWebView at runtime when GeckoView is selected on API < 26
+- Add dontwarn rules for GeckoView bundled Kotlin annotations (R8 fossRelease build)
 
 ## Changed
-- Update short_description.txt
+- Update F-Droid short_description.txt
 
 # [0.0.3] - 2026-05-06
 
