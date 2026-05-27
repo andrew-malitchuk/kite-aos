@@ -40,13 +40,6 @@ public class YahkApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Pre-warm the GeckoView runtime as early as possible so the GPU compositor process
-        // has time to stabilise before any Activity receives window focus. Without this,
-        // GeckoRuntime.create() runs during Compose composition on the main thread, and if the
-        // device is under memory pressure the 5-second ANR timeout can be hit while waiting
-        // for the GPU process to respond to SyncResumeResizeCompositor.
-        warmGeckoIfNeeded()
-
         // Initialise the Koin dependency injection container with logging and the Android context.
         startKoin {
             androidLogger()
