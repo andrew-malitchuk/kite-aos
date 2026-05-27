@@ -7,7 +7,7 @@ versionCode = "4"
 versionName = "1.0.0"
 
 compileSdk = "36"
-minSdk = "26"
+minSdk = "25"
 targetSdk = "36"
 #endregion metadata
 
