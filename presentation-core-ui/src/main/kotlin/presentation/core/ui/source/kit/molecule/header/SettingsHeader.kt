@@ -24,9 +24,11 @@ import presentation.core.ui.source.kit.atom.icon.IcMore24
  * This header displays a back button (Primary Icon Button) on the left,
  * a centered title text, and a secondary action button (Secondary Icon Button) on the right.
  *
+ * @param modifier Modifier to be applied to the [Row].
  * @param title The text to display as the title in the center of the header.
- * @param onAction Callback to handle [SettingsHeaderAction]s.
- * @param modifier The modifier to be applied to the header row.
+ * @param onAction Callback invoked when a [SettingsHeaderAction] is triggered by the user.
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun SettingsHeader(modifier: Modifier = Modifier, title: String, onAction: (SettingsHeaderAction) -> Unit) {
@@ -67,15 +69,22 @@ public fun SettingsHeader(modifier: Modifier = Modifier, title: String, onAction
 
 /**
  * Represents the actions that can be triggered from the [SettingsHeader].
+ *
+ * @see SettingsHeader
+ * @since 0.0.1
  */
 public sealed interface SettingsHeaderAction {
     /**
      * Action triggered when the back button is clicked.
+     *
+     * @since 0.0.1
      */
     public data object OnBackClick : SettingsHeaderAction
 
     /**
      * Action triggered when the more/settings button is clicked.
+     *
+     * @since 0.0.1
      */
     public data object OnMoreClick : SettingsHeaderAction
 }

@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp timeout / timer icon.
+ *
+ * @since 0.0.1
+ */
 public val IcTimeout24: ImageVector
     get() {
         if (_IcTimeout24 != null) {

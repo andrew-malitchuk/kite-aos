@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package webengine;
+
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "WebEngineDataProto";
+
+message WebEngineProtoModel {
+  string engine = 1;
+}

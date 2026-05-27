@@ -1,10 +1,14 @@
 package domain.usecase.api.source.usecase.configuration
 
 import domain.core.source.model.DashboardModel
-import domain.usecase.api.core.common.Optional
+import domain.usecase.api.source.common.Optional
 
 /**
  * Use case for updating the kiosk dashboard configuration.
+ *
+ * @see GetDashboardUseCase
+ * @see DashboardModel
+ * @since 0.0.1
  */
 public interface SetDashboardUseCase {
     /**

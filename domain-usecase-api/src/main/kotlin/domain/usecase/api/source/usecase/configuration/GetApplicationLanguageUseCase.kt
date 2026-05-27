@@ -2,6 +2,9 @@ package domain.usecase.api.source.usecase.configuration
 
 /**
  * Use case for retrieving the current application language locale code.
+ *
+ * @see SetApplicationLanguageUseCase
+ * @since 0.0.1
  */
 public interface GetApplicationLanguageUseCase {
     /**

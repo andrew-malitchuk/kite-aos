@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 48dp Kite application logo icon.
+ *
+ * @since 0.0.1
+ */
 public val IcLogo48: ImageVector
     get() {
         if (_IcLogo48 != null) {

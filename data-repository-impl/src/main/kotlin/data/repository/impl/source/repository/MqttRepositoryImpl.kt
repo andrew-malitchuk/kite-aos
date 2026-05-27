@@ -10,21 +10,24 @@ import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
 /**
- * Implementation of [MqttRepository] that delegates to [TelemetryMqttSource].
- * This acts as a bridge between the domain and data layers for MQTT operations.
- */
-
-/**
  * Implementation of [MqttRepository] that delegates to [TelemetryMqttSource] and [MqttPreferenceSource].
  *
- * @property telemetryMqttSource The MQTT telemetry source for network operations.
- * @property mqttPreferenceSource The preference source for storing MQTT configuration.
+ * This repository acts as a bridge between the domain and data layers for MQTT operations,
+ * coordinating between the MQTT network client for telemetry operations and the preference
+ * store for persisting MQTT broker configuration.
+ *
+ * @property telemetryMqttSource The MQTT telemetry source for network operations (connect, disconnect, publish).
+ * @property mqttPreferenceSource The preference source for storing and retrieving MQTT configuration.
+ * @see MqttRepository
+ * @see MqttPreferenceMapper
+ * @since 0.0.1
  */
 @Single(binds = [MqttRepository::class])
 internal class MqttRepositoryImpl(
     private val telemetryMqttSource: TelemetryMqttSource,
     private val mqttPreferenceSource: MqttPreferenceSource,
 ) : MqttRepository {
+
     override suspend fun connect(
         server: String,
         port: Int,
@@ -47,6 +50,33 @@ internal class MqttRepositoryImpl(
     override suspend fun sendBatteryLevel(level: Int) {
         telemetryMqttSource.sendBatteryLevel(level)
     }
+
+    override suspend fun sendVolume(level: Int) {
+        telemetryMqttSource.sendVolume(level)
+    }
+
+    override suspend fun sendBrightness(level: Int) {
+        telemetryMqttSource.sendBrightness(level)
+    }
+
+    override suspend fun sendUrl(url: String) {
+        telemetryMqttSource.sendUrl(url)
+    }
+
+    override suspend fun sendScreenState(isOn: Boolean) {
+        telemetryMqttSource.sendScreenState(isOn)
+    }
+
+    override suspend fun sendWatchdogState(state: String) {
+        telemetryMqttSource.sendWatchdogState(state)
+    }
+
+    override suspend fun sendNetworkState(isOnline: Boolean) {
+        telemetryMqttSource.sendNetworkState(isOnline)
+    }
+
+    override fun observeCommands(): Flow<Pair<String, String>> =
+        telemetryMqttSource.observeCommands()
 
     override fun observeMqttConfiguration(): Flow<MqttModel?> =
         mqttPreferenceSource.observeData().map { it?.let(MqttPreferenceMapper.toModel::map) }

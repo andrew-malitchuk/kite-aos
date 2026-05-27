@@ -28,72 +28,111 @@ import androidx.compose.ui.graphics.Color
  * @property warning Warnings and non-blocking alerts.
  * @property disabled Background/text for inactive elements.
  * @property scrim Darkening overlay for modal backgrounds.
+ * @see Theme
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 public data class ThemeColor(
     //region 1. Brand (Accent colors for primary actions)
     /**
      * Primary brand color.
+     *
+     * @since 0.0.1
      */
     val brand: Color,
     /**
      * Hover, pressed, or alternative brand state.
+     *
+     * @since 0.0.1
      */
     val brandVariant: Color,
     //endregion 1. Brand (Accent colors for primary actions)
     //region 2. Surface (Backgrounds and layers)
     /**
      * Main background of the application (lowest layer).
+     *
+     * @since 0.0.1
      */
     val canvas: Color,
     /**
      * Surface for cards, dialogs, and sheets.
+     *
+     * @since 0.0.1
      */
     val surface: Color,
     /**
      * Subtle background for inputs or highlighted sections.
+     *
+     * @since 0.0.1
      */
     val surfaceVariant: Color,
     //endregion 2. Surface (Backgrounds and layers)
     //region 3. Ink (Typography and icons)
     /**
      * Primary text color with highest contrast.
+     *
+     * @since 0.0.1
      */
     val inkMain: Color,
     /**
      * Secondary text for captions and metadata.
+     *
+     * @since 0.0.1
      */
     val inkSubtle: Color,
     /**
      * Text color used on top of brand backgrounds.
+     *
+     * @since 0.0.1
      */
     val inkOnBrand: Color,
     //endregion 3. Ink (Typography and icons)
     //region 4. Outline (Borders and dividers)
     /**
      * Subtle dividers and separators.
+     *
+     * @since 0.0.1
      */
     val outlineLow: Color,
     /**
      * Stronger borders for active inputs or focus states.
+     *
+     * @since 0.0.1
      */
     val outlineHigh: Color,
     //endregion 4. Outline (Borders and dividers)
     //region 5. Status (Functional feedback)
     /**
      * Success states and confirmations.
+     *
+     * @since 0.0.1
      */
     val success: Color,
     /**
      * Error messages and destructive actions.
+     *
+     * @since 0.0.1
      */
     val error: Color,
     /**
      * Warnings and non-blocking alerts.
+     *
+     * @since 0.0.1
      */
     val warning: Color,
     //endregion 5. Status (Functional feedback)
     //region 6. Interaction (Special states)
-    val disabled: Color, // Background/Text for inactive elements
-    val scrim: Color, // Darkening overlay for modal backgrounds
+    /**
+     * Background/text for inactive elements.
+     *
+     * @since 0.0.1
+     */
+    val disabled: Color,
+    /**
+     * Darkening overlay for modal backgrounds.
+     *
+     * @since 0.0.1
+     */
+    val scrim: Color,
     //endregion 6. Interaction (Special states)
 )

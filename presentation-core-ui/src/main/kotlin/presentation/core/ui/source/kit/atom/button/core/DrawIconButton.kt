@@ -21,24 +21,28 @@ import androidx.compose.ui.unit.Dp
  * color, border color, shape and icon size.
  * It also supports a loading state that displays a Lottie animation.
  *
- * @param modifier The modifier to be applied to the button.
- * @param icon The icon to display on the button.
+ * @param modifier Modifier to be applied to the [DrawIconButton].
+ * @param icon The [ImageVector] to display inside the button.
  * @param backgroundColor The background color of the button.
- * @param iconColor The icon color of the button.
+ * @param iconColor The tint color applied to the icon.
  * @param borderColor The border color of the button.
- * @param corner The corners of the button.
- * @param iconSize The size of the icons within the button.
+ * @param corner The corner radius applied to the button shape.
+ * @param iconSize The size of the icon within the button.
  * @param loadingSize The size of the loading indicator within the button.
- * @param borderSize The size of the border around the button.
+ * @param borderSize The width of the border around the button.
  * @param minHeight The minimum height of the button.
  * @param paddings The padding values for the content within the button.
  * @param isLoading A boolean indicating whether the button is in a loading state.
- * @param horizontalArrangement The horizontal arrangement of the layout's children.
+ * @param horizontalArrangement The horizontal alignment of the button content.
  *
  * References:
  *
  * - https://proandroiddev.com/compose-a-compose-button-by-composing-composable-functions-9f275772bd23
  * - https://github.com/aoriani/ComposeButton/tree/main
+ *
+ * @see DrawBaseButton
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 internal fun DrawIconButton(

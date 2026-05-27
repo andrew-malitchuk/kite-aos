@@ -1,9 +1,12 @@
 package domain.usecase.api.source.usecase.configuration
 
-import domain.usecase.api.core.common.Optional
+import domain.usecase.api.source.common.Optional
 
 /**
  * Use case for updating the onboarding completion status.
+ *
+ * @see GetOnboardingStatusUseCase
+ * @since 0.0.1
  */
 public interface SetOnboardingStatusUseCase {
     /**

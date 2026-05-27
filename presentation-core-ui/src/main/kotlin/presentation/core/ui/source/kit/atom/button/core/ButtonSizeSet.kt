@@ -9,6 +9,8 @@ package presentation.core.ui.source.kit.atom.button.core
  *
  * - https://proandroiddev.com/compose-a-compose-button-by-composing-composable-functions-9f275772bd23
  * - https://github.com/aoriani/ComposeButton/tree/main
+ *
+ * @since 0.0.1
  */
 // TODO remove to t-shirts
 public interface ButtonSizeSet {

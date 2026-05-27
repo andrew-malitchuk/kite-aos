@@ -6,6 +6,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 
+/**
+ * 24dp admin/shield icon with user silhouette.
+ *
+ * @since 0.0.1
+ */
 public val IcAdmin24: ImageVector
     get() {
         if (_IcAdmin24 != null) {

@@ -1,14 +1,17 @@
 package domain.usecase.impl.source.usecase.mqtt
 
-import domain.core.core.monad.Failure
+import domain.core.source.monad.Failure
 import domain.repository.api.source.repository.MqttRepository
-import domain.usecase.api.core.common.Optional
+import domain.usecase.api.source.common.Optional
 import domain.usecase.api.source.usecase.mqtt.MqttSendBatteryLevelUseCase
 import domain.usecase.impl.core.resultLauncher
 import org.koin.core.annotation.Single
 
 /**
  * Implementation of [MqttSendBatteryLevelUseCase] using [MqttRepository].
+ *
+ * @see MqttSendBatteryLevelUseCase
+ * @since 0.0.1
  */
 @Single(binds = [MqttSendBatteryLevelUseCase::class])
 internal class MqttSendBatteryLevelUseCaseImpl(

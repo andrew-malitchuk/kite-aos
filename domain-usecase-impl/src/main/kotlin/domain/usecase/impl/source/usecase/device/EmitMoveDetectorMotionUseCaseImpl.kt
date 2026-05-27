@@ -6,6 +6,9 @@ import org.koin.core.annotation.Single
 
 /**
  * Implementation of [EmitMoveDetectorMotionUseCase] using [ConfigureRepository].
+ *
+ * @see EmitMoveDetectorMotionUseCase
+ * @since 0.0.1
  */
 @Single(binds = [EmitMoveDetectorMotionUseCase::class])
 internal class EmitMoveDetectorMotionUseCaseImpl(

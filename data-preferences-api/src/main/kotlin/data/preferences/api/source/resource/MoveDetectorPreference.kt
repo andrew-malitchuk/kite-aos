@@ -3,13 +3,31 @@ package data.preferences.api.source.resource
 import data.core.source.resource.Resource
 
 /**
- * Preference model for the motion detector settings.
+ * Preference resource representing motion detector configuration.
  *
- * @property enabled Whether the motion detector is enabled.
- * @property sensitivity The sensitivity threshold for motion detection.
- * @property dimDelay The delay in milliseconds before the screen dims due to inactivity.
- * @property screenTimeout The delay in milliseconds before the screen turns off due to inactivity.
- * @property fabDelay The delay in milliseconds before the Floating Action Button is hidden.
+ * Controls the CameraX-based presence detection service behavior, including sensitivity
+ * thresholds and timing for screen dimming, timeout, and FAB visibility.
+ *
+ * Serialized via Proto DataStore with the following schema:
+ * ```protobuf
+ * message MoveDetectorPreference {
+ *     optional bool enabled = 1;
+ *     optional int32 sensitivity = 2;
+ *     optional int64 dim_delay = 3;
+ *     optional int64 screen_timeout = 4;
+ *     optional int64 fab_delay = 5;
+ * }
+ * ```
+ *
+ * @property enabled whether the motion detector is enabled.
+ * @property sensitivity the sensitivity threshold for motion detection.
+ * @property dimDelay the delay in milliseconds before the screen dims due to inactivity.
+ * @property screenTimeout the delay in milliseconds before the screen turns off due to inactivity.
+ * @property fabDelay the delay in milliseconds before the Floating Action Button is hidden.
+ *
+ * @see data.preferences.api.source.datasource.MoveDetectorPreferenceSource
+ *
+ * @since 0.0.1
  */
 public data class MoveDetectorPreference(
     val enabled: Boolean? = null,

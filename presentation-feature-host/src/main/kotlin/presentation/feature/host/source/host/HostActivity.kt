@@ -1,5 +1,6 @@
 package presentation.feature.host.source.host
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -25,12 +27,21 @@ import presentation.core.ui.core.splash.splash
 
 /**
  * The main and single activity of the application.
+ *
  * This activity hosts the entire composable UI and manages the initial setup,
  * including the splash screen and determining the initial navigation route.
+ * It enforces immersive (full-screen) mode for the kiosk experience and blocks
+ * the system back gesture/button.
+ *
+ * @see HostViewModel
+ * @see HostState
+ * @see HostSideEffect
+ * @since 0.0.1
  */
 public class HostActivity : AppCompatActivity() {
     private var splashScreen: SplashScreenDecorator? = null
     private val viewModel: HostViewModel by inject()
+    private var autoReturnJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,8 +58,38 @@ public class HostActivity : AppCompatActivity() {
         setupContent()
     }
 
+    override fun onResume() {
+        super.onResume()
+        autoReturnJob?.cancel()
+        autoReturnJob = null
+        hideSystemUI()
+    }
+
+    /**
+     * Schedules an auto-return to the kiosk when the activity is fully hidden
+     * (e.g., an external app was launched from the control drawer or MQTT).
+     *
+     * Uses [onStop] instead of [onPause] to avoid triggering for partial occlusion
+     * (permission dialogs, system prompts). The delayed [Intent] brings [HostActivity]
+     * back to the foreground via [Intent.FLAG_ACTIVITY_REORDER_TO_FRONT].
+     *
+     * Requires `SYSTEM_ALERT_WINDOW` permission for background activity starts on API 29+.
+     */
+    override fun onStop() {
+        super.onStop()
+        if (!viewModel.container.stateFlow.value.isAutoReturnEnabled) return
+        autoReturnJob = lifecycleScope.launch {
+            delay(AUTO_RETURN_DELAY_MS)
+            val intent = Intent(this@HostActivity, HostActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
+            startActivity(intent)
+        }
+    }
+
     override fun onDestroy() {
-        splashScreen = null // Avoid memory leaks when the activity is destroyed.
+        autoReturnJob?.cancel()
+        splashScreen = null
         super.onDestroy()
     }
 
@@ -151,5 +192,8 @@ public class HostActivity : AppCompatActivity() {
 
         /** The artificial delay before dismissing the splash screen after the destination is decided. */
         const val SPLASH_DISMISS_DELAY = 1500L
+
+        /** Delay before auto-returning to the kiosk after the activity is stopped. */
+        const val AUTO_RETURN_DELAY_MS = 30_000L
     }
 }

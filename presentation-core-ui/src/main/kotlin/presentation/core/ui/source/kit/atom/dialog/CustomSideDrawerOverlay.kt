@@ -37,23 +37,31 @@ import presentation.core.styling.core.Theme
 import kotlin.math.roundToInt
 
 /**
- * A custom composable that provides a side drawer overlay.
- * This drawer slides in and out from either the left or right side of the screen and can be used to
- * display additional options or information.
+ * A custom composable that provides a side drawer overlay with a drag-handle indicator.
  *
- * @param isDrawerOpen Boolean indicating whether the drawer is open.
- * @param onDismiss Callback function that gets called when the drawer should be dismissed.
- * @param drawerContent Composable content that is displayed inside the drawer.
- * @param content Composable content of the main screen.
- * @param modifier Modifier to be applied to the drawer overlay container.
- * @param drawerWidth Width of the drawer in Dp.
- * @param animationDuration Duration of the drawer open/close animation in milliseconds.
- * @param maskColor Color of the mask overlay when the drawer is open.
- * @param showMask Boolean indicating whether to show the mask overlay.
- * @param drawerSide Side of the screen where the drawer appears (left or right).
- * @param cornerRadius Corner radius of the drawer for rounded edges.
- * @param dragThresholdFraction Fraction of the drawer's width that must be dragged to open/close it.
- * @param enableSwipe Boolean indicating whether swipe gestures are enabled to open/close the drawer.
+ * This drawer slides in and out from either the left or right side of the screen and can be used to
+ * display additional options or information. It includes an animated vertical drag handle that
+ * expands during drag interactions.
+ *
+ * @param isDrawerOpen whether the drawer is currently open.
+ * @param onDismiss callback invoked when the drawer should be dismissed (tap on mask or swipe).
+ * @param drawerContent composable content displayed inside the drawer panel.
+ * @param content composable content of the main screen behind the drawer.
+ * @param modifier Modifier to be applied to the [Box].
+ * @param drawerWidth the width of the drawer panel.
+ * @param animationDuration duration of the open/close slide animation in milliseconds.
+ * @param maskColor the color of the semi-transparent overlay mask.
+ * @param showMask whether the mask overlay is shown when the drawer is open.
+ * @param drawerSide the side of the screen the drawer slides in from.
+ * @param cornerRadius corner radius for the drawer panel edges.
+ * @param dragThresholdFraction fraction of the drawer width that must be dragged to trigger dismissal.
+ * @param enableSwipe whether swipe-to-dismiss gestures are enabled on the drawer.
+ *
+ * @see BlurredCustomSideDrawerOverlay
+ * @see DrawerSide
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
  */
 @Composable
 public fun CustomSideDrawerOverlay(
@@ -131,6 +139,7 @@ public fun CustomSideDrawerOverlay(
             Modifier
                 .fillMaxHeight()
                 .width(drawerWidth)
+                // Doubled offset creates an accelerated slide-in effect
                 .offset { IntOffset(x = 2 * offsetX.value.roundToInt(), y = 0) }
                 .align(if (drawerSide == DrawerSide.LEFT) Alignment.CenterStart else Alignment.CenterEnd)
                 .pointerInput(Unit) {
@@ -222,7 +231,9 @@ public fun CustomSideDrawerOverlay(
 }
 
 /**
- * Enum class representing the side of the screen where the drawer appears.
+ * Enum class representing the side of the screen where a drawer overlay appears.
+ *
+ * @since 0.0.1
  */
 public enum class DrawerSide {
     LEFT,

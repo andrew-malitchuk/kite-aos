@@ -5,6 +5,8 @@ package common.core.core.mapper
  *
  * @param I The input type.
  * @param O The output type.
+ *
+ * @since 0.0.1
  */
 public fun interface Mapper<I, O> {
     /**

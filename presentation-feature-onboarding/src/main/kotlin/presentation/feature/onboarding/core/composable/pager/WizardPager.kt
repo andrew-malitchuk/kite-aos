@@ -39,6 +39,9 @@ import presentation.core.ui.source.kit.atom.button.primary.core.PrimaryButtonDef
 
 /**
  * Represents the possible actions triggered by the [WizardPager].
+ *
+ * @see WizardPager
+ * @since 0.0.1
  */
 public sealed interface WizardPagerAction {
     /** Triggered when the final page's finish button is clicked. */
@@ -59,6 +62,8 @@ public sealed interface WizardPagerAction {
  * @param backgroundColor The target background color for this specific page.
  * @param isNextEnabled A lambda returning whether the "Next" button should be interactable.
  * @param content The Composable content to display in the main pager area.
+ * @see WizardPager
+ * @since 0.0.1
  */
 public data class WizardPageData(
     val title: String,
@@ -75,9 +80,17 @@ public data class WizardPageData(
  * animates smoothly as the user navigates. Navigation is controlled via "Previous" and
  * "Next/Finish" buttons at the bottom.
  *
- * @param modifier The modifier to be applied to the wizard layout.
+ * @param modifier Modifier to be applied to the [Column] root composable.
  * @param pages The list of [WizardPageData] representing the wizard steps.
- * @param onAction Callback for handling navigation actions.
+ * @param pagerState The [PagerState] controlling the current page and scroll position.
+ * @param onAction Callback for handling navigation actions. Supported actions include:
+ *   [WizardPagerAction.OnNextClick] for advancing to the next page,
+ *   [WizardPagerAction.OnBackClick] for returning to the previous page,
+ *   and [WizardPagerAction.OnFinishClick] for completing the wizard on the last page.
+ * @see WizardPageData
+ * @see WizardPagerAction
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

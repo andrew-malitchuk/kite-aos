@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -35,6 +37,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import domain.core.source.model.DockPositionModel
 import presentation.core.platform.source.service.MotionService
 import presentation.core.styling.core.Theme
@@ -49,7 +54,7 @@ import presentation.feature.main.core.components.SideBar
 import presentation.feature.main.source.drawer.ControlAction
 import presentation.feature.main.source.drawer.ControlDrawer
 import presentation.feature.main.source.webview.KioskWebView
-import presentation.feature.main.source.webview.rememberKioskWebViewState
+import presentation.feature.main.source.webview.rememberKioskEngineState
 import kotlin.math.roundToInt
 
 /**
@@ -59,8 +64,15 @@ import kotlin.math.roundToInt
  * It also handles immersive mode management and motion detection service lifecycle.
  *
  * @param state The current [MainState].
- * @param onIntent Callback to dispatch [MainIntent] to the ViewModel.
+ * @param onIntent Callback to dispatch [MainIntent] to the ViewModel. Supported actions include:
+ *   [MainIntent.OnLoadIntent] for initial data loading,
+ *   [MainIntent.OnSettingsClickAction] for navigating to settings,
+ *   and [MainIntent.OnOpenApplicationIntent] for launching an external application.
  * @param snackbarHostState State for the Design System's snackbar.
+ * @see MainScreen
+ * @see MainViewModel
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 internal fun MainContent(
@@ -74,7 +86,19 @@ internal fun MainContent(
 
     val isBottom = state.dockPosition?.position == DockPositionModel.Position.Up
 
-    val webViewState = rememberKioskWebViewState()
+    val webViewState = rememberKioskEngineState()
+
+    // Debounce the loading-hidden transition to suppress flicker caused by rapid
+    // onPageStart / onPageStop cycles during auth redirects (especially GeckoView).
+    var isPageLoading by remember { mutableStateOf(true) }
+    LaunchedEffect(webViewState.isLoading) {
+        if (webViewState.isLoading) {
+            isPageLoading = true
+        } else {
+            delay(400)
+            isPageLoading = false
+        }
+    }
 
     LaunchedEffect(Unit) {
         onIntent(MainIntent.OnLoadIntent)
@@ -95,6 +119,13 @@ internal fun MainContent(
         }
     }
 
+    // Publish the URL to MQTT whenever the WebView finishes loading a new page.
+    LaunchedEffect(webViewState.currentUrl) {
+        if (webViewState.currentUrl.isNotEmpty()) {
+            onIntent(MainIntent.OnPageLoadedIntent(webViewState.currentUrl))
+        }
+    }
+
     val activity = LocalActivity.current
     val window = (activity)?.window
 
@@ -111,6 +142,18 @@ internal fun MainContent(
             // Configure the system to show bars temporarily when the user swipes from edges.
             controller.systemBarsBehavior =
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+
+        // Re-apply immersive mode when returning from an external app (auto-return behaviour).
+        val lifecycleOwner = LocalLifecycleOwner.current
+        DisposableEffect(lifecycleOwner) {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    controller.hide(WindowInsetsCompat.Type.systemBars())
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
         }
     }
 
@@ -184,13 +227,14 @@ internal fun MainContent(
                         modifier =
                         Modifier
                             .fillMaxSize()
-                            .alpha(if (webViewState.isLoading) 0f else 1f),
+                            .alpha(if (isPageLoading) 0f else 1f),
                     ) {
                         KioskWebView(
                             modifier =
                             Modifier
                                 .fillMaxSize(),
                             state = webViewState,
+                            engineType = state.webEngine,
                         )
 
                         // Track the drag offset of the FAB to allow user repositioning.
@@ -245,7 +289,7 @@ internal fun MainContent(
                     }
 
                     AnimatedVisibility(
-                        visible = webViewState.isLoading,
+                        visible = isPageLoading,
                         enter = fadeIn(),
                         exit = fadeOut(),
                         modifier = Modifier.align(Alignment.Center),
@@ -255,12 +299,19 @@ internal fun MainContent(
                             imageVector = IcLogo48,
                         )
                     }
+
                 }
             },
         )
     }
 }
 
+/**
+ * Starts the [MotionService] as a foreground service for camera-based motion detection.
+ *
+ * @param context The Android [Context] used to start the service.
+ * @since 0.0.1
+ */
 private fun startSelectedService(context: Context) {
     val intent = Intent(context, MotionService::class.java)
     try {
@@ -270,11 +321,20 @@ private fun startSelectedService(context: Context) {
     }
 }
 
+/**
+ * Stops the [MotionService] foreground service.
+ *
+ * @param context The Android [Context] used to stop the service.
+ * @since 0.0.1
+ */
 private fun stopSelectedService(context: Context) {
     val intent = Intent(context, MotionService::class.java)
     context.stopService(intent)
 }
 
+/**
+ * Custom [Saver] for [IntOffset] to persist the FAB drag position across configuration changes.
+ */
 private val IntOffsetSaver =
     Saver<IntOffset, Pair<Int, Int>>(
         save = { it.x to it.y },

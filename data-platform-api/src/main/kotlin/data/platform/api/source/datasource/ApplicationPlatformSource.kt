@@ -7,6 +7,10 @@ import data.platform.api.source.resource.ApplicationPlatform
  *
  * This source is primarily used to discover which applications are installed on the device
  * and can be launched by the user.
+ *
+ * @see data.platform.impl.source.datasource.ApplicationPlatformSourceImpl
+ * @see ApplicationPlatform
+ * @since 0.0.1
  */
 public interface ApplicationPlatformSource {
     /**

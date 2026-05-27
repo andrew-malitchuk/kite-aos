@@ -25,16 +25,26 @@ import androidx.compose.foundation.shape.CornerBasedShape
 import androidx.compose.foundation.shape.CornerSize
 
 /**
+ * Base class for creating a Squircle shape derived from a [CornerBasedShape]
+ * defined by four corners and a corner smoothing value.
  *
- *  Base class for creating a Squircle shape derived from a [CornerBasedShape]
- *  defined by four corners and a corner smoothing.
+ * Unlike [GentleSquircleBasedShape], this variant exposes an explicit [smoothing] parameter
+ * that controls the degree of superellipse curvature applied to each corner via cubic Bezier
+ * curves. The smoothing value is used by [squircleShapePath] to compute the Bezier control
+ * point offset factor.
  *
- *  @param topStart The top start corner radius defined as [CornerSize].
- *  @param topEnd The top end corner radius defined as [CornerSize].
- *  @param bottomStart The bottom start corner radius defined as [CornerSize].
- *  @param bottomEnd The bottom end corner radius defined as [CornerSize].
- *  @param smoothing The corner smoothing value from 0 to 100.
+ * @param topStart The top start corner radius defined as [CornerSize].
+ * @param topEnd The top end corner radius defined as [CornerSize].
+ * @param bottomStart The bottom start corner radius defined as [CornerSize].
+ * @param bottomEnd The bottom end corner radius defined as [CornerSize].
+ * @param smoothing The corner smoothing value from 0 to 100, where 0 produces standard
+ *   rounded corners and 100 produces the most pronounced squircle effect.
  *
+ * @see SquircleShape
+ * @see GentleSquircleBasedShape
+ * @see CornerSmoothing
+ * @see CornerBasedShape
+ * @since 0.0.1
  **/
 public abstract class SquircleBasedShape(
     topStart: CornerSize,

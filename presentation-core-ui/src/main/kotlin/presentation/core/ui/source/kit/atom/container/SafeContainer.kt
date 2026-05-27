@@ -19,6 +19,24 @@ import presentation.core.ui.source.kit.atom.snackbar.StackedSnackbarHost
 import presentation.core.ui.source.kit.atom.snackbar.StackedSnakbarHostState
 import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHostState
 
+/**
+ * A scaffold-based container that handles system bar insets, keyboard (IME) insets, and provides
+ * an integrated stacked snackbar host.
+ *
+ * On API level 30 and above, the container applies edge-to-edge insets (system bars + IME).
+ * On older APIs, insets are omitted to avoid double-padding since the system already handles
+ * system bars and keyboard resizing at the window level.
+ *
+ * @param modifier Modifier to be applied to the [Scaffold].
+ * @param snackbarHostState the [StackedSnakbarHostState] managing snackbar display.
+ * @param snackbarHost composable slot for the snackbar host UI.
+ * @param content the main screen content receiving [PaddingValues] from the scaffold.
+ *
+ * @see StackedSnackbarHost
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
+ */
 @Composable
 public fun SafeContainer(
     modifier: Modifier = Modifier,

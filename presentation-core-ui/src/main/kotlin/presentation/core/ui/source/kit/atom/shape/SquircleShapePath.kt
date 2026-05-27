@@ -38,16 +38,31 @@ import presentation.core.ui.source.kit.atom.shape.util.clampedCornerRadius
 import presentation.core.ui.source.kit.atom.shape.util.convertIntBasedSmoothingToFloat
 
 /**
+ * Builds a [Path] for drawing a typical Squircle shape using cubic Bezier curves.
  *
- *  The path used for drawing a typical Squircle shape.
+ * The algorithm works as follows:
+ * 1. Each corner radius is clamped via [clampedCornerRadius] to fit within the shape bounds,
+ *    taking the smoothing value into account for the expansion factor.
+ * 2. The integer smoothing value is converted to a float factor via [convertIntBasedSmoothingToFloat],
+ *    which maps the 0-100 range to 0.55-1.0. The inverse (`1 - factor`) becomes the
+ *    `smoothingFactor` that controls how far each cubic Bezier control point is offset
+ *    from the corner along the edge.
+ * 3. Four cubic Bezier curves are drawn (one per corner), each connecting two straight
+ *    edge segments with a smooth superellipse-like transition.
  *
- *  @param size The size of the shape in pixels.
- *  @param topLeftCorner The top left corner radius in pixels.
- *  @param topRightCorner The top right corner radius in pixels.
- *  @param bottomLeftCorner The bottom left corner radius in pixels.
- *  @param bottomRightCorner The bottom right corner radius in pixels.
- *  @param smoothing The corner smoothing from 0 to 100.
+ * @param size The size of the shape in pixels.
+ * @param topLeftCorner The top left corner radius in pixels.
+ * @param topRightCorner The top right corner radius in pixels.
+ * @param bottomLeftCorner The bottom left corner radius in pixels.
+ * @param bottomRightCorner The bottom right corner radius in pixels.
+ * @param smoothing The corner smoothing from 0 to 100, defaults to [CornerSmoothing.Medium].
+ * @return A closed [Path] representing the squircle outline.
  *
+ * @see gentleSquircleShapePath
+ * @see CornerSmoothing
+ * @see clampedCornerRadius
+ * @see convertIntBasedSmoothingToFloat
+ * @since 0.0.1
  **/
 public fun squircleShapePath(
     size: Size,
@@ -85,6 +100,9 @@ public fun squircleShapePath(
             smoothing = smoothing,
         )
 
+    // Convert the integer smoothing (0-100) to a float in [0.55, 1.0], then invert it.
+    // A higher smoothing value produces a smaller smoothingFactor, pulling the Bezier
+    // control points closer to the corner and creating a more pronounced squircle curve.
     val smoothingFactor = 1f - convertIntBasedSmoothingToFloat(smoothing)
     return Path().apply {
         // Extract the shape width & height
@@ -175,9 +193,10 @@ public fun squircleShapePath(
 }
 
 /**
- *
  * Draws a Squircle with the given [Color]. Whether the Squircle is
  * filled or stroked (or both) is controlled by [Paint.style].
+ *
+ * Corner radii are automatically swapped for right-to-left layout directions.
  *
  * @param color The color to be applied to the Squircle.
  * @param topLeft Offset from the local origin of 0, 0 relative to the current translation.
@@ -186,12 +205,17 @@ public fun squircleShapePath(
  * @param topRightCorner The top right corner radius in pixels.
  * @param bottomLeftCorner The bottom left corner radius in pixels.
  * @param bottomRightCorner The bottom right corner radius in pixels.
- * @param smoothing The smoothing factor from 0 to 100.
- * @param alpha Opacity to be applied to Squircle from 0.0f to 1.0f representing fully transparent to fully opaque respectively.
+ * @param smoothing The smoothing factor from 0 to 100, defaults to [CornerSmoothing.Medium].
  * @param style Specifies whether the Squircle is stroked or filled in.
- * @param colorFilter ColorFilter to apply to the [color] when drawn into the destination.
+ * @param alpha Opacity to be applied to Squircle from 0.0f to 1.0f representing
+ *   fully transparent to fully opaque respectively.
+ * @param colorFilter [ColorFilter] to apply to the [color] when drawn into the destination.
  * @param blendMode Blending algorithm to be applied to the color.
  *
+ * @see squircleShapePath
+ * @see drawGentleSquircle
+ * @see CornerSmoothing
+ * @since 0.0.1
  */
 public fun DrawScope.drawSquircle(
     color: Color,
@@ -207,6 +231,7 @@ public fun DrawScope.drawSquircle(
     colorFilter: ColorFilter? = null,
     blendMode: BlendMode = DrawScope.DefaultBlendMode,
 ) {
+    // Mirror corners horizontally for right-to-left layouts.
     val isRtl = this.layoutDirection == LayoutDirection.Rtl
     val path =
         squircleShapePath(
@@ -218,6 +243,7 @@ public fun DrawScope.drawSquircle(
             smoothing = smoothing,
         )
 
+    // Translate the canvas to the requested offset before drawing the path.
     translate(
         left = topLeft.x,
         top = topLeft.y,
@@ -234,23 +260,29 @@ public fun DrawScope.drawSquircle(
 }
 
 /**
- *
  * Draws a Squircle with the given [Brush]. Whether the Squircle is
  * filled or stroked (or both) is controlled by [Paint.style].
  *
- * @param brush The brush to be applied to the Squircle.
+ * Corner radii are automatically swapped for right-to-left layout directions.
+ *
+ * @param brush The brush (gradient or shader) to be applied to the Squircle.
  * @param topLeft Offset from the local origin of 0, 0 relative to the current translation.
  * @param size Dimensions of the Squircle to draw.
  * @param topLeftCorner The top left corner radius in pixels.
  * @param topRightCorner The top right corner radius in pixels.
  * @param bottomLeftCorner The bottom left corner radius in pixels.
  * @param bottomRightCorner The bottom right corner radius in pixels.
- * @param smoothing The smoothing factor from 0 to 100.
- * @param alpha Opacity to be applied to Squircle from 0.0f to 1.0f representing fully transparent to fully opaque respectively.
+ * @param smoothing The smoothing factor from 0 to 100, defaults to [CornerSmoothing.Medium].
  * @param style Specifies whether the Squircle is stroked or filled in.
- * @param colorFilter ColorFilter to apply to the [brush] when drawn into the destination.
- * @param blendMode Blending algorithm to be applied to the color.
+ * @param alpha Opacity to be applied to Squircle from 0.0f to 1.0f representing
+ *   fully transparent to fully opaque respectively.
+ * @param colorFilter [ColorFilter] to apply to the [brush] when drawn into the destination.
+ * @param blendMode Blending algorithm to be applied to the brush.
  *
+ * @see squircleShapePath
+ * @see drawGentleSquircle
+ * @see CornerSmoothing
+ * @since 0.0.1
  */
 public fun DrawScope.drawSquircle(
     brush: Brush,
@@ -266,6 +298,7 @@ public fun DrawScope.drawSquircle(
     colorFilter: ColorFilter? = null,
     blendMode: BlendMode = DrawScope.DefaultBlendMode,
 ) {
+    // Mirror corners horizontally for right-to-left layouts.
     val isRtl = this.layoutDirection == LayoutDirection.Rtl
     val path =
         squircleShapePath(
@@ -277,6 +310,7 @@ public fun DrawScope.drawSquircle(
             smoothing = smoothing,
         )
 
+    // Translate the canvas to the requested offset before drawing the path.
     translate(
         left = topLeft.x,
         top = topLeft.y,

@@ -9,8 +9,13 @@
     <!-- Required to list installed apps for the application drawer -->
     <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     
-    <!-- Camera access for motion detection via CameraX -->
+    <!-- Camera access for motion detection via CameraX and WebRTC camera streams -->
     <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Required for WebRTC: RTCPeerConnection negotiates audio tracks in SDP even for
+         receive-only camera streams; without this the ICE/DTLS handshake silently fails -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     
     <!-- Foreground service permissions for background monitoring and connectivity -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -30,6 +35,8 @@
     <application
         android:name="presentation.core.application.YahkApplication"
         android:allowBackup="false"
+        android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:localeConfig="@xml/locales_config"

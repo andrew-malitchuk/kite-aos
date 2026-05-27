@@ -1,7 +1,13 @@
 package presentation.feature.main.source.main
 
 /**
- * User actions that can be performed on the Main screen.
+ * User actions (intents) that can be performed on the Main screen.
+ *
+ * Intents are dispatched from [MainContent] and processed by [MainViewModel.handleIntent].
+ *
+ * @see MainViewModel
+ * @see MainContent
+ * @since 0.0.1
  */
 public sealed class MainIntent {
     /** Initial load of kiosk configuration and state. */
@@ -15,4 +21,7 @@ public sealed class MainIntent {
 
     /** User clicked an application icon in the drawer. */
     public data class OnOpenApplicationIntent(val packageName: String) : MainIntent()
+
+    /** WebView finished loading a page; the [url] is the fully-loaded URL. */
+    public data class OnPageLoadedIntent(val url: String) : MainIntent()
 }

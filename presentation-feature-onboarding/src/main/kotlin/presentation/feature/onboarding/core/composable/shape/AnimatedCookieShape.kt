@@ -24,12 +24,14 @@ import androidx.graphics.shapes.toPath
 /**
  * A decorative animated shape that morphs between different star polygons.
  *
- * This component uses the 'androidx.graphics.shapes' library to create a dynamic,
+ * This component uses the `androidx.graphics.shapes` library to create a dynamic,
  * rotating background element. It continuously morphs its vertex count and
  * rotates to provide a modern, "alive" visual feel to the onboarding screens.
  *
- * @param modifier The modifier to be applied to the shape container.
+ * @param modifier Modifier to be applied to the [Box] root composable.
  * @param color The color of the shape.
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun AnimatedCookieShape(modifier: Modifier = Modifier, color: Color) {

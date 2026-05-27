@@ -2,6 +2,9 @@ package domain.usecase.api.source.usecase.configuration
 
 /**
  * Use case for checking if the initial onboarding flow has been completed.
+ *
+ * @see SetOnboardingStatusUseCase
+ * @since 0.0.1
  */
 public interface GetOnboardingStatusUseCase {
     /**

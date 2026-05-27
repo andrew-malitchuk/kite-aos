@@ -1,10 +1,20 @@
 plugins {
-    id("dev.yahk.convention.application")
-    id("dev.yahk.convention.di.android")
+    id("convention.application")
+    id("convention.di.android")
+    id("convention.firebase")
 }
 
 android {
     namespace = "presentation.core.application"
+
+    buildTypes {
+        release {
+            configure<com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension> {
+                mappingFileUploadEnabled = true
+                nativeSymbolUploadEnabled = false
+            }
+        }
+    }
 }
 
 dependencies {
@@ -58,4 +68,5 @@ dependencies {
     implementation(libs.androidx.remote.creation.core)
     implementation(libs.androidx.material3)
     // endregion
+
 }

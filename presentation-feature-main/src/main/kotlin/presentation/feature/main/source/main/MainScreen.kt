@@ -14,6 +14,12 @@ import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHost
  *
  * It manages the [MainViewModel] state, handles side effects like navigation
  * and application launching, and hosts the primary [MainContent].
+ *
+ * @param viewModel The Koin-provided ViewModel managing the kiosk dashboard logic.
+ * @see MainViewModel
+ * @see MainContent
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun MainScreen(viewModel: MainViewModel = koinViewModel()) {

@@ -12,7 +12,7 @@ This module serves as the central core of the Domain layer. It contains the fund
 This is a pure Kotlin module that sits at the center of the architecture. It does not depend on any other layers (Data or Presentation), ensuring that the business logic remains decoupled from infrastructure and UI concerns.
 
 ### Key Components
-*   **`domain.core.core.monad.Failure`**: A structured way to represent errors. 
+*   **`domain.core.source.monad.Failure`**: A structured way to represent errors. 
     *   `Technical`: For infrastructure issues (Database, Network, Platform).
     *   `Logic`: For business rules or "Not Found" scenarios.
 *   **`domain.core.source.model.*`**: Data classes representing the state of various components like Dock position, Onboarding status, and Application info.

@@ -31,6 +31,23 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.absoluteValue
 import kotlin.math.sqrt
 
+/**
+ * A horizontal pager with a circular reveal animation effect during page transitions.
+ *
+ * As the user swipes between pages, the incoming page is revealed through an expanding circle
+ * originating from the right edge at the user's vertical touch position. Pages also scale up
+ * slightly during the transition for added depth.
+ *
+ * @param count the total number of pages.
+ * @param modifier Modifier to be applied to the [HorizontalPager].
+ * @param clipCornerRadius corner radius applied to the pager container.
+ * @param state the [PagerState] controlling the pager's current page and scroll position.
+ * @param pageContent composable content for each page, receiving the page index.
+ *
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 public fun CircleAnimatedRevealPager(
@@ -76,6 +93,7 @@ public fun CircleAnimatedRevealPager(
                     clip = true
 
                     val absoluteOffset = pageOffset.absoluteValue
+                    // Scale up by 40% of offset to create a zoom-out-then-in depth effect
                     val scale = 1f + (absoluteOffset * .4f)
                     scaleX = scale
                     scaleY = scale
@@ -106,7 +124,8 @@ private fun PagerState.endOffsetForPage(page: Int): Float {
     return (currentPage - page) + currentPageOffsetFraction
 }
 
-// ===== Circle clip shape used for the reveal =====
+// Circle clip shape used for the reveal animation; creates an oval path
+// centered between the origin and the layout center, with radius proportional to progress
 private class CirclePath(
     private val progress: Float,
     private val origin: Offset = Offset(0f, 0f),

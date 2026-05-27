@@ -27,8 +27,10 @@ import androidx.graphics.shapes.toPath
  * between multiple [RoundedPolygon] star shapes, while simultaneously rotating the
  * result. It's used as a dynamic background for the application icon on the About screen.
  *
- * @param modifier Modifier to be applied to the box containing the shape.
+ * @param modifier Modifier to be applied to the [Box] root composable.
  * @param color The color used to draw the morphing shape.
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun AnimatedCookieShape(modifier: Modifier = Modifier, color: Color) {

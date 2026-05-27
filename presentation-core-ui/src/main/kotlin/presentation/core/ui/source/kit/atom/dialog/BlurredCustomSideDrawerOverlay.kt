@@ -39,6 +39,33 @@ import presentation.core.ui.source.kit.atom.shape.SquircleShape
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+/**
+ * A side drawer overlay with a blurred background effect powered by Haze.
+ *
+ * The drawer slides in from either the left or right side of the screen with an animated offset.
+ * While open, the background content is blurred and overlaid with a semi-transparent mask. The
+ * drawer supports swipe-to-dismiss gestures and tap-on-mask dismissal.
+ *
+ * @param isDrawerOpen whether the drawer is currently open.
+ * @param onDismiss callback invoked when the drawer should be dismissed (tap on mask or swipe).
+ * @param drawerContent composable content displayed inside the drawer panel.
+ * @param content composable content of the main screen behind the drawer.
+ * @param modifier Modifier to be applied to the [Box].
+ * @param drawerWidth the width of the drawer panel.
+ * @param animationDuration duration of the open/close slide animation in milliseconds.
+ * @param maskColor the color of the semi-transparent overlay mask.
+ * @param showMask whether the mask overlay is shown when the drawer is open.
+ * @param drawerSide the side of the screen the drawer slides in from.
+ * @param cornerRadius corner radius for the drawer panel edges.
+ * @param dragThresholdFraction fraction of the drawer width that must be dragged to trigger dismissal.
+ * @param enableSwipe whether swipe-to-dismiss gestures are enabled on the drawer.
+ *
+ * @see CustomSideDrawerOverlay
+ * @see DrawerSide
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
+ */
 @Composable
 public fun BlurredCustomSideDrawerOverlay(
     isDrawerOpen: Boolean,

@@ -39,10 +39,17 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import presentation.core.ui.source.kit.atom.button.icon.IconButton
+import presentation.core.ui.source.kit.atom.button.icon.core.IconButtonDefault
+import presentation.core.ui.source.kit.atom.icon.IcChrome24
+import presentation.core.ui.source.kit.atom.icon.IcFirefox24
+import presentation.core.ui.source.kit.molecule.item.BaseListItem
 import domain.core.source.model.DockPositionModel
+import domain.core.source.model.HomeAssistantInstanceModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.MqttModel
 import domain.core.source.model.ThemeModel
+import domain.core.source.model.WebEngineModel
 import presentation.core.localisation.R
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
@@ -54,6 +61,7 @@ import presentation.core.ui.source.kit.atom.icon.IcApp24
 import presentation.core.ui.source.kit.atom.icon.IcDim24
 import presentation.core.ui.source.kit.atom.icon.IcDock24
 import presentation.core.ui.source.kit.atom.icon.IcLang24
+import presentation.core.ui.source.kit.atom.icon.IcForward24
 import presentation.core.ui.source.kit.atom.icon.IcOpen24
 import presentation.core.ui.source.kit.atom.icon.IcRefresh24
 import presentation.core.ui.source.kit.atom.icon.IcSensor24
@@ -63,6 +71,7 @@ import presentation.core.ui.source.kit.atom.icon.IcWeb24
 import presentation.core.ui.source.kit.atom.icon.IcWebProtected24
 import presentation.core.ui.source.kit.atom.item.SectionItem
 import presentation.core.ui.source.kit.atom.item.SectionToggleItem
+import presentation.core.ui.source.kit.molecule.item.ToggleListItem
 import presentation.core.ui.source.kit.atom.snackbar.StackedSnakbarHostState
 import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHostState
 import presentation.core.ui.source.kit.molecule.header.SettingsHeader
@@ -83,14 +92,20 @@ import presentation.core.ui.source.kit.organism.animatedsequence.AnimationSequen
  * The main content of the settings screen.
  *
  * This Composable orchestrates several sections of settings, each handled by its own
- * sub-composable. It also manages the overall layout, scrolling, and theme reveal animations.
+ * sub-composable. It also manages the overall layout, scrolling, and theme reveal animations
+ * via [CircularReveal].
  *
- * @param state The current state of the settings.
- * @param onIntent Callback to handle user actions.
+ * @param state The current [SettingsState] of the settings screen.
+ * @param onIntent Callback to handle user actions. Accepts all [SettingsIntent] subtypes.
  * @param showLanguageDialog Whether the in-app language dialog is visible.
  * @param onShowLanguageDialogChange Callback to toggle language dialog visibility.
  * @param snackbarHostState State for displaying snackbars.
+ * @see SettingsScreen
+ * @see SettingsViewModel
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
+// Suppressed: deeply nested Compose layout makes formatter indentation unreliable.
 @Suppress("Indentation")
 @Composable
 internal fun SettingsContent(
@@ -99,6 +114,9 @@ internal fun SettingsContent(
     showLanguageDialog: Boolean,
     onShowLanguageDialogChange: (Boolean) -> Unit,
     snackbarHostState: StackedSnakbarHostState = rememberStackedSnackbarHostState(),
+    showDiscoveryDialog: Boolean = false,
+    discoveryResults: List<HomeAssistantInstanceModel> = emptyList(),
+    onShowDiscoveryDialogChange: (Boolean) -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
 
@@ -164,6 +182,7 @@ internal fun SettingsContent(
                                     WebKioskSection(state, onIntent) { isDashboardValid = it }
                                     UiUxSection(state, onIntent)
                                     SystemSection(state, onIntent)
+                                    AdvancedSection(onIntent)
 
                                     Spacer(modifier = Modifier.height(Theme.spacing.sizeL))
                                 }
@@ -182,6 +201,17 @@ internal fun SettingsContent(
                             onDismiss = { onShowLanguageDialogChange(false) },
                         )
                     }
+
+                    if (showDiscoveryDialog) {
+                        HomeAssistantDiscoveryDialog(
+                            instances = discoveryResults,
+                            onSelect = { url ->
+                                onIntent(SettingsIntent.OnSelectDiscoveredInstanceIntent(url))
+                                onShowDiscoveryDialogChange(false)
+                            },
+                            onDismiss = { onShowDiscoveryDialogChange(false) },
+                        )
+                    }
                 }
             }
         }
@@ -190,7 +220,14 @@ internal fun SettingsContent(
 
 /**
  * Section for configuring the camera-based motion detector.
+ *
+ * Includes toggle, sensitivity, dim delay, screen timeout, and FAB delay controls.
+ *
+ * @param state The current [SettingsState] for reading motion detector configuration.
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetMoveDetectorIntent] updates.
+ * @since 0.0.1
  */
+// Suppressed: deeply nested Compose layout makes formatter indentation unreliable.
 @Suppress("Indentation")
 @Composable
 private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
@@ -279,6 +316,14 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
 
 /**
  * Section for configuring the MQTT telemetry and control broker connection.
+ *
+ * Includes fields for IP, port, client ID, username, password, and friendly name.
+ * A debounced [LaunchedEffect] auto-saves changes after 1 second of inactivity.
+ *
+ * @param state The current [SettingsState] for reading MQTT configuration.
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetMqttIntent] updates.
+ * @param isDashboardValid Whether the dashboard URL passes validation, used for MQTT toggle eligibility.
+ * @since 0.0.1
  */
 @Composable
 private fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit, isDashboardValid: Boolean) {
@@ -319,6 +364,7 @@ private fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
     }
 
     // Regex patterns for validation (from architectural requirements)
+    // Suppressed: IP/hostname regex pattern necessarily exceeds line length.
     @Suppress("MaximumLineLength")
     val ipRegex =
         remember {
@@ -435,7 +481,16 @@ private fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
 }
 
 /**
- * Section for configuring the web kiosk dashboard and whitelist.
+ * Section for configuring the web kiosk dashboard, whitelist URLs, and browser engine.
+ *
+ * Also provides a link to the application selection screen.
+ *
+ * @param state The current [SettingsState] for reading dashboard and engine configuration.
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetDashboardIntent],
+ *   [SettingsIntent.OnApplicationIntent], and [SettingsIntent.OnSetWebEngineIntent].
+ * @param onValidationChange Callback reporting whether the dashboard URL passes validation,
+ *   used by the MQTT section to determine toggle eligibility.
+ * @since 0.0.1
  */
 @Composable
 private fun WebKioskSection(
@@ -506,6 +561,22 @@ private fun WebKioskSection(
             ),
         )
         SimpleListItem(
+            text = if (state.isDiscovering) {
+                stringResource(R.string.settings_discovering)
+            } else {
+                stringResource(R.string.settings_discover_ha)
+            },
+            icon = IcSensor24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+        ) {
+            if (!state.isDiscovering) onIntent(SettingsIntent.OnDiscoverHomeAssistantIntent)
+        }
+        WebEngineListItem(
+            currentEngine = state.webEngine,
+            onEngineSelected = { engine -> onIntent(SettingsIntent.OnSetWebEngineIntent(engine)) },
+        )
+        SimpleListItem(
             text = stringResource(R.string.settings_application),
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
@@ -513,11 +584,64 @@ private fun WebKioskSection(
         ) {
             onIntent(SettingsIntent.OnApplicationIntent)
         }
+
+        ToggleListItem(
+            text = stringResource(R.string.settings_auto_return),
+            icon = IcRefresh24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = state.isAutoReturnEnabled,
+            onCheckedChange = { onIntent(SettingsIntent.OnSetAutoReturnIntent(it)) },
+        )
     }
 }
 
 /**
- * Section for visual settings like theme and dock position.
+ * Engine selector list item using the standard [BaseListItem] pattern with trailing [IconButton]s.
+ *
+ * Android WebView is represented by [IcChrome24]; GeckoView by [IcFirefox24].
+ * The selected engine button is highlighted.
+ *
+ * @param currentEngine The currently selected [WebEngineModel].
+ * @param onEngineSelected Callback invoked when the user picks a different engine.
+ * @since 0.0.4
+ */
+@Composable
+private fun WebEngineListItem(
+    currentEngine: WebEngineModel,
+    onEngineSelected: (WebEngineModel) -> Unit,
+) {
+    BaseListItem(
+        icon = IcWeb24,
+        text = stringResource(R.string.settings_web_engine_title),
+        iconBackgroundColor = Theme.color.brand,
+        iconForegroundColor = Theme.color.inkMain,
+        trailingContent = {
+            Row(horizontalArrangement = Arrangement.spacedBy(Theme.spacing.sizeXS)) {
+                IconButton(
+                    icon = IcChrome24,
+                    onClick = { onEngineSelected(WebEngineModel.AndroidWebView) },
+                    sizes = IconButtonDefault.buttonSizeSet().buttonSize40(),
+                    isSelected = currentEngine == WebEngineModel.AndroidWebView,
+                )
+                IconButton(
+                    icon = IcFirefox24,
+                    onClick = { onEngineSelected(WebEngineModel.GeckoView) },
+                    sizes = IconButtonDefault.buttonSizeSet().buttonSize40(),
+                    isSelected = currentEngine == WebEngineModel.GeckoView,
+                )
+            }
+        },
+    )
+}
+
+/**
+ * Section for visual settings like theme, dock position, and language.
+ *
+ * @param state The current [SettingsState] for reading UI/UX preferences.
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetThemeIntent],
+ *   [SettingsIntent.OnSetDockIntent], and [SettingsIntent.OnLangIntent].
+ * @since 0.0.1
  */
 @Composable
 private fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
@@ -585,6 +709,10 @@ private fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
 
 /**
  * Section for system-level actions like restarting or viewing version info.
+ *
+ * @param state The current [SettingsState] (unused but kept for consistency).
+ * @param onIntent Callback to dispatch [SettingsIntent.OnRestartIntent].
+ * @since 0.0.1
  */
 @Composable
 private fun SystemSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
@@ -594,6 +722,15 @@ private fun SystemSection(state: SettingsState, onIntent: (SettingsIntent) -> Un
 
     Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
         SectionItem(title = stringResource(R.string.settings_system))
+
+        SimpleListItem(
+            text = stringResource(R.string.settings_default_launcher),
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            icon = IcApp24,
+        ) {
+            onIntent(SettingsIntent.OnSetDefaultLauncherIntent)
+        }
 
         SimpleListItem(
             text = stringResource(R.string.settings_restart),
@@ -618,7 +755,115 @@ private fun SystemSection(state: SettingsState, onIntent: (SettingsIntent) -> Un
 }
 
 /**
+ * Section for advanced operations: configuration export and import.
+ *
+ * @param onIntent Callback to dispatch [SettingsIntent.OnExportConfigIntent] and [SettingsIntent.OnImportConfigIntent].
+ * @since 0.0.5
+ */
+@Composable
+private fun AdvancedSection(onIntent: (SettingsIntent) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
+        SectionItem(title = stringResource(R.string.settings_advanced))
+
+        SimpleListItem(
+            text = stringResource(R.string.settings_export_config),
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            icon = IcForward24,
+        ) {
+            onIntent(SettingsIntent.OnExportConfigIntent)
+        }
+
+        SimpleListItem(
+            text = stringResource(R.string.settings_import_config),
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            icon = IcOpen24,
+        ) {
+            onIntent(SettingsIntent.OnImportConfigIntent)
+        }
+    }
+}
+
+/**
+ * A dialog showing discovered Home Assistant instances for the user to select.
+ *
+ * Displays a list of instances with their URL and discovery source label.
+ * An empty state message is shown when no instances were found.
+ *
+ * @param instances The list of discovered [HomeAssistantInstanceModel] instances.
+ * @param onSelect Callback invoked with the URL when the user picks an instance.
+ * @param onDismiss Callback invoked when the dialog is dismissed without selection.
+ * @since 0.0.5
+ */
+@Composable
+private fun HomeAssistantDiscoveryDialog(
+    instances: List<HomeAssistantInstanceModel>,
+    onSelect: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.settings_discover_ha_dialog_title)) },
+        text = {
+            if (instances.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.settings_discover_ha_empty),
+                    style = Theme.typography.body,
+                    color = Theme.color.inkMain.copy(alpha = 0.6f),
+                )
+            } else {
+                Column {
+                    instances.forEach { instance ->
+                        val sourceLabel = when (instance.source) {
+                            HomeAssistantInstanceModel.DiscoverySource.Quick ->
+                                stringResource(R.string.settings_discover_ha_source_quick)
+                            HomeAssistantInstanceModel.DiscoverySource.Scan ->
+                                stringResource(R.string.settings_discover_ha_source_scan)
+                        }
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onSelect(instance.url) }
+                                .padding(Theme.spacing.sizeM),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = instance.url,
+                                    style = Theme.typography.body,
+                                    color = Theme.color.inkMain,
+                                )
+                                Text(
+                                    text = sourceLabel,
+                                    style = Theme.typography.caption,
+                                    color = Theme.color.inkMain.copy(alpha = 0.5f),
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+    )
+}
+
+/**
  * A dialog for selecting the application language in-app.
+ *
+ * Displays a list of supported languages (English, Ukrainian) as radio button options.
+ *
+ * @param showDialog Whether the dialog is currently visible.
+ * @param currentLanguage The currently selected language code (e.g., "en", "uk"), or null.
+ * @param onLanguageSelected Callback invoked with the chosen locale code when a language is selected.
+ * @param onDismiss Callback invoked when the dialog is dismissed without selection.
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 0.0.1
  */
 @Composable
 public fun LanguageSelectionDialog(
