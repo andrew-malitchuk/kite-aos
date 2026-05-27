@@ -10,7 +10,6 @@ import org.koin.core.context.startKoin
 import presentation.core.application.di.appModule
 import presentation.core.platform.source.receiver.BatteryReceiver
 import presentation.core.platform.source.service.MqttService
-import presentation.feature.main.source.webview.engine.preWarmGeckoRuntime
 
 /**
  * The main [Application] class for the Yahk project.
@@ -46,7 +45,7 @@ public class YahkApplication : Application() {
         // GeckoRuntime.create() runs during Compose composition on the main thread, and if the
         // device is under memory pressure the 5-second ANR timeout can be hit while waiting
         // for the GPU process to respond to SyncResumeResizeCompositor.
-        preWarmGeckoRuntime(applicationContext)
+        warmGeckoIfNeeded()
 
         // Initialise the Koin dependency injection container with logging and the Android context.
         startKoin {
