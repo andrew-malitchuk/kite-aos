@@ -64,7 +64,13 @@ public class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             flavorDimensions += "distribution"
             productFlavors {
-                create("foss") { dimension = "distribution" }
+                // GeckoView 147+ declares minSdk 26 in its manifest; override here
+                // so the foss variant satisfies the library constraint while gms
+                // (standard Android WebView) can target API 25.
+                create("foss") {
+                    dimension = "distribution"
+                    minSdk = 26
+                }
                 create("gms") { dimension = "distribution" }
             }
 
