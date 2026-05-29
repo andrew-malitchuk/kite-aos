@@ -30,6 +30,7 @@ internal object DashboardProtobufPreferenceMapper :
                 // Default to empty string for null URLs since Protobuf does not support nullable strings
                 .setDashboardUrl(input.dashboardUrl ?: "")
                 .setWhitelistUrl(input.whitelistUrl ?: "")
+                .setTrustAllSsl(input.trustAllSsl)
                 .build()
         }
 
@@ -39,6 +40,7 @@ internal object DashboardProtobufPreferenceMapper :
             DashboardPreference(
                 dashboardUrl = input.dashboardUrl,
                 whitelistUrl = input.whitelistUrl,
+                trustAllSsl = input.trustAllSsl,
             )
         }
 }

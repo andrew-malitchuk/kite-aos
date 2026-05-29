@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package screensaver;
+
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "ScreensaverDataProto";
+
+message ScreensaverProtoModel {
+  bool enabled = 1;
+  int64 activation_delay = 2;
+  int64 slide_interval = 3;
+  bool show_clock = 4;
+  int32 source = 5;
+  string local_folder_uri = 6;
+}
