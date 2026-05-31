@@ -14,4 +14,5 @@ import domain.core.source.model.base.Model
 public data class DashboardModel(
     val dashboardUrl: String,
     val whitelistUrl: String,
+    val trustAllSsl: Boolean = false,
 ) : Model
