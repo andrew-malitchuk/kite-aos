@@ -1,6 +1,7 @@
 package data.platform.impl.source.datasource
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import data.platform.api.source.datasource.ApplicationPlatformSource
 import data.platform.api.source.resource.ApplicationPlatform
@@ -10,9 +11,9 @@ import org.koin.core.annotation.Single
 /**
  * Android implementation of [ApplicationPlatformSource] using the system's [PackageManager].
  *
- * This implementation handles the heavy lifting of querying the Android package system,
- * filtering results to only include user-launchable apps, and mapping them into
- * the platform-agnostic [ApplicationPlatform] model.
+ * Uses [PackageManager.queryIntentActivities] with MAIN+LAUNCHER to enumerate launchable apps
+ * without requiring QUERY_ALL_PACKAGES — the manifest's <queries> block grants the necessary
+ * package visibility on Android 11+.
  *
  * @param context The Android [Context] used to obtain the [PackageManager].
  * @see ApplicationPlatformSource
@@ -24,30 +25,21 @@ internal class ApplicationPlatformSourceImpl(
     private val context: Context,
 ) : ApplicationPlatformSource {
     /**
-     * Queries all installed applications and filters for those with a launch intent.
-     *
-     * The process involves:
-     * 1. Retrieving all applications via [PackageManager.getInstalledApplications].
-     * 2. Checking each package for a valid launch intent using [PackageManager.getLaunchIntentForPackage].
-     * 3. Mapping `ApplicationInfo` to [ApplicationPlatform] and loading the display label.
-     * 4. Sorting the final list alphabetically by name.
-     *
-     * @return A list of [ApplicationPlatform] for all launchable apps, sorted alphabetically by name.
+     * Returns all apps that appear in the device launcher, sorted alphabetically.
      */
     override suspend fun getApplications(): List<ApplicationPlatform> {
         val packageManager = context.packageManager
-        val installedApplications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+        val launcherIntent = Intent(Intent.ACTION_MAIN).apply {
+            addCategory(Intent.CATEGORY_LAUNCHER)
+        }
 
-        return installedApplications
-            // Keep only apps that declare a launcher intent (i.e., appear in the app drawer).
-            .filter { info ->
-                packageManager.getLaunchIntentForPackage(info.packageName) != null
-            }
-            // Map system ApplicationInfo to the domain model and fill in the display name,
-            // which the mapper intentionally leaves empty (requires PackageManager to resolve).
-            .map { info ->
-                ApplicationSystemPlatformMapper.toPlatform.map(info).copy(
-                    name = info.loadLabel(packageManager).toString(),
+        @Suppress("QueryPermissionsNeeded")
+        return packageManager.queryIntentActivities(launcherIntent, 0)
+            .map { resolveInfo ->
+                ApplicationPlatform(
+                    name = resolveInfo.loadLabel(packageManager).toString(),
+                    packageName = resolveInfo.activityInfo.packageName,
+                    icon = resolveInfo.activityInfo.applicationInfo.icon,
                 )
             }
             .sortedBy { it.name.lowercase() }

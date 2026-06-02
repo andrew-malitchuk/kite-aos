@@ -2,22 +2,36 @@ package data.repository.impl.source.repository
 
 import data.platform.api.source.connectivity.ConnectivityObserver
 import data.platform.api.source.scanner.HomeAssistantScanner
+import data.preferences.api.source.datasource.AutoRebootPreferenceSource
 import data.preferences.api.source.datasource.DashboardPreferenceSource
 import data.preferences.api.source.datasource.DockPositionPreferenceSource
 import data.preferences.api.source.datasource.LanguagePreferenceSource
 import data.preferences.api.source.datasource.MoveDetectorPreferenceSource
 import data.preferences.api.source.datasource.OnboardingPreferenceSource
+import data.preferences.api.source.datasource.ScreensaverPreferenceSource
 import data.preferences.api.source.datasource.ThemePreferenceSource
 import data.preferences.api.source.datasource.AutoReturnPreferenceSource
+import data.preferences.api.source.datasource.StreamingPreferenceSource
 import data.preferences.api.source.datasource.WebEnginePreferenceSource
+import data.preferences.api.source.datasource.ReduceMotionPreferenceSource
+import data.preferences.api.source.datasource.WebViewRefreshPreferenceSource
+import data.repository.impl.core.mapper.AutoRebootPreferenceMapper
 import data.repository.impl.core.mapper.DashboardPreferenceMapper
 import data.repository.impl.core.mapper.DockPositionPreferenceMapper
 import data.repository.impl.core.mapper.LanguagePreferenceMapper
 import data.repository.impl.core.mapper.MoveDetectorPreferenceMapper
 import data.repository.impl.core.mapper.OnboardingPreferenceMapper
+import data.repository.impl.core.mapper.ScreensaverPreferenceMapper
 import data.repository.impl.core.mapper.ThemePreferenceMapper
+import data.repository.impl.core.mapper.StreamingPreferenceMapper
 import data.repository.impl.core.mapper.WebEnginePreferenceMapper
+import data.repository.impl.core.mapper.WebViewRefreshPreferenceMapper
 import data.preferences.api.source.resource.AutoReturnPreference
+import data.preferences.api.source.resource.ReduceMotionPreference
+import domain.core.source.model.AutoRebootModel
+import domain.core.source.model.ScreenStateModel
+import domain.core.source.model.ScreensaverModel
+import domain.core.source.model.StreamingModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.HomeAssistantInstanceModel
@@ -25,8 +39,12 @@ import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.OnboardingModel
 import domain.core.source.model.ThemeModel
 import domain.core.source.model.WebEngineModel
+import domain.core.source.model.WebViewRefreshModel
 import domain.repository.api.source.repository.ConfigureRepository
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transform
 import org.koin.core.annotation.Single
@@ -66,9 +84,20 @@ internal class ConfigureRepositoryImpl(
     private val languagePreferenceSource: LanguagePreferenceSource,
     private val webEnginePreferenceSource: WebEnginePreferenceSource,
     private val autoReturnPreferenceSource: AutoReturnPreferenceSource,
+    private val webViewRefreshPreferenceSource: WebViewRefreshPreferenceSource,
+    private val reduceMotionPreferenceSource: ReduceMotionPreferenceSource,
+    private val streamingPreferenceSource: StreamingPreferenceSource,
+    private val screensaverPreferenceSource: ScreensaverPreferenceSource,
+    private val autoRebootPreferenceSource: AutoRebootPreferenceSource,
     private val connectivityObserver: ConnectivityObserver,
     private val homeAssistantScanner: HomeAssistantScanner,
 ) : ConfigureRepository {
+
+    private val _screenState = MutableSharedFlow<ScreenStateModel>(
+        replay = 1,
+        extraBufferCapacity = 4,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    ).also { it.tryEmit(ScreenStateModel.Active) }
 
     /**
      * Retrieves the current theme setting.
@@ -254,13 +283,40 @@ internal class ConfigureRepositoryImpl(
      *
      * @return a [Flow] emitting `true` when network is available, `false` when lost/unavailable.
      */
-    override fun observeNetworkStatus(): Flow<Boolean> =
-        connectivityObserver.status.transform { status ->
-            emit(
-                status == ConnectivityObserver.NetworkStatus.Available ||
-                    status == ConnectivityObserver.NetworkStatus.Losing,
-            )
-        }
+    override fun observeNetworkStatus(): Flow<Boolean> = connectivityObserver.status.transform { status ->
+        emit(
+            status == ConnectivityObserver.NetworkStatus.Available ||
+                status == ConnectivityObserver.NetworkStatus.Losing,
+        )
+    }
+
+    override suspend fun getWebViewRefresh(): WebViewRefreshModel? {
+        return webViewRefreshPreferenceSource.getData()?.let(WebViewRefreshPreferenceMapper.toModel::map)
+    }
+
+    override suspend fun setWebViewRefresh(refresh: WebViewRefreshModel?) {
+        return webViewRefreshPreferenceSource.setData(refresh?.let(WebViewRefreshPreferenceMapper.toResource::map))
+    }
+
+    override suspend fun getReduceMotion(): Boolean? {
+        return reduceMotionPreferenceSource.getData()?.isEnabled
+    }
+
+    override suspend fun setReduceMotion(enabled: Boolean?) {
+        reduceMotionPreferenceSource.setData(enabled?.let { ReduceMotionPreference(isEnabled = it) })
+    }
+
+    override suspend fun getStreaming(): StreamingModel? {
+        return streamingPreferenceSource.getData()?.let(StreamingPreferenceMapper.toModel::map)
+    }
+
+    override suspend fun setStreaming(streaming: StreamingModel?) {
+        return streamingPreferenceSource.setData(streaming?.let(StreamingPreferenceMapper.toResource::map))
+    }
+
+    override fun observeStreaming(): kotlinx.coroutines.flow.Flow<StreamingModel?> {
+        return streamingPreferenceSource.observeData().map { it?.let(StreamingPreferenceMapper.toModel::map) }
+    }
 
     override suspend fun discoverHomeAssistant(): List<HomeAssistantInstanceModel> =
         homeAssistantScanner.discover().map { host ->
@@ -272,4 +328,34 @@ internal class ConfigureRepositoryImpl(
                 },
             )
         }
+
+    override suspend fun getScreensaver(): ScreensaverModel? {
+        return screensaverPreferenceSource.getData()?.let(ScreensaverPreferenceMapper.toModel::map)
+    }
+
+    override suspend fun setScreensaver(screensaver: ScreensaverModel?) {
+        return screensaverPreferenceSource.setData(screensaver?.let(ScreensaverPreferenceMapper.toResource::map))
+    }
+
+    override fun observeScreensaver(): Flow<ScreensaverModel?> {
+        return screensaverPreferenceSource.observeData().map { it?.let(ScreensaverPreferenceMapper.toModel::map) }
+    }
+
+    override fun observeScreenState(): Flow<ScreenStateModel> = _screenState.asSharedFlow()
+
+    override suspend fun emitScreenState(state: ScreenStateModel) {
+        _screenState.emit(state)
+    }
+
+    override suspend fun getAutoReboot(): AutoRebootModel? {
+        return autoRebootPreferenceSource.getData()?.let(AutoRebootPreferenceMapper.toModel::map)
+    }
+
+    override suspend fun setAutoReboot(model: AutoRebootModel?) {
+        autoRebootPreferenceSource.setData(model?.let(AutoRebootPreferenceMapper.toResource::map))
+    }
+
+    override fun observeAutoReboot(): Flow<AutoRebootModel?> {
+        return autoRebootPreferenceSource.observeData().map { it?.let(AutoRebootPreferenceMapper.toModel::map) }
+    }
 }

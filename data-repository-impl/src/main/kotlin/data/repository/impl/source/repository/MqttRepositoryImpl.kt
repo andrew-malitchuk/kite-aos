@@ -75,8 +75,11 @@ internal class MqttRepositoryImpl(
         telemetryMqttSource.sendNetworkState(isOnline)
     }
 
-    override fun observeCommands(): Flow<Pair<String, String>> =
-        telemetryMqttSource.observeCommands()
+    override suspend fun sendCameraUrl(url: String) {
+        telemetryMqttSource.sendCameraUrl(url)
+    }
+
+    override fun observeCommands(): Flow<Pair<String, String>> = telemetryMqttSource.observeCommands()
 
     override fun observeMqttConfiguration(): Flow<MqttModel?> =
         mqttPreferenceSource.observeData().map { it?.let(MqttPreferenceMapper.toModel::map) }

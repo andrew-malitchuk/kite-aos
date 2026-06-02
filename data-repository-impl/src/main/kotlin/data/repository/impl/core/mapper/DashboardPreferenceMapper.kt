@@ -26,6 +26,7 @@ internal object DashboardPreferenceMapper :
                 // Default to empty string when preference URL values are null
                 dashboardUrl = input.dashboardUrl ?: "",
                 whitelistUrl = input.whitelistUrl ?: "",
+                trustAllSsl = input.trustAllSsl,
             )
         }
 
@@ -34,6 +35,7 @@ internal object DashboardPreferenceMapper :
             DashboardPreference(
                 dashboardUrl = input.dashboardUrl,
                 whitelistUrl = input.whitelistUrl,
+                trustAllSsl = input.trustAllSsl,
             )
         }
 }
