@@ -10,27 +10,40 @@ import android.util.Size
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import android.graphics.Bitmap
+import android.graphics.Matrix
+import domain.core.source.model.ScreenStateModel
 import domain.usecase.api.source.usecase.device.EmitMoveDetectorMotionUseCase
+import domain.usecase.api.source.usecase.device.EmitScreenStateUseCase
 import domain.usecase.api.source.usecase.device.GetMoveDetectorUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttSendMotionUseCase
+import domain.usecase.api.source.usecase.screensaver.GetScreensaverUseCase
+import domain.usecase.api.source.usecase.streaming.ObserveStreamingConfigurationUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import presentation.core.platform.R
 import presentation.core.platform.core.helper.DevicePowerManager
 import presentation.core.platform.source.analyzer.MotionAnalyzer
+import presentation.core.platform.source.streaming.MjpegHttpServer
+import java.io.ByteArrayOutputStream
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.coroutines.cancellation.CancellationException
@@ -66,6 +79,10 @@ public class MotionService : LifecycleService() {
     private val getMoveDetectorUseCase: GetMoveDetectorUseCase by inject()
     private val emitMoveDetectorMotionUseCase: EmitMoveDetectorMotionUseCase by inject()
     private val mqttSendMotionUseCase: MqttSendMotionUseCase by inject()
+    private val observeStreamingConfigurationUseCase: ObserveStreamingConfigurationUseCase by inject()
+    private val mjpegHttpServer: MjpegHttpServer by inject()
+    private val getScreensaverUseCase: GetScreensaverUseCase by inject()
+    private val emitScreenStateUseCase: EmitScreenStateUseCase by inject()
     // endregion
 
     // SupervisorJob ensures a single coroutine failure does not cancel all service coroutines.
@@ -74,6 +91,22 @@ public class MotionService : LifecycleService() {
 
     /** Dedicated single-thread executor for CameraX image analysis callbacks. */
     private lateinit var cameraExecutor: ExecutorService
+
+    // region Streaming State
+    private val frameFlow = MutableSharedFlow<ByteArray>(
+        replay = 1,
+        extraBufferCapacity = 4,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    private var isStreamingEnabled = false
+    private var streamingPort = DEFAULT_STREAMING_PORT
+    private var streamingQuality = DEFAULT_STREAMING_QUALITY
+    private var streamingFps = DEFAULT_STREAMING_FPS
+    private var streamingRotation = DEFAULT_STREAMING_ROTATION
+    private var lastStreamFrameTime = 0L
+    private val jpegOutputStream = ByteArrayOutputStream(64 * 1024)
+    private var cameraProvider: ProcessCameraProvider? = null
+    // endregion
 
     // region Helpers
     private lateinit var motionAnalyzer: MotionAnalyzer
@@ -107,6 +140,15 @@ public class MotionService : LifecycleService() {
 
     /** Seconds of inactivity before the device is locked. */
     private var lockDelaySeconds = 30
+
+    /** Whether the screensaver overlay is enabled. */
+    private var screensaverEnabled = false
+
+    /** Seconds of inactivity after dim before the screensaver activates. */
+    private var screensaverActivationDelay = 60L
+
+    /** Tracks whether the screensaver is currently shown to avoid repeated emissions. */
+    private var wasScreensaverActive = false
     // endregion
 
     /**
@@ -147,6 +189,16 @@ public class MotionService : LifecycleService() {
          * detection only needs coarse luminance data, not fine detail.
          */
         private val LOW_RES_SIZE = Size(176, 144)
+
+        /** Camera resolution used when MJPEG streaming is enabled. */
+        private val STREAM_RES_SIZE = Size(640, 480)
+
+        /** Default values for streaming configuration. */
+        internal const val DEFAULT_STREAMING_PORT = 8080
+        internal const val DEFAULT_STREAMING_QUALITY = 75
+        internal const val DEFAULT_STREAMING_FPS = 10
+        internal const val DEFAULT_STREAMING_ROTATION = 0
+
     }
 
     /**
@@ -206,25 +258,30 @@ public class MotionService : LifecycleService() {
             try {
                 val model = getMoveDetectorUseCase().getOrNull()
                 isEnabled = model?.enabled ?: true
-                if (!isEnabled) {
-                    stopSelf()
-                    return@launch
+
+                if (isEnabled) {
+                    // Sensitivity is stored as an integer 0–100 in settings; divide by 10 for the
+                    // analyzer's expected 0.0–10.0 range.
+                    sensitivity = (model?.sensitivity ?: 50).toFloat() / 10f
+                    dimDelaySeconds = model?.dimDelay?.toInt() ?: 15
+                    lockDelaySeconds = model?.screenTimeout?.toInt() ?: 30
+
+                    val screensaverModel = getScreensaverUseCase().getOrNull()
+                    screensaverEnabled = screensaverModel?.enabled == true
+                    screensaverActivationDelay = screensaverModel?.activationDelay ?: 60L
+
+                    startInactivityChecker()
                 }
 
-                // Sensitivity is stored as an integer 0–100 in settings; divide by 10 for the
-                // analyzer's expected 0.0–10.0 range.
-                sensitivity = (model?.sensitivity ?: 50).toFloat() / 10f
-                dimDelaySeconds = model?.dimDelay?.toInt() ?: 15
-                lockDelaySeconds = model?.screenTimeout?.toInt() ?: 30
-
+                // Camera and streaming must always initialize — streaming may run without motion.
                 setupCamera()
-                startInactivityChecker()
+                startStreamingObserver()
             } catch (e: CancellationException) {
                 Log.i(TAG, "Initialization cancelled.")
             } catch (e: Exception) {
                 Log.e(TAG, "Initialization failed, using defaults.", e)
                 setupCamera()
-                startInactivityChecker()
+                startStreamingObserver()
             }
         }
     }
@@ -276,9 +333,21 @@ public class MotionService : LifecycleService() {
         }
 
         when {
-            idleTimeSeconds >= lockDelaySeconds -> {
+            lockDelaySeconds > 0 && idleTimeSeconds >= lockDelaySeconds -> {
                 enterBlindnessMode()
                 devicePowerManager.lockDevice()
+            }
+
+            screensaverEnabled && idleTimeSeconds >= (dimDelaySeconds + screensaverActivationDelay) -> {
+                if (devicePowerManager.setBrightness(DevicePowerManager.BRIGHTNESS_DIM)) {
+                    enterBlindnessMode()
+                }
+                if (!wasScreensaverActive) {
+                    wasScreensaverActive = true
+                    lifecycleScope.launch {
+                        emitScreenStateUseCase(ScreenStateModel.Screensaver)
+                    }
+                }
             }
 
             idleTimeSeconds >= dimDelaySeconds -> {
@@ -296,51 +365,89 @@ public class MotionService : LifecycleService() {
     }
 
     /**
-     * Configures and binds the CameraX [ImageAnalysis] use case to the service lifecycle.
+     * Observes streaming preference changes and manages the MJPEG server lifecycle accordingly.
      *
-     * The front-facing camera is used at [LOW_RES_SIZE] resolution with a
-     * [ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST] backpressure strategy, so only the most recent
-     * frame is analyzed and older frames are dropped. A [Preview] use case is also bound
-     * because some devices require it for ImageAnalysis to function properly.
+     * Uses [collectLatest] so that any in-flight streaming session is cancelled when the
+     * configuration changes. When streaming is enabled the camera is rebound at a higher
+     * resolution; when disabled it reverts to the low-res motion-only configuration.
+     */
+    private fun startStreamingObserver() {
+        serviceScope.launch {
+            @Suppress("OPT_IN_USAGE")
+            observeStreamingConfigurationUseCase().debounce(300L).collectLatest { model ->
+                val wasEnabled = isStreamingEnabled
+                isStreamingEnabled = model?.enabled == true
+                streamingPort = model?.port ?: DEFAULT_STREAMING_PORT
+                streamingQuality = model?.quality ?: DEFAULT_STREAMING_QUALITY
+                streamingFps = model?.fps ?: DEFAULT_STREAMING_FPS
+                streamingRotation = model?.rotation ?: DEFAULT_STREAMING_ROTATION
+                lastStreamFrameTime = 0L
+
+                if (isStreamingEnabled) {
+                    rebindCamera()
+                    mjpegHttpServer.start(streamingPort, frameFlow)
+                } else {
+                    mjpegHttpServer.stop()
+                    if (wasEnabled) rebindCamera()
+                }
+            }
+        }
+    }
+
+    /** Rebinds CameraX with the appropriate resolution for the current streaming state. */
+    private fun rebindCamera() {
+        val provider = cameraProvider ?: return
+        ContextCompat.getMainExecutor(this).execute { bindCamera(provider) }
+    }
+
+    /**
+     * Obtains the [ProcessCameraProvider] and performs the initial camera bind.
      *
+     * Resolution is [LOW_RES_SIZE] by default; once [startStreamingObserver] fires and
+     * streaming is enabled, [rebindCamera] switches to [STREAM_RES_SIZE].
+     *
+     * @see bindCamera
      * @see processImageProxy
-     * @see MotionAnalyzer
      * @since 0.0.1
      */
     private fun setupCamera() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
             try {
-                val cameraProvider = cameraProviderFuture.get()
-
-                // Preview is bound even though we don't display it — some devices require a
-                // preview surface to be bound alongside ImageAnalysis.
-                val previewUseCase = Preview.Builder().build()
-                val imageAnalysis =
-                    ImageAnalysis.Builder()
-                        .setTargetResolution(LOW_RES_SIZE)
-                        // STRATEGY_KEEP_ONLY_LATEST drops older frames if the analyzer is busy,
-                        // ensuring we always process the most recent frame.
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                        .build()
-                        .also {
-                            it.setAnalyzer(cameraExecutor) { imageProxy ->
-                                processImageProxy(imageProxy)
-                            }
-                        }
-
-                // Unbind all existing use cases before re-binding to avoid IllegalStateException.
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    this,
-                    CameraSelector.DEFAULT_FRONT_CAMERA,
-                    previewUseCase,
-                    imageAnalysis,
-                )
+                val provider = cameraProviderFuture.get()
+                cameraProvider = provider
+                bindCamera(provider)
             } catch (e: Exception) {
-                Log.e(TAG, "Camera bind failed", e)
+                Log.e(TAG, "Camera setup failed", e)
             }
         }, ContextCompat.getMainExecutor(this))
+    }
+
+    /**
+     * Binds CameraX use cases to this service's lifecycle.
+     *
+     * When [isStreamingEnabled] is true, [STREAM_RES_SIZE] (640×480) is used so that JPEG
+     * frames are usable for video; otherwise [LOW_RES_SIZE] (176×144) is used for efficiency.
+     * Both cases share the same [processImageProxy] callback — streaming encoding is skipped
+     * when [isStreamingEnabled] is false.
+     *
+     * Must be called on the main thread.
+     *
+     * @param provider The [ProcessCameraProvider] obtained during [setupCamera].
+     * @since 0.1.0
+     */
+    private fun bindCamera(provider: ProcessCameraProvider) {
+        val resolution = if (isStreamingEnabled) STREAM_RES_SIZE else LOW_RES_SIZE
+        val imageAnalysis =
+            ImageAnalysis.Builder()
+                .setTargetResolution(resolution)
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+                .also {
+                    it.setAnalyzer(cameraExecutor) { imageProxy -> processImageProxy(imageProxy) }
+                }
+        provider.unbindAll()
+        provider.bindToLifecycle(this, CameraSelector.DEFAULT_FRONT_CAMERA, imageAnalysis)
     }
 
     /**
@@ -357,24 +464,56 @@ public class MotionService : LifecycleService() {
      * @see enterBlindnessMode
      * @since 0.0.1
      */
+    @Suppress("MagicNumber")
     private fun processImageProxy(imageProxy: ImageProxy) {
         try {
             val now = System.currentTimeMillis()
 
-            // During the blindness window, skip analysis to avoid light-feedback false positives.
-            if (isChangingState) {
-                if (now - lastStateChangeTime > STATE_CHANGE_COOLDOWN_MS) {
+            // Motion analysis runs first — MotionAnalyzer uses absolute-index buffer.get(i)
+            // and does NOT advance the buffer position. Running it before toBitmap() is
+            // required because toBitmap() advances the Y-plane position to its limit,
+            // which would make buffer.remaining() == 0 and silently kill detection.
+            //
+            // Blindness mode applies ONLY to motion analysis — streaming must continue
+            // uninterrupted so the MJPEG client does not freeze for 2.5 s after each
+            // motion event.
+            val isMotion: Boolean = when {
+                isChangingState && now - lastStateChangeTime > STATE_CHANGE_COOLDOWN_MS -> {
                     isChangingState = false
-                    // Reset the analyzer baseline so the first frame after blindness establishes
-                    // a new reference point.
                     motionAnalyzer.reset()
                     Log.d(TAG, "Blindness period ended. Resuming analysis.")
-                } else {
-                    return
+                    motionAnalyzer.analyze(imageProxy, sensitivity)
+                }
+                isChangingState -> false
+                else -> motionAnalyzer.analyze(imageProxy, sensitivity)
+            }
+
+            // MJPEG streaming: runs unconditionally, independent of blindness state.
+            if (isStreamingEnabled) {
+                val minIntervalMs = 1000L / maxOf(1, streamingFps)
+                if (now - lastStreamFrameTime >= minIntervalMs) {
+                    lastStreamFrameTime = now
+                    try {
+                        val raw = imageProxy.toBitmap()
+                        val frame = if (streamingRotation != 0) {
+                            val matrix = Matrix().apply { postRotate(streamingRotation.toFloat()) }
+                            val rotated = Bitmap.createBitmap(raw, 0, 0, raw.width, raw.height, matrix, false)
+                            raw.recycle()
+                            rotated
+                        } else {
+                            raw
+                        }
+                        jpegOutputStream.reset()
+                        frame.compress(Bitmap.CompressFormat.JPEG, streamingQuality, jpegOutputStream)
+                        frame.recycle()
+                        frameFlow.tryEmit(jpegOutputStream.toByteArray())
+                    } catch (e: Exception) {
+                        Log.w(TAG, "JPEG encode failed", e)
+                    }
                 }
             }
 
-            if (motionAnalyzer.analyze(imageProxy, sensitivity)) {
+            if (isMotion) {
                 onMotionDetected()
             }
         } catch (e: Exception) {
@@ -402,6 +541,11 @@ public class MotionService : LifecycleService() {
         enterBlindnessMode()
         devicePowerManager.wakeUp()
         devicePowerManager.setBrightness(DevicePowerManager.BRIGHTNESS_MAX)
+
+        if (wasScreensaverActive) {
+            wasScreensaverActive = false
+            lifecycleScope.launch { emitScreenStateUseCase(ScreenStateModel.Active) }
+        }
 
         lifecycleScope.launch {
             try {
@@ -501,5 +645,6 @@ public class MotionService : LifecycleService() {
         super.onDestroy()
         serviceJob.cancel()
         cameraExecutor.shutdown()
+        runBlocking { mjpegHttpServer.stop() }
     }
 }
