@@ -29,6 +29,9 @@ public class KioskEngineState(
     /** The list of domains that are allowed to be navigated to. */
     public var whitelist: List<String> by mutableStateOf(initialWhitelist)
 
+    /** Whether to bypass SSL certificate validation (for self-signed certs on local HA instances). */
+    public var trustAllSsl: Boolean by mutableStateOf(false)
+
     /** Whether the engine is currently loading a page. */
     public var isLoading: Boolean by mutableStateOf(false)
 

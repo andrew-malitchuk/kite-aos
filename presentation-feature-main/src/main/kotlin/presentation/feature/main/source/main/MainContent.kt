@@ -53,6 +53,7 @@ import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHost
 import presentation.feature.main.core.components.SideBar
 import presentation.feature.main.source.drawer.ControlAction
 import presentation.feature.main.source.drawer.ControlDrawer
+import presentation.feature.main.source.screensaver.ScreensaverOverlay
 import presentation.feature.main.source.webview.KioskWebView
 import presentation.feature.main.source.webview.rememberKioskEngineState
 import kotlin.math.roundToInt
@@ -79,6 +80,7 @@ internal fun MainContent(
     state: MainState,
     onIntent: (MainIntent) -> Unit = {},
     snackbarHostState: StackedSnakbarHostState = rememberStackedSnackbarHostState(),
+    reloadTrigger: Int = 0,
 ) {
     val context = LocalContext.current
 
@@ -104,8 +106,8 @@ internal fun MainContent(
         onIntent(MainIntent.OnLoadIntent)
     }
 
-    LaunchedEffect(state.isMoveDetectorEnabled) {
-        if (state.isMoveDetectorEnabled) {
+    LaunchedEffect(state.isMoveDetectorEnabled, state.isStreamingEnabled) {
+        if (state.isMoveDetectorEnabled || state.isStreamingEnabled) {
             startSelectedService(context)
         } else {
             stopSelectedService(context)
@@ -116,7 +118,12 @@ internal fun MainContent(
         state.dashboardUrls?.let {
             webViewState.url = it.dashboardUrl
             webViewState.whitelist = listOf(it.whitelistUrl)
+            webViewState.trustAllSsl = it.trustAllSsl
         }
+    }
+
+    LaunchedEffect(reloadTrigger) {
+        if (reloadTrigger > 0) webViewState.reload()
     }
 
     // Publish the URL to MQTT whenever the WebView finishes loading a new page.
@@ -302,6 +309,14 @@ internal fun MainContent(
 
                 }
             },
+        )
+
+        ScreensaverOverlay(
+            isVisible = state.isScreensaverVisible,
+            source = state.screensaverSource,
+            folderUri = state.screensaverFolderUri,
+            slideIntervalSeconds = state.screensaverSlideInterval,
+            showClock = state.screensaverShowClock,
         )
     }
 }

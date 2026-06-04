@@ -15,6 +15,7 @@ android {
 
 dependencies {
     implementation(libs.core.ktx)
+    implementation(libs.androidx.documentfile)
     implementation(libs.androidx.webkit)
     implementation(libs.geckoview)
     implementation(libs.androidx.appcompat)
@@ -34,5 +35,6 @@ dependencies {
     implementation(libs.orbit.core)
     implementation(libs.orbit.viewmodel)
     implementation(libs.orbit.compose)
+    implementation(libs.coil.compose)
     implementation("dev.chrisbanes.haze:haze:1.7.1")
 }
