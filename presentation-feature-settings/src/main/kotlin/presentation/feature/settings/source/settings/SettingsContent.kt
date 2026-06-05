@@ -44,12 +44,17 @@ import presentation.core.ui.source.kit.atom.button.icon.core.IconButtonDefault
 import presentation.core.ui.source.kit.atom.icon.IcChrome24
 import presentation.core.ui.source.kit.atom.icon.IcFirefox24
 import presentation.core.ui.source.kit.molecule.item.BaseListItem
+import domain.core.source.model.AutoRebootModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.HomeAssistantInstanceModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.MqttModel
+import domain.core.source.model.ScreensaverModel
+import domain.core.source.model.ScreensaverSource
+import domain.core.source.model.StreamingModel
 import domain.core.source.model.ThemeModel
 import domain.core.source.model.WebEngineModel
+import domain.core.source.model.WebViewRefreshModel
 import presentation.core.localisation.R
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
@@ -64,6 +69,7 @@ import presentation.core.ui.source.kit.atom.icon.IcLang24
 import presentation.core.ui.source.kit.atom.icon.IcForward24
 import presentation.core.ui.source.kit.atom.icon.IcOpen24
 import presentation.core.ui.source.kit.atom.icon.IcRefresh24
+import presentation.core.ui.source.kit.atom.icon.IcCamera24
 import presentation.core.ui.source.kit.atom.icon.IcSensor24
 import presentation.core.ui.source.kit.atom.icon.IcTheme24
 import presentation.core.ui.source.kit.atom.icon.IcTimeout24
@@ -178,8 +184,12 @@ internal fun SettingsContent(
                                     var isDashboardValid by remember { mutableStateOf(false) }
 
                                     MoveDetectorSection(state, onIntent)
+                                    StreamingSection(state, onIntent)
+                                    ScreensaverSection(state, onIntent)
+                                    AutoRebootSection(state, onIntent)
                                     MqttSection(state, onIntent, isDashboardValid)
                                     WebKioskSection(state, onIntent) { isDashboardValid = it }
+                                    WebViewRefreshSection(state, onIntent)
                                     UiUxSection(state, onIntent)
                                     SystemSection(state, onIntent)
                                     AdvancedSection(onIntent)
@@ -249,6 +259,7 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
     Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
         SectionToggleItem(
             title = stringResource(R.string.settings_move_detector),
+            subtitle = stringResource(R.string.hint_move_detector),
             checked = moveDetector.enabled ?: false,
             enabled = isToggleAllowed,
             onCheckedChange = { isEnabled ->
@@ -258,6 +269,7 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
 
         NumberInputListItem(
             text = stringResource(R.string.settings_sensitivity),
+            subtitle = stringResource(R.string.hint_sensitivity),
             icon = IcSensor24,
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
@@ -269,6 +281,7 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
 
         NumberInputListItem(
             text = stringResource(R.string.settings_dim_delay),
+            subtitle = stringResource(R.string.hint_dim_delay),
             icon = IcDim24,
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
@@ -284,6 +297,7 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
 
         NumberInputListItem(
             text = stringResource(R.string.settings_screen_timeout),
+            subtitle = stringResource(R.string.hint_screen_timeout),
             icon = IcTimeout24,
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
@@ -299,6 +313,7 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
 
         NumberInputListItem(
             text = stringResource(R.string.settings_fab_delay),
+            subtitle = stringResource(R.string.hint_fab_delay),
             icon = IcOpen24,
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
@@ -310,6 +325,257 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
             },
             range = 0..3600,
             enabled = true,
+        )
+    }
+}
+
+/**
+ * Section for configuring the MJPEG camera streaming server.
+ *
+ * Includes a toggle, port, quality, and FPS controls.
+ *
+ * @param state The current [SettingsState] for reading streaming configuration.
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetStreamingIntent] updates.
+ * @since 0.0.7
+ */
+@Composable
+private fun StreamingSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+    val streaming = state.streaming ?: StreamingModel(
+        enabled = false,
+        port = 8080,
+        quality = 75,
+        fps = 10,
+        rotation = 0,
+    )
+
+    val portRegex = remember {
+        Regex("^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$")
+    }
+    var streamingPort by remember { mutableStateOf(streaming.port?.toString() ?: "8080") }
+
+    LaunchedEffect(state.streaming) {
+        state.streaming?.let { streamingPort = it.port?.toString() ?: "8080" }
+    }
+
+    LaunchedEffect(streamingPort) {
+        if (!state.isLoading) {
+            kotlinx.coroutines.delay(1000)
+            val port = streamingPort.toIntOrNull() ?: return@LaunchedEffect
+            onIntent(SettingsIntent.OnSetStreamingIntent(streaming.copy(port = port)))
+        }
+    }
+
+    val isToggleAllowed = portRegex.matches(streamingPort)
+
+    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
+        SectionToggleItem(
+            title = stringResource(R.string.settings_streaming),
+            subtitle = stringResource(R.string.hint_streaming_section),
+            checked = streaming.enabled ?: false,
+            enabled = isToggleAllowed,
+            onCheckedChange = { isEnabled ->
+                onIntent(SettingsIntent.OnSetStreamingIntent(streaming.copy(enabled = isEnabled)))
+            },
+        )
+
+        TextInputListItem(
+            initialText = streamingPort,
+            onTextChanged = { streamingPort = it },
+            placeholder = stringResource(R.string.settings_streaming_port),
+            icon = IcPort24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            enabled = true,
+            validationRegex = portRegex,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next, keyboardType = KeyboardType.Number),
+        )
+
+        NumberInputListItem(
+            text = stringResource(R.string.settings_streaming_quality),
+            subtitle = stringResource(R.string.hint_streaming_quality),
+            icon = IcCamera24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = streaming.quality ?: 75,
+            onValueChange = { onIntent(SettingsIntent.OnSetStreamingIntent(streaming.copy(quality = it))) },
+            range = 30..100,
+            enabled = true,
+        )
+
+        NumberInputListItem(
+            text = stringResource(R.string.settings_streaming_fps),
+            subtitle = stringResource(R.string.hint_streaming_fps),
+            icon = IcRefresh24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = streaming.fps ?: 10,
+            onValueChange = { onIntent(SettingsIntent.OnSetStreamingIntent(streaming.copy(fps = it))) },
+            range = 1..30,
+            enabled = true,
+        )
+
+        val currentRotation = streaming.rotation ?: 0
+        SimpleListItem(
+            text = stringResource(R.string.settings_streaming_rotation, currentRotation),
+            subtitle = stringResource(R.string.hint_streaming_rotation),
+            icon = IcRefresh24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            onClick = {
+                val nextRotation = (currentRotation + 90) % 360
+                onIntent(SettingsIntent.OnSetStreamingIntent(streaming.copy(rotation = nextRotation)))
+            },
+        )
+    }
+}
+
+/**
+ * Section for configuring the screensaver overlay that appears during inactivity.
+ *
+ * Includes a toggle, activation delay, slide interval, clock toggle, and folder picker.
+ *
+ * @param state The current [SettingsState] for reading screensaver configuration.
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetScreensaverIntent] and related updates.
+ * @since 0.0.8
+ */
+@Composable
+private fun ScreensaverSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+    val screensaver = state.screensaver ?: ScreensaverModel(
+        enabled = false,
+        activationDelay = 60L,
+        slideInterval = 30L,
+        showClock = true,
+        source = ScreensaverSource.BLACK,
+        localFolderUri = null,
+    )
+
+    val isToggleAllowed = (screensaver.activationDelay ?: 0L) > 0L
+
+    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
+        SectionToggleItem(
+            title = stringResource(R.string.settings_screensaver),
+            subtitle = stringResource(R.string.hint_screensaver_section),
+            checked = screensaver.enabled ?: false,
+            enabled = isToggleAllowed,
+            onCheckedChange = { isEnabled ->
+                onIntent(SettingsIntent.OnSetScreensaverIntent(screensaver.copy(enabled = isEnabled)))
+            },
+        )
+
+        NumberInputListItem(
+            text = stringResource(R.string.settings_screensaver_activation_delay),
+            subtitle = stringResource(R.string.hint_screensaver_activation_delay),
+            icon = IcTimeout24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = screensaver.activationDelay?.toInt() ?: 60,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetScreensaverIntent(screensaver.copy(activationDelay = it.toLong())))
+            },
+            range = 0..3600,
+            enabled = true,
+        )
+
+        NumberInputListItem(
+            text = stringResource(R.string.settings_screensaver_slide_interval),
+            subtitle = stringResource(R.string.hint_screensaver_slide_interval),
+            icon = IcRefresh24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = screensaver.slideInterval?.toInt() ?: 30,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetScreensaverIntent(screensaver.copy(slideInterval = it.toLong())))
+            },
+            range = 5..300,
+            enabled = true,
+        )
+
+        ToggleListItem(
+            text = stringResource(R.string.settings_screensaver_show_clock),
+            icon = IcDim24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = screensaver.showClock ?: true,
+            onCheckedChange = {
+                onIntent(SettingsIntent.OnSetScreensaverIntent(screensaver.copy(showClock = it)))
+            },
+        )
+
+        SimpleListItem(
+            text = if (!screensaver.localFolderUri.isNullOrEmpty()) {
+                stringResource(R.string.settings_screensaver_folder_selected)
+            } else {
+                stringResource(R.string.settings_screensaver_pick_folder)
+            },
+            icon = IcOpen24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+        ) {
+            onIntent(SettingsIntent.OnPickScreensaverFolderIntent)
+        }
+    }
+}
+
+@Composable
+private fun AutoRebootSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+    val autoReboot = state.autoReboot ?: AutoRebootModel(
+        enabled = false,
+        hour = 3,
+        minute = 0,
+        intervalDays = 1,
+    )
+
+    val intervalCycle = listOf(1, 7, 14, 30)
+
+    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
+        SectionToggleItem(
+            title = stringResource(R.string.settings_auto_reboot),
+            subtitle = stringResource(R.string.hint_auto_reboot_section),
+            checked = autoReboot.enabled ?: false,
+            enabled = true,
+            onCheckedChange = { isEnabled ->
+                onIntent(SettingsIntent.OnSetAutoRebootIntent(autoReboot.copy(enabled = isEnabled)))
+            },
+        )
+
+        NumberInputListItem(
+            text = stringResource(R.string.settings_auto_reboot_hour),
+            icon = IcTimeout24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = autoReboot.hour ?: 3,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetAutoRebootIntent(autoReboot.copy(hour = it)))
+            },
+            range = 0..23,
+            enabled = true,
+        )
+
+        NumberInputListItem(
+            text = stringResource(R.string.settings_auto_reboot_minute),
+            icon = IcTimeout24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = autoReboot.minute ?: 0,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetAutoRebootIntent(autoReboot.copy(minute = it)))
+            },
+            range = 0..59,
+            enabled = true,
+        )
+
+        val currentInterval = autoReboot.intervalDays ?: 1
+        val nextInterval = intervalCycle[(intervalCycle.indexOf(currentInterval).takeIf { it >= 0 }
+            ?.let { (it + 1) % intervalCycle.size } ?: 1)]
+        SimpleListItem(
+            text = stringResource(R.string.settings_auto_reboot_interval, currentInterval),
+            subtitle = stringResource(R.string.hint_auto_reboot_interval),
+            icon = IcRefresh24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            onClick = {
+                onIntent(SettingsIntent.OnSetAutoRebootIntent(autoReboot.copy(intervalDays = nextInterval)))
+            },
         )
     }
 }
@@ -389,6 +655,7 @@ private fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
     Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
         SectionToggleItem(
             title = stringResource(R.string.settings_mqtt),
+            subtitle = stringResource(R.string.hint_mqtt_section),
             checked = state.mqtt?.enabled ?: false,
             enabled = isMqttConfigValid,
             onCheckedChange = { isEnabled ->
@@ -500,18 +767,20 @@ private fun WebKioskSection(
 ) {
     var dashboardUrl by remember { mutableStateOf(state.dashboardUrls?.dashboardUrl ?: "http://") }
     var whitelistUrl by remember { mutableStateOf(state.dashboardUrls?.whitelistUrl ?: "http://") }
+    var trustAllSsl by remember { mutableStateOf(state.dashboardUrls?.trustAllSsl ?: false) }
 
     LaunchedEffect(state.dashboardUrls) {
         state.dashboardUrls?.let {
             dashboardUrl = it.dashboardUrl
             whitelistUrl = it.whitelistUrl
+            trustAllSsl = it.trustAllSsl
         }
     }
 
-    LaunchedEffect(dashboardUrl, whitelistUrl) {
+    LaunchedEffect(dashboardUrl, whitelistUrl, trustAllSsl) {
         if (!state.isLoading) {
             kotlinx.coroutines.delay(1000)
-            onIntent(SettingsIntent.OnSetDashboardIntent(dashboardUrl, whitelistUrl))
+            onIntent(SettingsIntent.OnSetDashboardIntent(dashboardUrl, whitelistUrl, trustAllSsl))
         }
     }
 
@@ -587,11 +856,61 @@ private fun WebKioskSection(
 
         ToggleListItem(
             text = stringResource(R.string.settings_auto_return),
+            subtitle = stringResource(R.string.hint_auto_return),
             icon = IcRefresh24,
             iconBackgroundColor = Theme.color.brand,
             iconForegroundColor = Theme.color.inkMain,
             isChecked = state.isAutoReturnEnabled,
             onCheckedChange = { onIntent(SettingsIntent.OnSetAutoReturnIntent(it)) },
+        )
+        ToggleListItem(
+            text = stringResource(R.string.settings_trust_ssl),
+            subtitle = stringResource(R.string.hint_trust_ssl),
+            icon = IcWebProtected24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = trustAllSsl,
+            onCheckedChange = { trustAllSsl = it },
+        )
+    }
+}
+
+/**
+ * Section for configuring periodic automatic WebView refresh.
+ *
+ * @param state The current [SettingsState] for reading WebView refresh configuration.
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetWebViewRefreshIntent] updates.
+ * @since 0.0.6
+ */
+@Composable
+private fun WebViewRefreshSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+    val refresh = state.webViewRefresh ?: WebViewRefreshModel(enabled = false, intervalSeconds = 300L)
+
+    val isToggleAllowed = (refresh.intervalSeconds ?: 0L) != 0L
+
+    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
+        SectionToggleItem(
+            title = stringResource(R.string.settings_webview_refresh),
+            subtitle = stringResource(R.string.hint_webview_refresh),
+            checked = refresh.enabled ?: false,
+            enabled = isToggleAllowed,
+            onCheckedChange = { isEnabled ->
+                onIntent(SettingsIntent.OnSetWebViewRefreshIntent(refresh.copy(enabled = isEnabled)))
+            },
+        )
+
+        NumberInputListItem(
+            text = stringResource(R.string.settings_webview_refresh_interval),
+            subtitle = stringResource(R.string.hint_webview_refresh_interval),
+            icon = IcTimeout24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = refresh.intervalSeconds?.toInt() ?: 0,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetWebViewRefreshIntent(refresh.copy(intervalSeconds = it.toLong())))
+            },
+            range = 0..3600,
+            enabled = true,
         )
     }
 }
@@ -624,12 +943,15 @@ private fun WebEngineListItem(
                     sizes = IconButtonDefault.buttonSizeSet().buttonSize40(),
                     isSelected = currentEngine == WebEngineModel.AndroidWebView,
                 )
-                IconButton(
-                    icon = IcFirefox24,
-                    onClick = { onEngineSelected(WebEngineModel.GeckoView) },
-                    sizes = IconButtonDefault.buttonSizeSet().buttonSize40(),
-                    isSelected = currentEngine == WebEngineModel.GeckoView,
-                )
+                val isGeckoViewAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                if (isGeckoViewAvailable) {
+                    IconButton(
+                        icon = IcFirefox24,
+                        onClick = { onEngineSelected(WebEngineModel.GeckoView) },
+                        sizes = IconButtonDefault.buttonSizeSet().buttonSize40(),
+                        isSelected = currentEngine == WebEngineModel.GeckoView,
+                    )
+                }
             }
         },
     )
@@ -703,6 +1025,16 @@ private fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
             icon = IcLang24,
             selectedLanguageCode = (state.currentLanguage ?: currentTag).uppercase(java.util.Locale.getDefault()),
             onLanguageChange = { onIntent(SettingsIntent.OnLangIntent) },
+        )
+
+        ToggleListItem(
+            text = stringResource(R.string.settings_reduce_motion),
+            subtitle = stringResource(R.string.hint_reduce_motion),
+            icon = IcSensor24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = state.isReduceMotionEnabled,
+            onCheckedChange = { onIntent(SettingsIntent.OnSetReduceMotionIntent(it)) },
         )
     }
 }

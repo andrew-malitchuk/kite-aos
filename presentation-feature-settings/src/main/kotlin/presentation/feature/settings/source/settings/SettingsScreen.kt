@@ -75,6 +75,18 @@ public fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
         }
     }
 
+    val screensaverFolderLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocumentTree(),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION,
+            )
+            viewModel.handleIntent(SettingsIntent.OnSetScreensaverFolderIntent(uri.toString()))
+        }
+    }
+
     val state by viewModel.collectAsState()
 
     viewModel.collectSideEffect { effect ->
@@ -124,6 +136,9 @@ public fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
             is SettingsSideEffect.ShowDiscoveryResultEffect -> {
                 discoveryResults = effect.instances
                 showDiscoveryDialog = true
+            }
+            SettingsSideEffect.PickScreensaverFolderEffect -> {
+                screensaverFolderLauncher.launch(null)
             }
         }
     }

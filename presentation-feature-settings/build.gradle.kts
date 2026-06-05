@@ -5,6 +5,10 @@ plugins {
 
 android {
     namespace = "presentation.feature.settings"
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {

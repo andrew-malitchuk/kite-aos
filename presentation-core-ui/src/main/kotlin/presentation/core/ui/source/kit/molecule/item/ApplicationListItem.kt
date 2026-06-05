@@ -6,6 +6,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Apps
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -16,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.graphics.drawable.toBitmap
 import domain.core.source.model.ApplicationModel
@@ -89,18 +91,18 @@ public fun ApplicationListItem(
                         }
                     }
 
-                // Prefer the runtime-resolved icon; fall back to the resource ID if available
                 if (iconPainter != null) {
                     Image(
                         modifier = Modifier.size(Theme.size.sizeXL),
                         painter = iconPainter,
                         contentDescription = null,
                     )
-                } else if (applicationModel.icon != 0) {
-                    Image(
+                } else {
+                    Icon(
                         modifier = Modifier.size(Theme.size.sizeXL),
-                        painter = painterResource(id = applicationModel.icon),
+                        imageVector = Icons.Outlined.Apps,
                         contentDescription = null,
+                        tint = Theme.color.onSurfaceVariant,
                     )
                 }
             }

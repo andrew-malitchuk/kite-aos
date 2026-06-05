@@ -60,6 +60,20 @@
     <string name="settings_mqtt_topic">Topic</string>
     <string name="settings_mqtt_friendly_name">Friendly Name</string>
 
+    <string name="settings_streaming">Camera streaming</string>
+    <string name="settings_streaming_port">Port</string>
+    <string name="settings_streaming_quality">Quality</string>
+    <string name="settings_streaming_fps">FPS</string>
+    <string name="settings_streaming_rotation">Rotation: %d°</string>
+
+    <!-- Screensaver -->
+    <string name="settings_screensaver">Screensaver</string>
+    <string name="settings_screensaver_activation_delay">Activation delay (sec)</string>
+    <string name="settings_screensaver_slide_interval">Slide interval (sec)</string>
+    <string name="settings_screensaver_show_clock">Show clock</string>
+    <string name="settings_screensaver_pick_folder">Pick image folder</string>
+    <string name="settings_screensaver_folder_selected">Image folder selected</string>
+
     <string name="settings_system">System</string>
     <string name="settings_restart">Restart application</string>
     <string name="settings_default_launcher">Set as default launcher</string>
@@ -93,6 +107,40 @@
     <string name="settings_discover_ha_empty">No Home Assistant instances found on this network</string>
     <string name="settings_discover_ha_source_quick">mDNS</string>
     <string name="settings_discover_ha_source_scan">Network scan</string>
+
+    <!-- Settings → WebView Refresh -->
+    <string name="settings_webview_refresh">WebView refresh</string>
+    <string name="settings_webview_refresh_interval">Refresh interval</string>
+    <string name="hint_webview_refresh">Automatically reloads the kiosk dashboard at a set interval</string>
+    <string name="hint_webview_refresh_interval">Seconds between automatic page reloads</string>
+
+    <!-- Settings → Subtitle hints -->
+    <string name="hint_move_detector">Uses front camera · wakes screen on presence</string>
+    <string name="hint_sensitivity">Luma threshold · 0 = off, 100 = most sensitive</string>
+    <string name="hint_dim_delay">Seconds without motion before screen dims</string>
+    <string name="hint_screen_timeout">Seconds after dim before screen locks</string>
+    <string name="hint_fab_delay">Seconds of motion before control button appears</string>
+    <string name="hint_mqtt_section">All fields below must be valid to enable</string>
+    <string name="hint_streaming_section">Serves a live MJPEG stream from the front camera over HTTP</string>
+    <string name="hint_streaming_quality">JPEG compression quality · 30 = small, 100 = best</string>
+    <string name="hint_streaming_fps">Target frames per second for the MJPEG stream</string>
+    <string name="hint_streaming_rotation">Tap to rotate the stream output by 90°</string>
+    <string name="hint_auto_return">Reloads dashboard when a whitelisted URL is left</string>
+    <string name="settings_trust_ssl">Trust all SSL certificates</string>
+    <string name="hint_trust_ssl">Allow self-signed or invalid SSL certificates · required for local Home Assistant with custom certs</string>
+    <string name="hint_screensaver_section">Show a screensaver overlay after inactivity, before the screen locks</string>
+    <string name="hint_screensaver_activation_delay">Seconds of inactivity after dimming before the screensaver appears</string>
+    <string name="hint_screensaver_slide_interval">Seconds between image transitions in slideshow mode</string>
+    <string name="settings_reduce_motion">Reduce motion</string>
+    <string name="hint_reduce_motion">Disables all animations globally · improves performance on slow devices</string>
+
+    <!-- Settings → Auto Reboot -->
+    <string name="settings_auto_reboot">Auto Reboot</string>
+    <string name="settings_auto_reboot_hour">Hour</string>
+    <string name="settings_auto_reboot_minute">Minute</string>
+    <string name="settings_auto_reboot_interval">Interval: %d days</string>
+    <string name="hint_auto_reboot_section">Reboots the device daily at the configured time</string>
+    <string name="hint_auto_reboot_interval">Tap to cycle between daily, weekly, biweekly, and monthly</string>
 
     <!-- Settings → Advanced -->
     <string name="settings_advanced">Advanced</string>
