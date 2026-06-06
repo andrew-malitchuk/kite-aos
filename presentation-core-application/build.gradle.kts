@@ -25,6 +25,13 @@ dependencies {
     implementation(libs.bundles.arrow)
     // endregion
 
+    // region Analytics
+    implementation(projects.commonCoreAnalyticsApi)
+    implementation(projects.commonCoreAnalyticsImpl)
+    implementation(projects.commonCoreAnalyticsProviderConsole)
+    "gmsImplementation"(projects.commonCoreAnalyticsProviderFirebase)
+    // endregion
+
     // region Data Layer
     implementation(projects.commonCore)
     implementation(projects.dataCore)

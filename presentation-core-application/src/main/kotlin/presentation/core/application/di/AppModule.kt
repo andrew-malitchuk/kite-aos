@@ -1,5 +1,6 @@
 package presentation.core.application.di
 
+import common.core.analytics.impl.di.analyticsManagerModule
 import data.database.impl.di.DataDatabaseImplModule
 import data.mqtt.impl.di.DataMqttImplModule
 import data.platform.impl.di.DataPlatformImplModule
@@ -9,6 +10,7 @@ import domain.usecase.impl.di.DomainUseCaseImplModule
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.koin.ksp.generated.module
+import presentation.core.platform.di.PresentationCorePlatformModule
 import presentation.feature.about.di.PresentationFeatureAboutModule
 import presentation.feature.application.di.PresentationFeatureApplicationModule
 import presentation.feature.host.di.PresentationFeatureHostModule
@@ -38,6 +40,11 @@ import presentation.feature.settings.di.PresentationFeatureSettingsModule
  * @since 0.0.1
  */
 public val appModule: Module = module {
+    // region Analytics
+    registerAnalyticsProviders()
+    includes(analyticsManagerModule)
+    // endregion
+
     // region Data Layer
     // Database (Room) bindings — DAOs, database instance.
     includes(DataDatabaseImplModule().module)
@@ -57,6 +64,8 @@ public val appModule: Module = module {
     // endregion
 
     // region Presentation Layer
+    // Platform services — MJPEG server and related platform helpers.
+    includes(PresentationCorePlatformModule().module)
     // Feature modules — each provides its ViewModel and screen-scoped dependencies.
     includes(PresentationFeatureMainModule().module)
     includes(PresentationFeatureOnboardingModule().module)

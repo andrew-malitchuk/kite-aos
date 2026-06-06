@@ -27,6 +27,10 @@ rootProject.name = "kite-aos"
 includeBuild("build-logic")
 
 include(":common-core")
+include(":common-core-analytics-api")
+include(":common-core-analytics-impl")
+include(":common-core-analytics-provider-console")
+include(":common-core-analytics-provider-firebase")
 
 include(":data-core")
 include(":data-database-api")
