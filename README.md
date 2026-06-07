@@ -2,6 +2,12 @@
 
 # Kite
 
+<p align="center">
+  <a href="https://t.me/kite_aos"><img src="https://img.shields.io/badge/Telegram-kite__aos-26A5E4?logo=telegram&logoColor=white" alt="Telegram"/></a>
+  <a href="https://github.com/andrew-malitchuk/kite-aos/releases/latest"><img src="https://img.shields.io/github/v/release/andrew-malitchuk/kite-aos" alt="Latest Release"/></a>
+  <a href="https://github.com/andrew-malitchuk/kite-aos/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue" alt="License"/></a>
+</p>
+
 ## Overview
 
 **Kite AOS** is a modern, open-source Android kiosk application designed to transform tablets into
@@ -18,6 +24,10 @@ issue!
   <img src="docs/img/img_demo_0.png" alt="Onboarding" width="50%"/>
   <img src="docs/img/img_demo_1.png" alt="Dashboard" width="50%"/>
 </p>
+
+## Demo
+
+<video src="docs/video/kite-aos-demo.mp4" controls width="100%"></video>
 
 ## Core Features
 
@@ -94,15 +104,24 @@ git clone https://github.com/andrew-malitchuk/kite-aos.git
 
 __JTBD:__
 
+## Community
+
+Join the [Telegram channel **@kite_aos**](https://t.me/kite_aos) for:
+
+* **Feature discussions** — suggest and vote on new capabilities
+* **Troubleshooting** — get help from the community and maintainer
+* **Tips & tricks** — share setups, automations, and HA integrations
+* **Release announcements** — be the first to know about updates
+
 ## Feedback & Feature Requests
 
-If you have ideas for new features or encounter issues, please open an issue in the repository to
-suggest improvements.
+For bug reports and tracked feature requests, open an issue on GitHub.
+For open-ended discussions and quick questions, use the [Telegram channel](https://t.me/kite_aos).
 
 ## Troubleshooting
 
-Check out the troubleshooting section for common problems
-and solutions. If you still need assistance, feel free to reach out support.
+Check out the troubleshooting section for common problems and solutions.
+For community support, join the [Telegram channel @kite_aos](https://t.me/kite_aos) — someone has likely seen your issue before.
 
 ## Contributing
 
