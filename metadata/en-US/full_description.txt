@@ -1,2 +1,16 @@
 Kite AOS is a modern, open-source Android kiosk application designed to transform tablets into dedicated smart home dashboards. While optimized for Home Assistant, it is designed for any use case requiring a persistent, locked-down web-view interface (e.g., industrial panels, information kiosks, or dedicated web-resource controllers).
 
+Key features:
+• Persistent full-screen WebView kiosk — loads any local or remote web dashboard.
+• MQTT telemetry — publishes device state (battery, motion events) to your broker and supports Home Assistant auto-discovery. Only contacts the MQTT broker you configure; no analytics or cloud services are used.
+• Motion-wake — uses the front camera, processed entirely on-device, to detect presence and wake or dim the display automatically. No images or video are captured, stored, or transmitted.
+• Application launcher — lets you pin selected apps to an overlay control drawer for quick access outside the kiosk browser.
+• Auto-start on boot — the kiosk restarts automatically after a device reboot so the dashboard is always available.
+
+Permission notes:
+• CAMERA / FOREGROUND_SERVICE_CAMERA: Used exclusively for on-device luma (brightness) analysis via CameraX to detect motion. No images leave the device.
+• WRITE_SETTINGS: Required to programmatically control screen brightness and display timeout as part of the motion-wake feature.
+• SYSTEM_ALERT_WINDOW: Required to draw the slide-out control drawer over the full-screen kiosk WebView.
+• RECEIVE_BOOT_COMPLETED: Used to automatically restart the kiosk service after a device reboot.
+• INTERNET / ACCESS_NETWORK_STATE: Required to load the dashboard URL and maintain the MQTT connection.
+
