@@ -17,7 +17,7 @@ Repo: https://github.com/andrew-malitchuk/kite-aos.git
 Builds:
   - versionName: 1.1.0
     versionCode: 6
-    commit: 62a7789cce6bc35643bcb2ec40c9b692342c504b
+    commit: ae5a16044a54b784882494ff579b2f67435073ac
     subdir: presentation-core-application
     gradle:
       - foss
