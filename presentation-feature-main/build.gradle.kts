@@ -17,7 +17,9 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.androidx.documentfile)
     implementation(libs.androidx.webkit)
-    implementation(libs.geckoview)
+    implementation(libs.geckoview) {
+        exclude(group = "com.google.android.gms")
+    }
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 
