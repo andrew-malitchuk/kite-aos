@@ -18,6 +18,19 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://maven.mozilla.org/maven2/")
     }
+    components {
+        // GeckoView's module metadata declares play-services-fido as a required
+        // dependency (in its debug runtime variant) which ends up in the foss APK.
+        // Strip all com.google.android.gms transitive deps from GeckoView here so
+        // that the foss build produces a GMS-free APK.
+        withModule("org.mozilla.geckoview:geckoview") {
+            allVariants {
+                withDependencies {
+                    removeAll { it.group == "com.google.android.gms" }
+                }
+            }
+        }
+    }
 }
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
