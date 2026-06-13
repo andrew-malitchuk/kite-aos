@@ -8,6 +8,7 @@ android {
 
 dependencies {
 
+    implementation(libs.material.icons.core)
     implementation(libs.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
