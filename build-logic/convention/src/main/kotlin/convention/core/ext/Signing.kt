@@ -28,18 +28,25 @@ internal fun Project.configureSigning(extension: ApplicationExtension) {
             }
         }
 
+        val debugKeystore = File(project.rootDir, "./configure/signing/yahk.debug")
+        val releaseKeystore = File(project.rootDir, "./configure/signing/yahk.release")
+
         signingConfigs {
-            getByName("debug") {
-                keyAlias = properties.getProperty("debugKey")
-                keyPassword = properties.getProperty("debugPassword")
-                storePassword = properties.getProperty("debugPassword")
-                storeFile = File(project.rootDir, "./configure/signing/yahk.debug")
+            if (debugKeystore.exists()) {
+                getByName("debug") {
+                    keyAlias = properties.getProperty("debugKey")
+                    keyPassword = properties.getProperty("debugPassword")
+                    storePassword = properties.getProperty("debugPassword")
+                    storeFile = debugKeystore
+                }
             }
-            create("release") {
-                keyAlias = properties.getProperty("releaseKey")
-                keyPassword = properties.getProperty("releasePassword")
-                storePassword = properties.getProperty("releasePassword")
-                storeFile = File(project.rootDir, "./configure/signing/yahk.release")
+            if (releaseKeystore.exists()) {
+                create("release") {
+                    keyAlias = properties.getProperty("releaseKey")
+                    keyPassword = properties.getProperty("releasePassword")
+                    storePassword = properties.getProperty("releasePassword")
+                    storeFile = releaseKeystore
+                }
             }
         }
     }
