@@ -102,7 +102,7 @@ public fun ApplicationListItem(
                         modifier = Modifier.size(Theme.size.sizeXL),
                         imageVector = Icons.Outlined.Apps,
                         contentDescription = null,
-                        tint = Theme.color.onSurfaceVariant,
+                        tint = Theme.color.inkSubtle,
                     )
                 }
             }

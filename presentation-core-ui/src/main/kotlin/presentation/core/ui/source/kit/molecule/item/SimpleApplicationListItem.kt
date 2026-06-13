@@ -84,7 +84,7 @@ public fun SimpleApplicationListItem(
                 modifier = Modifier.size(Theme.size.size3XL),
                 imageVector = Icons.Outlined.Apps,
                 contentDescription = null,
-                tint = Theme.color.onSurfaceVariant,
+                tint = Theme.color.inkSubtle,
             )
         }
     }
