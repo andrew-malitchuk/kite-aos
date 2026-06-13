@@ -17,6 +17,10 @@ android {
     }
 }
 
+configurations.matching { it.name.contains("foss", ignoreCase = true) }.configureEach {
+    exclude(group = "com.google.android.gms")
+}
+
 dependencies {
     // region Core Libraries
     implementation(libs.core.ktx)
