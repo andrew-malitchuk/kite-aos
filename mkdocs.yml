@@ -74,6 +74,9 @@ nav:
   - User Guide:
     - First-Time Setup: user-guide/first-time-setup.md
     - Motion Detection: user-guide/motion-detection.md
+    - Camera Streaming: user-guide/camera-streaming.md
+    - Screensaver: user-guide/screensaver.md
+    - Auto Reboot: user-guide/auto-reboot.md
     - Home Assistant & MQTT: user-guide/home-assistant-and-mqtt.md
     - Web Kiosk: user-guide/web-kiosk.md
     - Appearance: user-guide/appearance.md

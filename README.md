@@ -20,9 +20,17 @@ Originally developed to solve my personal smart home setup needs, the platform i
 I'm always open to discussions and feature requests to expand its capabilities. Feel free to open an
 issue!
 
+[Telegram channel](https://t.me/kite_aos).
+
 <p align="center">
-  <img src="docs/img/img_demo_0.png" alt="Onboarding" width="50%"/>
-  <img src="docs/img/img_demo_1.png" alt="Dashboard" width="50%"/>
+  <img src="docs/img/img_demo_0.png" alt="Onboarding" width="24%"/>
+  <img src="docs/img/img_demo_1.png" alt="Dashboard" width="24%"/>
+  <img src="docs/img/img_demo_2.jpg" alt="Settings — Motion &amp; Camera" width="24%"/>
+  <img src="docs/img/img_demo_3.jpg" alt="Settings — MQTT &amp; Web Kiosk" width="24%"/>
+</p>
+<p align="center">
+  <img src="docs/img/img_demo_4.jpg" alt="Settings — WebView &amp; UI" width="24%"/>
+  <img src="docs/img/img_demo_5.jpg" alt="Settings — System &amp; Advanced" width="24%"/>
 </p>
 
 ## Demo
@@ -52,10 +60,16 @@ issue!
 | **Onboarding Wizard**      | Step-by-step configuration for system permissions and MQTT connectivity.                              |
 | **Custom Launcher**        | Set Kite as the default Android launcher to prevent users from leaving the kiosk.                     |
 | **Auto-Return to Kiosk**   | Automatically returns to the dashboard 30 s after leaving to an external app.                         |
-| **Watchdog & Auto-Reload** | Monitors the dashboard URL with a 45 s HTTP ping loop; reloads the WebView on detected failures.      |
 | **Network Recovery**       | Detects connectivity loss and automatically reloads the dashboard on restoration.                     |
 | **Config Import / Export** | Back up and restore all settings as a JSON file via the system file picker.                           |
 | **HA Auto-Discovery**      | Scans the local network for Home Assistant instances and populates the dashboard URL automatically.    |
+| **Screensaver**            | Image slideshow overlay with optional clock display; configurable activation delay and slide interval; dismisses automatically when motion is detected. |
+| **MJPEG Streaming**        | Streams the front camera as MJPEG over HTTP (`/stream.mjpg`, `/snapshot.jpg`). The stream URL is auto-published to Home Assistant via MQTT Discovery — no credentials or manual YAML required. |
+| **Auto-Reboot**            | Scheduled device reboots on a daily, weekly, bi-weekly, or monthly interval at a configured time; keeps long-running kiosk deployments healthy. |
+| **Periodic WebView Refresh** | Automatically reloads the dashboard at a configurable interval.                                    |
+| **Reduce Motion**          | Disables Android animations globally for smoother performance on low-end hardware.                   |
+| **MQTT Remote Control**    | Bidirectional MQTT: control brightness, volume, FAB visibility, and receive device telemetry.        |
+| **Analytics**              | Pluggable analytics provider (console logging; Firebase Crashlytics in GMS flavor).                  |
 
 ## Technical Specifications
 
@@ -63,8 +77,11 @@ issue!
 * **State Management:** Orbit MVI.
 * **Persistence:** Proto DataStore for atomic, thread-safe configuration.
 * **Dependency Injection:** Koin.
-* **Image Processing:** Background-threaded Luma analysis for motion detection.
+* **Camera:** CameraX — Luma analysis for motion detection; MJPEG streaming server at 640×480.
+* **MQTT:** kmqtt-client-jvm with bidirectional telemetry and Home Assistant Discovery.
+* **Analytics:** Pluggable provider pattern — console in FOSS, Firebase Crashlytics in GMS.
 * **Build System:** Gradle Convention Plugins for centralized build logic.
+* **Build Flavors:** `foss` (no GMS/Firebase) and `gms` (full Firebase suite).
 
 ## Installation & Deployment
 
@@ -102,7 +119,15 @@ git clone https://github.com/andrew-malitchuk/kite-aos.git
 
 ## Roadmap
 
-__JTBD:__
+The full roadmap is tracked in [ROADMAP.md](ROADMAP.md). Highlights currently in progress:
+
+* **Companion HA Entities** — expose uptime, app version, IP address, and current URL as Home Assistant sensors.
+* **Inactivity Page Reset** — navigate back to the home URL after a configurable idle period.
+* **Volume Button Gesture** — open the control drawer by pressing a physical volume button N times.
+* **Time-Based Sleep / Wake Scheduler** — define daily on/off rules without requiring Home Assistant automations.
+* **Remote MQTT Commands** — accept inbound commands to control WebView navigation remotely.
+
+Community-sourced items and votes live in [GitHub Issues](https://github.com/andrew-malitchuk/kite-aos/issues).
 
 ## Community
 
@@ -125,14 +150,9 @@ For community support, join the [Telegram channel @kite_aos](https://t.me/kite_a
 
 ## Contributing
 
-Contributions are welcome. Please follow the standard pull request process:
+Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide covering branch naming, code style, module structure, and the PR process.
 
-1. Fork the repository.
-2. Create a feature branch.
-3. Submit a PR with a detailed description of changes.
-
-This project started as a personal tool to cover my specific use cases. If you need functionality
-that isn't currently supported, let's discuss it in the Issues section before submitting a PR.
+This project started as a personal tool to cover my specific use cases. If you need functionality that isn't currently supported, open an issue first so we can align on scope before you invest time in a PR.
 
 ---
 
