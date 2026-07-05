@@ -47,6 +47,8 @@ dependencies {
     implementation(projects.dataMqttImpl)
     implementation(projects.dataPlatformApi)
     implementation(projects.dataPlatformImpl)
+    implementation(projects.dataRuntimeApi)
+    implementation(projects.dataRuntimeImpl)
     implementation(projects.dataRepositoryImpl)
     // endregion
 

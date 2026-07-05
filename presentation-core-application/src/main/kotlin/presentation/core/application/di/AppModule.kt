@@ -6,6 +6,7 @@ import data.mqtt.impl.di.DataMqttImplModule
 import data.platform.impl.di.DataPlatformImplModule
 import data.preferences.impl.di.DataPreferencesImplModule
 import data.repository.impl.di.DataRepositoryImplModule
+import data.runtime.impl.di.DataRuntimeImplModule
 import domain.usecase.impl.di.DomainUseCaseImplModule
 import org.koin.core.module.Module
 import org.koin.dsl.module
@@ -54,6 +55,8 @@ public val appModule: Module = module {
     includes(DataPreferencesImplModule().module)
     // MQTT client configuration and connection management.
     includes(DataMqttImplModule().module)
+    // In-memory runtime data sources (e.g., screen state).
+    includes(DataRuntimeImplModule().module)
     // Repository implementations bridging data sources to domain contracts.
     includes(DataRepositoryImplModule().module)
     // endregion
