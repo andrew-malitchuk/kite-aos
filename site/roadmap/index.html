@@ -1,0 +1,3493 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Open-source Android kiosk application for smart home dashboards">
+      
+      
+      
+        <link rel="canonical" href="https://andrew-malitchuk.github.io/kite-aos/roadmap/">
+      
+      
+        <link rel="prev" href="../modules/common-core/">
+      
+      
+        <link rel="next" href="../changelog/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../img/ic_launcher.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Roadmap - Kite</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Plus+Jakarta+Sans:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Plus Jakarta Sans";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#roadmap" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Kite" class="md-header__button md-logo" aria-label="Kite" data-md-component="logo">
+      
+  <img src="../img/ic_launcher_transparent.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Kite
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Roadmap
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="deep-purple"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/andrew-malitchuk/kite-aos" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    andrew-malitchuk/kite-aos
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../user-guide/first-time-setup/" class="md-tabs__link">
+          
+  
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/overview/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../modules/presentation-feature-main/" class="md-tabs__link">
+          
+  
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../modules/presentation-core-application/" class="md-tabs__link">
+          
+  
+  
+  Presentation Core
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../modules/domain-core/" class="md-tabs__link">
+          
+  
+  
+  Domain
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../modules/data-core/" class="md-tabs__link">
+          
+  
+  
+  Data
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../modules/build-logic/" class="md-tabs__link">
+          
+  
+  
+  Infrastructure
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Roadmap
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Changelog
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Kite" class="md-nav__button md-logo" aria-label="Kite" data-md-component="logo">
+      
+  <img src="../img/ic_launcher_transparent.svg" alt="logo">
+
+    </a>
+    Kite
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/andrew-malitchuk/kite-aos" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    andrew-malitchuk/kite-aos
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/first-time-setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    First-Time Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/motion-detection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Motion Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/camera-streaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Camera Streaming
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/screensaver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Screensaver
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/auto-reboot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Auto Reboot
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/home-assistant-and-mqtt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home Assistant & MQTT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/web-kiosk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Kiosk
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/appearance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appearance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/system-controls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Controls
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user-guide/backup-restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/mvi/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MVI Pattern
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-feature-main/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Main Dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-feature-settings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Settings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-feature-onboarding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Onboarding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-feature-host/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Host
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-feature-about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-feature-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    App Launcher
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Presentation Core
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Presentation Core
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-core-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-core-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-core-styling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Styling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-core-ui/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UI Kit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-core-navigation-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Navigation API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-core-navigation-impl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Navigation Impl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/presentation-core-localisation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Localisation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Domain
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/domain-core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/domain-repository-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repository API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/domain-usecase-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UseCase API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/domain-usecase-impl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    UseCase Impl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/data-core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/data-database-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/data-database-impl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Database Impl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/data-mqtt-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MQTT API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/data-mqtt-impl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MQTT Impl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/data-preferences-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preferences API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/data-preferences-impl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preferences Impl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/data-platform-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/data-platform-impl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Platform Impl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/data-repository-impl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Repository Impl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Infrastructure
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Infrastructure
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/build-logic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build System
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/common-core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Common Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#in-progress-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In Progress / Next
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="In Progress / Next">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#screensaver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Screensaver
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planned
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Planned">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#companion-ha-entities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Companion HA Entities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inactivity-page-reset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inactivity Page Reset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#volume-button-gesture-for-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Volume Button Gesture for Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#time-based-sleep-wake-scheduler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Time-Based Sleep / Wake Scheduler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remote-mqtt-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote MQTT Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auto-reboot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auto Reboot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqtt-tls-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MQTT TLS + DNS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#front-light-color-temperature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Front Light Color Temperature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#light-sensor-dimming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Light Sensor Dimming
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acoustic-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acoustic Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Done
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Done">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#camera-streaming-mjpeg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Camera Streaming (MJPEG) ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#volume-control-via-mqtt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Volume Control via MQTT ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#screen-brightness-via-mqtt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Screen Brightness via MQTT ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#home-assistant-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Home Assistant Discovery ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-restore-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup / Restore Configuration ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings-subtitle-hints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings: Subtitle Hints ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fab-control-via-mqtt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAB Control via MQTT ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#low-motion-reduce-animations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Low Motion / Reduce Animations ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#periodic-webview-refresh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Periodic WebView Refresh ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ui-polish-custom-controls-loading-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI Polish: Custom Controls &amp; Loading State ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#long-term-exploratory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Long-term / Exploratory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Long-term / Exploratory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#android-tv-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV Support
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Android TV Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build &amp; Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-1-direct-port-no-logic-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 1 — Direct Port (no logic changes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-2-adapted-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 2 — Adapted Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-3-new-tv-specific-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 3 — New TV-Specific Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#content" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Content
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Content">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#demo-video" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo Video
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#in-progress-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In Progress / Next
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="In Progress / Next">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#screensaver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Screensaver
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Planned
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Planned">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#companion-ha-entities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Companion HA Entities
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inactivity-page-reset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inactivity Page Reset
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#volume-button-gesture-for-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Volume Button Gesture for Settings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#time-based-sleep-wake-scheduler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Time-Based Sleep / Wake Scheduler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remote-mqtt-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote MQTT Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auto-reboot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auto Reboot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mqtt-tls-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MQTT TLS + DNS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#front-light-color-temperature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Front Light Color Temperature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#light-sensor-dimming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Light Sensor Dimming
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#acoustic-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Acoustic Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Done
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Done">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#camera-streaming-mjpeg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Camera Streaming (MJPEG) ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#volume-control-via-mqtt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Volume Control via MQTT ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#screen-brightness-via-mqtt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Screen Brightness via MQTT ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#home-assistant-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Home Assistant Discovery ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-restore-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup / Restore Configuration ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#settings-subtitle-hints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Settings: Subtitle Hints ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fab-control-via-mqtt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FAB Control via MQTT ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#low-motion-reduce-animations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Low Motion / Reduce Animations ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#periodic-webview-refresh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Periodic WebView Refresh ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ui-polish-custom-controls-loading-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI Polish: Custom Controls &amp; Loading State ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#long-term-exploratory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Long-term / Exploratory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Long-term / Exploratory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#android-tv-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV Support
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Android TV Support">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build &amp; Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-1-direct-port-no-logic-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 1 — Direct Port (no logic changes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-2-adapted-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 2 — Adapted Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-3-new-tv-specific-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 3 — New TV-Specific Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#content" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Content
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Content">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#demo-video" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo Video
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="roadmap">Roadmap<a class="headerlink" href="#roadmap" title="Permanent link">&para;</a></h1>
+<p>Community-driven feature backlog. Items sourced from GitHub issues and Reddit feedback.</p>
+<hr />
+<h2 id="in-progress-next">In Progress / Next<a class="headerlink" href="#in-progress-next" title="Permanent link">&para;</a></h2>
+<h3 id="screensaver">Screensaver<a class="headerlink" href="#screensaver" title="Permanent link">&para;</a></h3>
+<p>Idle screensaver that activates after a configurable timeout, overlaid on the dimmed WebView.</p>
+<ul>
+<li>Fullscreen slideshow from a local folder or Unsplash (configurable source)</li>
+<li>Clock overlay (time + date)</li>
+<li>Entity-status display: show live Home Assistant sensor values (temperature, humidity, etc.) via JS bridge from the already-loaded WebView session — no separate HA client needed</li>
+<li>Configurable activation delay and transition interval</li>
+<li>Dismisses on motion detection (integrates with existing CameraX pipeline)</li>
+<li>MQTT command to force-activate / dismiss</li>
+<li><code>MotionService</code> emits <code>ACTIVE | SCREENSAVER | LOCKED</code> screen-state via a new use case; <code>MainScreen</code> renders the overlay in reaction to that state</li>
+</ul>
+<hr />
+<h2 id="planned">Planned<a class="headerlink" href="#planned" title="Permanent link">&para;</a></h2>
+<h3 id="companion-ha-entities">Companion HA Entities<a class="headerlink" href="#companion-ha-entities" title="Permanent link">&para;</a></h3>
+<p>Expand Home Assistant Discovery so the tablet appears as a full companion device — not just a brightness/volume MQTT client.</p>
+<ul>
+<li>New published entities alongside existing ones:</li>
+<li><code>sensor</code> — <code>uptime</code> (seconds since last boot, via <code>SystemClock.elapsedRealtime()</code>)</li>
+<li><code>sensor</code> — <code>app_version</code> (versionName from <code>BuildConfig</code>)</li>
+<li><code>sensor</code> — <code>ip_address</code> (current WiFi IP via <code>WifiManager</code>)</li>
+<li><code>sensor</code> — <code>current_url</code> (URL currently loaded in the WebView; updated on every <code>onPageFinished</code>)</li>
+<li><code>binary_sensor</code> — <code>last_seen</code> (timestamp of last MQTT publish; HA marks unavailable if broker stops receiving)</li>
+<li>All entities follow the existing <code>*ConfigMqtt</code> pattern in <code>data-mqtt-impl</code> — new <code>CompanionTelemetryMqtt</code> data class + corresponding <code>MqttPublisher</code></li>
+<li><code>current_url</code> published reactively: <code>MainViewModel</code> emits URL changes into a <code>StateFlow</code>; <code>MqttService</code> collects and publishes on change with a 1-second debounce</li>
+<li><code>uptime</code> and <code>ip_address</code> refreshed on a configurable interval (default 60 s) alongside the existing battery telemetry ticker</li>
+<li>Configurable toggle per entity in Settings → MQTT section so users can opt out of individual sensors</li>
+</ul>
+<h3 id="inactivity-page-reset">Inactivity Page Reset<a class="headerlink" href="#inactivity-page-reset" title="Permanent link">&para;</a></h3>
+<p>Automatically navigate back to the configured home URL after the user stops interacting with the dashboard for a configurable period.</p>
+<ul>
+<li>Idle timeout (minutes) stored in Proto DataStore; configurable in Settings → WebView section</li>
+<li>Touch events forwarded from <code>GeckoView</code> / <code>WebView</code> reset a coroutine-based countdown timer in <code>MainViewModel</code></li>
+<li>On expiry: <code>MainViewModel</code> dispatches a <code>NavigateHome</code> intent that calls <code>loadUrl(homeUrl)</code> — reuses the existing home-URL preference already in DataStore</li>
+<li>Timer is paused while the screen is off or the screensaver is active (integrates with <code>MotionService</code> screen-state flow)</li>
+<li>Setting of <code>0</code> disables the feature entirely</li>
+<li>MQTT command <code>inactivity_reset/trigger</code> forces an immediate reset remotely</li>
+</ul>
+<h3 id="volume-button-gesture-for-settings">Volume Button Gesture for Settings<a class="headerlink" href="#volume-button-gesture-for-settings" title="Permanent link">&para;</a></h3>
+<p>Open the control drawer by pressing a physical volume button N times in quick succession — no visible UI required during kiosk operation.</p>
+<ul>
+<li><code>HostActivity.dispatchKeyEvent</code> intercepts <code>KEYCODE_VOLUME_UP</code> / <code>KEYCODE_VOLUME_DOWN</code>; counts presses within a 2-second rolling window</li>
+<li>Configurable press count (default 5) stored in DataStore; configurable in Settings → Access section</li>
+<li>On threshold reached: emits the same side effect that the FAB press fires — opens the control drawer via <code>AppNavigator</code></li>
+<li>Volume key events consumed only for the gesture; when count is not reached the key event propagates normally to the system</li>
+<li>Can be disabled via Settings toggle for deployments that need hardware volume control intact</li>
+</ul>
+<h3 id="time-based-sleep-wake-scheduler">Time-Based Sleep / Wake Scheduler<a class="headerlink" href="#time-based-sleep-wake-scheduler" title="Permanent link">&para;</a></h3>
+<p>Define daily on/off rules so the kiosk screen powers down overnight and wakes at a configured time — no Home Assistant automation required.</p>
+<ul>
+<li>Data model: list of <code>ScheduleRule(id, type: WAKE|SLEEP, hour, minute, enabled)</code> serialized via <code>kotlinx.serialization</code> and stored in DataStore</li>
+<li><code>AlarmManager.setAlarmClock()</code> used for each active rule; alarms re-registered on <code>ACTION_BOOT_COMPLETED</code>, <code>ACTION_TIME_CHANGED</code>, and <code>ACTION_TIMEZONE_CHANGED</code></li>
+<li>On SLEEP alarm: calls existing <code>DevicePowerManager.dimScreen()</code> → <code>goToSleep()</code> pipeline</li>
+<li>On WAKE alarm: calls <code>DevicePowerManager.wakeScreen()</code> + re-arms the next occurrence 24 h later</li>
+<li>New sub-screen in Settings → Display: list of rules with add/edit/delete, toggle per rule, time picker</li>
+<li>Requires <code>SCHEDULE_EXACT_ALARM</code> permission (already targeted API 31+); prompts user if not granted</li>
+<li>Overnight schedules (e.g. sleep 23:00 → wake 07:00) handled by sorting rules chronologically and scheduling the next future alarm</li>
+</ul>
+<h3 id="remote-mqtt-commands">Remote MQTT Commands<a class="headerlink" href="#remote-mqtt-commands" title="Permanent link">&para;</a></h3>
+<p>Accept inbound MQTT commands to control WebView navigation and state remotely from Home Assistant or any MQTT client.</p>
+<ul>
+<li>New subscription topic: <code>{clientId}/command/set</code>; payload is a JSON object <code>{ "action": "...", "value": "..." }</code></li>
+<li>Supported actions: <code>navigate</code> (load arbitrary URL), <code>reload</code> (refresh current page), <code>back</code> (WebView history back), <code>forward</code>, <code>clear_cache</code>, <code>navigate_home</code> (load configured home URL), <code>evaluate_js</code> (execute a JS snippet in the page)</li>
+<li><code>ObserveMqttRemoteCommandUseCase</code> filters the shared MQTT command flow and maps payloads to a <code>RemoteCommand</code> sealed class in <code>domain-core</code></li>
+<li><code>MainViewModel.observeRemoteCommands()</code> collects the flow and translates each command to the appropriate <code>MainIntent</code>; WebView/GeckoView executes via existing <code>webViewClient</code> hooks</li>
+<li>HA Discovery: <code>button</code> entity per action for <code>reload</code> and <code>navigate_home</code>; <code>text</code> entity for <code>navigate</code> URL input</li>
+<li>All commands logged at DEBUG level via the existing analytics pipeline</li>
+</ul>
+<h3 id="auto-reboot">Auto Reboot<a class="headerlink" href="#auto-reboot" title="Permanent link">&para;</a></h3>
+<p>Schedule automatic device reboots (e.g. 2 AM every two weeks) for long-running kiosk deployments.</p>
+<ul>
+<li><code>AlarmManager</code> + <code>DevicePolicyManager.reboot()</code> (requires device owner)</li>
+<li>Configurable time and recurrence interval in Settings</li>
+</ul>
+<h3 id="mqtt-tls-dns">MQTT TLS + DNS<a class="headerlink" href="#mqtt-tls-dns" title="Permanent link">&para;</a></h3>
+<p>Improve MQTT connectivity for production deployments.</p>
+<ul>
+<li>Accept hostnames in addition to IP addresses for broker address</li>
+<li>TLS support with configurable certificate (port 8883)</li>
+</ul>
+<h3 id="front-light-color-temperature">Front Light Color Temperature<a class="headerlink" href="#front-light-color-temperature" title="Permanent link">&para;</a></h3>
+<p>Adjust the warmth/coolness of the display front light where hardware supports it.</p>
+<ul>
+<li>Investigate <code>NIGHT_DISPLAY_*</code> / display color matrix APIs</li>
+<li>Device-specific availability — expose only when supported</li>
+</ul>
+<h3 id="light-sensor-dimming">Light Sensor Dimming<a class="headerlink" href="#light-sensor-dimming" title="Permanent link">&para;</a></h3>
+<p>Use the device's ambient light sensor as an alternative (or complement) to camera-based motion detection for screen brightness control.</p>
+<ul>
+<li>Read <code>TYPE_LIGHT</code> sensor values</li>
+<li>Map lux levels to configurable brightness thresholds</li>
+<li>Can run independently of or alongside the existing CameraX motion detector</li>
+<li>Useful for devices without a usable front camera</li>
+</ul>
+<h3 id="acoustic-detection">Acoustic Detection<a class="headerlink" href="#acoustic-detection" title="Permanent link">&para;</a></h3>
+<p>Use the device's microphone to detect ambient sound as a presence signal — an alternative or complement to camera-based motion detection, useful for devices without a usable front camera (e.g. Android TV boxes).</p>
+<ul>
+<li>Read raw audio amplitude via <code>AudioRecord</code> or <code>MediaRecorder.getMaxAmplitude()</code> at a configurable polling interval</li>
+<li>Configurable sensitivity threshold (dB level) — above threshold fires the same <code>MOTION_DETECTED</code> event as CameraX</li>
+<li>Runs inside <code>MotionService</code> as an optional detection mode; can operate alongside or independently of CameraX</li>
+<li>Toggle in Settings → Motion section; disabled by default (requires microphone permission)</li>
+<li>Publishes presence state via MQTT identically to camera-based detection</li>
+<li>Particularly useful for Android TV deployments where USB webcam is absent but a USB mic or built-in mic is available</li>
+</ul>
+<hr />
+<h2 id="done">Done<a class="headerlink" href="#done" title="Permanent link">&para;</a></h2>
+<h3 id="camera-streaming-mjpeg">Camera Streaming (MJPEG) ✓<a class="headerlink" href="#camera-streaming-mjpeg" title="Permanent link">&para;</a></h3>
+<p>Expose the tablet's front camera as an MJPEG stream consumable by Home Assistant or any browser.</p>
+<ul>
+<li>Embedded HTTP server (<code>MjpegHttpServer</code>) running inside <code>MotionService</code> foreground service</li>
+<li>Two endpoints: <code>/stream.mjpg</code> (continuous multipart stream) and <code>/snapshot.jpg</code> (single frame)</li>
+<li>Stream accessible on the local network (e.g. <code>http://192.168.1.x:8080/stream.mjpg</code>)</li>
+<li>Configurable port, quality (0–100), and FPS in Settings</li>
+<li>Toggle via Settings; camera rebinds to 640×480 when enabled, 176×144 when disabled</li>
+<li>No data leaves the local network</li>
+</ul>
+<h3 id="volume-control-via-mqtt">Volume Control via MQTT ✓<a class="headerlink" href="#volume-control-via-mqtt" title="Permanent link">&para;</a></h3>
+<p>Receive and publish device volume over MQTT.</p>
+<ul>
+<li>Topic: <code>{clientId}_volume/volume/set</code> (inbound, 0–100)</li>
+<li>Publishes confirmed volume state back to broker on change</li>
+<li>Integrated with HA discovery</li>
+</ul>
+<h3 id="screen-brightness-via-mqtt">Screen Brightness via MQTT ✓<a class="headerlink" href="#screen-brightness-via-mqtt" title="Permanent link">&para;</a></h3>
+<p>Control screen brightness remotely from Home Assistant or any MQTT client.</p>
+<ul>
+<li>Topic: <code>{clientId}_brightness/brightness/set</code> (inbound, 0–255)</li>
+<li>Publishes confirmed brightness state back to broker on change</li>
+<li>Requires <code>WRITE_SETTINGS</code> permission (already declared)</li>
+<li>Integrated with HA discovery via <code>BrightnessConfigMqtt</code></li>
+<li>Mirrors the volume MQTT implementation</li>
+</ul>
+<h3 id="home-assistant-discovery">Home Assistant Discovery ✓<a class="headerlink" href="#home-assistant-discovery" title="Permanent link">&para;</a></h3>
+<p>Detect Home Assistant instances on the local network from the onboarding wizard.</p>
+<ul>
+<li>mDNS hostname probes (<code>homeassistant.local</code>, etc.) with 900 ms timeout</li>
+<li>Parallel subnet scan fallback</li>
+<li><code>DiscoverHomeAssistantUseCase</code> + <code>HomeAssistantScannerImpl</code></li>
+</ul>
+<h3 id="backup-restore-configuration">Backup / Restore Configuration ✓<a class="headerlink" href="#backup-restore-configuration" title="Permanent link">&para;</a></h3>
+<p>Export all app settings to a single JSON file and restore them on any device.</p>
+<ul>
+<li><code>onExportConfig()</code> in <code>SettingsViewModel</code> reads current state and serializes to JSON (<code>kotlinx.serialization</code>)</li>
+<li><code>onImportConfigContent()</code> parses the JSON and writes each preference back via existing use cases; onboarding state excluded</li>
+<li>Export/Import UI in Settings — Android share sheet for export, SAF file picker for import</li>
+<li>Config JSON includes a <code>version</code> field for forward-compatibility</li>
+<li>Enables quick migration between tablets and multi-device deployments</li>
+</ul>
+<h3 id="settings-subtitle-hints">Settings: Subtitle Hints ✓<a class="headerlink" href="#settings-subtitle-hints" title="Permanent link">&para;</a></h3>
+<p>Added descriptive subtitle/hint text below hard-to-understand settings to reduce support questions.</p>
+<ul>
+<li><code>BaseListItem</code>, <code>ToggleListItem</code>, <code>NumberInputListItem</code>, <code>SimpleListItem</code>, <code>SectionToggleItem</code> all support optional <code>subtitle</code> parameter</li>
+<li>Hints added for: motion detector, sensitivity, dim delay, screen timeout, FAB delay, MQTT section, auto-return, WebView refresh</li>
+</ul>
+<h3 id="fab-control-via-mqtt">FAB Control via MQTT ✓<a class="headerlink" href="#fab-control-via-mqtt" title="Permanent link">&para;</a></h3>
+<p>Show or hide the floating action button remotely from Home Assistant.</p>
+<ul>
+<li>Subscribe to <code>{clientId}_fab/fab/set</code> inbound MQTT topic</li>
+<li><code>ObserveMqttFabCommandUseCase</code> filters the shared command flow, maps <code>"ON"</code> / <code>"OFF"</code> → <code>Boolean</code></li>
+<li><code>MainViewModel.observeFabCommand()</code>: <code>"ON"</code> triggers <code>onMotionDetected()</code> (shows FAB + timer), <code>"OFF"</code> hides immediately</li>
+<li>HA Discovery: <code>switch</code> entity with <code>optimistic: true</code>, icon <code>mdi:gesture-tap-button</code></li>
+</ul>
+<h3 id="low-motion-reduce-animations">Low Motion / Reduce Animations ✓<a class="headerlink" href="#low-motion-reduce-animations" title="Permanent link">&para;</a></h3>
+<p>Disables all Android animations globally for a smoother experience on slow kiosk hardware.</p>
+<ul>
+<li><code>ReduceMotionPreference</code> in Proto DataStore → full pipeline (serializer, source, repository, use cases)</li>
+<li>Toggle in Settings → UX section, with subtitle hint</li>
+<li><code>HostActivity</code> applies <code>ValueAnimator.setDurationScale(0f)</code> via reflection (works API 26+) whenever the preference changes</li>
+</ul>
+<h3 id="periodic-webview-refresh">Periodic WebView Refresh ✓<a class="headerlink" href="#periodic-webview-refresh" title="Permanent link">&para;</a></h3>
+<p>Automatically reload the dashboard at a configurable interval.</p>
+<ul>
+<li>Toggle + interval (seconds) in Settings under a dedicated WebView Refresh section</li>
+<li>Coroutine timer in <code>MainViewModel</code> — cancels/restarts on settings change</li>
+<li>Auto-disables when interval is set to 0</li>
+</ul>
+<h3 id="ui-polish-custom-controls-loading-state">UI Polish: Custom Controls &amp; Loading State ✓<a class="headerlink" href="#ui-polish-custom-controls-loading-state" title="Permanent link">&para;</a></h3>
+<p>Replaced Material3 defaults with design system components; added shimmer loading experience.</p>
+<ul>
+<li>All toggle controls use the custom <code>Toggle</code> component via <code>ToggleListItem</code> / <code>SectionToggleItem</code> — no Material3 Switch remains</li>
+<li><code>ShimmerImage</code> overlay displayed over the WebView while the page loads; debounced 400 ms to suppress auth-redirect flicker</li>
+</ul>
+<hr />
+<h2 id="long-term-exploratory">Long-term / Exploratory<a class="headerlink" href="#long-term-exploratory" title="Permanent link">&para;</a></h2>
+<h3 id="android-tv-support">Android TV Support<a class="headerlink" href="#android-tv-support" title="Permanent link">&para;</a></h3>
+<p>Run kite-aos on Android TV boxes as a large-screen Home Assistant dashboard — delivered as a dedicated <code>tv</code> build flavor rather than branching the existing tablet flow.</p>
+<p><strong>Market context:</strong> No reliable, HA-native kiosk dashboard exists for Android TV. The closest competitor (<code>HA TV Dashboard</code>, Play Store) is rated 2.6/5 and functionally broken as of 2025. Homey launched a TV app but requires the Homey ecosystem — not compatible with Home Assistant. Android TV holds 35% of the smart TV OS market; 1.1B smart TV households projected by 2026.</p>
+<p><strong>Target hardware:</strong> Android TV boxes with USB-A host port (NVIDIA Shield TV Pro, Xiaomi Mi Box S+, ONN 4K Pro, generic Android TV boxes). Chromecast with Google TV and Fire TV Sticks are out of scope (no USB-A / no USB host).</p>
+<h4 id="build-architecture">Build &amp; Architecture<a class="headerlink" href="#build-architecture" title="Permanent link">&para;</a></h4>
+<ul>
+<li>New <code>tv</code> product flavor in <code>build-logic</code> convention plugin; shares all <code>domain-*</code> and <code>data-*</code> modules unchanged; diverges only at <code>presentation-feature-*</code> and <code>presentation-core-platform</code></li>
+<li>TV detection at runtime via <code>PackageManager.hasSystemFeature(FEATURE_LEANBACK)</code> as a fallback guard inside <code>HostActivity</code></li>
+<li><code>android.software.leanback</code> declared as <code>required=false</code> in the manifest + Leanback launcher <code>intent-filter</code> so the app appears on the Android TV home screen</li>
+<li><code>device_class</code> published via MQTT as <code>tv</code> instead of <code>tablet</code></li>
+</ul>
+<h4 id="category-1-direct-port-no-logic-changes">Category 1 — Direct Port (no logic changes)<a class="headerlink" href="#category-1-direct-port-no-logic-changes" title="Permanent link">&para;</a></h4>
+<p>All core features transfer unchanged:</p>
+<ul>
+<li>Home Assistant WebView kiosk (same <code>KioskWebView</code> + JS injection)</li>
+<li><code>MqttService</code> — telemetry, HA Discovery, screen control commands</li>
+<li>Battery telemetry (TV boxes expose battery state API identically)</li>
+<li>Screen wake / dim / lock via <code>PowerManager</code> + <code>WindowManager</code></li>
+<li><code>MotionService</code> interface preserved — implementation swapped per flavor</li>
+<li>Onboarding flow (layout adapted, logic unchanged)</li>
+<li>Settings screen (layout adapted, logic unchanged)</li>
+<li>Kiosk lockdown (launcher replacement; mechanism differs on TV but result identical)</li>
+</ul>
+<h4 id="category-2-adapted-features">Category 2 — Adapted Features<a class="headerlink" href="#category-2-adapted-features" title="Permanent link">&para;</a></h4>
+<p><strong>D-pad / Remote Navigation (replaces all touch)</strong>
+- <code>HostActivity</code> intercepts <code>KEYCODE_DPAD_*</code> and <code>KEYCODE_DPAD_CENTER</code>; translates to WebView scroll and click via <code>evaluateJavascript</code> — no touch events assumed
+- JS focus manager injected on page load: sets <code>document.activeElement</code> traversal via Tab/arrow keys so HA dashboard cards receive proper focus rings
+- All Compose UI components audited for <code>Modifier.focusable()</code> + visual focus indicators (10-foot UI scale)
+- FAB hidden in TV flavor; swipe gestures suppressed</p>
+<p><strong>USB Webcam Motion Detection (replaces CameraX front camera)</strong>
+- Primary path: Camera2 API with <code>FEATURE_CAMERA_EXTERNAL</code> (API 28+, official Android mechanism, no extra dependency)
+  - Check <code>PackageManager.hasSystemFeature(FEATURE_CAMERA_EXTERNAL)</code> at runtime; skip <code>MotionService</code> camera binding if absent
+  - Luma analysis pipeline identical to existing CameraX implementation — same <code>ImageAnalysis</code> callback interface
+- Fallback path: <a href="https://github.com/jiangdongguo/AndroidUSBCamera"><code>AndroidUSBCamera</code></a> (UVC, Apache 2.0) for devices that expose USB camera via USB Host but not through Camera2
+  - Risk: last release v3.3.3 (Feb 2023), 488 open issues — use only as fallback, not primary
+- USB permissions requested at runtime via <code>UsbManager</code>; user prompted once on first attach
+- If neither path is available: <code>MotionService</code> falls back to MQTT trigger mode (see below)</p>
+<h4 id="category-3-new-tv-specific-features">Category 3 — New TV-Specific Features<a class="headerlink" href="#category-3-new-tv-specific-features" title="Permanent link">&para;</a></h4>
+<p><strong>MQTT Motion Fallback</strong>
+- Subscribe to a configurable MQTT topic (e.g. from a PIR sensor connected to Home Assistant)
+- On message received: fire the same <code>MOTION_DETECTED</code> event that CameraX would fire — wakes screen, resets dim timer, publishes presence state
+- Configured in Settings → Motion section; enabled automatically if no camera is detected at startup
+- Allows motion-based screen wake even on devices with no USB webcam attached</p>
+<p><strong>TV Remote Key Mapping</strong>
+- <code>HostActivity.dispatchKeyEvent</code> intercepts configurable remote keycodes and maps them to app intents
+- Default mappings:
+  - Long-press <code>KEYCODE_BACK</code> (1 s) → open Settings (with optional PIN gate)
+  - <code>KEYCODE_MENU</code> → toggle control overlay
+  - Configurable N-press combo on any button (default: 5× <code>KEYCODE_DPAD_CENTER</code>) → PIN-protected kiosk exit
+- Configurable in Settings → Access section (same pattern as volume-button gesture on tablet)
+- Key events consumed only for mapped combos; all others propagate normally to system / WebView</p>
+<p><strong>Ambient Mode (Screensaver)</strong>
+- Reuses the existing <code>Screensaver</code> roadmap item (clock overlay, entity-status display, configurable timeout)
+- On TV: dismisses on MQTT motion event or remote keypress (D-pad center) instead of camera motion
+- TV-specific: fullscreen clock uses larger typography scaled for 10-foot viewing distance</p>
+<hr />
+<h2 id="content">Content<a class="headerlink" href="#content" title="Permanent link">&para;</a></h2>
+<h3 id="demo-video">Demo Video<a class="headerlink" href="#demo-video" title="Permanent link">&para;</a></h3>
+<p>A short screen-recorded walkthrough of the main features:
+onboarding → dashboard → motion wake → control drawer → settings → MQTT in HA.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../modules/common-core/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Common Core">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Common Core
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../changelog/" class="md-footer__link md-footer__link--next" aria-label="Next: Changelog">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Changelog
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/andrew-malitchuk/kite-aos" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.footer", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

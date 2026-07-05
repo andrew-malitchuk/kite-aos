@@ -11,7 +11,10 @@ import domain.core.source.model.WebEngineModel
  */
 public interface GetWebEngineUseCase {
     /**
-     * @return A [Result] containing the [WebEngineModel].
+     * Reads the selected browser engine from persistent storage.
+     *
+     * @return `Result.success` wrapping the current [WebEngineModel], or `Result.failure`
+     *   with a `Failure` if the preference store is unavailable.
      */
     public suspend operator fun invoke(): Result<WebEngineModel>
 }

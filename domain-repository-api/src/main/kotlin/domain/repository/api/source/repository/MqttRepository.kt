@@ -94,6 +94,13 @@ public interface MqttRepository {
     public suspend fun sendNetworkState(isOnline: Boolean)
 
     /**
+     * Sends the MJPEG camera stream URL to the MQTT broker.
+     *
+     * @param url The full stream URL, or empty string when streaming is inactive.
+     */
+    public suspend fun sendCameraUrl(url: String)
+
+    /**
      * Returns a [Flow] that emits every inbound MQTT command as a [Pair] of (topic, payload).
      *
      * @return A [Flow] of (topic, payload) pairs for all subscribed command topics.

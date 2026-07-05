@@ -17,12 +17,23 @@ android {
     }
 }
 
+configurations.matching { it.name.contains("foss", ignoreCase = true) }.configureEach {
+    exclude(group = "com.google.android.gms")
+}
+
 dependencies {
     // region Core Libraries
     implementation(libs.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.bundles.arrow)
+    // endregion
+
+    // region Analytics
+    implementation(projects.commonCoreAnalyticsApi)
+    implementation(projects.commonCoreAnalyticsImpl)
+    implementation(projects.commonCoreAnalyticsProviderConsole)
+    "gmsImplementation"(projects.commonCoreAnalyticsProviderFirebase)
     // endregion
 
     // region Data Layer
@@ -36,6 +47,8 @@ dependencies {
     implementation(projects.dataMqttImpl)
     implementation(projects.dataPlatformApi)
     implementation(projects.dataPlatformImpl)
+    implementation(projects.dataRuntimeApi)
+    implementation(projects.dataRuntimeImpl)
     implementation(projects.dataRepositoryImpl)
     // endregion
 
@@ -68,4 +81,5 @@ dependencies {
     implementation(libs.androidx.remote.creation.core)
     implementation(libs.androidx.material3)
     // endregion
+
 }

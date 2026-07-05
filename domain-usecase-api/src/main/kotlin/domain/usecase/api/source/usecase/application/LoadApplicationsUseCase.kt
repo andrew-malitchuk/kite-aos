@@ -10,10 +10,13 @@ import domain.core.source.model.ApplicationModel
  */
 public interface LoadApplicationsUseCase {
     /**
-     * Loads a list of applications.
+     * Loads applications by merging the system package list with user-saved selections.
      *
-     * @param chosen If `true`, only returns applications that have been selected by the user.
-     * @return A [Result] containing the filtered list of [ApplicationModel]s.
+     * @param chosen When `true`, returns only applications explicitly saved by the user via
+     *   [SaveApplicationUseCase]. When `false`, returns all launcher-enabled applications
+     *   with their saved-selection state reflected in each [ApplicationModel].
+     * @return `Result.success` wrapping the filtered list of [ApplicationModel]s (may be empty),
+     *   or `Result.failure` with a `Failure` if either the database or the platform query fails.
      */
     public suspend operator fun invoke(chosen: Boolean = false): Result<List<ApplicationModel>>
 }

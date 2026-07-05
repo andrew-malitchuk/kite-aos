@@ -21,15 +21,18 @@ import androidx.lifecycle.lifecycleScope
 import domain.usecase.api.source.usecase.mqtt.MqttConnectUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttDisconnectUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttSendBrightnessUseCase
+import domain.usecase.api.source.usecase.mqtt.MqttSendCameraUrlUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttSendScreenStateUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttSendVolumeUseCase
 import domain.usecase.api.source.usecase.mqtt.ObserveMqttCommandsUseCase
 import domain.usecase.api.source.usecase.mqtt.ObserveMqttConfigurationUseCase
+import domain.usecase.api.source.usecase.streaming.ObserveStreamingConfigurationUseCase
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import presentation.core.platform.R
 import presentation.core.platform.core.helper.DevicePowerManager
+import presentation.core.platform.core.helper.NetworkAddressResolver
 
 /**
  * Foreground service that maintains the MQTT connection and handles bidirectional control.
@@ -65,6 +68,8 @@ public class MqttService : LifecycleService() {
     private val mqttSendVolumeUseCase: MqttSendVolumeUseCase by inject()
     private val mqttSendBrightnessUseCase: MqttSendBrightnessUseCase by inject()
     private val mqttSendScreenStateUseCase: MqttSendScreenStateUseCase by inject()
+    private val mqttSendCameraUrlUseCase: MqttSendCameraUrlUseCase by inject()
+    private val observeStreamingConfigurationUseCase: ObserveStreamingConfigurationUseCase by inject()
 
     private lateinit var audioManager: AudioManager
     private lateinit var powerManager: PowerManager
@@ -168,6 +173,7 @@ public class MqttService : LifecycleService() {
                     if (result.isSuccess) {
                         Log.i(TAG, "MQTT connected successfully.")
                         publishInitialStates()
+                        launch { observeStreamingUrl() }
                         observeAndRouteCommands(clientId = config.clientId ?: "")
                     } else {
                         Log.e(TAG, "Failed to connect to MQTT broker", result.exceptionOrNull())
@@ -203,6 +209,26 @@ public class MqttService : LifecycleService() {
             mqttSendScreenStateUseCase(powerManager.isInteractive)
         } catch (e: Exception) {
             Log.e(TAG, "Failed to publish initial states", e)
+        }
+    }
+
+    /**
+     * Observes streaming configuration changes and publishes the MJPEG stream URL to HA.
+     *
+     * Publishes a full URL when streaming is enabled, or an empty string when disabled.
+     * Runs as a peer coroutine inside the MQTT-connected block so it is cancelled automatically
+     * when the MQTT config changes or the connection is lost.
+     */
+    private suspend fun observeStreamingUrl() {
+        observeStreamingConfigurationUseCase().collect { model ->
+            val url = if (model?.enabled == true) {
+                val ip = NetworkAddressResolver.getLocalIpAddress() ?: ""
+                val port = model.port ?: MotionService.DEFAULT_STREAMING_PORT
+                if (ip.isNotEmpty()) "http://$ip:$port/stream.mjpg" else ""
+            } else {
+                ""
+            }
+            mqttSendCameraUrlUseCase(url)
         }
     }
 

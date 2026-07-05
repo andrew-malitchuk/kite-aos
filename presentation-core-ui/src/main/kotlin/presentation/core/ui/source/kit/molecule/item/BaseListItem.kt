@@ -1,6 +1,7 @@
 package presentation.core.ui.source.kit.molecule.item
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +28,8 @@ import presentation.core.ui.source.kit.atom.container.IconContainer
  * @param modifier Modifier to be applied to the [SquircleCard].
  * @param icon The [ImageVector] icon to display on the left. Optional if [iconContent] is provided.
  * @param text The title text of the item. Optional if [content] is provided.
+ * @param subtitle Optional secondary text displayed below [text] in a smaller, muted style.
+ *   Ignored when [content] is provided.
  * @param textStyle The [TextStyle] for the title text. Defaults to [Theme.typography.body].
  * @param iconBackgroundColor Background [Color] for the icon container.
  * @param iconForegroundColor Foreground [Color] for the icon.
@@ -44,6 +47,7 @@ public fun BaseListItem(
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     text: String? = null,
+    subtitle: String? = null,
     textStyle: TextStyle = Theme.typography.body,
     iconBackgroundColor: Color = Theme.color.surfaceVariant,
     iconForegroundColor: Color = Theme.color.inkMain,
@@ -76,14 +80,36 @@ public fun BaseListItem(
             if (content != null) {
                 content()
             } else if (text != null) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = text,
-                    color = Theme.color.inkMain,
-                    style = textStyle,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                if (subtitle != null) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeXXS),
+                    ) {
+                        Text(
+                            text = text,
+                            color = Theme.color.inkMain,
+                            style = textStyle,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            text = subtitle,
+                            color = Theme.color.inkMain.copy(alpha = 0.5f),
+                            style = Theme.typography.caption,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                } else {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = text,
+                        color = Theme.color.inkMain,
+                        style = textStyle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
 
             trailingContent?.invoke(this)

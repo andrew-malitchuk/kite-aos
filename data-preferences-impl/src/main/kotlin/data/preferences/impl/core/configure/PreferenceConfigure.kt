@@ -66,5 +66,30 @@ internal object PreferenceConfigure {
          * The filename for storing the auto-return kiosk setting.
          */
         internal const val AUTO_RETURN = "auto_return.pb"
+
+        /**
+         * The filename for storing the periodic WebView refresh configuration.
+         */
+        internal const val WEBVIEW_REFRESH = "webview_refresh.pb"
+
+        /**
+         * The filename for storing the reduce motion / disable animations setting.
+         */
+        internal const val REDUCE_MOTION = "reduce_motion.pb"
+
+        /**
+         * The filename for storing the camera streaming configuration.
+         */
+        internal const val STREAMING = "streaming.pb"
+
+        /**
+         * The filename for storing the screensaver configuration.
+         */
+        internal const val SCREENSAVER = "screensaver.pb"
+
+        /**
+         * The filename for storing the auto reboot schedule configuration.
+         */
+        internal const val AUTO_REBOOT = "auto_reboot.pb"
     }
 }

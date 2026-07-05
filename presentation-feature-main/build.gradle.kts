@@ -15,8 +15,11 @@ android {
 
 dependencies {
     implementation(libs.core.ktx)
+    implementation(libs.androidx.documentfile)
     implementation(libs.androidx.webkit)
-    implementation(libs.geckoview)
+    implementation(libs.geckoview) {
+        exclude(group = "com.google.android.gms")
+    }
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
 
@@ -34,5 +37,6 @@ dependencies {
     implementation(libs.orbit.core)
     implementation(libs.orbit.viewmodel)
     implementation(libs.orbit.compose)
+    implementation(libs.coil.compose)
     implementation("dev.chrisbanes.haze:haze:1.7.1")
 }

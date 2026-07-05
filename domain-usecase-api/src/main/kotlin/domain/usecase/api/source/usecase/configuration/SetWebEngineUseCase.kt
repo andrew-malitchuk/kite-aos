@@ -12,8 +12,11 @@ import domain.usecase.api.source.common.Optional
  */
 public interface SetWebEngineUseCase {
     /**
-     * @param value The new [WebEngineModel] to persist.
-     * @return An [Optional] result.
+     * Writes the selected browser engine to persistent storage.
+     *
+     * @param value The new [WebEngineModel] (e.g., Android WebView or GeckoView) to persist.
+     * @return `Result.success(Unit)` on success, or `Result.failure` with a `Failure`
+     *   if the write operation fails.
      */
     public suspend operator fun invoke(value: WebEngineModel): Optional
 }

@@ -10,10 +10,11 @@ import domain.usecase.api.source.common.Optional
  */
 public interface SetApplicationLanguageUseCase {
     /**
-     * Sets the application language.
+     * Writes the given locale code to persistent storage, making it the active app language.
      *
-     * @param localeCode The ISO language code (e.g., "uk", "en").
-     * @return An [Optional] result.
+     * @param localeCode The BCP-47 / ISO 639-1 language tag to apply (e.g., `"en"`, `"uk"`).
+     * @return `Result.success(Unit)` on success, or `Result.failure` with a `Failure`
+     *   if the write operation fails.
      */
     public suspend operator fun invoke(localeCode: String): Optional
 }

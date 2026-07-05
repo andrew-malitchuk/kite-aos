@@ -1,12 +1,17 @@
 package domain.repository.api.source.repository
 
+import domain.core.source.model.AutoRebootModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.HomeAssistantInstanceModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.OnboardingModel
+import domain.core.source.model.ScreenStateModel
+import domain.core.source.model.ScreensaverModel
+import domain.core.source.model.StreamingModel
 import domain.core.source.model.ThemeModel
 import domain.core.source.model.WebEngineModel
+import domain.core.source.model.WebViewRefreshModel
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -84,6 +89,27 @@ public interface ConfigureRepository {
      */
     public fun observeNetworkStatus(): kotlinx.coroutines.flow.Flow<Boolean>
 
+    /** Retrieves the periodic WebView refresh configuration. */
+    public suspend fun getWebViewRefresh(): WebViewRefreshModel?
+
+    /** Updates the periodic WebView [refresh] configuration. */
+    public suspend fun setWebViewRefresh(refresh: WebViewRefreshModel?)
+
+    /** Retrieves whether reduce motion / disable animations is enabled. */
+    public suspend fun getReduceMotion(): Boolean?
+
+    /** Updates the reduce motion [enabled] setting. */
+    public suspend fun setReduceMotion(enabled: Boolean?)
+
+    /** Retrieves the current camera streaming configuration. */
+    public suspend fun getStreaming(): StreamingModel?
+
+    /** Updates the camera [streaming] configuration. */
+    public suspend fun setStreaming(streaming: StreamingModel?)
+
+    /** Observes changes to the camera streaming configuration. */
+    public fun observeStreaming(): Flow<StreamingModel?>
+
     /**
      * Scans the local network for reachable Home Assistant instances.
      *
@@ -94,4 +120,28 @@ public interface ConfigureRepository {
      *   found or the timeout is exceeded.
      */
     public suspend fun discoverHomeAssistant(): List<HomeAssistantInstanceModel>
+
+    /** Retrieves the current screensaver configuration. */
+    public suspend fun getScreensaver(): ScreensaverModel?
+
+    /** Updates the [screensaver] configuration. */
+    public suspend fun setScreensaver(screensaver: ScreensaverModel?)
+
+    /** Observes changes to the screensaver configuration. */
+    public fun observeScreensaver(): Flow<ScreensaverModel?>
+
+    /** Observes the current screen state (Active / Screensaver). */
+    public fun observeScreenState(): Flow<ScreenStateModel>
+
+    /** Emits a screen state update to all observers. */
+    public suspend fun emitScreenState(state: ScreenStateModel)
+
+    /** Retrieves the current auto reboot schedule configuration. */
+    public suspend fun getAutoReboot(): AutoRebootModel?
+
+    /** Updates the auto reboot schedule [model]. */
+    public suspend fun setAutoReboot(model: AutoRebootModel?)
+
+    /** Observes changes to the auto reboot schedule configuration. */
+    public fun observeAutoReboot(): Flow<AutoRebootModel?>
 }

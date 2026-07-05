@@ -1,7 +1,10 @@
 package domain.usecase.impl.source.usecase.device
 
+import domain.core.source.monad.Failure
 import domain.repository.api.source.repository.ConfigureRepository
+import domain.usecase.api.source.common.Optional
 import domain.usecase.api.source.usecase.device.EmitMoveDetectorMotionUseCase
+import domain.usecase.impl.core.resultLauncher
 import org.koin.core.annotation.Single
 
 /**
@@ -14,7 +17,9 @@ import org.koin.core.annotation.Single
 internal class EmitMoveDetectorMotionUseCaseImpl(
     private val configureRepository: ConfigureRepository,
 ) : EmitMoveDetectorMotionUseCase {
-    override suspend fun invoke() {
+    override suspend fun invoke(): Optional = resultLauncher(
+        errorMapper = Failure.Technical::Platform,
+    ) {
         configureRepository.emitMoveDetectorMotion()
     }
 }

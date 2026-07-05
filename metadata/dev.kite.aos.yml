@@ -1,0 +1,39 @@
+Categories:
+  - Connectivity
+  - System
+License: Apache-2.0
+AuthorName: Andrew Malitchuk
+AuthorEmail: andrew.malitchuk@gmail.com
+AuthorWebSite: https://github.com/andrew-malitchuk
+SourceCode: https://github.com/andrew-malitchuk/kite-aos
+IssueTracker: https://github.com/andrew-malitchuk/kite-aos/issues
+Changelog: https://github.com/andrew-malitchuk/kite-aos/releases
+
+AutoName: Kite
+
+RepoType: git
+Repo: https://github.com/andrew-malitchuk/kite-aos.git
+
+Builds:
+  - versionName: 1.1.0
+    versionCode: 6
+    commit: 518528073b435cdedf7144ac4fa63a5cffe7d5eb
+    subdir: presentation-core-application
+    gradle:
+      - foss
+    scanignore:
+      - build.gradle.kts
+      - settings.gradle.kts
+      - build-logic/convention/build.gradle.kts
+      - common-core-analytics-provider-firebase/build.gradle.kts
+
+MaintainerNotes: Build the foss flavor only — the gms flavor includes Firebase Analytics
+  and Crashlytics which are excluded from the foss build. GeckoView (minSdk 26) is
+  only included in the foss flavor; gms uses the system WebView.
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+UpdateCheckData: 
+  gradle/libs.versions.toml|versionCode\s*=\s*"(\d+)"|.|versionName\s*=\s*"([\d.]+)"
+CurrentVersion: 1.1.0
+CurrentVersionCode: 6

@@ -42,6 +42,7 @@ public class ApplicationViewModel(
             loadApplications()
         }
 
+    // Maps domain Failure types to user-facing string resource IDs for the snackbar.
     private fun mapError(failure: Throwable): Int = when (failure) {
         is Failure.Technical.Network -> R.string.error_network
         is Failure.Technical.Database -> R.string.error_database
@@ -51,6 +52,7 @@ public class ApplicationViewModel(
         else -> R.string.error_unknown
     }
 
+    // CancellationException is not a user-visible error; skip snackbar for coroutine cancellations.
     private fun handleError(failure: Throwable) {
         if (failure is CancellationException) return
         intent {
@@ -66,6 +68,7 @@ public class ApplicationViewModel(
         performLoad()
     }
 
+    // Extracted so that save/remove operations can trigger a reload without duplicating the loading logic.
     private fun performLoad() = executeResult(
         scope = viewModelScope,
         request = { loadApplicationsUseCase() },

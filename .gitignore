@@ -404,3 +404,5 @@ obj/
 # End of https://www.toptal.com/developers/gitignore/api/android,androidstudio,powershell,windows,linux,macos,gradle,intellij,kotlin,java
 /configure/
 /git-generator.sh
+
+# MkDocs: docs source and built site are tracked in git (see gh-pages for deploy)

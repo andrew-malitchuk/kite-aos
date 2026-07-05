@@ -1,0 +1,2 @@
+Fixed GeckoView crash on app startup in child processes.
+Removed watchdog recovery system from the main dashboard screen.

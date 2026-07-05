@@ -18,6 +18,19 @@ dependencyResolutionManagement {
         mavenCentral()
         maven("https://maven.mozilla.org/maven2/")
     }
+    components {
+        // GeckoView's module metadata declares play-services-fido as a required
+        // dependency (in its debug runtime variant) which ends up in the foss APK.
+        // Strip all com.google.android.gms transitive deps from GeckoView here so
+        // that the foss build produces a GMS-free APK.
+        withModule("org.mozilla.geckoview:geckoview") {
+            allVariants {
+                withDependencies {
+                    removeAll { it.group == "com.google.android.gms" }
+                }
+            }
+        }
+    }
 }
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
@@ -27,6 +40,10 @@ rootProject.name = "kite-aos"
 includeBuild("build-logic")
 
 include(":common-core")
+include(":common-core-analytics-api")
+include(":common-core-analytics-impl")
+include(":common-core-analytics-provider-console")
+include(":common-core-analytics-provider-firebase")
 
 include(":data-core")
 include(":data-database-api")
@@ -37,6 +54,8 @@ include(":data-platform-api")
 include(":data-platform-impl")
 include(":data-preferences-api")
 include(":data-preferences-impl")
+include(":data-runtime-api")
+include(":data-runtime-impl")
 include(":data-repository-impl")
 
 include(":domain-core")

@@ -5,6 +5,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
 import androidx.datastore.dataStoreFile
 import data.preferences.impl.core.configure.PreferenceConfigure
+import data.preferences.impl.core.serializer.AutoRebootProtoSerializer
 import data.preferences.impl.core.serializer.AutoReturnProtoSerializer
 import data.preferences.impl.core.serializer.DashboardProtoSerializer
 import data.preferences.impl.core.serializer.DockProtoSerializer
@@ -14,6 +15,11 @@ import data.preferences.impl.core.serializer.MqttProtoSerializer
 import data.preferences.impl.core.serializer.OnboardingProtoSerializer
 import data.preferences.impl.core.serializer.ThemeProtoSerializer
 import data.preferences.impl.core.serializer.WebEngineProtoSerializer
+import data.preferences.impl.core.serializer.ReduceMotionProtoSerializer
+import data.preferences.impl.core.serializer.ScreensaverProtoSerializer
+import data.preferences.impl.core.serializer.StreamingProtoSerializer
+import data.preferences.impl.core.serializer.WebViewRefreshProtoSerializer
+import data.preferences.impl.proto.AutoRebootDataProto
 import data.preferences.impl.proto.AutoReturnDataProto
 import data.preferences.impl.proto.DashboardDataProto
 import data.preferences.impl.proto.DockDataProto
@@ -23,6 +29,10 @@ import data.preferences.impl.proto.MqttDataProto
 import data.preferences.impl.proto.OnboardingDataProto
 import data.preferences.impl.proto.ThemeDataProto
 import data.preferences.impl.proto.WebEngineDataProto
+import data.preferences.impl.proto.ReduceMotionDataProto
+import data.preferences.impl.proto.ScreensaverDataProto
+import data.preferences.impl.proto.StreamingDataProto
+import data.preferences.impl.proto.WebViewRefreshDataProto
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
 import org.koin.core.annotation.Named
@@ -188,6 +198,91 @@ public class DataPreferencesImplModule {
         return DataStoreFactory.create(
             serializer = AutoReturnProtoSerializer(),
             produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.AUTO_RETURN) },
+        )
+    }
+
+    /**
+     * Provides the [DataStore] instance for periodic WebView refresh preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [WebViewRefreshProtoSerializer] and stored in
+     *   [PreferenceConfigure.Filename.WEBVIEW_REFRESH].
+     * @see WebViewRefreshProtoSerializer
+     */
+    @Single
+    @Named("webViewRefreshDataStore")
+    public fun webViewRefreshDataStore(context: Context): DataStore<WebViewRefreshDataProto.WebViewRefreshProtoModel> {
+        return DataStoreFactory.create(
+            serializer = WebViewRefreshProtoSerializer(),
+            produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.WEBVIEW_REFRESH) },
+        )
+    }
+
+    /**
+     * Provides the [DataStore] instance for reduce motion / disable animations preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [ReduceMotionProtoSerializer] and stored in
+     *   [PreferenceConfigure.Filename.REDUCE_MOTION].
+     * @see ReduceMotionProtoSerializer
+     */
+    @Single
+    @Named("reduceMotionDataStore")
+    public fun reduceMotionDataStore(context: Context): DataStore<ReduceMotionDataProto.ReduceMotionProtoModel> {
+        return DataStoreFactory.create(
+            serializer = ReduceMotionProtoSerializer(),
+            produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.REDUCE_MOTION) },
+        )
+    }
+
+    /**
+     * Provides the [DataStore] instance for camera streaming preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [StreamingProtoSerializer] and stored in
+     *   [PreferenceConfigure.Filename.STREAMING].
+     * @see StreamingProtoSerializer
+     */
+    @Single
+    @Named("streamingDataStore")
+    public fun streamingDataStore(context: Context): DataStore<StreamingDataProto.StreamingProtoModel> {
+        return DataStoreFactory.create(
+            serializer = StreamingProtoSerializer(),
+            produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.STREAMING) },
+        )
+    }
+
+    /**
+     * Provides the [DataStore] instance for screensaver preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [ScreensaverProtoSerializer] and stored in
+     *   [PreferenceConfigure.Filename.SCREENSAVER].
+     * @see ScreensaverProtoSerializer
+     */
+    @Single
+    @Named("screensaverDataStore")
+    public fun screensaverDataStore(context: Context): DataStore<ScreensaverDataProto.ScreensaverProtoModel> {
+        return DataStoreFactory.create(
+            serializer = ScreensaverProtoSerializer(),
+            produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.SCREENSAVER) },
+        )
+    }
+
+    /**
+     * Provides the [DataStore] instance for auto-reboot schedule preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [AutoRebootProtoSerializer] and stored in
+     *   [PreferenceConfigure.Filename.AUTO_REBOOT].
+     * @see AutoRebootProtoSerializer
+     */
+    @Single
+    @Named("autoRebootDataStore")
+    public fun autoRebootDataStore(context: Context): DataStore<AutoRebootDataProto.AutoRebootProtoModel> {
+        return DataStoreFactory.create(
+            serializer = AutoRebootProtoSerializer(),
+            produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.AUTO_REBOOT) },
         )
     }
 }

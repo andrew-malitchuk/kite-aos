@@ -16,6 +16,7 @@ import data.preferences.impl.proto.WebEngineDataProto
 internal object WebEngineProtobufPreferenceMapper :
     ProtobufPreferenceMapper<WebEngineDataProto.WebEngineProtoModel, WebEnginePreference> {
 
+    /** Converts a [WebEnginePreference] to its Protobuf representation for storage. */
     override val toProtobuf: Mapper<WebEnginePreference, WebEngineDataProto.WebEngineProtoModel> =
         Mapper { input ->
             WebEngineDataProto.WebEngineProtoModel.newBuilder()
@@ -23,6 +24,7 @@ internal object WebEngineProtobufPreferenceMapper :
                 .build()
         }
 
+    /** Converts a Protobuf [WebEngineDataProto.WebEngineProtoModel] back to a [WebEnginePreference]. */
     override val toPreference: Mapper<WebEngineDataProto.WebEngineProtoModel, WebEnginePreference> =
         Mapper { input ->
             WebEnginePreference(

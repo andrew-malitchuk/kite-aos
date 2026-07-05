@@ -1,6 +1,10 @@
 package presentation.feature.main.source.main
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import org.koin.androidx.compose.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
@@ -28,6 +32,7 @@ public fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
 
     val snackbarHostState = rememberStackedSnackbarHostState()
     val state = viewModel.collectAsState()
+    var webViewReloadTrigger by remember { mutableIntStateOf(0) }
 
     viewModel.collectSideEffect { effect ->
         when (effect) {
@@ -45,6 +50,8 @@ public fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
                     title = context.getString(effect.messageId),
                 )
             }
+
+            MainSideEffect.ReloadWebViewEffect -> webViewReloadTrigger++
         }
     }
 
@@ -52,5 +59,6 @@ public fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
         state = state.value,
         onIntent = viewModel::handleIntent,
         snackbarHostState = snackbarHostState,
+        reloadTrigger = webViewReloadTrigger,
     )
 }

@@ -12,7 +12,10 @@ import domain.core.source.model.ThemeModel
  */
 public interface GetThemeUseCase {
     /**
-     * @return A [Result] containing the [ThemeModel].
+     * Reads the active theme setting from persistent storage.
+     *
+     * @return `Result.success` wrapping the current [ThemeModel], or `Result.failure`
+     *   with a `Failure` if the preference store is unavailable.
      */
     public suspend operator fun invoke(): Result<ThemeModel>
 }

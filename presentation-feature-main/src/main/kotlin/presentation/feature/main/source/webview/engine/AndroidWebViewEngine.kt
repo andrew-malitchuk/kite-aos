@@ -177,7 +177,7 @@ internal fun AndroidWebViewEngine(state: KioskEngineState, modifier: Modifier = 
                                         handler: SslErrorHandler?,
                                         error: SslError?,
                                     ) {
-                                        handler?.proceed()
+                                        if (state.trustAllSsl) handler?.proceed() else handler?.cancel()
                                     }
                                 }
                             }
@@ -427,7 +427,7 @@ internal fun AndroidWebViewEngine(state: KioskEngineState, modifier: Modifier = 
                             handler: SslErrorHandler?,
                             error: SslError?,
                         ) {
-                            handler?.proceed()
+                            if (state.trustAllSsl) handler?.proceed() else handler?.cancel()
                         }
                     }
 

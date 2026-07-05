@@ -9,10 +9,11 @@ import domain.usecase.api.source.common.Optional
  */
 public interface MqttSendScreenStateUseCase {
     /**
-     * Publishes the screen state to the MQTT broker.
+     * Publishes the current screen power state to the broker's screen telemetry topic.
      *
-     * @param isOn `true` if the screen is currently on (interactive), `false` otherwise.
-     * @return An [Optional] result.
+     * @param isOn `true` when the screen is on and interactive, `false` when it is off or locked.
+     * @return `Result.success(Unit)` on successful publish, or `Result.failure` with a
+     *   `Failure.Technical.Network` if the broker is unreachable or the client is not connected.
      */
     public suspend operator fun invoke(isOn: Boolean): Optional
 }

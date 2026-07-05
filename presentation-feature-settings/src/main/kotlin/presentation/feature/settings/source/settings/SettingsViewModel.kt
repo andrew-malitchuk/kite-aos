@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import domain.core.source.monad.Failure
+import domain.core.source.model.AutoRebootModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.MoveDetectorModel
@@ -16,8 +17,15 @@ import domain.core.source.model.MqttModel
 import domain.core.source.model.ThemeModel
 import domain.core.source.model.WebEngineModel
 import domain.usecase.api.source.usecase.configuration.DiscoverHomeAssistantUseCase
+import domain.usecase.api.source.usecase.configuration.GetAutoRebootUseCase
 import domain.usecase.api.source.usecase.configuration.GetAutoReturnUseCase
 import domain.usecase.api.source.usecase.configuration.GetApplicationLanguageUseCase
+import domain.usecase.api.source.usecase.configuration.GetReduceMotionUseCase
+import domain.usecase.api.source.usecase.configuration.GetWebViewRefreshUseCase
+import domain.usecase.api.source.usecase.configuration.SetAutoRebootUseCase
+import domain.usecase.api.source.usecase.configuration.SetReduceMotionUseCase
+import domain.usecase.api.source.usecase.configuration.SetWebViewRefreshUseCase
+import domain.core.source.model.WebViewRefreshModel
 import domain.usecase.api.source.usecase.configuration.GetDashboardUseCase
 import domain.usecase.api.source.usecase.configuration.GetThemeUseCase
 import domain.usecase.api.source.usecase.configuration.GetWebEngineUseCase
@@ -32,6 +40,13 @@ import domain.usecase.api.source.usecase.device.SetDockPositionUseCase
 import domain.usecase.api.source.usecase.device.SetMoveDetectorUseCase
 import domain.usecase.api.source.usecase.mqtt.GetMqttConfigurationUseCase
 import domain.usecase.api.source.usecase.mqtt.SetMqttConfigurationUseCase
+import domain.usecase.api.source.usecase.streaming.GetStreamingConfigurationUseCase
+import domain.usecase.api.source.usecase.streaming.SetStreamingConfigurationUseCase
+import domain.core.source.model.StreamingModel
+import domain.core.source.model.ScreensaverModel
+import domain.core.source.model.ScreensaverSource
+import domain.usecase.api.source.usecase.screensaver.GetScreensaverUseCase
+import domain.usecase.api.source.usecase.screensaver.SetScreensaverUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -89,6 +104,16 @@ public class SettingsViewModel(
     private val getAutoReturnUseCase: GetAutoReturnUseCase,
     private val setAutoReturnUseCase: SetAutoReturnUseCase,
     private val discoverHomeAssistantUseCase: DiscoverHomeAssistantUseCase,
+    private val getWebViewRefreshUseCase: GetWebViewRefreshUseCase,
+    private val setWebViewRefreshUseCase: SetWebViewRefreshUseCase,
+    private val getReduceMotionUseCase: GetReduceMotionUseCase,
+    private val setReduceMotionUseCase: SetReduceMotionUseCase,
+    private val getStreamingConfigurationUseCase: GetStreamingConfigurationUseCase,
+    private val setStreamingConfigurationUseCase: SetStreamingConfigurationUseCase,
+    private val getScreensaverUseCase: GetScreensaverUseCase,
+    private val setScreensaverUseCase: SetScreensaverUseCase,
+    private val getAutoRebootUseCase: GetAutoRebootUseCase,
+    private val setAutoRebootUseCase: SetAutoRebootUseCase,
 ) : ContainerHost<SettingsState, SettingsSideEffect>,
     ViewModel() {
     public override val container: Container<SettingsState, SettingsSideEffect> =
@@ -152,6 +177,8 @@ public class SettingsViewModel(
             isPasswordValid && isFriendlyNameValid && isDashboardUrlValid && isWhitelistValid
     }
 
+    private var streamingJob: Job? = null
+
     init {
         loadTheme()
         loadDashboardUrls()
@@ -161,6 +188,11 @@ public class SettingsViewModel(
         loadApplicationLanguage()
         loadWebEngine()
         loadAutoReturn()
+        loadWebViewRefresh()
+        loadReduceMotion()
+        loadStreaming()
+        loadScreensaver()
+        loadAutoReboot()
     }
 
     /**
@@ -324,17 +356,18 @@ public class SettingsViewModel(
      *
      * @param dashboardUrl The Home Assistant dashboard URL.
      * @param whitelistUrl The comma-separated whitelist domain(s) for WebView navigation.
+     * @param trustAllSsl Whether to bypass SSL certificate validation for self-signed certs.
      * @return The [Job] associated with the use case execution.
      * @since 0.0.1
      */
-    public fun onSetDashboard(dashboardUrl: String, whitelistUrl: String): Job = executeResult(
+    public fun onSetDashboard(dashboardUrl: String, whitelistUrl: String, trustAllSsl: Boolean = false): Job = executeResult(
         scope = viewModelScope,
         request = {
-            setDashboardUseCase(DashboardModel(dashboardUrl.trim(), whitelistUrl.trim()))
+            setDashboardUseCase(DashboardModel(dashboardUrl.trim(), whitelistUrl.trim(), trustAllSsl))
         },
         result = {
             intent {
-                val dashboard = DashboardModel(dashboardUrl.trim(), whitelistUrl.trim())
+                val dashboard = DashboardModel(dashboardUrl.trim(), whitelistUrl.trim(), trustAllSsl)
                 val currentMqtt = state.mqtt ?: MqttModel()
                 val isConfigValid = isMqttConfigurationValid(currentMqtt, dashboard)
                 val validatedMqtt =
@@ -562,6 +595,12 @@ public class SettingsViewModel(
         errorBlock = { handleError(it) },
     )
 
+    /**
+     * Loads the auto-return-to-kiosk preference from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.4
+     */
     private fun loadAutoReturn(): Job = executeResult(
         scope = viewModelScope,
         request = { getAutoReturnUseCase() },
@@ -573,6 +612,14 @@ public class SettingsViewModel(
         },
     )
 
+    /**
+     * Updates and persists the auto-return-to-kiosk preference.
+     *
+     * @param enabled Whether the device should automatically return to the kiosk after
+     *   [HostActivity][presentation.feature.host.source.host.HostActivity] is backgrounded.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.4
+     */
     public fun onSetAutoReturn(enabled: Boolean): Job = executeResult(
         scope = viewModelScope,
         request = { setAutoReturnUseCase(enabled) },
@@ -581,6 +628,214 @@ public class SettingsViewModel(
         },
         errorBlock = { handleError(it) },
     )
+
+    /**
+     * Loads the periodic WebView refresh configuration from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
+    private fun loadWebViewRefresh(): Job = executeResult(
+        scope = viewModelScope,
+        request = { getWebViewRefreshUseCase() },
+        result = { refresh ->
+            intent { reduce { state.copy(webViewRefresh = refresh) } }
+        },
+        errorBlock = {
+            intent { reduce { state.copy(webViewRefresh = WebViewRefreshModel(enabled = false, intervalSeconds = 300L)) } }
+        },
+    )
+
+    /**
+     * Updates and persists the periodic WebView refresh configuration.
+     *
+     * Automatically disables refresh if [WebViewRefreshModel.intervalSeconds] is zero or null.
+     * Debounced by 500 ms to prevent excessive writes during slider interaction.
+     *
+     * @param refresh The [WebViewRefreshModel] to validate, apply, and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
+    public fun onSetWebViewRefresh(refresh: WebViewRefreshModel): Job {
+        val validated = if ((refresh.intervalSeconds ?: 0L) == 0L) {
+            refresh.copy(enabled = false)
+        } else {
+            refresh
+        }
+        intent { reduce { state.copy(webViewRefresh = validated) } }
+        return executeResult(
+            scope = viewModelScope,
+            request = {
+                delay(500)
+                setWebViewRefreshUseCase(validated)
+            },
+            result = { /* Persistence success */ },
+            errorBlock = { handleError(it) },
+        )
+    }
+
+    /**
+     * Loads the reduce-motion / disable-animations preference from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
+    private fun loadReduceMotion(): Job = executeResult(
+        scope = viewModelScope,
+        request = { getReduceMotionUseCase() },
+        result = { enabled ->
+            intent { reduce { state.copy(isReduceMotionEnabled = enabled ?: false) } }
+        },
+        errorBlock = { handleError(it) },
+    )
+
+    /**
+     * Updates and persists the reduce-motion / disable-animations preference.
+     *
+     * When `true`, the [ValueAnimator][android.animation.ValueAnimator] duration scale is set to
+     * 0 in [presentation.feature.host.source.host.HostActivity], suppressing all system animations.
+     *
+     * @param enabled Whether to reduce motion globally.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
+    public fun onSetReduceMotion(enabled: Boolean): Job = executeResult(
+        scope = viewModelScope,
+        request = { setReduceMotionUseCase(enabled) },
+        result = {
+            intent { reduce { state.copy(isReduceMotionEnabled = enabled) } }
+        },
+        errorBlock = { handleError(it) },
+    )
+
+    /**
+     * Loads the MJPEG camera streaming configuration from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.1.0
+     */
+    private fun loadStreaming(): Job = executeResult(
+        scope = viewModelScope,
+        request = { getStreamingConfigurationUseCase() },
+        result = { streaming ->
+            intent { reduce { state.copy(streaming = streaming) } }
+        },
+        errorBlock = {
+            intent { reduce { state.copy(streaming = StreamingModel()) } }
+        },
+    )
+
+    /**
+     * Updates and persists the MJPEG camera streaming configuration.
+     *
+     * Debounced by 1 000 ms to avoid flooding [presentation.core.platform.source.streaming.MjpegHttpServer]
+     * with rapid config changes while the user adjusts quality or FPS sliders.
+     *
+     * @param streaming The [StreamingModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.1.0
+     */
+    public fun onSetStreaming(streaming: StreamingModel): Job {
+        streamingJob?.cancel()
+        intent { reduce { state.copy(streaming = streaming) } }
+        streamingJob = executeResult(
+            scope = viewModelScope,
+            request = {
+                delay(1000)
+                setStreamingConfigurationUseCase(streaming)
+            },
+            result = { /* Persistence success */ },
+            errorBlock = { handleError(it) },
+        )
+        return streamingJob!!
+    }
+
+    /**
+     * Loads the screensaver configuration from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.1.0
+     */
+    private fun loadScreensaver(): Job = executeResult(
+        scope = viewModelScope,
+        request = { getScreensaverUseCase() },
+        result = { screensaver ->
+            intent { reduce { state.copy(screensaver = screensaver) } }
+        },
+        errorBlock = {
+            // NOTE: Default screensaver is disabled with sensible fallbacks so the UI renders
+            // correctly even when the DataStore is empty on first launch.
+            intent { reduce { state.copy(screensaver = ScreensaverModel(
+                enabled = false,
+                activationDelay = 60L,
+                slideInterval = 30L,
+                showClock = true,
+                source = ScreensaverSource.BLACK,
+                localFolderUri = null,
+            )) } }
+        },
+    )
+
+    /**
+     * Updates and persists the screensaver configuration.
+     *
+     * Debounced by 500 ms to avoid redundant writes while the user adjusts slider values.
+     *
+     * @param screensaver The [ScreensaverModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.1.0
+     */
+    public fun onSetScreensaver(screensaver: ScreensaverModel): Job {
+        intent { reduce { state.copy(screensaver = screensaver) } }
+        return executeResult(
+            scope = viewModelScope,
+            request = {
+                delay(500)
+                setScreensaverUseCase(screensaver)
+            },
+            result = { /* Persistence success */ },
+            errorBlock = { handleError(it) },
+        )
+    }
+
+    /**
+     * Loads the auto-reboot schedule configuration from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
+    private fun loadAutoReboot(): Job = executeResult(
+        scope = viewModelScope,
+        request = { getAutoRebootUseCase() },
+        result = { autoReboot ->
+            intent { reduce { state.copy(autoReboot = autoReboot) } }
+        },
+        errorBlock = {
+            intent { reduce { state.copy(autoReboot = AutoRebootModel()) } }
+        },
+    )
+
+    /**
+     * Updates and persists the auto-reboot schedule configuration.
+     *
+     * Changes are applied immediately (no debounce) because rescheduling an alarm is idempotent
+     * and the user explicitly taps a control rather than dragging a slider.
+     *
+     * @param model The [AutoRebootModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
+    public fun onSetAutoReboot(model: AutoRebootModel): Job {
+        intent { reduce { state.copy(autoReboot = model) } }
+        return executeResult(
+            scope = viewModelScope,
+            request = {
+                setAutoRebootUseCase(model)
+            },
+            result = { /* Persistence success */ },
+            errorBlock = { handleError(it) },
+        )
+    }
 
     /**
      * Handles incoming user intents and routes them to the appropriate logic.
@@ -599,6 +854,7 @@ public class SettingsViewModel(
                 onSetDashboard(
                     intent.dashboardUrl,
                     intent.whitelistUrl,
+                    intent.trustAllSsl,
                 )
 
             SettingsIntent.OnMoreIntent -> onMore()
@@ -616,6 +872,25 @@ public class SettingsViewModel(
             is SettingsIntent.OnImportConfigContentIntent -> onImportConfigContent(intent.json)
             SettingsIntent.OnDiscoverHomeAssistantIntent -> onDiscoverHomeAssistant()
             is SettingsIntent.OnSelectDiscoveredInstanceIntent -> onSelectDiscoveredInstance(intent.url)
+            is SettingsIntent.OnSetWebViewRefreshIntent -> onSetWebViewRefresh(intent.refresh)
+            is SettingsIntent.OnSetReduceMotionIntent -> onSetReduceMotion(intent.enabled)
+            is SettingsIntent.OnSetStreamingIntent -> onSetStreaming(intent.streaming)
+            is SettingsIntent.OnSetScreensaverIntent -> onSetScreensaver(intent.screensaver)
+            is SettingsIntent.OnSetAutoRebootIntent -> onSetAutoReboot(intent.model)
+            is SettingsIntent.OnSetScreensaverFolderIntent -> {
+                val current = container.stateFlow.value.screensaver ?: ScreensaverModel(
+                    enabled = false,
+                    activationDelay = 60L,
+                    slideInterval = 30L,
+                    showClock = true,
+                    source = ScreensaverSource.BLACK,
+                    localFolderUri = null,
+                )
+                onSetScreensaver(current.copy(localFolderUri = intent.uri, source = ScreensaverSource.LOCAL_FOLDER))
+            }
+            SettingsIntent.OnPickScreensaverFolderIntent -> intent {
+                postSideEffect(SettingsSideEffect.PickScreensaverFolderEffect)
+            }
         }
     }
 
@@ -641,6 +916,7 @@ public class SettingsViewModel(
         val snapshot = ConfigSnapshot(
             dashboardUrl = state.dashboardUrls?.dashboardUrl ?: "",
             whitelistUrl = state.dashboardUrls?.whitelistUrl ?: "",
+            trustAllSsl = state.dashboardUrls?.trustAllSsl ?: false,
             theme = state.theme?.name ?: "Light",
             dockPosition = state.dock?.position?.name ?: "Left",
             isAutoReturnEnabled = state.isAutoReturnEnabled,
@@ -696,7 +972,7 @@ public class SettingsViewModel(
                 ?: DockPositionModel.Position.Left
             setDockPositionUseCase(DockPositionModel(dockPos))
 
-            setDashboardUseCase(DashboardModel(snapshot.dashboardUrl, snapshot.whitelistUrl))
+            setDashboardUseCase(DashboardModel(snapshot.dashboardUrl, snapshot.whitelistUrl, snapshot.trustAllSsl))
 
             setAutoReturnUseCase(snapshot.isAutoReturnEnabled)
 
@@ -776,9 +1052,10 @@ public class SettingsViewModel(
      */
     public fun onSelectDiscoveredInstance(url: String): Job {
         val whitelist = container.stateFlow.value.dashboardUrls?.whitelistUrl ?: ""
+        val currentTrustAllSsl = container.stateFlow.value.dashboardUrls?.trustAllSsl ?: false
         return executeResult(
             scope = viewModelScope,
-            request = { setDashboardUseCase(DashboardModel(url, whitelist)) },
+            request = { setDashboardUseCase(DashboardModel(url, whitelist, currentTrustAllSsl)) },
             result = {
                 intent {
                     reduce {
@@ -804,6 +1081,7 @@ public class SettingsViewModel(
     private data class ConfigSnapshot(
         val dashboardUrl: String = "",
         val whitelistUrl: String = "",
+        val trustAllSsl: Boolean = false,
         val theme: String = "Light",
         val dockPosition: String = "Left",
         val isAutoReturnEnabled: Boolean = true,

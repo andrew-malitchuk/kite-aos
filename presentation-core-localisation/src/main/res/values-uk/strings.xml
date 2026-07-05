@@ -60,6 +60,20 @@
     <string name="settings_mqtt_topic">Тема (Topic)</string>
     <string name="settings_mqtt_friendly_name">Зрозуміла назва</string>
 
+    <string name="settings_streaming">Стрімінг з камери</string>
+    <string name="settings_streaming_port">Порт</string>
+    <string name="settings_streaming_quality">Якість</string>
+    <string name="settings_streaming_fps">Частота кадрів</string>
+    <string name="settings_streaming_rotation">Поворот: %d°</string>
+
+    <!-- Screensaver -->
+    <string name="settings_screensaver">Заставка</string>
+    <string name="settings_screensaver_activation_delay">Затримка активації (сек)</string>
+    <string name="settings_screensaver_slide_interval">Інтервал слайдів (сек)</string>
+    <string name="settings_screensaver_show_clock">Показувати годинник</string>
+    <string name="settings_screensaver_pick_folder">Вибрати папку з фото</string>
+    <string name="settings_screensaver_folder_selected">Папку з фото вибрано</string>
+
     <string name="settings_system">Система</string>
     <string name="settings_restart">Перезапустити застосунок</string>
     <string name="settings_default_launcher">Встановити лаунчером за замовчуванням</string>
@@ -93,6 +107,40 @@
     <string name="settings_discover_ha_empty">Інстанси Home Assistant не знайдено в мережі</string>
     <string name="settings_discover_ha_source_quick">mDNS</string>
     <string name="settings_discover_ha_source_scan">Сканування мережі</string>
+
+    <!-- Settings → WebView Refresh -->
+    <string name="settings_webview_refresh">Оновлення WebView</string>
+    <string name="settings_webview_refresh_interval">Інтервал оновлення</string>
+    <string name="hint_webview_refresh">Автоматично перезавантажує дашборд через заданий інтервал</string>
+    <string name="hint_webview_refresh_interval">Секунди між автоматичними перезавантаженнями сторінки</string>
+
+    <!-- Settings → Subtitle hints -->
+    <string name="hint_move_detector">Фронтальна камера · пробудження при русі</string>
+    <string name="hint_sensitivity">Поріг яскравості · 0 = вимк., 100 = найчутливіший</string>
+    <string name="hint_dim_delay">Секунди без руху до затемнення екрану</string>
+    <string name="hint_screen_timeout">Секунди після затемнення до блокування</string>
+    <string name="hint_fab_delay">Секунди руху до появи кнопки керування</string>
+    <string name="hint_mqtt_section">Всі поля нижче мають бути заповнені для увімкнення</string>
+    <string name="hint_streaming_section">Транслює живе MJPEG-відео з фронтальної камери через HTTP</string>
+    <string name="hint_streaming_quality">Якість JPEG-стиснення · 30 = мало, 100 = максимум</string>
+    <string name="hint_streaming_fps">Цільова частота кадрів для MJPEG-потоку</string>
+    <string name="hint_streaming_rotation">Натисніть щоб повернути відео на 90°</string>
+    <string name="hint_auto_return">Повертає на дашборд коли покинуто дозволений URL</string>
+    <string name="settings_trust_ssl">Довіряти всім SSL-сертифікатам</string>
+    <string name="hint_trust_ssl">Дозволяє самопідписані або недійсні SSL-сертифікати · потрібно для локального Home Assistant із власними сертифікатами</string>
+    <string name="hint_screensaver_section">Показує заставку після простою, перш ніж заблокується екран</string>
+    <string name="hint_screensaver_activation_delay">Секунди простою після затемнення до появи заставки</string>
+    <string name="hint_screensaver_slide_interval">Секунди між переходами зображень у режимі слайд-шоу</string>
+    <string name="settings_reduce_motion">Зменшити анімацію</string>
+    <string name="hint_reduce_motion">Вимикає всі анімації глобально · покращує продуктивність на повільних пристроях</string>
+
+    <!-- Settings → Auto Reboot -->
+    <string name="settings_auto_reboot">Авто-перезавантаження</string>
+    <string name="settings_auto_reboot_hour">Година</string>
+    <string name="settings_auto_reboot_minute">Хвилина</string>
+    <string name="settings_auto_reboot_interval">Інтервал: %d днів</string>
+    <string name="hint_auto_reboot_section">Перезавантажує пристрій у заданий час</string>
+    <string name="hint_auto_reboot_interval">Натисніть для вибору: щодня, щотижня, двотижнево, щомісяця</string>
 
     <!-- Settings → Advanced -->
     <string name="settings_advanced">Розширені</string>

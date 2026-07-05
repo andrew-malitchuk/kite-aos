@@ -45,8 +45,8 @@ public fun KioskWebView(
 ) {
     when (engineType) {
         WebEngineModel.AndroidWebView -> AndroidWebViewEngine(state, modifier)
-        // GeckoView requires API 26+; fall back to AndroidWebView on older devices
-        // so a saved GeckoView preference does not crash on API 25 (gms flavor).
+        // GeckoView's libxul.so requires lutimes (API 26+); fall back to AndroidWebView on
+        // older devices to prevent a fatal dlopen crash on armeabi-v7a API-25 builds.
         WebEngineModel.GeckoView -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             GeckoViewEngine(state, modifier)
         } else {

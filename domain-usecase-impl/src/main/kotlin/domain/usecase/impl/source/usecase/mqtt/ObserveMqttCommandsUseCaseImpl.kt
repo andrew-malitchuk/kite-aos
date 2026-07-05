@@ -15,6 +15,5 @@ import org.koin.core.annotation.Single
 internal class ObserveMqttCommandsUseCaseImpl(
     private val mqttRepository: MqttRepository,
 ) : ObserveMqttCommandsUseCase {
-    override operator fun invoke(): Flow<Pair<String, String>> =
-        mqttRepository.observeCommands()
+    override operator fun invoke(): Flow<Pair<String, String>> = mqttRepository.observeCommands()
 }

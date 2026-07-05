@@ -10,9 +10,11 @@ import domain.core.source.model.ApplicationModel
  */
 public interface GetApplicationsUseCase {
     /**
-     * Retrieves a list of all available [ApplicationModel]s from the platform.
+     * Queries the platform package manager for all launcher-enabled applications.
      *
-     * @return A [Result] containing the list of installed applications.
+     * @return `Result.success` wrapping a list of [ApplicationModel]s (never null; may be empty
+     *   if no launcher-enabled apps exist), or `Result.failure` with a `Failure` if the
+     *   platform query fails.
      */
     public suspend operator fun invoke(): Result<List<ApplicationModel>>
 }

@@ -12,10 +12,15 @@ import domain.usecase.api.source.common.Optional
  */
 public interface SetMoveDetectorUseCase {
     /**
-     * Updates the move detector settings.
+     * Writes the given motion detector settings to persistent storage.
      *
-     * @param moveDetectorModel The new motion detector configuration.
-     * @return An [Optional] result.
+     * Changes take effect the next time `MotionService` reads its configuration, which
+     * typically occurs on service restart.
+     *
+     * @param moveDetectorModel The new motion detector configuration (sensitivity thresholds,
+     *   wake/dim delays, enabled flag, etc.).
+     * @return `Result.success(Unit)` on success, or `Result.failure` with a `Failure`
+     *   if the write operation fails.
      */
     public suspend operator fun invoke(moveDetectorModel: MoveDetectorModel): Optional
 }
