@@ -1,0 +1,11 @@
+syntax = "proto3";
+package auto_reboot;
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "AutoRebootDataProto";
+
+message AutoRebootProtoModel {
+  bool enabled = 1;
+  int32 hour = 2;
+  int32 minute = 3;
+  int32 interval_days = 4;
+}

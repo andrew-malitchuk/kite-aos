@@ -3,9 +3,12 @@ package data.mqtt.impl.source.datasource
 import data.mqtt.api.source.datasource.TelemetryMqttSource
 import data.mqtt.impl.source.resources.BatteryConfigMqtt
 import data.mqtt.impl.source.resources.BrightnessConfigMqtt
+import data.mqtt.impl.source.resources.CameraUrlConfigMqtt
 import data.mqtt.impl.source.resources.DeviceConfigMqtt
 import data.mqtt.impl.source.resources.DeviceMqtt
+import data.mqtt.impl.source.resources.FabConfigMqtt
 import data.mqtt.impl.source.resources.ScreenConfigMqtt
+import data.mqtt.impl.source.resources.ScreensaverConfigMqtt
 import data.mqtt.impl.source.resources.UrlConfigMqtt
 import data.mqtt.impl.source.resources.VolumeConfigMqtt
 import io.github.davidepianca98.MQTTClient
@@ -132,6 +135,9 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
                             registerBrightness(clientId = clientId, friendlyName = friendlyName)
                             registerUrl(clientId = clientId, friendlyName = friendlyName)
                             registerScreen(clientId = clientId, friendlyName = friendlyName)
+                            registerFab(clientId = clientId, friendlyName = friendlyName)
+                            registerScreensaver(clientId = clientId, friendlyName = friendlyName)
+                            registerCameraUrl(clientId = clientId, friendlyName = friendlyName)
 
                             // Subscribe to inbound command topics so HA can control the device.
                             subscribeToCommandTopics(clientId = clientId)
@@ -211,6 +217,11 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
         publish(false, "${currentClientId}_network/state", payload)
     }
 
+    override suspend fun sendCameraUrl(url: String): Unit = withContext(Dispatchers.IO) {
+        val currentClientId = clientId ?: return@withContext
+        publish(false, "${currentClientId}_camera_url/camera_url/state", url)
+    }
+
     override fun observeCommands(): Flow<Pair<String, String>> = commandFlow.asSharedFlow()
 
     /**
@@ -229,6 +240,8 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
                 Subscription("${clientId}_brightness/brightness/set", options),
                 Subscription("${clientId}_screen/screen/set", options),
                 Subscription("${clientId}_app/app/launch", options),
+                Subscription("${clientId}_fab/fab/set", options),
+                Subscription("${clientId}_screensaver/screensaver/set", options),
             ),
         )
     }
@@ -361,6 +374,59 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
             uniqueId = "${clientId}_screen",
             stateTopic = "${clientId}_screen/screen/state",
             commandTopic = "${clientId}_screen/screen/set",
+        )
+        publish(true, topic, json.encodeToString(config))
+    }
+
+    /**
+     * Registers a switch entity for FAB visibility control with Home Assistant via MQTT Discovery.
+     *
+     * Uses `optimistic` mode — no state topic is needed because HA assumes the state matches
+     * the last command without confirmation from the device.
+     *
+     * @param clientId Unique identifier for the device, used as a topic prefix.
+     * @param friendlyName Human-readable name for the device shown in Home Assistant.
+     */
+    private suspend fun registerFab(clientId: String, friendlyName: String) {
+        val topic = "homeassistant/switch/${clientId}_fab/config"
+        val config = FabConfigMqtt(
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            uniqueId = "${clientId}_fab",
+            commandTopic = "${clientId}_fab/fab/set",
+        )
+        publish(true, topic, json.encodeToString(config))
+    }
+
+    /**
+     * Registers a switch entity for screensaver control with Home Assistant via MQTT Discovery.
+     *
+     * Uses `optimistic` mode — `"ON"` activates the screensaver, `"OFF"` dismisses it.
+     *
+     * @param clientId Unique identifier for the device, used as a topic prefix.
+     * @param friendlyName Human-readable name for the device shown in Home Assistant.
+     */
+    private suspend fun registerScreensaver(clientId: String, friendlyName: String) {
+        val topic = "homeassistant/switch/${clientId}_screensaver/config"
+        val config = ScreensaverConfigMqtt(
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            uniqueId = "${clientId}_screensaver",
+            commandTopic = "${clientId}_screensaver/screensaver/set",
+        )
+        publish(true, topic, json.encodeToString(config))
+    }
+
+    /**
+     * Registers a sensor entity for the MJPEG camera stream URL with Home Assistant via MQTT Discovery.
+     *
+     * @param clientId Unique identifier for the device, used as a topic prefix.
+     * @param friendlyName Human-readable name for the device shown in Home Assistant.
+     */
+    private suspend fun registerCameraUrl(clientId: String, friendlyName: String) {
+        val topic = "homeassistant/sensor/${clientId}_camera_url/config"
+        val config = CameraUrlConfigMqtt(
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            uniqueId = "${clientId}_camera_url",
+            stateTopic = "${clientId}_camera_url/camera_url/state",
         )
         publish(true, topic, json.encodeToString(config))
     }

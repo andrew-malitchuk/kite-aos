@@ -10,8 +10,11 @@ import domain.usecase.api.source.common.Optional
  */
 public interface SetOnboardingStatusUseCase {
     /**
-     * @param value `true` if onboarding is finished, `false` otherwise.
-     * @return An [Optional] result.
+     * Writes the onboarding completion flag to persistent storage.
+     *
+     * @param value `true` to mark onboarding as finished, `false` to mark it as pending.
+     * @return `Result.success(Unit)` on success, or `Result.failure` with a `Failure`
+     *   if the write operation fails.
      */
     public suspend operator fun invoke(value: Boolean): Optional
 }

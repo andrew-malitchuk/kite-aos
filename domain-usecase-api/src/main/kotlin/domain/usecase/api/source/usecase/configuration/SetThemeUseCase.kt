@@ -12,8 +12,11 @@ import domain.usecase.api.source.common.Optional
  */
 public interface SetThemeUseCase {
     /**
-     * @param value The new [ThemeModel] to apply.
-     * @return An [Optional] result.
+     * Writes the given theme to persistent storage, making it the active application theme.
+     *
+     * @param value The new [ThemeModel] (e.g., light, dark, or system-default) to persist.
+     * @return `Result.success(Unit)` on success, or `Result.failure` with a `Failure`
+     *   if the write operation fails.
      */
     public suspend operator fun invoke(value: ThemeModel): Optional
 }

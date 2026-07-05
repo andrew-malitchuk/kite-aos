@@ -19,6 +19,7 @@ public data class HostState(
     val startDestination: Destination? = null,
     val theme: ThemeModel = ThemeModel.Light,
     val isAutoReturnEnabled: Boolean = true,
+    val isReduceMotionEnabled: Boolean = false,
 )
 
 /**

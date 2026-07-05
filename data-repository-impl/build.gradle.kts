@@ -10,6 +10,7 @@ dependencies {
     implementation(projects.dataPlatformApi)
     implementation(projects.dataPreferencesApi)
     implementation(projects.dataMqttApi)
+    implementation(projects.dataRuntimeApi)
     implementation(projects.domainCore)
     implementation(projects.domainRepositoryApi)
 }

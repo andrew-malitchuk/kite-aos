@@ -23,6 +23,7 @@ import presentation.core.ui.source.kit.atom.icon.IcOutline3
  *
  * @param modifier Modifier to be applied to the [BaseListItem].
  * @param text The label text displayed in the item (e.g., "Enable notifications").
+ * @param subtitle Optional secondary hint text displayed below [text].
  * @param textStyle The [TextStyle] for the label text. Defaults to [Theme.typography.body].
  * @param icon The [ImageVector] icon to display on the leading side.
  * @param iconBackgroundColor Background [Color] for the icon container.
@@ -37,6 +38,7 @@ import presentation.core.ui.source.kit.atom.icon.IcOutline3
 public fun ToggleListItem(
     modifier: Modifier = Modifier,
     text: String,
+    subtitle: String? = null,
     textStyle: TextStyle = Theme.typography.body,
     icon: ImageVector,
     iconBackgroundColor: Color,
@@ -48,6 +50,7 @@ public fun ToggleListItem(
         modifier = modifier,
         icon = icon,
         text = text,
+        subtitle = subtitle,
         textStyle = textStyle,
         iconBackgroundColor = iconBackgroundColor,
         iconForegroundColor = iconForegroundColor,

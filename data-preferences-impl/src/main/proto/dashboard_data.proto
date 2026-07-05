@@ -8,4 +8,5 @@ option java_outer_classname = "DashboardDataProto";
 message DashboardProtoModel {
   string dashboard_url = 1;
   string whitelist_url = 2;
+  bool trust_all_ssl = 3;
 }

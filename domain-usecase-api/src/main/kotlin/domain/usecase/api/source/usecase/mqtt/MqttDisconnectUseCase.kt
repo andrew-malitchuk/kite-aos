@@ -10,9 +10,14 @@ import domain.usecase.api.source.common.Optional
  */
 public interface MqttDisconnectUseCase {
     /**
-     * Disconnects the MQTT client and cleans up resources.
+     * Gracefully disconnects the MQTT client and releases all associated resources.
      *
-     * @return An [Optional] result.
+     * Safe to call even if the client is already disconnected — in that case the call
+     * is a no-op. Suspends until the disconnect handshake is acknowledged by the broker.
+     *
+     * @return `Result.success(Unit)` when the client has been cleanly disconnected, or
+     *   `Result.failure` with a `Failure.Technical.Network` if an error occurs during
+     *   the disconnect procedure.
      */
     public suspend operator fun invoke(): Optional
 }

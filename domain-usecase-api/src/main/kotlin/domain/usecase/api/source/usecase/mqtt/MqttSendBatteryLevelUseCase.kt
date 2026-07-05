@@ -9,10 +9,11 @@ import domain.usecase.api.source.common.Optional
  */
 public interface MqttSendBatteryLevelUseCase {
     /**
-     * Publishes the [level] to the MQTT broker.
+     * Publishes the current battery level to the MQTT broker's battery telemetry topic.
      *
-     * @param level The battery level percentage (0-100).
-     * @return An [Optional] result.
+     * @param level Battery charge percentage in the range `0–100`.
+     * @return `Result.success(Unit)` on successful publish, or `Result.failure` with a
+     *   `Failure.Technical.Network` if the broker is unreachable or the client is not connected.
      */
     public suspend operator fun invoke(level: Int): Optional
 }

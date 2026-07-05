@@ -236,6 +236,9 @@ public fun CustomSideDrawerOverlay(
  * @since 0.0.1
  */
 public enum class DrawerSide {
+    /** Drawer slides in from the left edge of the screen. */
     LEFT,
+
+    /** Drawer slides in from the right edge of the screen. */
     RIGHT,
 }

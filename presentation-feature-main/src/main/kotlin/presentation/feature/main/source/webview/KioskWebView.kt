@@ -1,5 +1,6 @@
 package presentation.feature.main.source.webview
 
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -44,6 +45,12 @@ public fun KioskWebView(
 ) {
     when (engineType) {
         WebEngineModel.AndroidWebView -> AndroidWebViewEngine(state, modifier)
-        WebEngineModel.GeckoView -> GeckoViewEngine(state, modifier)
+        // GeckoView's libxul.so requires lutimes (API 26+); fall back to AndroidWebView on
+        // older devices to prevent a fatal dlopen crash on armeabi-v7a API-25 builds.
+        WebEngineModel.GeckoView -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            GeckoViewEngine(state, modifier)
+        } else {
+            AndroidWebViewEngine(state, modifier)
+        }
     }
 }

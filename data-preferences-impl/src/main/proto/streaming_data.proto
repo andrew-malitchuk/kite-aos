@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package streaming;
+
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "StreamingDataProto";
+
+message StreamingProtoModel {
+  bool enabled = 1;
+  int32 port = 2;
+  int32 quality = 3;
+  int32 fps = 4;
+  int32 rotation = 5;
+}

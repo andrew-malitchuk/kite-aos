@@ -6,6 +6,7 @@ import common.core.core.execute.executeResult
 import domain.core.source.model.ThemeModel
 import domain.usecase.api.source.usecase.configuration.GetAutoReturnUseCase
 import domain.usecase.api.source.usecase.configuration.GetOnboardingStatusUseCase
+import domain.usecase.api.source.usecase.configuration.GetReduceMotionUseCase
 import domain.usecase.api.source.usecase.configuration.ObserveThemeUseCase
 import org.koin.android.annotation.KoinViewModel
 import org.orbitmvi.orbit.Container
@@ -32,6 +33,7 @@ public class HostViewModel(
     private val getOnboardingStatusUseCase: GetOnboardingStatusUseCase,
     private val observeThemeUseCase: ObserveThemeUseCase,
     private val getAutoReturnUseCase: GetAutoReturnUseCase,
+    private val getReduceMotionUseCase: GetReduceMotionUseCase,
 ) : ContainerHost<HostState, HostSideEffect>, ViewModel() {
     override val container: Container<HostState, HostSideEffect> = container(HostState())
 
@@ -39,6 +41,7 @@ public class HostViewModel(
         determineStartDestination()
         observeTheme()
         loadAutoReturn()
+        loadReduceMotion()
     }
 
     private fun loadAutoReturn() = executeResult(
@@ -46,6 +49,14 @@ public class HostViewModel(
         request = { getAutoReturnUseCase() },
         result = { enabled ->
             intent { reduce { state.copy(isAutoReturnEnabled = enabled ?: true) } }
+        },
+    )
+
+    private fun loadReduceMotion() = executeResult(
+        scope = viewModelScope,
+        request = { getReduceMotionUseCase() },
+        result = { enabled ->
+            intent { reduce { state.copy(isReduceMotionEnabled = enabled ?: false) } }
         },
     )
 

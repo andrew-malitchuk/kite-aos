@@ -123,6 +123,17 @@ public interface TelemetryMqttSource {
     public suspend fun sendNetworkState(isOnline: Boolean)
 
     /**
+     * Sends the MJPEG camera stream URL to the broker.
+     *
+     * Published whenever the stream server starts or the device IP changes.
+     * An empty string signals that the stream is currently unavailable.
+     *
+     * @param url The full MJPEG stream URL (e.g., `http://192.168.1.100:8080/stream.mjpg`),
+     *   or an empty string when the stream is not active.
+     */
+    public suspend fun sendCameraUrl(url: String)
+
+    /**
      * Returns a [Flow] that emits every inbound MQTT command as a [Pair] of (topic, payload).
      *
      * Only topics that the client is subscribed to (command topics for volume, brightness,

@@ -12,8 +12,11 @@ import domain.usecase.api.source.common.Optional
  */
 public interface SetDockPositionUseCase {
     /**
-     * @param dockPositionModel The new dock position configuration.
-     * @return An [Optional] result.
+     * Writes the given dock position preference to persistent storage.
+     *
+     * @param dockPositionModel The new dock position (e.g., left or right side of the screen).
+     * @return `Result.success(Unit)` on success, or `Result.failure` with a `Failure`
+     *   if the write operation fails.
      */
     public suspend operator fun invoke(dockPositionModel: DockPositionModel): Optional
 }

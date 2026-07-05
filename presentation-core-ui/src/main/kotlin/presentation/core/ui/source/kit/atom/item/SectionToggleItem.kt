@@ -1,5 +1,6 @@
 package presentation.core.ui.source.kit.atom.item
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
@@ -10,6 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
@@ -22,6 +24,7 @@ import presentation.core.ui.source.kit.atom.button.toggle.Toggle
  * It is useful for sections that can be enabled or disabled as a whole.
  *
  * @param title the text to display as the section title.
+ * @param subtitle optional secondary hint text displayed below [title].
  * @param checked whether the toggle is currently checked.
  * @param enabled whether the toggle is interactive.
  * @param onCheckedChange callback invoked when the toggle state changes.
@@ -35,6 +38,7 @@ import presentation.core.ui.source.kit.atom.button.toggle.Toggle
 @Composable
 public fun SectionToggleItem(
     title: String,
+    subtitle: String? = null,
     checked: Boolean,
     enabled: Boolean = true,
     onCheckedChange: (Boolean) -> Unit,
@@ -44,12 +48,30 @@ public fun SectionToggleItem(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            text = title,
-            style = Theme.typography.title,
-            color = Theme.color.inkMain,
-            modifier = Modifier.weight(1f),
-        )
+        if (subtitle != null) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    style = Theme.typography.title,
+                    color = Theme.color.inkMain,
+                )
+                Text(
+                    text = subtitle,
+                    style = Theme.typography.caption,
+                    color = Theme.color.inkMain.copy(alpha = 0.5f),
+                    minLines = 2,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        } else {
+            Text(
+                text = title,
+                style = Theme.typography.title,
+                color = Theme.color.inkMain,
+                modifier = Modifier.weight(1f),
+            )
+        }
         Toggle(
             checked = checked,
             enabled = enabled,

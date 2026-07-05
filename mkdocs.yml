@@ -1,0 +1,123 @@
+site_name: Kite
+site_description: Open-source Android kiosk application for smart home dashboards
+site_url: https://andrew-malitchuk.github.io/kite-aos/
+repo_name: andrew-malitchuk/kite-aos
+repo_url: https://github.com/andrew-malitchuk/kite-aos
+edit_uri: edit/main/
+
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: deep purple
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep purple
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+  font:
+    text: Plus Jakarta Sans
+    code: JetBrains Mono
+  logo: img/ic_launcher_transparent.svg
+  favicon: img/ic_launcher.png
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/andrew-malitchuk/kite-aos
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Configuration: getting-started/configuration.md
+  - User Guide:
+    - First-Time Setup: user-guide/first-time-setup.md
+    - Motion Detection: user-guide/motion-detection.md
+    - Camera Streaming: user-guide/camera-streaming.md
+    - Screensaver: user-guide/screensaver.md
+    - Auto Reboot: user-guide/auto-reboot.md
+    - Home Assistant & MQTT: user-guide/home-assistant-and-mqtt.md
+    - Web Kiosk: user-guide/web-kiosk.md
+    - Appearance: user-guide/appearance.md
+    - System Controls: user-guide/system-controls.md
+    - Backup & Restore: user-guide/backup-restore.md
+  - Architecture:
+    - Overview: architecture/overview.md
+    - MVI Pattern: architecture/mvi.md
+  - Features:
+    - Main Dashboard: modules/presentation-feature-main.md
+    - Settings: modules/presentation-feature-settings.md
+    - Onboarding: modules/presentation-feature-onboarding.md
+    - Host: modules/presentation-feature-host.md
+    - About: modules/presentation-feature-about.md
+    - App Launcher: modules/presentation-feature-application.md
+  - Presentation Core:
+    - Application: modules/presentation-core-application.md
+    - Platform: modules/presentation-core-platform.md
+    - Styling: modules/presentation-core-styling.md
+    - UI Kit: modules/presentation-core-ui.md
+    - Navigation API: modules/presentation-core-navigation-api.md
+    - Navigation Impl: modules/presentation-core-navigation-impl.md
+    - Localisation: modules/presentation-core-localisation.md
+  - Domain:
+    - Core: modules/domain-core.md
+    - Repository API: modules/domain-repository-api.md
+    - UseCase API: modules/domain-usecase-api.md
+    - UseCase Impl: modules/domain-usecase-impl.md
+  - Data:
+    - Core: modules/data-core.md
+    - Database API: modules/data-database-api.md
+    - Database Impl: modules/data-database-impl.md
+    - MQTT API: modules/data-mqtt-api.md
+    - MQTT Impl: modules/data-mqtt-impl.md
+    - Preferences API: modules/data-preferences-api.md
+    - Preferences Impl: modules/data-preferences-impl.md
+    - Platform API: modules/data-platform-api.md
+    - Platform Impl: modules/data-platform-impl.md
+    - Repository Impl: modules/data-repository-impl.md
+  - Infrastructure:
+    - Build System: modules/build-logic.md
+    - Common Core: modules/common-core.md
+  - Roadmap: roadmap.md
+  - Changelog: changelog.md

@@ -1,12 +1,16 @@
 package presentation.feature.settings.source.settings
 
+import domain.core.source.model.AutoRebootModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.HomeAssistantInstanceModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.MqttModel
+import domain.core.source.model.ScreensaverModel
+import domain.core.source.model.StreamingModel
 import domain.core.source.model.ThemeModel
 import domain.core.source.model.WebEngineModel
+import domain.core.source.model.WebViewRefreshModel
 
 /**
  * Represents the MVI state of the settings screen.
@@ -35,6 +39,11 @@ public data class SettingsState(
     val webEngine: WebEngineModel = WebEngineModel.AndroidWebView,
     val isAutoReturnEnabled: Boolean = true,
     val isDiscovering: Boolean = false,
+    val webViewRefresh: WebViewRefreshModel? = null,
+    val isReduceMotionEnabled: Boolean = false,
+    val streaming: StreamingModel? = null,
+    val screensaver: ScreensaverModel? = null,
+    val autoReboot: AutoRebootModel? = null,
 )
 
 /**
@@ -82,6 +91,9 @@ public sealed class SettingsSideEffect {
     /** Triggers the SAF "Open Document" picker to select a config JSON file for import. */
     public data object ImportConfigEffect : SettingsSideEffect()
 
+    /** Triggers the SAF tree picker to select an image folder for the screensaver slideshow. */
+    public data object PickScreensaverFolderEffect : SettingsSideEffect()
+
     /**
      * Delivers the list of discovered Home Assistant instances to display in a selection dialog.
      *
@@ -107,7 +119,11 @@ public sealed class SettingsIntent {
     public data class OnSetThemeIntent(val theme: ThemeModel) : SettingsIntent()
 
     /** Sets the kiosk dashboard and whitelist URLs. */
-    public data class OnSetDashboardIntent(val dashboardUrl: String, val whitelistUrl: String) : SettingsIntent()
+    public data class OnSetDashboardIntent(
+        val dashboardUrl: String,
+        val whitelistUrl: String,
+        val trustAllSsl: Boolean = false,
+    ) : SettingsIntent()
 
     /** Sets the control dock position. */
     public data class OnSetDockIntent(val dock: DockPositionModel) : SettingsIntent()
@@ -160,6 +176,27 @@ public sealed class SettingsIntent {
      * @param json The raw JSON string from the user-selected file.
      */
     public data class OnImportConfigContentIntent(val json: String) : SettingsIntent()
+
+    /** Updates the periodic WebView refresh configuration. */
+    public data class OnSetWebViewRefreshIntent(val refresh: WebViewRefreshModel) : SettingsIntent()
+
+    /** Sets the reduce motion / disable animations preference. */
+    public data class OnSetReduceMotionIntent(val enabled: Boolean) : SettingsIntent()
+
+    /** Updates the camera streaming configuration. */
+    public data class OnSetStreamingIntent(val streaming: StreamingModel) : SettingsIntent()
+
+    /** Updates the screensaver configuration. */
+    public data class OnSetScreensaverIntent(val screensaver: ScreensaverModel) : SettingsIntent()
+
+    /** Updates the screensaver folder URI and switches the source to LOCAL_FOLDER. */
+    public data class OnSetScreensaverFolderIntent(val uri: String) : SettingsIntent()
+
+    /** Request to open the SAF tree picker for screensaver image folder selection. */
+    public data object OnPickScreensaverFolderIntent : SettingsIntent()
+
+    /** Updates the auto reboot schedule configuration. */
+    public data class OnSetAutoRebootIntent(val model: AutoRebootModel) : SettingsIntent()
 
     /** Request to scan the local network for Home Assistant instances. */
     public data object OnDiscoverHomeAssistantIntent : SettingsIntent()

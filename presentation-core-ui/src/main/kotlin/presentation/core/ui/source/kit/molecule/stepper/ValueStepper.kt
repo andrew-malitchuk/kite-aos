@@ -150,6 +150,10 @@ private fun StepperButton(text: String, onAction: () -> Unit, enabled: Boolean) 
     val haptic = LocalHapticFeedback.current
     var isPressed by remember { mutableStateOf(false) }
     val currentOnAction by rememberUpdatedState(onAction)
+    // enabled must be rememberUpdatedState so the running LaunchedEffect sees the latest value.
+    // Without this, the auto-repeat loop captures a stale enabled=true and keeps firing haptic
+    // feedback even after the value reaches the range boundary and the button turns grey.
+    val currentEnabled by rememberUpdatedState(enabled)
 
     // Auto-repeat loop: fires the action while the button is held down.
     // The repeat interval starts at 300 ms and accelerates by 40 ms per tick
@@ -158,7 +162,7 @@ private fun StepperButton(text: String, onAction: () -> Unit, enabled: Boolean) 
         if (isPressed) {
             var currentDelay = 300L // Initial delay between repeats in milliseconds
             while (isPressed) {
-                if (enabled) {
+                if (currentEnabled) {
                     currentOnAction()
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 }

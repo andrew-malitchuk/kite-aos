@@ -8,7 +8,10 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import android.animation.ValueAnimator
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -20,6 +23,7 @@ import org.koin.android.ext.android.inject
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import presentation.core.navigation.impl.source.host.NavigationHost
+import presentation.core.platform.source.service.MqttService
 import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.core.splash.SplashLoading
 import presentation.core.ui.core.splash.SplashScreenDecorator
@@ -56,6 +60,11 @@ public class HostActivity : AppCompatActivity() {
 
         setupSplashScreen()
         setupContent()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ContextCompat.startForegroundService(this, Intent(this, MqttService::class.java))
     }
 
     override fun onResume() {
@@ -144,6 +153,15 @@ public class HostActivity : AppCompatActivity() {
                             splashScreen?.dismiss()
                         }
                     }
+                }
+            }
+
+            LaunchedEffect(state.isReduceMotionEnabled) {
+                val scale = if (state.isReduceMotionEnabled) 0f else 1f
+                runCatching {
+                    ValueAnimator::class.java
+                        .getMethod("setDurationScale", Float::class.javaPrimitiveType)
+                        .invoke(null, scale)
                 }
             }
 

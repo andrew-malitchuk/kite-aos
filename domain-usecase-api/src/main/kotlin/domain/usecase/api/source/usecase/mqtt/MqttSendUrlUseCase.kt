@@ -11,10 +11,11 @@ import domain.usecase.api.source.common.Optional
  */
 public interface MqttSendUrlUseCase {
     /**
-     * Publishes the [url] to the MQTT broker.
+     * Publishes the given URL to the broker's current-page telemetry topic.
      *
-     * @param url The URL of the currently displayed page.
-     * @return An [Optional] result.
+     * @param url The fully-qualified URL of the page currently loaded in the WebView.
+     * @return `Result.success(Unit)` on successful publish, or `Result.failure` with a
+     *   `Failure.Technical.Network` if the broker is unreachable or the client is not connected.
      */
     public suspend operator fun invoke(url: String): Optional
 }

@@ -12,5 +12,15 @@ import kotlinx.coroutines.flow.Flow
  * @since 0.0.1
  */
 public interface ObserveMqttConfigurationUseCase {
+
+    /**
+     * Returns a cold [Flow] backed by the preference data store that re-emits on every
+     * configuration change persisted via [SetMqttConfigurationUseCase].
+     *
+     * Emits `null` when no configuration has been saved yet. The flow never completes
+     * under normal operation — it terminates only when the collector's scope is cancelled.
+     *
+     * @return A [Flow] emitting the latest [MqttModel], or `null` if unconfigured.
+     */
     public operator fun invoke(): Flow<MqttModel?>
 }

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package webview_refresh;
+
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "WebViewRefreshDataProto";
+
+message WebViewRefreshProtoModel {
+  bool enabled = 1;
+  int64 interval_seconds = 2;
+}

@@ -18,6 +18,7 @@ dependencies {
     implementation(projects.presentationCoreNavigationImpl)
     implementation(projects.presentationCoreStyling)
     implementation(projects.presentationCoreUi)
+    implementation(projects.presentationCorePlatform)
     implementation(projects.domainCore)
     implementation(projects.domainUsecaseApi)
     implementation(libs.orbit.core)
