@@ -98,12 +98,13 @@ public class MotionService : LifecycleService() {
         extraBufferCapacity = 4,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
-    private var isStreamingEnabled = false
-    private var streamingPort = DEFAULT_STREAMING_PORT
-    private var streamingQuality = DEFAULT_STREAMING_QUALITY
-    private var streamingFps = DEFAULT_STREAMING_FPS
-    private var streamingRotation = DEFAULT_STREAMING_ROTATION
-    private var lastStreamFrameTime = 0L
+    // Written on serviceScope (Main), read on cameraExecutor — @Volatile ensures cross-thread visibility.
+    @Volatile private var isStreamingEnabled = false
+    @Volatile private var streamingPort = DEFAULT_STREAMING_PORT
+    @Volatile private var streamingQuality = DEFAULT_STREAMING_QUALITY
+    @Volatile private var streamingFps = DEFAULT_STREAMING_FPS
+    @Volatile private var streamingRotation = DEFAULT_STREAMING_ROTATION
+    @Volatile private var lastStreamFrameTime = 0L
     private val jpegOutputStream = ByteArrayOutputStream(64 * 1024)
     private var cameraProvider: ProcessCameraProvider? = null
     // endregion
@@ -376,6 +377,8 @@ public class MotionService : LifecycleService() {
             @Suppress("OPT_IN_USAGE")
             observeStreamingConfigurationUseCase().debounce(300L).collectLatest { model ->
                 val wasEnabled = isStreamingEnabled
+                val prevPort = streamingPort
+
                 isStreamingEnabled = model?.enabled == true
                 streamingPort = model?.port ?: DEFAULT_STREAMING_PORT
                 streamingQuality = model?.quality ?: DEFAULT_STREAMING_QUALITY
@@ -383,12 +386,23 @@ public class MotionService : LifecycleService() {
                 streamingRotation = model?.rotation ?: DEFAULT_STREAMING_ROTATION
                 lastStreamFrameTime = 0L
 
-                if (isStreamingEnabled) {
-                    rebindCamera()
-                    mjpegHttpServer.start(streamingPort, frameFlow)
-                } else {
-                    mjpegHttpServer.stop()
-                    if (wasEnabled) rebindCamera()
+                when {
+                    isStreamingEnabled && !wasEnabled -> {
+                        // Streaming turned on — bind camera at stream resolution and start server.
+                        rebindCamera()
+                        mjpegHttpServer.start(streamingPort, frameFlow)
+                    }
+                    !isStreamingEnabled && wasEnabled -> {
+                        // Streaming turned off — stop server and drop back to motion-only resolution.
+                        mjpegHttpServer.stop()
+                        rebindCamera()
+                    }
+                    isStreamingEnabled && streamingPort != prevPort -> {
+                        // Port changed while streaming — restart server on new port only.
+                        mjpegHttpServer.start(streamingPort, frameFlow)
+                    }
+                    // rotation / quality / fps changed while streaming: variables updated above,
+                    // processImageProxy picks them up on the next frame — no restart needed.
                 }
             }
         }
