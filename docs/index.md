@@ -20,6 +20,8 @@ Originally developed to solve my personal smart home setup needs, the platform i
 I'm always open to discussions and feature requests to expand its capabilities. Feel free to open an
 issue!
 
+[Telegram channel](https://t.me/kite_aos).
+
 <p align="center">
   <img src="img/img_demo_0.png" alt="Onboarding" width="24%"/>
   <img src="img/img_demo_1.png" alt="Dashboard" width="24%"/>
@@ -62,7 +64,7 @@ issue!
 | **Config Import / Export** | Back up and restore all settings as a JSON file via the system file picker.                           |
 | **HA Auto-Discovery**      | Scans the local network for Home Assistant instances and populates the dashboard URL automatically.    |
 | **Screensaver**            | Image slideshow overlay with optional clock display; configurable activation delay and slide interval; dismisses automatically when motion is detected. |
-| **MJPEG Streaming**        | Exposes the front camera as an MJPEG stream (`/stream.mjpg`) accessible on the local network.        |
+| **MJPEG Streaming**        | Streams the front camera as MJPEG over HTTP (`/stream.mjpg`, `/snapshot.jpg`). The stream URL is auto-published to Home Assistant via MQTT Discovery — no credentials or manual YAML required. |
 | **Auto-Reboot**            | Scheduled device reboots on a daily, weekly, bi-weekly, or monthly interval at a configured time; keeps long-running kiosk deployments healthy. |
 | **Periodic WebView Refresh** | Automatically reloads the dashboard at a configurable interval.                                    |
 | **Reduce Motion**          | Disables Android animations globally for smoother performance on low-end hardware.                   |
@@ -148,14 +150,9 @@ For community support, join the [Telegram channel @kite_aos](https://t.me/kite_a
 
 ## Contributing
 
-Contributions are welcome. Please follow the standard pull request process:
+Contributions are welcome. See [CONTRIBUTING.md](https://github.com/andrew-malitchuk/kite-aos/blob/main/CONTRIBUTING.md) for the full guide covering branch naming, code style, module structure, and the PR process.
 
-1. Fork the repository.
-2. Create a feature branch.
-3. Submit a PR with a detailed description of changes.
-
-This project started as a personal tool to cover my specific use cases. If you need functionality
-that isn't currently supported, let's discuss it in the Issues section before submitting a PR.
+This project started as a personal tool to cover my specific use cases. If you need functionality that isn't currently supported, open an issue first so we can align on scope before you invest time in a PR.
 
 ---
 

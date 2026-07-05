@@ -1,3 +1,27 @@
+# [1.1.0] - 2026-06-13
+
+This release adds screensaver overlay, MJPEG streaming, auto-reboot scheduler, analytics infrastructure, and expands settings with five new preference categories.
+
+## Added
+- Analytics infrastructure with pluggable provider pattern (console + Firebase for gms flavor)
+- Screensaver, auto-reboot, streaming, reduce-motion, and webview-refresh preferences
+- Domain models and repository contracts for new features
+- Use cases for screensaver, streaming, auto-reboot, screen state, and webview-refresh
+- MQTT telemetry extended with screensaver, FAB, and camera URL commands
+- Auto-reboot scheduler, MJPEG streaming server, and network resolver to platform
+- Screensaver overlay with clock component to main dashboard
+- Settings expanded with streaming, screensaver, auto-reboot, and webview-refresh configuration
+- Analytics, new modules, and updated services wired into app composition root
+- Project documentation, architecture guides, and MkDocs configuration
+
+## Fixed
+- Guard Application.onCreate against GeckoView child processes
+
+## Changed
+- Remove watchdog recovery system from main feature
+- Update F-Droid store listing description
+- Remove GEMINI.md documentation files from all modules
+
 # [1.0.0] - 2026-05-27
 
 This release marks the first major version of Kite AOS, introducing pluggable WebView engine support, automatic return, Home Assistant network discovery, expanded MQTT telemetry, and Android 7.1 (API 25) compatibility for the GMS flavor.

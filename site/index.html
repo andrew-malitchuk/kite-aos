@@ -2760,6 +2760,7 @@ information kiosks, or dedicated web-resource controllers).</p>
 <p>Originally developed to solve my personal smart home setup needs, the platform is highly modular.
 I'm always open to discussions and feature requests to expand its capabilities. Feel free to open an
 issue!</p>
+<p><a href="https://t.me/kite_aos">Telegram channel</a>.</p>
 <p align="center">
   <img src="img/img_demo_0.png" alt="Onboarding" width="24%"/>
   <img src="img/img_demo_1.png" alt="Dashboard" width="24%"/>
@@ -2838,7 +2839,7 @@ issue!</p>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>MJPEG Streaming</strong></td>
-<td style="text-align: left;">Exposes the front camera as an MJPEG stream (<code>/stream.mjpg</code>) accessible on the local network.</td>
+<td style="text-align: left;">Streams the front camera as MJPEG over HTTP (<code>/stream.mjpg</code>, <code>/snapshot.jpg</code>). The stream URL is auto-published to Home Assistant via MQTT Discovery — no credentials or manual YAML required.</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Auto-Reboot</strong></td>
@@ -2927,14 +2928,8 @@ For open-ended discussions and quick questions, use the <a href="https://t.me/ki
 <p>Check out the troubleshooting section for common problems and solutions.
 For community support, join the <a href="https://t.me/kite_aos">Telegram channel @kite_aos</a> — someone has likely seen your issue before.</p>
 <h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
-<p>Contributions are welcome. Please follow the standard pull request process:</p>
-<ol>
-<li>Fork the repository.</li>
-<li>Create a feature branch.</li>
-<li>Submit a PR with a detailed description of changes.</li>
-</ol>
-<p>This project started as a personal tool to cover my specific use cases. If you need functionality
-that isn't currently supported, let's discuss it in the Issues section before submitting a PR.</p>
+<p>Contributions are welcome. See <a href="https://github.com/andrew-malitchuk/kite-aos/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for the full guide covering branch naming, code style, module structure, and the PR process.</p>
+<p>This project started as a personal tool to cover my specific use cases. If you need functionality that isn't currently supported, open an issue first so we can align on scope before you invest time in a PR.</p>
 <hr />
 <p>Built with Jetpack Compose, Koin, and Orbit MVI.</p>
 <h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
