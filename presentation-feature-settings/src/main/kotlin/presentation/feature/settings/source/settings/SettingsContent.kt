@@ -194,6 +194,20 @@ internal fun SettingsContent(
                                     SystemSection(state, onIntent)
                                     AdvancedSection(onIntent)
 
+                                    val context = LocalContext.current
+                                    val packageInfo = remember(context) {
+                                        context.packageManager.getPackageInfo(context.packageName, 0)
+                                    }
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = Theme.spacing.sizeM),
+                                        text = "v${packageInfo.versionName} (${packageInfo.versionCode})",
+                                        style = Theme.typography.caption,
+                                        color = Theme.color.inkMain.copy(alpha = 0.3f),
+                                        textAlign = TextAlign.Center,
+                                    )
+
                                     Spacer(modifier = Modifier.height(Theme.spacing.sizeL))
                                 }
                             }
@@ -398,7 +412,7 @@ private fun StreamingSection(state: SettingsState, onIntent: (SettingsIntent) ->
             iconForegroundColor = Theme.color.inkMain,
             value = streaming.quality ?: 75,
             onValueChange = { onIntent(SettingsIntent.OnSetStreamingIntent(streaming.copy(quality = it))) },
-            range = 30..100,
+            range = 1..100,
             enabled = true,
         )
 
@@ -1048,10 +1062,6 @@ private fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
  */
 @Composable
 private fun SystemSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
-    val context = LocalContext.current
-    val packageInfo = remember(context) { context.packageManager.getPackageInfo(context.packageName, 0) }
-    val versionDisplay = "v${packageInfo.versionName} (${packageInfo.versionCode})"
-
     Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
         SectionItem(title = stringResource(R.string.settings_system))
 
@@ -1072,17 +1082,6 @@ private fun SystemSection(state: SettingsState, onIntent: (SettingsIntent) -> Un
         ) {
             onIntent(SettingsIntent.OnRestartIntent)
         }
-
-        Text(
-            modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = Theme.spacing.sizeM, bottom = Theme.spacing.sizeL),
-            text = versionDisplay,
-            style = Theme.typography.caption,
-            color = Theme.color.inkMain.copy(alpha = 0.3f),
-            textAlign = TextAlign.Center,
-        )
     }
 }
 
