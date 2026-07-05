@@ -38,3 +38,14 @@ Kite is available in **English** and **Ukrainian**.
 
 - On **Android 13 and later**: tapping Language opens the system's per-app language settings. Set the language there to apply it to Kite without changing the rest of your device.
 - On **older Android versions**: an in-app dialog appears. Select your language and Kite restarts to apply the change.
+
+---
+
+## Reduce Motion
+
+Toggle **Reduce motion** to disable all UI animations globally — page transitions, FAB appearance, circular-reveal theme changes, and all other Kite animations are replaced with instant cuts.
+
+This improves responsiveness on lower-end tablets where animation rendering causes visible lag or missed touch events.
+
+!!! tip
+    Enable Reduce motion if the UI feels sluggish or if transitions stutter on your hardware. It has no effect on the WebView content itself, only on Kite's own UI chrome.

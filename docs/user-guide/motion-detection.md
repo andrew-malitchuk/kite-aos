@@ -22,7 +22,7 @@ The master **Mode detector** toggle activates the camera service. It is on by de
 | **Sensitivity** | 0–100 | 50 | How easily motion is detected. Higher values respond to subtle or distant movement; lower values require more prominent motion. |
 | **Dim delay** | 0–300 s | 30 | Seconds of no motion before the screen dims. |
 | **Screen timeout** | 0–3600 s | 60 | Seconds of no motion before the screen turns off completely. |
-| **FAB delay** | 0–3600 s | 60 | Seconds before the floating action button (control drawer handle) auto-hides after the last interaction. |
+| **FAB delay** | 0–3600 s | 60 | Seconds of sustained motion required before the control button (FAB) appears on screen. Prevents the drawer handle from flashing up on brief, incidental motion. |
 
 !!! info "Enable gate"
     The Mode detector toggle is disabled if any timing field is set to zero. Set all four numeric fields to a value greater than 0 first, then toggle the service on.

@@ -69,8 +69,19 @@ When MQTT is active, Kite publishes standard Home Assistant discovery payloads. 
 
 - Battery level and charging state
 - Motion detected (binary sensor)
+- Camera stream URL (when [Camera Streaming](camera-streaming.md) is enabled)
 
 No YAML configuration required on the HA side.
+
+#### Camera Stream URL Sensor
+
+When camera streaming is enabled, Kite publishes the live MJPEG endpoint as a sensor:
+
+| Entity | Example value |
+|---|---|
+| `sensor.<clientId>_camera_url` | `http://192.168.1.x:8080/stream.mjpg` |
+
+The sensor value is empty when streaming is off, and updates automatically when the port changes. You can use this URL directly in a `camera: generic` entry in `configuration.yaml` — no username or password needed. See [Camera Streaming → Home Assistant Integration](camera-streaming.md#home-assistant-integration) for the full setup.
 
 ---
 

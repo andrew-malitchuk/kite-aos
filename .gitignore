@@ -405,9 +405,4 @@ obj/
 /configure/
 /git-generator.sh
 
-# MkDocs generated site
-/site/
-/docs/index.md
-/docs/changelog.md
-/docs/roadmap.md
-/docs/modules/
+# MkDocs: docs source and built site are tracked in git (see gh-pages for deploy)
