@@ -96,7 +96,7 @@ public fun BaseListItem(
                             text = subtitle,
                             color = Theme.color.inkMain.copy(alpha = 0.5f),
                             style = Theme.typography.caption,
-                            maxLines = 2,
+                            maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
