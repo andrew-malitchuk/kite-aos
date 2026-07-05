@@ -11,10 +11,12 @@ import domain.usecase.api.source.common.Optional
  */
 public interface MqttSendWatchdogStateUseCase {
     /**
-     * Publishes the [state] string to the MQTT watchdog topic.
+     * Publishes the given watchdog health string to the broker's watchdog telemetry topic.
      *
-     * @param state One of `"ok"`, `"fail(N)"`, or `"recovering"`.
-     * @return An [Optional] result.
+     * @param state Watchdog health label — one of `"ok"`, `"fail(N)"` where N is the failure
+     *   count, or `"recovering"`.
+     * @return `Result.success(Unit)` on successful publish, or `Result.failure` with a
+     *   `Failure.Technical.Network` if the broker is unreachable or the client is not connected.
      */
     public suspend operator fun invoke(state: String): Optional
 }

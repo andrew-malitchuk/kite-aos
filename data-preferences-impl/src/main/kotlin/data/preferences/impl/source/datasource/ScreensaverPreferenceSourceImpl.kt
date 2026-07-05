@@ -8,6 +8,20 @@ import data.preferences.impl.source.datasource.base.BasePreferenceSourceImpl
 import data.preferences.impl.source.storage.ScreensaverPreferenceStorage
 import org.koin.core.annotation.Single
 
+/**
+ * Implementation of [ScreensaverPreferenceSource] backed by Proto DataStore.
+ *
+ * Delegates persistence to [ScreensaverPreferenceStorage] and uses
+ * [ScreensaverProtobufPreferenceMapper] for converting between the Protobuf model and the
+ * [ScreensaverPreference] resource.
+ *
+ * @param storage the [ScreensaverPreferenceStorage] providing DataStore access.
+ * @see ScreensaverPreferenceSource
+ * @see ScreensaverPreferenceStorage
+ * @see ScreensaverProtobufPreferenceMapper
+ * @see BasePreferenceSourceImpl
+ * @since 0.0.1
+ */
 @Single(binds = [ScreensaverPreferenceSource::class])
 internal class ScreensaverPreferenceSourceImpl(
     storage: ScreensaverPreferenceStorage,

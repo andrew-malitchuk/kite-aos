@@ -5,8 +5,24 @@ import data.preferences.api.source.resource.ScreensaverPreference
 import domain.core.source.model.ScreensaverModel
 import domain.core.source.model.ScreensaverSource
 
+/**
+ * Mapper for converting between [ScreensaverModel] and [ScreensaverPreference].
+ *
+ * Handles bidirectional mapping between the domain representation of screensaver configuration
+ * and the preference storage resource. The [ScreensaverSource] enum is encoded as an integer
+ * in preferences: `0` maps to [ScreensaverSource.BLACK] and `1` maps to [ScreensaverSource.LOCAL_FOLDER].
+ *
+ * Unlike other preference mappers, this object does not implement [ModelResourceMapper] because
+ * [ScreensaverModel] is not backed by a type that directly implements [data.core.source.resource.Resource].
+ *
+ * @see ScreensaverModel
+ * @see ScreensaverPreference
+ * @see ScreensaverSource
+ * @since 0.0.1
+ */
 internal object ScreensaverPreferenceMapper {
 
+    // NOTE: source is stored as an integer in preferences (0 = BLACK, 1 = LOCAL_FOLDER).
     val toModel: Mapper<ScreensaverPreference, ScreensaverModel> = Mapper { input ->
         ScreensaverModel(
             enabled = input.enabled,

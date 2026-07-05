@@ -11,7 +11,10 @@ import domain.core.source.model.DockPositionModel
  */
 public interface GetDockPositionUseCase {
     /**
-     * @return A [Result] containing the [DockPositionModel].
+     * Reads the dock position preference from persistent storage.
+     *
+     * @return `Result.success` wrapping the current [DockPositionModel] (e.g., left or right),
+     *   or `Result.failure` with a `Failure` if the preference store is unavailable.
      */
     public suspend operator fun invoke(): Result<DockPositionModel>
 }

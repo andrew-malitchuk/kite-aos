@@ -18,6 +18,8 @@ import data.core.source.resource.Resource
  *
  * @property dashboardUrl the URL of the Home Assistant dashboard to display, or `null` if not configured.
  * @property whitelistUrl the URL pattern used to restrict allowed navigation, or `null` if unrestricted.
+ * @property trustAllSsl whether to bypass SSL certificate validation for self-signed certificates.
+ *   Enable with caution — only use on trusted local networks.
  *
  * @see data.preferences.api.source.datasource.DashboardPreferenceSource
  *

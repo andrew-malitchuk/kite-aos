@@ -20,6 +20,13 @@ import java.io.OutputStream
  */
 internal class WebEngineProtoSerializer : Serializer<WebEngineDataProto.WebEngineProtoModel> {
 
+    /**
+     * Reads and parses a [WebEngineDataProto.WebEngineProtoModel] from the given [input] stream.
+     *
+     * @param input the [InputStream] containing the serialized Protobuf bytes.
+     * @return the deserialized [WebEngineDataProto.WebEngineProtoModel].
+     * @throws CorruptionException if the input bytes are not a valid Protobuf message.
+     */
     override suspend fun readFrom(input: InputStream): WebEngineDataProto.WebEngineProtoModel {
         try {
             return WebEngineDataProto.WebEngineProtoModel.parseFrom(input)
@@ -28,10 +35,21 @@ internal class WebEngineProtoSerializer : Serializer<WebEngineDataProto.WebEngin
         }
     }
 
+    /**
+     * Writes the given [WebEngineDataProto.WebEngineProtoModel] to the [output] stream
+     * using Protobuf binary encoding.
+     *
+     * @param t the model instance to serialize.
+     * @param output the [OutputStream] to write the serialized bytes to.
+     */
     override suspend fun writeTo(t: WebEngineDataProto.WebEngineProtoModel, output: OutputStream) {
         t.writeTo(output)
     }
 
+    /**
+     * The default value returned when no data has been persisted yet.
+     * Uses the Protobuf-generated default instance with all fields at their zero values.
+     */
     override val defaultValue: WebEngineDataProto.WebEngineProtoModel =
         WebEngineDataProto.WebEngineProtoModel.getDefaultInstance()
 }

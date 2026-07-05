@@ -7,6 +7,15 @@ import domain.usecase.api.source.usecase.streaming.GetStreamingConfigurationUseC
 import domain.usecase.impl.core.resultLauncher
 import org.koin.core.annotation.Single
 
+/**
+ * Implementation of [GetStreamingConfigurationUseCase] using [ConfigureRepository].
+ *
+ * Returns a default [StreamingModel] when no streaming configuration has been persisted yet,
+ * ensuring callers always receive a valid model rather than null.
+ *
+ * @see GetStreamingConfigurationUseCase
+ * @since 0.0.1
+ */
 @Single(binds = [GetStreamingConfigurationUseCase::class])
 internal class GetStreamingConfigurationUseCaseImpl(
     private val configureRepository: ConfigureRepository,

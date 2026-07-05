@@ -70,10 +70,14 @@ public class YahkApplication : Application() {
         CrashlyticsInitializer.init()
     }
 
+    // Returns true only when the current process is the main app process, identified by packageName.
+    // GeckoView spawns auxiliary processes whose Application.onCreate would otherwise re-run DI init.
     private fun isMainProcess(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // API 28+: getProcessName() is a fast, direct system call.
             getProcessName() == packageName
         } else {
+            // Pre-API 28: iterate running processes to find the one matching the current PID.
             val pid = Process.myPid()
             val manager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
             manager.runningAppProcesses?.any { it.pid == pid && it.processName == packageName } ?: false

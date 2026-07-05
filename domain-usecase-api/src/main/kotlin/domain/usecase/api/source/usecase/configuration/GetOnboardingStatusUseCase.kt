@@ -8,7 +8,11 @@ package domain.usecase.api.source.usecase.configuration
  */
 public interface GetOnboardingStatusUseCase {
     /**
-     * @return A [Result] containing `true` if onboarding is completed, `false` otherwise.
+     * Reads the onboarding completion flag from persistent storage.
+     *
+     * @return `Result.success(true)` if the user has completed onboarding, `Result.success(false)`
+     *   if it has not been completed yet, or `Result.failure` with a `Failure` if the
+     *   preference store is unavailable.
      */
     public suspend operator fun invoke(): Result<Boolean>
 }

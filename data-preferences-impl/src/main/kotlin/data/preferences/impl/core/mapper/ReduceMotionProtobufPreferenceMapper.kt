@@ -16,6 +16,7 @@ import data.preferences.impl.proto.ReduceMotionDataProto
 internal object ReduceMotionProtobufPreferenceMapper :
     ProtobufPreferenceMapper<ReduceMotionDataProto.ReduceMotionProtoModel, ReduceMotionPreference> {
 
+    /** Converts a [ReduceMotionPreference] to its Protobuf representation for storage. */
     override val toProtobuf: Mapper<ReduceMotionPreference, ReduceMotionDataProto.ReduceMotionProtoModel> =
         Mapper { input ->
             ReduceMotionDataProto.ReduceMotionProtoModel.newBuilder()
@@ -23,6 +24,7 @@ internal object ReduceMotionProtobufPreferenceMapper :
                 .build()
         }
 
+    /** Converts a Protobuf [ReduceMotionDataProto.ReduceMotionProtoModel] back to a [ReduceMotionPreference]. */
     override val toPreference: Mapper<ReduceMotionDataProto.ReduceMotionProtoModel, ReduceMotionPreference> =
         Mapper { input ->
             ReduceMotionPreference(isEnabled = input.enabled)

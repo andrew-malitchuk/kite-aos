@@ -235,6 +235,14 @@ public class DataPreferencesImplModule {
         )
     }
 
+    /**
+     * Provides the [DataStore] instance for camera streaming preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [StreamingProtoSerializer] and stored in
+     *   [PreferenceConfigure.Filename.STREAMING].
+     * @see StreamingProtoSerializer
+     */
     @Single
     @Named("streamingDataStore")
     public fun streamingDataStore(context: Context): DataStore<StreamingDataProto.StreamingProtoModel> {
@@ -244,6 +252,14 @@ public class DataPreferencesImplModule {
         )
     }
 
+    /**
+     * Provides the [DataStore] instance for screensaver preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [ScreensaverProtoSerializer] and stored in
+     *   [PreferenceConfigure.Filename.SCREENSAVER].
+     * @see ScreensaverProtoSerializer
+     */
     @Single
     @Named("screensaverDataStore")
     public fun screensaverDataStore(context: Context): DataStore<ScreensaverDataProto.ScreensaverProtoModel> {
@@ -253,6 +269,14 @@ public class DataPreferencesImplModule {
         )
     }
 
+    /**
+     * Provides the [DataStore] instance for auto-reboot schedule preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [AutoRebootProtoSerializer] and stored in
+     *   [PreferenceConfigure.Filename.AUTO_REBOOT].
+     * @see AutoRebootProtoSerializer
+     */
     @Single
     @Named("autoRebootDataStore")
     public fun autoRebootDataStore(context: Context): DataStore<AutoRebootDataProto.AutoRebootProtoModel> {

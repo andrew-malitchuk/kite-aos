@@ -8,6 +8,15 @@ import domain.usecase.api.source.usecase.streaming.SetStreamingConfigurationUseC
 import domain.usecase.impl.core.resultLauncher
 import org.koin.core.annotation.Single
 
+/**
+ * Implementation of [SetStreamingConfigurationUseCase] using [ConfigureRepository].
+ *
+ * Persists the streaming configuration; failures are mapped to
+ * [domain.core.source.monad.Failure.Technical.Preference].
+ *
+ * @see SetStreamingConfigurationUseCase
+ * @since 0.0.1
+ */
 @Single(binds = [SetStreamingConfigurationUseCase::class])
 internal class SetStreamingConfigurationUseCaseImpl(
     private val configureRepository: ConfigureRepository,

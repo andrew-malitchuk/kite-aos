@@ -11,7 +11,10 @@ import domain.core.source.model.DashboardModel
  */
 public interface GetDashboardUseCase {
     /**
-     * @return A [Result] containing the [DashboardModel].
+     * Reads the dashboard configuration from persistent storage.
+     *
+     * @return `Result.success` wrapping the current [DashboardModel] (URL and whitelist),
+     *   or `Result.failure` with a `Failure` if the preference store is unavailable.
      */
     public suspend operator fun invoke(): Result<DashboardModel>
 }

@@ -8,6 +8,14 @@ import domain.usecase.api.source.usecase.configuration.SetAutoRebootUseCase
 import domain.usecase.impl.core.resultLauncher
 import org.koin.core.annotation.Single
 
+/**
+ * Implementation of [SetAutoRebootUseCase] using [ConfigureRepository].
+ *
+ * Passing `null` clears the persisted auto-reboot configuration.
+ *
+ * @see SetAutoRebootUseCase
+ * @since 0.0.1
+ */
 @Single(binds = [SetAutoRebootUseCase::class])
 internal class SetAutoRebootUseCaseImpl(
     private val configureRepository: ConfigureRepository,

@@ -8,5 +8,13 @@ package domain.usecase.api.source.usecase.configuration
  * @since 0.0.6
  */
 public interface GetReduceMotionUseCase {
+
+    /**
+     * Reads the reduce-motion flag from persistent storage.
+     *
+     * @return `Result.success(true)` if animations should be suppressed across the UI,
+     *   `Result.success(false)` if animations are enabled, or `Result.failure` with a
+     *   `Failure` if the preference store is unavailable.
+     */
     public suspend operator fun invoke(): Result<Boolean>
 }

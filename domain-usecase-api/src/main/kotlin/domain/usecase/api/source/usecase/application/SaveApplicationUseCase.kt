@@ -11,10 +11,11 @@ import domain.usecase.api.source.common.Optional
  */
 public interface SaveApplicationUseCase {
     /**
-     * Persists the specified [applicationModel] to the local database.
+     * Inserts or updates the given application's record in the local database.
      *
-     * @param applicationModel The application to save.
-     * @return An [Optional] result.
+     * @param applicationModel The application entry to add to the user's saved list.
+     * @return `Result.success(Unit)` on success, or `Result.failure` with a
+     *   `Failure.Technical.Database` if the insert operation fails.
      */
     public suspend operator fun invoke(applicationModel: ApplicationModel): Optional
 }

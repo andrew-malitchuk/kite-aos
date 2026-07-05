@@ -595,6 +595,12 @@ public class SettingsViewModel(
         errorBlock = { handleError(it) },
     )
 
+    /**
+     * Loads the auto-return-to-kiosk preference from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.4
+     */
     private fun loadAutoReturn(): Job = executeResult(
         scope = viewModelScope,
         request = { getAutoReturnUseCase() },
@@ -606,6 +612,14 @@ public class SettingsViewModel(
         },
     )
 
+    /**
+     * Updates and persists the auto-return-to-kiosk preference.
+     *
+     * @param enabled Whether the device should automatically return to the kiosk after
+     *   [HostActivity][presentation.feature.host.source.host.HostActivity] is backgrounded.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.4
+     */
     public fun onSetAutoReturn(enabled: Boolean): Job = executeResult(
         scope = viewModelScope,
         request = { setAutoReturnUseCase(enabled) },
@@ -615,6 +629,12 @@ public class SettingsViewModel(
         errorBlock = { handleError(it) },
     )
 
+    /**
+     * Loads the periodic WebView refresh configuration from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
     private fun loadWebViewRefresh(): Job = executeResult(
         scope = viewModelScope,
         request = { getWebViewRefreshUseCase() },
@@ -626,6 +646,16 @@ public class SettingsViewModel(
         },
     )
 
+    /**
+     * Updates and persists the periodic WebView refresh configuration.
+     *
+     * Automatically disables refresh if [WebViewRefreshModel.intervalSeconds] is zero or null.
+     * Debounced by 500 ms to prevent excessive writes during slider interaction.
+     *
+     * @param refresh The [WebViewRefreshModel] to validate, apply, and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
     public fun onSetWebViewRefresh(refresh: WebViewRefreshModel): Job {
         val validated = if ((refresh.intervalSeconds ?: 0L) == 0L) {
             refresh.copy(enabled = false)
@@ -644,6 +674,12 @@ public class SettingsViewModel(
         )
     }
 
+    /**
+     * Loads the reduce-motion / disable-animations preference from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
     private fun loadReduceMotion(): Job = executeResult(
         scope = viewModelScope,
         request = { getReduceMotionUseCase() },
@@ -653,6 +689,16 @@ public class SettingsViewModel(
         errorBlock = { handleError(it) },
     )
 
+    /**
+     * Updates and persists the reduce-motion / disable-animations preference.
+     *
+     * When `true`, the [ValueAnimator][android.animation.ValueAnimator] duration scale is set to
+     * 0 in [presentation.feature.host.source.host.HostActivity], suppressing all system animations.
+     *
+     * @param enabled Whether to reduce motion globally.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
     public fun onSetReduceMotion(enabled: Boolean): Job = executeResult(
         scope = viewModelScope,
         request = { setReduceMotionUseCase(enabled) },
@@ -662,6 +708,12 @@ public class SettingsViewModel(
         errorBlock = { handleError(it) },
     )
 
+    /**
+     * Loads the MJPEG camera streaming configuration from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.1.0
+     */
     private fun loadStreaming(): Job = executeResult(
         scope = viewModelScope,
         request = { getStreamingConfigurationUseCase() },
@@ -673,6 +725,16 @@ public class SettingsViewModel(
         },
     )
 
+    /**
+     * Updates and persists the MJPEG camera streaming configuration.
+     *
+     * Debounced by 1 000 ms to avoid flooding [presentation.core.platform.source.streaming.MjpegHttpServer]
+     * with rapid config changes while the user adjusts quality or FPS sliders.
+     *
+     * @param streaming The [StreamingModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.1.0
+     */
     public fun onSetStreaming(streaming: StreamingModel): Job {
         streamingJob?.cancel()
         intent { reduce { state.copy(streaming = streaming) } }
@@ -688,6 +750,12 @@ public class SettingsViewModel(
         return streamingJob!!
     }
 
+    /**
+     * Loads the screensaver configuration from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.1.0
+     */
     private fun loadScreensaver(): Job = executeResult(
         scope = viewModelScope,
         request = { getScreensaverUseCase() },
@@ -695,6 +763,8 @@ public class SettingsViewModel(
             intent { reduce { state.copy(screensaver = screensaver) } }
         },
         errorBlock = {
+            // NOTE: Default screensaver is disabled with sensible fallbacks so the UI renders
+            // correctly even when the DataStore is empty on first launch.
             intent { reduce { state.copy(screensaver = ScreensaverModel(
                 enabled = false,
                 activationDelay = 60L,
@@ -706,6 +776,15 @@ public class SettingsViewModel(
         },
     )
 
+    /**
+     * Updates and persists the screensaver configuration.
+     *
+     * Debounced by 500 ms to avoid redundant writes while the user adjusts slider values.
+     *
+     * @param screensaver The [ScreensaverModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.1.0
+     */
     public fun onSetScreensaver(screensaver: ScreensaverModel): Job {
         intent { reduce { state.copy(screensaver = screensaver) } }
         return executeResult(
@@ -719,6 +798,12 @@ public class SettingsViewModel(
         )
     }
 
+    /**
+     * Loads the auto-reboot schedule configuration from persistence.
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
     private fun loadAutoReboot(): Job = executeResult(
         scope = viewModelScope,
         request = { getAutoRebootUseCase() },
@@ -730,6 +815,16 @@ public class SettingsViewModel(
         },
     )
 
+    /**
+     * Updates and persists the auto-reboot schedule configuration.
+     *
+     * Changes are applied immediately (no debounce) because rescheduling an alarm is idempotent
+     * and the user explicitly taps a control rather than dragging a slider.
+     *
+     * @param model The [AutoRebootModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 0.0.5
+     */
     public fun onSetAutoReboot(model: AutoRebootModel): Job {
         intent { reduce { state.copy(autoReboot = model) } }
         return executeResult(

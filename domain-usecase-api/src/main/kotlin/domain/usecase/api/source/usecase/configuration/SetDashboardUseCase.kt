@@ -12,8 +12,11 @@ import domain.usecase.api.source.common.Optional
  */
 public interface SetDashboardUseCase {
     /**
-     * @param dashboardModel The new dashboard configuration to save.
-     * @return An [Optional] result.
+     * Writes the given dashboard configuration to persistent storage.
+     *
+     * @param dashboardModel The new dashboard URL and URL-whitelist configuration to persist.
+     * @return `Result.success(Unit)` on success, or `Result.failure` with a `Failure`
+     *   if the write operation fails.
      */
     public suspend operator fun invoke(dashboardModel: DashboardModel): Optional
 }

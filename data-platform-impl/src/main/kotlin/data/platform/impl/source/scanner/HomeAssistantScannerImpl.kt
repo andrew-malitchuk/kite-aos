@@ -65,6 +65,17 @@ internal class HomeAssistantScannerImpl : HomeAssistantScanner {
         } ?: emptyList()
     }
 
+    /**
+     * Probes a single [host] for a Home Assistant HTTP endpoint on each port in [HA_PORTS].
+     *
+     * An HTTP response of 200, 401, or 403 from `http://{host}:{port}/api/` is treated as
+     * a positive identification of a Home Assistant instance.
+     *
+     * @param host The hostname or IPv4 address to probe.
+     * @param timeoutMs The connect and read timeout in milliseconds per port attempt.
+     * @return The base URL `http://{host}:{port}` if the host is identified, or `null` if
+     *   all port probes fail or time out.
+     */
     private suspend fun probeHost(host: String, timeoutMs: Int): String? =
         withContext(Dispatchers.IO) {
             for (port in HA_PORTS) {
@@ -90,6 +101,15 @@ internal class HomeAssistantScannerImpl : HomeAssistantScanner {
             null
         }
 
+    /**
+     * Derives the /24 subnet prefix (e.g., `"192.168.1"`) from the device's active IPv4 interface.
+     *
+     * Iterates over all active, non-loopback network interfaces and returns the three-octet
+     * prefix of the first IPv4 address found. Returns `null` if no suitable interface exists
+     * or if a security exception is thrown.
+     *
+     * @return The subnet prefix string (e.g., `"192.168.1"`), or `null` if undetermined.
+     */
     private fun getSubnetPrefix(): String? =
         try {
             NetworkInterface.getNetworkInterfaces()
@@ -107,14 +127,31 @@ internal class HomeAssistantScannerImpl : HomeAssistantScanner {
         }
 
     private companion object {
+        /** mDNS hostnames tried during the quick-probe phase before the full subnet scan. */
         val QUICK_HOSTS = listOf("homeassistant.local", "hass.local")
+
+        /** TCP ports probed on each host; 8123 is the default HA port, 80 is the HTTP fallback. */
         val HA_PORTS = listOf(8123, 80)
+
+        /** Connect/read timeout in milliseconds for mDNS quick probes. */
         const val QUICK_PROBE_TIMEOUT_MS = 900
+
+        /** Connect/read timeout in milliseconds for each host during the subnet scan. */
         const val SCAN_HOST_TIMEOUT_MS = 650
+
+        /** Maximum number of concurrent host probes during the subnet scan. */
         const val SCAN_PARALLELISM = 40
+
+        /** Overall timeout in milliseconds for the entire [discover] operation. */
         const val SCAN_TOTAL_TIMEOUT_MS = 12_000L
+
+        /** HTTP 200 OK — the HA API endpoint responded successfully. */
         const val HTTP_OK = 200
+
+        /** HTTP 401 Unauthorized — the HA API endpoint requires authentication (still a valid HA response). */
         const val HTTP_UNAUTHORIZED = 401
+
+        /** HTTP 403 Forbidden — the HA API endpoint rejected the request (still a valid HA response). */
         const val HTTP_FORBIDDEN = 403
     }
 }

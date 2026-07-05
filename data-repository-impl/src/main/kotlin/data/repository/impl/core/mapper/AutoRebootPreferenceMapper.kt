@@ -5,6 +5,17 @@ import data.preferences.api.source.resource.AutoRebootPreference
 import data.repository.impl.core.mapper.base.ModelResourceMapper
 import domain.core.source.model.AutoRebootModel
 
+/**
+ * Mapper for converting between [AutoRebootModel] and [AutoRebootPreference].
+ *
+ * Handles bidirectional mapping between the domain representation of the automatic reboot
+ * schedule (enabled state, time, and interval) and the preference storage resource.
+ *
+ * @see AutoRebootModel
+ * @see AutoRebootPreference
+ * @see ModelResourceMapper
+ * @since 0.0.1
+ */
 internal object AutoRebootPreferenceMapper :
     ModelResourceMapper<AutoRebootModel, AutoRebootPreference> {
 

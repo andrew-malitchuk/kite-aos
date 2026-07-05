@@ -14,6 +14,13 @@ public object NetworkAddressResolver {
 
     /**
      * Returns the device's LAN IPv4 address, or `null` if not connected to a network.
+     *
+     * Filters out loopback, link-local, and IPv6 addresses. Returns only the first
+     * matching site-local address, which is the address reachable by other devices on the LAN.
+     *
+     * @return The IPv4 address string (e.g., `"192.168.1.100"`), or `null` when no suitable
+     * interface is active or an exception occurs.
+     * @since 0.1.0
      */
     public fun getLocalIpAddress(): String? {
         return try {

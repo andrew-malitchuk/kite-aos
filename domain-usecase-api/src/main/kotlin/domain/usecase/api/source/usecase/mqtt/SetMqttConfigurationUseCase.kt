@@ -13,10 +13,12 @@ import domain.usecase.api.source.common.Optional
  */
 public interface SetMqttConfigurationUseCase {
     /**
-     * Persists the [mqttModel] settings.
+     * Writes the given MQTT broker settings to persistent storage.
      *
-     * @param mqttModel The new MQTT configuration.
-     * @return An [Optional] result.
+     * @param mqttModel The new MQTT configuration (host, port, client ID, credentials,
+     *   topic prefix, etc.) to persist.
+     * @return `Result.success(Unit)` on success, or `Result.failure` with a `Failure`
+     *   if the write operation fails.
      */
     public suspend operator fun invoke(mqttModel: MqttModel): Optional
 }

@@ -10,9 +10,14 @@ import domain.usecase.api.source.common.Optional
  */
 public interface MqttConnectUseCase {
     /**
-     * Attempts to connect to the MQTT broker using saved credentials.
+     * Attempts to connect to the MQTT broker using saved credentials from [GetMqttConfigurationUseCase].
      *
-     * @return An [Optional] result.
+     * The call suspends until the connection handshake completes or fails. After a successful
+     * connection the client can publish and subscribe to topics.
+     *
+     * @return `Result.success(Unit)` when the broker accepts the connection, or `Result.failure`
+     *   with a `Failure.Technical.Network` if the broker is unreachable, credentials are
+     *   rejected, or no configuration has been saved.
      */
     public suspend operator fun invoke(): Optional
 }

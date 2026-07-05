@@ -26,6 +26,14 @@ internal class WebEnginePreferenceStorage(
     private val preference: DataStore<WebEngineDataProto.WebEngineProtoModel>,
 ) : BasePreferenceStorage<WebEngineDataProto.WebEngineProtoModel> {
 
+    /**
+     * Subscribes to browser engine preference data changes.
+     *
+     * On [IOException], logs the error and emits the default Protobuf instance to allow
+     * graceful recovery rather than crashing.
+     *
+     * @return a [Flow] emitting the current [WebEngineDataProto.WebEngineProtoModel].
+     */
     override fun subscribeToData(): Flow<WebEngineDataProto.WebEngineProtoModel?> = preference.data.catch { exception ->
         if (exception is IOException) {
             Log.e("Error", exception.message.toString())
@@ -35,8 +43,21 @@ internal class WebEnginePreferenceStorage(
         }
     }
 
+    /**
+     * Retrieves the current browser engine preference data as a single snapshot.
+     *
+     * @return the current [WebEngineDataProto.WebEngineProtoModel], or `null` if unavailable.
+     */
     override suspend fun getData(): WebEngineDataProto.WebEngineProtoModel? = preference.data.firstOrNull()
 
+    /**
+     * Updates the browser engine preference data in DataStore.
+     *
+     * If [value] is `null`, resets the stored data to the default Protobuf instance.
+     * Otherwise, merges the engine identifier into the existing stored model via the builder.
+     *
+     * @param value the new [WebEngineDataProto.WebEngineProtoModel] to persist, or `null` to reset.
+     */
     override suspend fun updateData(value: WebEngineDataProto.WebEngineProtoModel?) {
         preference.updateData { preference ->
             if (value == null) {

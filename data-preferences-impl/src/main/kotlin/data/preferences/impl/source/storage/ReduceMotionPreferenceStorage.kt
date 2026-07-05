@@ -23,6 +23,14 @@ internal class ReduceMotionPreferenceStorage(
     @Named("reduceMotionDataStore") private val preference: DataStore<ReduceMotionDataProto.ReduceMotionProtoModel>,
 ) : BasePreferenceStorage<ReduceMotionDataProto.ReduceMotionProtoModel> {
 
+    /**
+     * Subscribes to reduce-motion preference data changes.
+     *
+     * On [IOException], logs the error and emits the default Protobuf instance to allow
+     * graceful recovery rather than crashing.
+     *
+     * @return a [Flow] emitting the current [ReduceMotionDataProto.ReduceMotionProtoModel].
+     */
     override fun subscribeToData(): Flow<ReduceMotionDataProto.ReduceMotionProtoModel?> =
         preference.data.catch { exception ->
             if (exception is IOException) {
@@ -33,9 +41,22 @@ internal class ReduceMotionPreferenceStorage(
             }
         }
 
+    /**
+     * Retrieves the current reduce-motion preference data as a single snapshot.
+     *
+     * @return the current [ReduceMotionDataProto.ReduceMotionProtoModel], or `null` if unavailable.
+     */
     override suspend fun getData(): ReduceMotionDataProto.ReduceMotionProtoModel? =
         preference.data.firstOrNull()
 
+    /**
+     * Updates the reduce-motion preference data in DataStore.
+     *
+     * If [value] is `null`, resets the stored data to the default Protobuf instance.
+     * Otherwise, merges the enabled field into the existing stored model via the builder.
+     *
+     * @param value the new [ReduceMotionDataProto.ReduceMotionProtoModel] to persist, or `null` to reset.
+     */
     override suspend fun updateData(value: ReduceMotionDataProto.ReduceMotionProtoModel?) {
         preference.updateData { current ->
             if (value == null) {

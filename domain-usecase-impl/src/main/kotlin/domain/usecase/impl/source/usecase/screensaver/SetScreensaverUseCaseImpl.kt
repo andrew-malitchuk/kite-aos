@@ -8,6 +8,15 @@ import domain.usecase.api.source.usecase.screensaver.SetScreensaverUseCase
 import domain.usecase.impl.core.resultLauncher
 import org.koin.core.annotation.Single
 
+/**
+ * Implementation of [SetScreensaverUseCase] using [ConfigureRepository].
+ *
+ * Persists the screensaver configuration; failures are mapped to
+ * [domain.core.source.monad.Failure.Technical.Preference].
+ *
+ * @see SetScreensaverUseCase
+ * @since 0.0.1
+ */
 @Single(binds = [SetScreensaverUseCase::class])
 internal class SetScreensaverUseCaseImpl(
     private val configureRepository: ConfigureRepository,

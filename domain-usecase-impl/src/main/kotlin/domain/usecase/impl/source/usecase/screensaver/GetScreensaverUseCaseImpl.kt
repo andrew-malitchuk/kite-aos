@@ -7,6 +7,15 @@ import domain.usecase.api.source.usecase.screensaver.GetScreensaverUseCase
 import domain.usecase.impl.core.resultLauncher
 import org.koin.core.annotation.Single
 
+/**
+ * Implementation of [GetScreensaverUseCase] using [ConfigureRepository].
+ *
+ * Returns `null` inside the [Result] when no screensaver configuration has been stored yet,
+ * allowing callers to distinguish between "not configured" and a preference read error.
+ *
+ * @see GetScreensaverUseCase
+ * @since 0.0.1
+ */
 @Single(binds = [GetScreensaverUseCase::class])
 internal class GetScreensaverUseCaseImpl(
     private val configureRepository: ConfigureRepository,

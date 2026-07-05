@@ -16,6 +16,7 @@ import data.preferences.impl.proto.WebViewRefreshDataProto
 internal object WebViewRefreshProtobufPreferenceMapper :
     ProtobufPreferenceMapper<WebViewRefreshDataProto.WebViewRefreshProtoModel, WebViewRefreshPreference> {
 
+    /** Converts a [WebViewRefreshPreference] to its Protobuf representation for storage. */
     override val toProtobuf: Mapper<WebViewRefreshPreference, WebViewRefreshDataProto.WebViewRefreshProtoModel> =
         Mapper { input ->
             WebViewRefreshDataProto.WebViewRefreshProtoModel.newBuilder()
@@ -24,6 +25,7 @@ internal object WebViewRefreshProtobufPreferenceMapper :
                 .build()
         }
 
+    /** Converts a Protobuf [WebViewRefreshDataProto.WebViewRefreshProtoModel] back to a [WebViewRefreshPreference]. */
     override val toPreference: Mapper<WebViewRefreshDataProto.WebViewRefreshProtoModel, WebViewRefreshPreference> =
         Mapper { input ->
             WebViewRefreshPreference(

@@ -8,5 +8,13 @@ import domain.usecase.api.source.common.Optional
  * @since 0.0.6
  */
 public interface SetReduceMotionUseCase {
+
+    /**
+     * Writes the reduce-motion preference to persistent storage.
+     *
+     * @param value `true` to suppress UI animations, `false` to enable them.
+     * @return `Result.success(Unit)` on success, or `Result.failure` with a `Failure`
+     *   if the write operation fails.
+     */
     public suspend operator fun invoke(value: Boolean): Optional
 }

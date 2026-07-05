@@ -7,6 +7,15 @@ import domain.usecase.api.source.usecase.mqtt.MqttSendCameraUrlUseCase
 import domain.usecase.impl.core.resultLauncher
 import org.koin.core.annotation.Single
 
+/**
+ * Implementation of [MqttSendCameraUrlUseCase] using [MqttRepository].
+ *
+ * Publishes the camera stream URL over the active MQTT connection.
+ * Failures are mapped to [domain.core.source.monad.Failure.Technical.Network].
+ *
+ * @see MqttSendCameraUrlUseCase
+ * @since 0.0.2
+ */
 @Single(binds = [MqttSendCameraUrlUseCase::class])
 internal class MqttSendCameraUrlUseCaseImpl(
     private val mqttRepository: MqttRepository,

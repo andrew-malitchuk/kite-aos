@@ -8,6 +8,20 @@ import data.preferences.impl.source.datasource.base.BasePreferenceSourceImpl
 import data.preferences.impl.source.storage.AutoRebootPreferenceStorage
 import org.koin.core.annotation.Single
 
+/**
+ * Implementation of [AutoRebootPreferenceSource] backed by Proto DataStore.
+ *
+ * Delegates persistence to [AutoRebootPreferenceStorage] and uses
+ * [AutoRebootProtobufPreferenceMapper] for converting between the Protobuf model and the
+ * [AutoRebootPreference] resource.
+ *
+ * @param storage the [AutoRebootPreferenceStorage] providing DataStore access.
+ * @see AutoRebootPreferenceSource
+ * @see AutoRebootPreferenceStorage
+ * @see AutoRebootProtobufPreferenceMapper
+ * @see BasePreferenceSourceImpl
+ * @since 0.0.1
+ */
 @Single(binds = [AutoRebootPreferenceSource::class])
 internal class AutoRebootPreferenceSourceImpl(
     storage: AutoRebootPreferenceStorage,
