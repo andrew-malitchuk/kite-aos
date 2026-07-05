@@ -54,6 +54,8 @@ include(":data-platform-api")
 include(":data-platform-impl")
 include(":data-preferences-api")
 include(":data-preferences-impl")
+include(":data-runtime-api")
+include(":data-runtime-impl")
 include(":data-repository-impl")
 
 include(":domain-core")
