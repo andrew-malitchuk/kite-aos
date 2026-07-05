@@ -27,8 +27,26 @@ import coil.request.ImageRequest
 import domain.core.source.model.ScreensaverSource
 import kotlinx.coroutines.delay
 import presentation.core.styling.core.Theme
-import presentation.feature.main.source.screensaver.component.ScreensaverClock
+import presentation.core.ui.source.kit.molecule.ScreensaverClock
 
+/**
+ * A full-screen overlay that appears when the screensaver is activated.
+ *
+ * Fades in over a black background when [isVisible] is `true`. If [source] is
+ * [ScreensaverSource.LOCAL_FOLDER] and [folderUri] is non-null, a [SlideshowBackground] cycles
+ * through local images at [slideIntervalSeconds] intervals. An optional clock widget is rendered
+ * on top when [showClock] is `true`.
+ *
+ * @param isVisible Whether the screensaver overlay should be shown.
+ * @param source The background source type (solid black or local image folder slideshow).
+ * @param folderUri SAF tree URI of the image folder used for slideshow mode. Ignored when
+ *   [source] is not [ScreensaverSource.LOCAL_FOLDER].
+ * @param slideIntervalSeconds Seconds between image transitions in slideshow mode.
+ * @param showClock Whether to display a [ScreensaverClock] on the overlay.
+ * @see SlideshowBackground
+ * @see ScreensaverClock
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ */
 @Composable
 internal fun ScreensaverOverlay(
     isVisible: Boolean,
@@ -66,6 +84,16 @@ internal fun ScreensaverOverlay(
     }
 }
 
+/**
+ * Cycles through images in a local folder as a fullscreen slideshow background.
+ *
+ * Reads image files from the SAF tree at [folderUri] on first composition. If the folder
+ * contains more than one image, an infinite loop advances [currentIndex] every
+ * [slideIntervalSeconds] seconds. Switching [folderUri] resets the image list.
+ *
+ * @param folderUri SAF tree URI string of the image folder. Must be a valid persisted URI.
+ * @param slideIntervalSeconds Seconds to display each image before transitioning to the next.
+ */
 @Composable
 private fun SlideshowBackground(
     folderUri: String,

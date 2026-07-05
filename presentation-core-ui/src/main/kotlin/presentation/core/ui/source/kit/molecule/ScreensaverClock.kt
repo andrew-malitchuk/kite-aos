@@ -1,4 +1,4 @@
-package presentation.feature.main.source.screensaver.component
+package presentation.core.ui.source.kit.molecule
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,8 +20,21 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+/**
+ * Displays a live clock with the current time and date, refreshing every second.
+ *
+ * The time is formatted as `HH:mm` and the date as `EEEE, d MMMM` using the device's
+ * default locale. A [LaunchedEffect] loop fires every 1000 ms to update both text values.
+ * Designed for use in screensaver overlays where the clock should always be visible.
+ *
+ * @param modifier Modifier to be applied to the [Column].
+ *
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ *
+ * @since 0.0.1
+ */
 @Composable
-internal fun ScreensaverClock(modifier: Modifier = Modifier) {
+public fun ScreensaverClock(modifier: Modifier = Modifier) {
     var timeText by remember { mutableStateOf("") }
     var dateText by remember { mutableStateOf("") }
 
