@@ -14,6 +14,13 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 
 /**
+ * Offset added to the base `versionCode` for the `tv` form-factor so mobile and TV APKs, which
+ * share one `applicationId`, get distinct codes for Play multi-APK delivery. Chosen far above
+ * any realistic base value so the mobile and TV ranges never overlap.
+ */
+private const val TV_VERSION_CODE_OFFSET = 1_000_000
+
+/**
  * Convention plugin that configures an Android application module with Compose,
  * signing, ProGuard, and a standard set of Compose/Lifecycle dependencies.
  *
@@ -62,7 +69,7 @@ public class AndroidApplicationConventionPlugin : Plugin<Project> {
                 versionName = getVersionAsString("versionName")
             }
 
-            flavorDimensions += "distribution"
+            flavorDimensions += listOf("distribution", "formfactor")
             productFlavors {
                 // GeckoView 147+ declares minSdk 26 in its manifest; override here
                 // so the foss variant satisfies the library constraint while gms
@@ -72,6 +79,27 @@ public class AndroidApplicationConventionPlugin : Plugin<Project> {
                     minSdk = 26
                 }
                 create("gms") { dimension = "distribution" }
+
+                // Second dimension for the Android TV form-factor. Both WebView
+                // engines stay available on TV, so no variantFilter prunes the
+                // matrix: {mobile,tv} x {foss,gms} x {debug,release}. IS_TV lets
+                // the application module seed the runtime form-factor detection
+                // (see AppConfig); feature libraries read it via AppConfig, not
+                // their own BuildConfig.
+                create("mobile") {
+                    dimension = "formfactor"
+                    buildConfigField("boolean", "IS_TV", "false")
+                }
+                create("tv") {
+                    dimension = "formfactor"
+                    buildConfigField("boolean", "IS_TV", "true")
+                    // Multi-APK delivery under a shared applicationId requires distinct
+                    // versionCodes so Play can serve mobile vs TV. Mobile keeps the base
+                    // versionCode (release continuity); TV is offset into a separate range that
+                    // still tracks the base as it increments. The offset is far above any
+                    // realistic base value, so the ranges never collide.
+                    versionCode = getVersionAsInt("versionCode") + TV_VERSION_CODE_OFFSET
+                }
             }
 
             buildTypes {

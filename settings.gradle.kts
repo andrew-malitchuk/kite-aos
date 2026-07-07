@@ -17,6 +17,9 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven("https://maven.mozilla.org/maven2/")
+        // JitPack hosts the AndroidUSBCamera (libausbc) UVC fallback used by the
+        // tv form-factor for USB webcams that don't surface via Camera2.
+        maven("https://jitpack.io")
     }
     components {
         // GeckoView's module metadata declares play-services-fido as a required
