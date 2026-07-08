@@ -119,6 +119,9 @@ ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 material3 = { group = "androidx.compose.material3", name = "material3" }
+# Window Size Class API for adaptive / 10-foot (TV) layouts; version managed by the Compose BOM.
+# NB: alias avoids the reserved word "class"; the artifact name still ends in -window-size-class.
+material3-window-size = { group = "androidx.compose.material3", name = "material3-window-size-class" }
 # https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-runtime-compose?repo=google
 lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose" }
 #endregion UI & Compose
@@ -167,6 +170,17 @@ androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", versi
 kmqtt-common = { group = "io.github.davidepianca98", name = "kmqtt-common-jvm", version.ref = "kmqtt" }
 kmqtt-client = { group = "io.github.davidepianca98", name = "kmqtt-client-jvm", version.ref = "kmqtt" }
 geckoview = { group = "org.mozilla.geckoview", name = "geckoview", version.ref = "geckoview" }
+# UVC (USB webcam) fallback for the tv form-factor. Apache 2.0; kept as a guarded fallback
+# behind Camera2. Resolved from JitPack (see settings.gradle.kts).
+# NB: 3.2.7 is the latest ACTUAL release (see the JitPack maven-metadata). 3.3.3 was never a
+# real release — JitPack lazily built that tag on request and only produced libausbc.aar while
+# the transitive libnative.aar was never published (404), which is what broke the build (a
+# missing binary, NOT an AGP transform issue). All 3.2.7 submodule AARs are present.
+androidusbcamera-libausbc = { group = "com.github.jiangdongguo.AndroidUSBCamera", name = "libausbc", version = "3.2.7" }
+# libausbc leaks com.serenegiant.usb.USBMonitor.UsbControlBlock through its public callback API
+# (IDeviceConnectCallBack.onConnectDev) but only depends on libuvc as `implementation`, so the
+# type isn't on the compile classpath. Add libuvc explicitly so UvcMotionSource can implement it.
+androidusbcamera-libuvc = { group = "com.github.jiangdongguo.AndroidUSBCamera", name = "libuvc", version = "3.2.7" }
 
 #region Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
