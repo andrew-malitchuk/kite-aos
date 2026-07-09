@@ -27,4 +27,12 @@ public sealed class ScreenStateResource : Resource {
      * Typically triggered after a period of inactivity detected by the motion sensor.
      */
     public data object Screensaver : ScreenStateResource()
+
+    /**
+     * A plain dark overlay is shown as a stand-in for powering the screen off.
+     *
+     * Used on devices where the app cannot turn the panel off (e.g. Android TV, where device
+     * locking is unavailable), so the screen simply stops glowing.
+     */
+    public data object DarkOverlay : ScreenStateResource()
 }
