@@ -91,5 +91,10 @@ internal object PreferenceConfigure {
          * The filename for storing the auto reboot schedule configuration.
          */
         internal const val AUTO_REBOOT = "auto_reboot.pb"
+
+        /**
+         * The filename for storing the selected camera source (auto / front / rear / external).
+         */
+        internal const val CAMERA = "camera.pb"
     }
 }

@@ -7,6 +7,7 @@ import androidx.datastore.dataStoreFile
 import data.preferences.impl.core.configure.PreferenceConfigure
 import data.preferences.impl.core.serializer.AutoRebootProtoSerializer
 import data.preferences.impl.core.serializer.AutoReturnProtoSerializer
+import data.preferences.impl.core.serializer.CameraProtoSerializer
 import data.preferences.impl.core.serializer.DashboardProtoSerializer
 import data.preferences.impl.core.serializer.DockProtoSerializer
 import data.preferences.impl.core.serializer.LanguageProtoSerializer
@@ -21,6 +22,7 @@ import data.preferences.impl.core.serializer.StreamingProtoSerializer
 import data.preferences.impl.core.serializer.WebViewRefreshProtoSerializer
 import data.preferences.impl.proto.AutoRebootDataProto
 import data.preferences.impl.proto.AutoReturnDataProto
+import data.preferences.impl.proto.CameraDataProto
 import data.preferences.impl.proto.DashboardDataProto
 import data.preferences.impl.proto.DockDataProto
 import data.preferences.impl.proto.LanguagePreferenceProto
@@ -283,6 +285,23 @@ public class DataPreferencesImplModule {
         return DataStoreFactory.create(
             serializer = AutoRebootProtoSerializer(),
             produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.AUTO_REBOOT) },
+        )
+    }
+
+    /**
+     * Provides the [DataStore] instance for the selected camera-source preference.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [CameraProtoSerializer] and stored in
+     *   [PreferenceConfigure.Filename.CAMERA].
+     * @see CameraProtoSerializer
+     */
+    @Single
+    @Named("cameraDataStore")
+    public fun cameraDataStore(context: Context): DataStore<CameraDataProto.CameraProtoModel> {
+        return DataStoreFactory.create(
+            serializer = CameraProtoSerializer(),
+            produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.CAMERA) },
         )
     }
 }
