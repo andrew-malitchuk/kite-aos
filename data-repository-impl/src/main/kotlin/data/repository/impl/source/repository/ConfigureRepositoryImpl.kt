@@ -5,6 +5,7 @@ import data.platform.api.source.scanner.HomeAssistantScanner
 import data.repository.impl.core.mapper.ScreenStateResourceMapper
 import data.runtime.api.source.datasource.ScreenStateSource
 import data.preferences.api.source.datasource.AutoRebootPreferenceSource
+import data.preferences.api.source.datasource.CameraPreferenceSource
 import data.preferences.api.source.datasource.DashboardPreferenceSource
 import data.preferences.api.source.datasource.DockPositionPreferenceSource
 import data.preferences.api.source.datasource.LanguagePreferenceSource
@@ -18,6 +19,7 @@ import data.preferences.api.source.datasource.WebEnginePreferenceSource
 import data.preferences.api.source.datasource.ReduceMotionPreferenceSource
 import data.preferences.api.source.datasource.WebViewRefreshPreferenceSource
 import data.repository.impl.core.mapper.AutoRebootPreferenceMapper
+import data.repository.impl.core.mapper.CameraPreferenceMapper
 import data.repository.impl.core.mapper.DashboardPreferenceMapper
 import data.repository.impl.core.mapper.DockPositionPreferenceMapper
 import data.repository.impl.core.mapper.LanguagePreferenceMapper
@@ -31,6 +33,7 @@ import data.repository.impl.core.mapper.WebViewRefreshPreferenceMapper
 import data.preferences.api.source.resource.AutoReturnPreference
 import data.preferences.api.source.resource.ReduceMotionPreference
 import domain.core.source.model.AutoRebootModel
+import domain.core.source.model.CameraSourceModel
 import domain.core.source.model.ScreenStateModel
 import domain.core.source.model.ScreensaverModel
 import domain.core.source.model.StreamingModel
@@ -88,6 +91,7 @@ internal class ConfigureRepositoryImpl(
     private val streamingPreferenceSource: StreamingPreferenceSource,
     private val screensaverPreferenceSource: ScreensaverPreferenceSource,
     private val autoRebootPreferenceSource: AutoRebootPreferenceSource,
+    private val cameraPreferenceSource: CameraPreferenceSource,
     private val connectivityObserver: ConnectivityObserver,
     private val homeAssistantScanner: HomeAssistantScanner,
     private val screenStateSource: ScreenStateSource,
@@ -437,5 +441,32 @@ internal class ConfigureRepositoryImpl(
      */
     override fun observeAutoReboot(): Flow<AutoRebootModel?> {
         return autoRebootPreferenceSource.observeData().map { it?.let(AutoRebootPreferenceMapper.toModel::map) }
+    }
+
+    /**
+     * Retrieves the selected camera source.
+     *
+     * @return the current [CameraSourceModel], or `null` if not yet configured.
+     */
+    override suspend fun getCameraSource(): CameraSourceModel? {
+        return cameraPreferenceSource.getData()?.let(CameraPreferenceMapper.toModel::map)
+    }
+
+    /**
+     * Persists the selected camera source.
+     *
+     * @param camera the [CameraSourceModel] to store, or `null` to clear.
+     */
+    override suspend fun setCameraSource(camera: CameraSourceModel?) {
+        return cameraPreferenceSource.setData(camera?.let(CameraPreferenceMapper.toResource::map))
+    }
+
+    /**
+     * Observes changes to the selected camera source.
+     *
+     * @return a [Flow] emitting the current [CameraSourceModel] whenever it changes.
+     */
+    override fun observeCameraSource(): Flow<CameraSourceModel?> {
+        return cameraPreferenceSource.observeData().map { it?.let(CameraPreferenceMapper.toModel::map) }
     }
 }
