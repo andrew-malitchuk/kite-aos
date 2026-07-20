@@ -61,6 +61,9 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
     /** The current client identifier, used as a topic prefix. `null` when not connected. */
     private var clientId: String? = null
 
+    // Device form-factor ("tv"/"tablet") reported in every HA discovery `device` block.
+    private var deviceModel: String? = null
+
     /**
      * Shared flow that emits each inbound MQTT command as (topic, payload).
      *
@@ -93,11 +96,13 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
         username: String,
         password: String,
         friendlyName: String,
+        model: String,
     ) {
         // Tear down any existing connection before establishing a new one.
         disconnect()
 
         this.clientId = clientId
+        this.deviceModel = model
 
         connectionJob =
             CoroutineScope(Dispatchers.IO).launch {
@@ -128,19 +133,38 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
                                     },
                                 )
 
+                            // Several controls are not meaningful or not reliably controllable on
+                            // Android TV, so their Home Assistant entities are hidden there to avoid
+                            // surfacing controls that would silently fail:
+                            //  - brightness: the panel backlight isn't exposed via Settings.System;
+                            //  - screen on/off: lockNow() needs a Device Administrator, which
+                            //    Android TV doesn't provide;
+                            //  - volume: audio over HDMI/ARC is owned by the TV/receiver, so
+                            //    AudioManager changes don't affect the actual output;
+                            //  - battery: TV boxes have no battery.
+                            val isTv = model == "tv"
+
                             // Register Home Assistant discovery configs on each fresh connection.
                             registerMotion(clientId = clientId, friendlyName = friendlyName)
-                            registerBattery(clientId = clientId, friendlyName = friendlyName)
-                            registerVolume(clientId = clientId, friendlyName = friendlyName)
-                            registerBrightness(clientId = clientId, friendlyName = friendlyName)
                             registerUrl(clientId = clientId, friendlyName = friendlyName)
-                            registerScreen(clientId = clientId, friendlyName = friendlyName)
                             registerFab(clientId = clientId, friendlyName = friendlyName)
                             registerScreensaver(clientId = clientId, friendlyName = friendlyName)
                             registerCameraUrl(clientId = clientId, friendlyName = friendlyName)
+                            if (isTv) {
+                                // Clear any entity left over from a previous mobile registration.
+                                unregisterEntity(entityType = "number", uniqueId = "${clientId}_brightness")
+                                unregisterEntity(entityType = "switch", uniqueId = "${clientId}_screen")
+                                unregisterEntity(entityType = "number", uniqueId = "${clientId}_volume")
+                                unregisterEntity(entityType = "sensor", uniqueId = "${clientId}_battery")
+                            } else {
+                                registerBattery(clientId = clientId, friendlyName = friendlyName)
+                                registerVolume(clientId = clientId, friendlyName = friendlyName)
+                                registerBrightness(clientId = clientId, friendlyName = friendlyName)
+                                registerScreen(clientId = clientId, friendlyName = friendlyName)
+                            }
 
                             // Subscribe to inbound command topics so HA can control the device.
-                            subscribeToCommandTopics(clientId = clientId)
+                            subscribeToCommandTopics(clientId = clientId, isTv = isTv)
                         }
 
                         // Drive the MQTT client's internal network processing.
@@ -231,19 +255,37 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
      * Subscriptions use [Qos.AT_MOST_ONCE] (fire-and-forget) for minimal latency.
      *
      * @param clientId The current client identifier used as a topic prefix.
+     * @param isTv When `true`, the volume, brightness and screen command topics are skipped
+     *   because those entities are hidden on Android TV (see [connect]).
      */
-    private fun subscribeToCommandTopics(clientId: String) {
+    private fun subscribeToCommandTopics(clientId: String, isTv: Boolean) {
         val options = SubscriptionOptions(Qos.AT_MOST_ONCE)
-        client?.subscribe(
-            listOf(
-                Subscription("${clientId}_volume/volume/set", options),
-                Subscription("${clientId}_brightness/brightness/set", options),
-                Subscription("${clientId}_screen/screen/set", options),
-                Subscription("${clientId}_app/app/launch", options),
-                Subscription("${clientId}_fab/fab/set", options),
-                Subscription("${clientId}_screensaver/screensaver/set", options),
-            ),
+        val subscriptions = mutableListOf(
+            Subscription("${clientId}_app/app/launch", options),
+            Subscription("${clientId}_fab/fab/set", options),
+            Subscription("${clientId}_screensaver/screensaver/set", options),
+            // TV motion fallback: HA (e.g. a PIR sensor automation) publishes ON here to
+            // inject presence when the device has no camera.
+            Subscription("${clientId}_motion/motion/set", options),
         )
+        if (!isTv) {
+            subscriptions += Subscription("${clientId}_volume/volume/set", options)
+            subscriptions += Subscription("${clientId}_brightness/brightness/set", options)
+            subscriptions += Subscription("${clientId}_screen/screen/set", options)
+        }
+        client?.subscribe(subscriptions)
+    }
+
+    /**
+     * Removes a Home Assistant discovery entity by publishing an empty retained payload to its
+     * config topic. Used to hide entities unsupported on the current form factor (brightness and
+     * screen on Android TV) and to clear any stale registration left by a previous form factor.
+     *
+     * @param entityType The HA entity domain in the config topic (e.g. `"number"`, `"switch"`).
+     * @param uniqueId The entity unique id / topic segment (e.g. `"${clientId}_brightness"`).
+     */
+    private suspend fun unregisterEntity(entityType: String, uniqueId: String) {
+        publish(true, "homeassistant/$entityType/$uniqueId/config", "")
     }
 
     /**
@@ -288,7 +330,7 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
     private suspend fun registerMotion(clientId: String, friendlyName: String) {
         val topic = "homeassistant/binary_sensor/${clientId}_motion/config"
         val config = DeviceConfigMqtt(
-            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId), model = deviceModel),
             uniqueId = "${clientId}_motion",
             stateTopic = "${clientId}_motion/motion/state",
         )
@@ -304,7 +346,7 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
     private suspend fun registerBattery(clientId: String, friendlyName: String) {
         val topic = "homeassistant/sensor/${clientId}_battery/config"
         val config = BatteryConfigMqtt(
-            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId), model = deviceModel),
             uniqueId = "${clientId}_battery",
             stateTopic = "${clientId}_battery/battery/state",
         )
@@ -320,7 +362,7 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
     private suspend fun registerVolume(clientId: String, friendlyName: String) {
         val topic = "homeassistant/number/${clientId}_volume/config"
         val config = VolumeConfigMqtt(
-            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId), model = deviceModel),
             uniqueId = "${clientId}_volume",
             stateTopic = "${clientId}_volume/volume/state",
             commandTopic = "${clientId}_volume/volume/set",
@@ -337,7 +379,7 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
     private suspend fun registerBrightness(clientId: String, friendlyName: String) {
         val topic = "homeassistant/number/${clientId}_brightness/config"
         val config = BrightnessConfigMqtt(
-            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId), model = deviceModel),
             uniqueId = "${clientId}_brightness",
             stateTopic = "${clientId}_brightness/brightness/state",
             commandTopic = "${clientId}_brightness/brightness/set",
@@ -354,7 +396,7 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
     private suspend fun registerUrl(clientId: String, friendlyName: String) {
         val topic = "homeassistant/sensor/${clientId}_url/config"
         val config = UrlConfigMqtt(
-            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId), model = deviceModel),
             uniqueId = "${clientId}_url",
             stateTopic = "${clientId}_url/url/state",
         )
@@ -370,7 +412,7 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
     private suspend fun registerScreen(clientId: String, friendlyName: String) {
         val topic = "homeassistant/switch/${clientId}_screen/config"
         val config = ScreenConfigMqtt(
-            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId), model = deviceModel),
             uniqueId = "${clientId}_screen",
             stateTopic = "${clientId}_screen/screen/state",
             commandTopic = "${clientId}_screen/screen/set",
@@ -390,7 +432,7 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
     private suspend fun registerFab(clientId: String, friendlyName: String) {
         val topic = "homeassistant/switch/${clientId}_fab/config"
         val config = FabConfigMqtt(
-            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId), model = deviceModel),
             uniqueId = "${clientId}_fab",
             commandTopic = "${clientId}_fab/fab/set",
         )
@@ -408,7 +450,7 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
     private suspend fun registerScreensaver(clientId: String, friendlyName: String) {
         val topic = "homeassistant/switch/${clientId}_screensaver/config"
         val config = ScreensaverConfigMqtt(
-            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId), model = deviceModel),
             uniqueId = "${clientId}_screensaver",
             commandTopic = "${clientId}_screensaver/screensaver/set",
         )
@@ -424,7 +466,7 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
     private suspend fun registerCameraUrl(clientId: String, friendlyName: String) {
         val topic = "homeassistant/sensor/${clientId}_camera_url/config"
         val config = CameraUrlConfigMqtt(
-            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId)),
+            device = DeviceMqtt(name = friendlyName, identifiers = listOf(clientId), model = deviceModel),
             uniqueId = "${clientId}_camera_url",
             stateTopic = "${clientId}_camera_url/camera_url/state",
         )

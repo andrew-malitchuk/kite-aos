@@ -22,6 +22,8 @@ import kotlinx.serialization.Serializable
  *   multiple sensors under one device entry.
  * @property manufacturer Name of the device manufacturer (default: `"Kite Kiosk"`).
  * @property name Human-readable name of the device shown in Home Assistant.
+ * @property model Device form-factor shown in Home Assistant (`"tv"` or `"tablet"`); `null`
+ *   omits the field.
  *
  * @see DeviceConfigMqtt
  * @see BatteryConfigMqtt
@@ -35,4 +37,6 @@ internal data class DeviceMqtt(
     val manufacturer: String = "Kite Kiosk",
     @SerialName("name")
     val name: String = "Kite Kiosk",
+    @SerialName("model")
+    val model: String? = null,
 )
