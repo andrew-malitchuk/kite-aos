@@ -17,6 +17,10 @@ import presentation.core.platform.source.receiver.ApplicationDeviceAdminReceiver
  * and orchestrates screen state transitions in response to motion detection events.
  *
  * @param context The application or service [Context] used to obtain system services.
+ * @param isTv When `true`, screen wake-up and device locking are disabled: an Android TV
+ * panel is driven by the TV/HDMI-CEC rather than the app, and `lockNow()` needs a Device
+ * Administrator, which Android TV does not provide. These calls become no-ops on TV so they
+ * fail silently rather than logging misleading warnings.
  * @see presentation.core.platform.source.service.MotionService
  * @see ApplicationDeviceAdminReceiver
  * @since 0.0.1
@@ -24,7 +28,10 @@ import presentation.core.platform.source.receiver.ApplicationDeviceAdminReceiver
 // Suppress MagicNumber at class level because brightness constants (10, 255) are domain-specific
 // values defined in the companion object, not arbitrary literals.
 @Suppress("MagicNumber")
-public class DevicePowerManager(private val context: Context) {
+public class DevicePowerManager(
+    private val context: Context,
+    private val isTv: Boolean = false,
+) {
     // Unsafe cast is safe here — POWER_SERVICE always returns a PowerManager instance.
     private val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
 
@@ -109,6 +116,11 @@ public class DevicePowerManager(private val context: Context) {
      * @since 0.0.1
      */
     public fun wakeUp() {
+        // On Android TV the panel is controlled by the TV/HDMI-CEC, not the app, so a
+        // SCREEN_BRIGHT_WAKE_LOCK cannot physically turn the display on. Skip entirely.
+        if (isTv) {
+            return
+        }
         try {
             if (!powerManager.isInteractive) {
                 val wakeLock =
@@ -137,6 +149,11 @@ public class DevicePowerManager(private val context: Context) {
      * @since 0.0.1
      */
     public fun lockDevice() {
+        // Android TV provides no "Device admins" enrollment UI, so admin-based locking can
+        // never activate there. Skip to avoid a misleading "Not a Device Administrator" warning.
+        if (isTv) {
+            return
+        }
         try {
             if (devicePolicyManager.isAdminActive(adminComponent)) {
                 devicePolicyManager.lockNow()
