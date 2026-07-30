@@ -75,6 +75,10 @@ public class TextButtonColor : ButtonColor {
                 !enabled -> Color.Transparent
                 // Subtle overlay to indicate the click
                 interactionState has ButtonInteractionState.PRESSED -> Theme.color.outlineLow
+                // D-pad / keyboard focus: text buttons have no border and a transparent fill,
+                // so the focus cue is the same subtle overlay used for press — no layout shift.
+                // On touch this state effectively never triggers, so mobile is unchanged.
+                interactionState has ButtonInteractionState.FOCUSED -> Theme.color.outlineLow
                 else -> Color.Transparent
             },
         )
