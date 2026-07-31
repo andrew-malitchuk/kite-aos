@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalInspectionMode
 import co.touchlab.stately.collections.ConcurrentMutableMap
 import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.CancellationException
@@ -157,6 +158,8 @@ private class SequentialAnimationHost : SequentialAnimationScope {
      * @param enterTransition Animation to play when entering
      * @param exitTransition Animation to play when exiting
      * @param delay Time to wait after this animation before starting the next one
+     * @param initiallyVisible When `true`, the item starts fully visible instead of hidden.
+     *   Used for Compose previews, where the host's enter [LaunchedEffect] never runs.
      * @return MutableTransitionState that controls the visibility of this item
      */
     fun registerItem(
@@ -164,6 +167,7 @@ private class SequentialAnimationHost : SequentialAnimationScope {
         enterTransition: EnterTransition,
         exitTransition: ExitTransition,
         delay: Long,
+        initiallyVisible: Boolean = false,
     ): MutableTransitionState<Boolean> {
         // Check if this index is already registered
         if (items.containsKey(index)) {
@@ -187,7 +191,7 @@ private class SequentialAnimationHost : SequentialAnimationScope {
         }
 
         // Create a new item
-        val visibilityState = MutableTransitionState(false)
+        val visibilityState = MutableTransitionState(initiallyVisible)
         val newItem =
             AnimationItem(
                 index = index,
@@ -458,6 +462,10 @@ public fun AnimatedItem(
         LocalSequentialAnimationHost.current
             ?: error("SequentialAnimation must be used within a SequentialAnimationHost")
 
+    // In a Compose preview the host's enter LaunchedEffect never fires, so items would stay
+    // hidden forever. Seed them visible under inspection so previews render their final frame.
+    val isInspection = LocalInspectionMode.current
+
     // Register with index as key
     val visibilityState =
         remember(index) {
@@ -466,6 +474,7 @@ public fun AnimatedItem(
                 enterTransition = enter,
                 exitTransition = exit,
                 delay = delayAfterAnimation,
+                initiallyVisible = isInspection,
             )
         }
 
