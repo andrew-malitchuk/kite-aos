@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      TV flavor overlay. Only merged into `tv*` variants, so mobile builds never
+      see the leanback launcher or the relaxed feature requirements.
+    -->
+
+    <!-- Leanback is the Android TV UI toolkit; not required so the same APK stays
+         installable on non-TV devices during testing. -->
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <!-- TV boxes have no touchscreen. -->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+    <!-- Motion detection uses a camera on mobile, but most TV boxes have none
+         (USB webcam is optional / external). Keep the app installable without one. -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.external"
+        android:required="false" />
+    <!-- WebRTC requests RECORD_AUDIO for SDP negotiation; TV boxes often have no mic, so keep
+         the app installable and don't gate on it. See the onboarding audio-permission handling
+         which skips the mic requirement on TV. -->
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+
+    <application>
+        <!-- Merges (by android:name) with the launcher activity declared in the main
+             manifest, adding a SEPARATE leanback intent-filter. This is the canonical
+             Android TV layout: the touch LAUNCHER filter stays in the main manifest,
+             the LEANBACK_LAUNCHER filter is added here, and neither is duplicated. -->
+        <activity
+            android:name=".source.host.HostActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

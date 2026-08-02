@@ -32,11 +32,42 @@
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
 
-    <!-- Enumerate launchable apps for the kiosk application drawer without QUERY_ALL_PACKAGES -->
+    <!-- External USB (UVC) webcam support for the "External" camera choice. Kept optional so the
+         app stays installable on devices without USB host / an external camera. tools:replace
+         overrides libausbc's bundled manifest, which declares usb.host as required. -->
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="false"
+        tools:replace="android:required" />
+    <uses-feature
+        android:name="android.hardware.camera.external"
+        android:required="false" />
+
+    <!-- Enumerate launchable apps for the kiosk application drawer without QUERY_ALL_PACKAGES.
+         Both the touch LAUNCHER and the Android TV LEANBACK_LAUNCHER categories are declared so
+         TV-only apps (visible only under leanback) are enumerable on API 30+. -->
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+        </intent>
+        <!--
+            Onboarding probes these Settings screens with resolveActivity(...) to hide the row on
+            devices (TV boxes / stripped ROMs) that lack them. Under API 30+ package visibility the
+            probe would otherwise return null even where the screen exists, silently dropping a
+            required permission from the completion gate. Declaring the intents keeps the probe honest.
+        -->
+        <intent>
+            <action android:name="android.settings.action.MANAGE_OVERLAY_PERMISSION" />
+            <data android:scheme="package" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.action.MANAGE_WRITE_SETTINGS" />
+            <data android:scheme="package" />
         </intent>
     </queries>
 
