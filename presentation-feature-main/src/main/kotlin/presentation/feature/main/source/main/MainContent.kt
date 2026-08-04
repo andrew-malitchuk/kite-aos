@@ -3,6 +3,7 @@ package presentation.feature.main.source.main
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -42,6 +43,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import domain.core.source.model.DockPositionModel
 import presentation.core.platform.source.service.MotionService
+import presentation.core.styling.core.FormFactor
+import presentation.core.styling.core.LocalFormFactor
 import presentation.core.styling.core.Theme
 import presentation.core.ui.source.kit.atom.container.SafeContainer
 import presentation.core.ui.source.kit.atom.icon.IcLogo48
@@ -53,6 +56,7 @@ import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHost
 import presentation.feature.main.core.components.SideBar
 import presentation.feature.main.source.drawer.ControlAction
 import presentation.feature.main.source.drawer.ControlDrawer
+import presentation.feature.main.source.screensaver.DarkOverlay
 import presentation.feature.main.source.screensaver.ScreensaverOverlay
 import presentation.feature.main.source.webview.KioskWebView
 import presentation.feature.main.source.webview.rememberKioskEngineState
@@ -81,10 +85,25 @@ internal fun MainContent(
     onIntent: (MainIntent) -> Unit = {},
     snackbarHostState: StackedSnakbarHostState = rememberStackedSnackbarHostState(),
     reloadTrigger: Int = 0,
+    openDrawerTrigger: Int = 0,
 ) {
     val context = LocalContext.current
+    val isTv = LocalFormFactor.current == FormFactor.TV
 
     var isOpened by remember { mutableStateOf(false) }
+
+    // TV: the touchless key combo (via RemoteCommandBus -> OpenDrawerEffect) raises this
+    // trigger to open the control drawer, since there is no FAB to tap.
+    LaunchedEffect(openDrawerTrigger) {
+        if (openDrawerTrigger > 0) isOpened = true
+    }
+
+    // TV: BACK closes the open drawer (there is no scrim to tap). Enabled only while the
+    // drawer is open so it takes priority over the global kiosk back-blocker; mobile is
+    // unchanged (dismiss stays via the scrim tap).
+    BackHandler(enabled = isTv && isOpened) {
+        isOpened = false
+    }
 
     val isBottom = state.dockPosition?.position == DockPositionModel.Position.Up
 
@@ -198,6 +217,7 @@ internal fun MainContent(
                         applications = state.chosenApps,
                         canGoBack = webViewState.canGoBack,
                         canGoForward = webViewState.canGoForward,
+                        requestInitialFocus = isTv && isOpened,
                     ) { action ->
                         when (action) {
                             ControlAction.OnReloadAction -> {
@@ -252,7 +272,8 @@ internal fun MainContent(
                         }
 
                         AnimatedVisibility(
-                            visible = state.isFabVisible,
+                            // No FAB on TV — the drawer opens via the remote key combo.
+                            visible = state.isFabVisible && !isTv,
                             enter = fadeIn(),
                             exit = fadeOut(),
                             modifier =
@@ -318,6 +339,8 @@ internal fun MainContent(
             slideIntervalSeconds = state.screensaverSlideInterval,
             showClock = state.screensaverShowClock,
         )
+
+        DarkOverlay(isVisible = state.isDarkOverlayVisible)
     }
 }
 

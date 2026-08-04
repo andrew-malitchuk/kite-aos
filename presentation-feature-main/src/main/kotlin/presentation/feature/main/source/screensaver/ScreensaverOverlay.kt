@@ -85,6 +85,30 @@ internal fun ScreensaverOverlay(
 }
 
 /**
+ * A plain full-screen black overlay shown as a stand-in for powering the screen off.
+ *
+ * Used on devices where the app cannot turn the panel off (e.g. Android TV, where device locking
+ * is unavailable). Unlike [ScreensaverOverlay] it never shows images or a clock — its sole purpose
+ * is to stop the screen from glowing.
+ *
+ * @param isVisible Whether the dark overlay should be shown.
+ */
+@Composable
+internal fun DarkOverlay(isVisible: Boolean) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn(tween(1000)),
+        exit = fadeOut(tween(500)),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black),
+        )
+    }
+}
+
+/**
  * Cycles through images in a local folder as a fullscreen slideshow background.
  *
  * Reads image files from the SAF tree at [folderUri] on first composition. If the folder

@@ -33,13 +33,17 @@ public fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
     val snackbarHostState = rememberStackedSnackbarHostState()
     val state = viewModel.collectAsState()
     var webViewReloadTrigger by remember { mutableIntStateOf(0) }
+    var openDrawerTrigger by remember { mutableIntStateOf(0) }
 
     viewModel.collectSideEffect { effect ->
         when (effect) {
             MainSideEffect.GoToSettingsEffect -> appNavigator?.navigate(Destination.Settings)
             is MainSideEffect.OpenApplicationEffect -> {
+                // Fall back to the leanback launch intent for Android TV apps, which have no
+                // regular CATEGORY_LAUNCHER entry (getLaunchIntentForPackage returns null).
                 val launchIntent =
                     context.packageManager.getLaunchIntentForPackage(effect.packageName)
+                        ?: context.packageManager.getLeanbackLaunchIntentForPackage(effect.packageName)
                 if (launchIntent != null) {
                     context.startActivity(launchIntent)
                 }
@@ -52,6 +56,7 @@ public fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
             }
 
             MainSideEffect.ReloadWebViewEffect -> webViewReloadTrigger++
+            MainSideEffect.OpenDrawerEffect -> openDrawerTrigger++
         }
     }
 
@@ -60,5 +65,6 @@ public fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
         onIntent = viewModel::handleIntent,
         snackbarHostState = snackbarHostState,
         reloadTrigger = webViewReloadTrigger,
+        openDrawerTrigger = openDrawerTrigger,
     )
 }
