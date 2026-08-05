@@ -12,8 +12,9 @@ This module follows the Clean Architecture principle where each Use Case is a sp
 
 ### Key Components
 *   **Application Use Cases** (`.application`): `SaveApplicationUseCase`, `GetApplicationsUseCase`, `LoadApplicationsUseCase`, etc.
-*   **MQTT Use Cases** (`.mqtt`): `MqttConnectUseCase`, `SetMqttConfigurationUseCase`, `MqttSendMotionUseCase`, etc.
+*   **MQTT Use Cases** (`.mqtt`): `MqttConnectUseCase`, `SetMqttConfigurationUseCase`, `MqttSendMotionUseCase`, etc. `MqttConnectUseCase.invoke(model: String)` requires a `model` parameter (`"tv"` or `"tablet"`; `@since 1.2.0`), supplied by the caller from the current form-factor (via `AppConfig.isTv`) and reported to Home Assistant discovery.
 *   **Configuration Use Cases** (`.configuration`): `SetThemeUseCase`, `SetDashboardUseCase`, `SetOnboardingStatusUseCase`, `SetApplicationLanguageUseCase`, etc.
+*   **Camera Use Cases** (`.camera`) (`@since 1.4.0`): `GetCameraSourceUseCase`, `SetCameraSourceUseCase`, `ObserveCameraSourceUseCase` — read, persist, and observe the user's `CameraSourceModel` preference (`Auto` / `Front` / `Rear` / `External`) that overrides automatic camera selection for motion detection and MJPEG streaming.
 *   **Device Use Cases** (`.device`): `SetDockPositionUseCase`, `SetMoveDetectorUseCase`, `ObserveMoveDetectorMotionUseCase`, etc.
 
 ### Error Handling

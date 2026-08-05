@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,9 +19,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import kotlinx.coroutines.delay
 import domain.core.source.model.ApplicationModel
 import presentation.core.styling.core.Theme
 import presentation.core.ui.source.kit.atom.button.icon.IconButton
@@ -60,13 +66,25 @@ public fun ControlDrawer(
     applications: List<ApplicationModel>,
     canGoBack: Boolean,
     canGoForward: Boolean,
+    requestInitialFocus: Boolean = false,
     onAction: (ControlAction) -> Unit,
 ) {
     val scrollState = rememberScrollState()
 
+    // TV: when the drawer opens, land focus on the first (Settings) button so the D-pad
+    // has a starting point. Delayed + guarded because the requester is only attached once
+    // the drawer has composed/animated in. No-op on mobile (requestInitialFocus = false).
+    val firstFocus = remember { FocusRequester() }
+    LaunchedEffect(requestInitialFocus) {
+        if (requestInitialFocus) {
+            delay(FOCUS_REQUEST_DELAY_MS)
+            runCatching { firstFocus.requestFocus() }
+        }
+    }
+
     val content = @Composable {
         IconButton(
-            modifier = Modifier,
+            modifier = Modifier.focusRequester(firstFocus),
             icon = IcSettings24,
             sizes = IconButtonDefault.buttonSizeSet().buttonSize64(),
             onClick = {
@@ -154,6 +172,7 @@ public fun ControlDrawer(
                 modifier =
                 modifier
                     .fillMaxSize()
+                    .focusGroup()
                     .background(Theme.color.canvas)
                     .horizontalScroll(scrollState)
                     .padding(Theme.spacing.sizeL),
@@ -167,6 +186,7 @@ public fun ControlDrawer(
                 modifier =
                 modifier
                     .fillMaxSize()
+                    .focusGroup()
                     .background(Theme.color.canvas)
                     .verticalScroll(scrollState)
                     .padding(Theme.spacing.sizeL),
@@ -185,6 +205,10 @@ public fun ControlDrawer(
  * @see ControlDrawer
  * @since 0.0.1
  */
+// Lets the drawer finish composing/animating in before the initial D-pad focus is
+// requested; requesting against an unattached FocusRequester would throw.
+private const val FOCUS_REQUEST_DELAY_MS = 150L
+
 public sealed interface ControlAction {
     /** Reload the current kiosk dashboard. */
     public data object OnReloadAction : ControlAction

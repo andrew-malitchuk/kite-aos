@@ -75,6 +75,10 @@ public class SecondaryButtonColor : ButtonColor {
                 !enabled -> Theme.color.surfaceVariant.copy(alpha = 0.5f)
                 // Darker background when pressed
                 interactionState has ButtonInteractionState.PRESSED -> Theme.color.outlineLow
+                // D-pad / keyboard focus: secondary buttons have no border (borderSize == 0),
+                // so the focus cue is a darker fill instead of a ring — no layout shift.
+                // On touch this state effectively never triggers, so mobile is unchanged.
+                interactionState has ButtonInteractionState.FOCUSED -> Theme.color.outlineLow
                 // Tonal background (Soft Blue/Grey)
                 else -> Theme.color.surfaceVariant
             },

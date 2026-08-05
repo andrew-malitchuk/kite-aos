@@ -18,6 +18,8 @@ import domain.core.source.model.WebEngineModel
  * @property isFabVisible Whether the "Open Drawer" FAB is currently visible (driven by motion).
  * @property fabDelay The duration in seconds the FAB remains visible after the last motion event.
  * @property isScreensaverVisible Whether the screensaver overlay is currently shown.
+ * @property isDarkOverlayVisible Whether the plain dark overlay is shown as a screen-off stand-in
+ *   (used on Android TV, where the panel can't be powered off).
  * @property screensaverShowClock Whether the clock is displayed on the screensaver overlay.
  * @property screensaverFolderUri URI of the local image folder used for slideshow mode.
  * @property screensaverSlideInterval Seconds between image transitions in slideshow mode.
@@ -40,6 +42,7 @@ public data class MainState(
     val webViewRefreshInterval: Long = 300L,
     val isStreamingEnabled: Boolean = false,
     val isScreensaverVisible: Boolean = false,
+    val isDarkOverlayVisible: Boolean = false,
     val screensaverShowClock: Boolean = true,
     val screensaverFolderUri: String? = null,
     val screensaverSlideInterval: Long = 30L,
@@ -68,4 +71,12 @@ public sealed class MainSideEffect {
 
     /** Signals the WebView to perform a full page reload. */
     public data object ReloadWebViewEffect : MainSideEffect()
+
+    /**
+     * Requests the control drawer (settings bar) be opened.
+     *
+     * Fired on Android TV when the touchless long-press key combo is detected, since
+     * there is no FAB to tap. Consumed by [MainScreen] which raises the drawer trigger.
+     */
+    public data object OpenDrawerEffect : MainSideEffect()
 }

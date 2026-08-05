@@ -10,8 +10,13 @@ Kite AOS is an Android kiosk application for smart home dashboards (primarily Ho
 
 ```bash
 ./gradlew build                    # Full build
-./gradlew assembleDebug            # Debug APK
+./gradlew assembleDebug            # Debug APK (all flavors)
 ./gradlew :presentation-core-application:installDebug  # Install on device
+
+# Flavor-specific builds (distribution × formfactor: gms/foss × mobile/tv)
+./gradlew :presentation-core-application:installFossMobileDebug  # phone/tablet, GeckoView
+./gradlew :presentation-core-application:installFossTvDebug      # Android TV, GeckoView
+./gradlew :presentation-core-application:assembleGmsTvRelease    # Android TV, system WebView + Firebase
 
 # Code quality
 ./gradlew detekt                   # Static analysis (maxIssues: 0, strict)
@@ -58,6 +63,22 @@ Modules don't configure builds directly. Instead they apply convention plugins:
 
 **Key**: Pure Kotlin library modules (`domain-core`, `common-core`, `data-core`, `domain-repository-api`, `domain-usecase-api`) use `ExplicitApiMode.Strict` — all public declarations need explicit visibility modifiers and return types.
 
+### Product Flavors (two dimensions)
+
+The build has **two** flavor dimensions (configured in the convention plugins, not per-module):
+
+| Dimension | Flavors | Meaning |
+|---|---|---|
+| `distribution` | `foss` / `gms` | `foss` = GeckoView engine, no GMS/Firebase (F-Droid friendly); `gms` = system Android WebView + Firebase |
+| `formfactor` | `mobile` / `tv` | `mobile` = phone/tablet (touch); `tv` = Android TV / leanback (D-pad remote) |
+
+Full matrix, no `variantFilter` prunes anything → **4 flavors** (`gmsMobile`, `fossMobile`, `gmsTv`, `fossTv`) × debug/release = 8 variants.
+
+- The application module exposes `BuildConfig.IS_TV` (`false` for `mobile`, `true` for `tv`). Feature/core libraries **cannot** read the app `BuildConfig`, so runtime form-factor detection is centralised in the **`AppConfig`** abstraction (`presentation-core-platform`); `YahkApplication` seeds `AppConfig.buildFlagIsTv` from `BuildConfig.IS_TV`.
+- Libraries only mirror the `formfactor` dimension (no `IS_TV` field) so variant-aware dependency matching resolves and `src/tv/` source-sets compile into `tv` variants. The app's extra `distribution` dimension auto-falls-back for libraries — no `missingDimensionStrategy` needed.
+- Mobile and TV share one `applicationId` (`dev.kite.aos`). TV gets `versionCode + TV_VERSION_CODE_OFFSET` (`1_000_000`) so Play multi-APK delivery can serve them distinctly.
+- **TV-specific code lives in `src/tv/` source-sets** of `presentation-*` modules only. All `domain-*` and `data-*` modules are shared/unchanged across form-factors. See [docs/android-tv.md](docs/android-tv.md).
+
 ### MVI Pattern (Orbit)
 
 Every feature module follows the same structure:
@@ -97,8 +118,8 @@ ViewModels use `intent { reduce { ... } }` for state and `postSideEffect()` for 
 
 ### Key Services
 
-- **MotionService** — Foreground service using CameraX for presence detection (luma analysis at 176x144). Controls screen wake/dim/lock based on motion.
-- **MqttService** — Foreground service for MQTT telemetry (battery, motion events, Home Assistant discovery).
+- **MotionService** — Foreground service using CameraX for presence detection (luma analysis at 176x144). Controls screen wake/dim/lock based on motion. On the `tv` flavor it sources frames from a USB webcam via `Camera2ExternalMotionSource` → `UvcMotionSource` (libausbc) fallback, or presence pulses from `MqttMotionSource` when no camera exists.
+- **MqttService** — Foreground service for MQTT telemetry (battery, motion events, Home Assistant discovery). Publishes `device_class = tv` on the `tv` flavor.
 
 ## Code Style
 

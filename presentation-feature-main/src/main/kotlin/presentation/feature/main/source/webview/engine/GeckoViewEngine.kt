@@ -24,6 +24,8 @@ import org.mozilla.geckoview.GeckoSession.NavigationDelegate
 import org.mozilla.geckoview.GeckoSession.ProgressDelegate
 import org.mozilla.geckoview.GeckoSessionSettings
 import org.mozilla.geckoview.GeckoView
+import presentation.core.styling.core.FormFactor
+import presentation.core.styling.core.LocalFormFactor
 import presentation.feature.main.BuildConfig
 import presentation.feature.main.source.webview.EngineHandle
 import presentation.feature.main.source.webview.KioskEngineState
@@ -64,6 +66,10 @@ public fun preWarmGeckoRuntime(context: android.content.Context) {
 @Composable
 internal fun GeckoViewEngine(state: KioskEngineState, modifier: Modifier = Modifier) {
     val context = LocalContext.current
+    // On TV the dashboard must own D-pad focus on entry. See AndroidWebViewEngine.
+    // NB: GeckoView routes keys through its own input path, so DOM focus quality
+    // still depends on the HA theme (documented v1 limitation).
+    val isTv = LocalFormFactor.current == FormFactor.TV
 
     val runtime = remember {
         GeckoRuntimeHolder.getOrCreate(context.applicationContext)
@@ -219,6 +225,12 @@ internal fun GeckoViewEngine(state: KioskEngineState, modifier: Modifier = Modif
                     }
                     session.open(runtime)
                     geckoView.setSession(session)
+                }
+            },
+            update = { geckoView ->
+                if (isTv && !geckoView.hasFocus()) {
+                    geckoView.isFocusableInTouchMode = true
+                    geckoView.requestFocus()
                 }
             },
         )

@@ -1,5 +1,9 @@
 package presentation.feature.onboarding.source.onboarding
 
+import android.content.pm.PackageManager
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -24,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -33,6 +38,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import presentation.core.localisation.R
+import presentation.core.styling.core.FormFactor
+import presentation.core.styling.core.LocalFormFactor
 import presentation.core.styling.core.Theme
 import presentation.core.ui.core.ext.fillMaxSquare
 import presentation.core.ui.source.kit.atom.container.SafeContainer
@@ -128,13 +135,41 @@ internal fun OnboardingContent(
             urlRegex.matches(dashboardUrl) && dashboardUrl.length > 7
         }
 
+    // WebRTC's RECORD_AUDIO is only meaningful for the mobile camera stack; TV boxes frequently
+    // have no microphone, so requiring it would strand the user on the permissions slide. Camera
+    // stays required (Camera2 external motion needs it).
+    val isTv = LocalFormFactor.current == FormFactor.TV
+
+    // Some device profiles (TV boxes / stripped ROMs) ship no system Settings Activity for these
+    // permissions. Probe availability up front so we can hide the unusable rows and drop them from
+    // the "all granted" gate below — otherwise the user is stranded on an impossible requirement and
+    // can never advance past the permissions slide.
+    val context = LocalContext.current
+    val isOverlaySettingAvailable =
+        remember {
+            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${context.packageName}"))
+                .resolveActivity(context.packageManager) != null
+        }
+    // Device admin uses the system feature flag rather than resolveActivity: it is the semantically
+    // correct "is device admin supported" signal (TV boxes lack it) and, unlike an implicit-intent
+    // probe, it is immune to API 30+ package-visibility filtering hiding the Settings activity.
+    val isDeviceAdminAvailable =
+        remember {
+            context.packageManager.hasSystemFeature(PackageManager.FEATURE_DEVICE_ADMIN)
+        }
+    val isWriteSettingsAvailable =
+        remember {
+            Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:${context.packageName}"))
+                .resolveActivity(context.packageManager) != null
+        }
+
     val allPermissionsGranted =
         state.isCameraPermissionGranted &&
-            state.isAudioPermissionGranted &&
-            state.isOverlayPermissionGranted &&
+            (isTv || state.isAudioPermissionGranted) &&
+            (!isOverlaySettingAvailable || state.isOverlayPermissionGranted) &&
             state.isPostNotificationPermissionGranted &&
-            state.isDeviceAdminGranted &&
-            state.isWriteSettingsGranted
+            (!isDeviceAdminAvailable || state.isDeviceAdminGranted) &&
+            (!isWriteSettingsAvailable || state.isWriteSettingsGranted)
 
     val onboardingPages =
         listOf(
@@ -166,7 +201,13 @@ internal fun OnboardingContent(
                 backgroundColor = Theme.color.error,
                 isNextEnabled = { allPermissionsGranted },
             ) {
-                PermissionsList(state, onIntent)
+                PermissionsList(
+                    state = state,
+                    onIntent = onIntent,
+                    isOverlaySettingAvailable = isOverlaySettingAvailable,
+                    isDeviceAdminAvailable = isDeviceAdminAvailable,
+                    isWriteSettingsAvailable = isWriteSettingsAvailable,
+                )
             },
             // Slide 3: Configuration - Collecting user input for Dashboard and Whitelist URLs.
             WizardPageData(
@@ -257,7 +298,13 @@ internal fun OnboardingContent(
 }
 
 @Composable
-private fun PermissionsList(state: OnboardingState, onIntent: (OnboardingIntent) -> Unit) {
+private fun PermissionsList(
+    state: OnboardingState,
+    onIntent: (OnboardingIntent) -> Unit,
+    isOverlaySettingAvailable: Boolean,
+    isDeviceAdminAvailable: Boolean,
+    isWriteSettingsAvailable: Boolean,
+) {
     Column(
         modifier =
         Modifier
@@ -287,26 +334,34 @@ private fun PermissionsList(state: OnboardingState, onIntent: (OnboardingIntent)
         ) {
             onIntent(OnboardingIntent.OnAskPostNotificationPermissionIntent)
         }
-        PermissionItem(
-            stringResource(R.string.permission_overlay_access),
-            IcOverlay24,
-            state.isOverlayPermissionGranted,
-        ) {
-            onIntent(OnboardingIntent.OnAskOverlayPermissionIntent)
+        // Only surface these when the device actually has the matching system Settings screen;
+        // otherwise the row is un-grantable and would block the user (see the gate in OnboardingContent).
+        if (isOverlaySettingAvailable) {
+            PermissionItem(
+                stringResource(R.string.permission_overlay_access),
+                IcOverlay24,
+                state.isOverlayPermissionGranted,
+            ) {
+                onIntent(OnboardingIntent.OnAskOverlayPermissionIntent)
+            }
         }
-        PermissionItem(
-            stringResource(R.string.permission_device_admin),
-            IcAdmin24,
-            state.isDeviceAdminGranted,
-        ) {
-            onIntent(OnboardingIntent.OnAskDeviceAdminPermissionIntent)
+        if (isDeviceAdminAvailable) {
+            PermissionItem(
+                stringResource(R.string.permission_device_admin),
+                IcAdmin24,
+                state.isDeviceAdminGranted,
+            ) {
+                onIntent(OnboardingIntent.OnAskDeviceAdminPermissionIntent)
+            }
         }
-        PermissionItem(
-            stringResource(R.string.permission_system_settings),
-            IcSystemSettings24,
-            state.isWriteSettingsGranted,
-        ) {
-            onIntent(OnboardingIntent.OnAskWriteSettingsPermissionIntent)
+        if (isWriteSettingsAvailable) {
+            PermissionItem(
+                stringResource(R.string.permission_system_settings),
+                IcSystemSettings24,
+                state.isWriteSettingsGranted,
+            ) {
+                onIntent(OnboardingIntent.OnAskWriteSettingsPermissionIntent)
+            }
         }
     }
 }

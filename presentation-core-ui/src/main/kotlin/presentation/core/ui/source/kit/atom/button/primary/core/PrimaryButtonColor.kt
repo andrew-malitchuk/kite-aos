@@ -36,6 +36,10 @@ public class PrimaryButtonColor : ButtonColor {
             when {
                 !enabled -> Color.Transparent
                 interactionState has ButtonInteractionState.PRESSED -> Theme.color.brand
+                // D-pad / keyboard focus: recolor the visible border to brand so the focused
+                // button stands out. The border already exists, so nothing shifts in the layout.
+                // On touch this state effectively never triggers, so mobile is unchanged.
+                interactionState has ButtonInteractionState.FOCUSED -> Theme.color.brand
                 else -> Color.White // Default white border
             },
         )

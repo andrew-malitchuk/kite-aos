@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
+import presentation.core.styling.core.FormFactor
+import presentation.core.styling.core.LocalFormFactor
 import presentation.feature.main.BuildConfig
 import presentation.feature.main.source.webview.EngineHandle
 import presentation.feature.main.source.webview.KioskEngineState
@@ -42,6 +44,9 @@ import presentation.feature.main.source.webview.KioskEngineState
  */
 @Composable
 internal fun AndroidWebViewEngine(state: KioskEngineState, modifier: Modifier = Modifier) {
+    // On TV the dashboard must own D-pad focus on entry so remote keys reach the
+    // page (we rely on HA's own focus handling). Harmless on mobile (touch).
+    val isTv = LocalFormFactor.current == FormFactor.TV
     Box(modifier = modifier.fillMaxSize()) {
         AndroidView(
             modifier = Modifier.fillMaxSize(),
@@ -441,6 +446,12 @@ internal fun AndroidWebViewEngine(state: KioskEngineState, modifier: Modifier = 
             update = { view ->
                 if (view.url != state.url) {
                     view.loadUrl(state.url)
+                }
+                // Give the WebView D-pad focus on TV once it is attached so remote
+                // navigation lands in the HA dashboard rather than nowhere.
+                if (isTv && !view.hasFocus()) {
+                    view.isFocusableInTouchMode = true
+                    view.requestFocus()
                 }
             },
         )

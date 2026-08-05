@@ -24,6 +24,7 @@ internal object ScreenStateResourceMapper : ModelResourceMapper<ScreenStateModel
             when (input) {
                 ScreenStateResource.Active -> ScreenStateModel.Active
                 ScreenStateResource.Screensaver -> ScreenStateModel.Screensaver
+                ScreenStateResource.DarkOverlay -> ScreenStateModel.DarkOverlay
             }
         }
 
@@ -32,6 +33,7 @@ internal object ScreenStateResourceMapper : ModelResourceMapper<ScreenStateModel
             when (input) {
                 ScreenStateModel.Active -> ScreenStateResource.Active
                 ScreenStateModel.Screensaver -> ScreenStateResource.Screensaver
+                ScreenStateModel.DarkOverlay -> ScreenStateResource.DarkOverlay
             }
         }
 }

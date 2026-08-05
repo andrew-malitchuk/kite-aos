@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.filterNotNull
 import presentation.core.styling.core.Theme
 import presentation.core.ui.source.kit.atom.tween.cupertinoTween
+import presentation.core.ui.source.kit.core.focus.tvFocusRing
 
 /**
  * Design system Toggle (switch) component.
@@ -162,6 +163,9 @@ public fun Toggle(
             )
             .wrapContentSize(Alignment.Center)
             .requiredSize(ToggleDefaults.Width, ToggleDefaults.Height)
+            // TV D-pad focus ring on the pill outline (standalone toggles; toggles inside list
+            // rows are covered by the row card's ring). Drawn before clip so it hugs the track.
+            .tvFocusRing(interactionSource = interactionSource, shape = ToggleDefaults.Shape)
             .clip(ToggleDefaults.Shape)
             .drawBehind {
 //                drawRect(animatedBackground)

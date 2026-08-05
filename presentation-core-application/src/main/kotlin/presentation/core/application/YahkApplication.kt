@@ -12,6 +12,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import presentation.core.application.BuildConfig
 import presentation.core.application.di.appModule
+import presentation.core.platform.source.config.AppConfig
 import presentation.core.platform.source.receiver.BatteryReceiver
 import presentation.core.platform.source.scheduler.AutoRebootScheduler
 import presentation.feature.main.source.webview.engine.preWarmGeckoRuntime
@@ -46,10 +47,16 @@ public class YahkApplication : Application() {
         // Skip full initialization in those processes — only the main process needs DI, receivers, and services.
         if (!isMainProcess()) return
 
+        // Seed the compile-time form-factor flag before Koin is started so AppConfig
+        // can fall back to it when runtime detection (leanback / UI mode) is unavailable.
+        AppConfig.buildFlagIsTv = BuildConfig.IS_TV
+
         // GeckoView 147+ requires API 26 (lutimes syscall); gms builds support API 25 and
         // use Android WebView instead, so pre-warming GeckoRuntime there causes a fatal
         // dlopen failure on armeabi-v7a API-25 devices.
-        if (BuildConfig.FLAVOR == "foss") {
+        // NOTE: with the second `formfactor` dimension, BuildConfig.FLAVOR is the combined
+        // name (e.g. "fossMobile"); use the per-dimension field to test distribution alone.
+        if (BuildConfig.FLAVOR_distribution == "foss") {
             preWarmGeckoRuntime(applicationContext)
         }
 
@@ -61,7 +68,12 @@ public class YahkApplication : Application() {
         }
 
         // Register the battery broadcast receiver to monitor charge level changes system-wide.
-        registerReceiver(BatteryReceiver(), IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        // Skipped on Android TV: TV boxes have no battery, so the sensor would only report
+        // meaningless values (and its HA entity is not registered on TV).
+        val appConfig: AppConfig by inject()
+        if (!appConfig.isTv) {
+            registerReceiver(BatteryReceiver(), IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        }
 
         // Start observing auto reboot config and schedule the alarm accordingly.
         val autoRebootScheduler: AutoRebootScheduler by inject()

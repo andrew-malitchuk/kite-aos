@@ -66,6 +66,38 @@ Modules don't configure builds directly. They apply convention plugins from `bui
 !!! note "ExplicitApiMode"
     Pure Kotlin library modules (`domain-core`, `common-core`, `data-core`, `domain-repository-api`, `domain-usecase-api`) enforce `ExplicitApiMode.Strict` — all public declarations require explicit visibility modifiers and return types.
 
+## Build Flavor Matrix
+
+The application module builds across a **two-dimensional flavor matrix** configured in the
+convention plugins:
+
+| Dimension | Values | Meaning |
+|-----------|--------|---------|
+| `distribution` | `foss`, `gms` | WebView engine — `foss` = GeckoView (F-Droid friendly, no GMS); `gms` = system Android WebView + Firebase |
+| `formfactor` | `mobile`, `tv` | Target device class |
+
+The two dimensions combine into four flavors — `gmsMobile`, `fossMobile`, `gmsTv`, `fossTv` —
+each with `debug` and `release` build types (8 variants total). All combinations are intentional;
+no `variantFilter` cuts any of them.
+
+Mobile and TV share a single `applicationId` (`dev.kite.aos`) but receive distinct `versionCode`s
+(TV offset by `1_000_000`) so the Play Store can serve the right APK per device via multi-APK
+delivery. A device is either mobile or TV; the two never coexist.
+
+### Form-factor source-set divergence
+
+The `formfactor` dimension does **not** ripple through the whole graph:
+
+- **All `domain-*` and `data-*` modules are shared and unchanged** across form-factors — business
+  rules, repositories, and data sources are identical on mobile and TV.
+- **Divergence lives only in `presentation-*` modules**, via `src/tv/` source-sets layered over
+  the shared `src/main/` — this covers motion sources (USB webcam / MQTT presence), D-pad key
+  handling, leanback manifest overlays (launcher entry + TV banner), and 10-foot layouts.
+
+Runtime form-factor detection is centralised in the `AppConfig` abstraction. UI then adapts
+through `LocalFormFactor` combined with `WindowSizeClass` (TV renders in expanded / 10-foot mode).
+See [Android TV support](../android-tv.md) for the full form-factor design.
+
 ## Error Handling
 
 Errors are modeled as a `Failure` sealed class in `domain-core`:

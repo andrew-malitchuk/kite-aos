@@ -19,8 +19,11 @@ The implementation follows a strict layered pattern for each preference type:
 
 ## Key Components
 *   **`data.preferences.impl.source.datasource.base.BasePreferenceSourceImpl`**: A generic base class that automates the orchestration of storage and mapping.
-*   **`data.preferences.impl.di.DataPreferencesImplModule`**: Central DI configuration using `DataStoreFactory`.
+*   **`data.preferences.impl.di.DataPreferencesImplModule`**: Central DI configuration using `DataStoreFactory`. Each preference gets its own `@Named` DataStore provider (e.g. `@Named("cameraDataStore")`).
 *   **`PreferenceConfigure`**: Constants for DataStore filenames.
+
+## Camera-Source Preference *(@since 1.4.0)*
+Persists the user's chosen camera source (`auto` / `front` / `rear` / `external`) for motion detection and MJPEG streaming; available on all form-factors, not just TV. It follows the standard per-preference pattern: `camera_data.proto` (`message CameraProtoModel { string mode = 1; }`) → `CameraProtoSerializer` → `CameraPreferenceStorage` → `CameraProtobufPreferenceMapper` → `CameraPreferenceSourceImpl`, backed by the `cameraDataStore()` provider (`@Named("cameraDataStore")`) persisting to `PreferenceConfigure.Filename.CAMERA` (`camera.pb`).
 
 ## Dependencies
 *   **`data-preferences-api`**: The contracts being implemented.

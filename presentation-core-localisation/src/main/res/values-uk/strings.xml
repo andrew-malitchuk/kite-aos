@@ -65,6 +65,11 @@
     <string name="settings_streaming_quality">Якість</string>
     <string name="settings_streaming_fps">Частота кадрів</string>
     <string name="settings_streaming_rotation">Поворот: %d°</string>
+    <string name="settings_camera_source">Камера: %s</string>
+    <string name="settings_camera_source_auto">Авто</string>
+    <string name="settings_camera_source_front">Фронтальна</string>
+    <string name="settings_camera_source_rear">Тилова</string>
+    <string name="settings_camera_source_external">Зовнішня (USB)</string>
 
     <!-- Screensaver -->
     <string name="settings_screensaver">Заставка</string>
@@ -96,6 +101,7 @@
     <string name="error_database">Помилка бази даних</string>
     <string name="error_preference">Помилка сховища налаштувань</string>
     <string name="error_not_found">Ресурс не знайдено</string>
+    <string name="error_permission_screen_unavailable">Цей екран налаштувань недоступний на цьому пристрої</string>
 
     <!-- Watchdog / Network Recovery -->
     <string name="watchdog_recovering">Перепідключення…</string>
@@ -125,6 +131,7 @@
     <string name="hint_streaming_quality">Якість JPEG-стиснення · 30 = мало, 100 = максимум</string>
     <string name="hint_streaming_fps">Цільова частота кадрів для MJPEG-потоку</string>
     <string name="hint_streaming_rotation">Натисніть щоб повернути відео на 90°</string>
+    <string name="hint_camera_source">Натисніть, щоб перемкнути камеру для детекції руху та стрімінгу</string>
     <string name="hint_auto_return">Повертає на дашборд коли покинуто дозволений URL</string>
     <string name="settings_trust_ssl">Довіряти всім SSL-сертифікатам</string>
     <string name="hint_trust_ssl">Дозволяє самопідписані або недійсні SSL-сертифікати · потрібно для локального Home Assistant із власними сертифікатами</string>
@@ -146,6 +153,11 @@
     <string name="settings_advanced">Розширені</string>
     <string name="settings_export_config">Експорт конфігурації</string>
     <string name="settings_import_config">Імпорт конфігурації</string>
+
+    <!-- Settings → TV -->
+    <string name="tv_hint_navigate">Навігація</string>
+    <string name="tv_hint_select">Вибрати</string>
+    <string name="tv_hint_back_to_list">До списку</string>
 
     <!-- Services -->
     <string name="motion_service_notification_title">Детекція руху</string>

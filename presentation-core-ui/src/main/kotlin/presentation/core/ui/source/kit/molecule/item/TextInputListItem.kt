@@ -28,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -102,10 +103,17 @@ public fun TextInputListItem(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    // Dismiss focus automatically when the software keyboard is hidden
+    // Track whether THIS field holds focus so the keyboard-dismiss effect below only clears our own
+    // focus. Without this guard the effect runs on initial composition (IME not visible) and clears
+    // whatever else is focused on screen — e.g. it would yank D-pad focus off a TV settings list the
+    // moment a section containing this field is shown.
+    var isFieldFocused by remember { mutableStateOf(false) }
+
+    // Dismiss focus automatically when the software keyboard is hidden, but only if this field is the
+    // one that was focused (see [isFieldFocused]).
     val isImeVisible = WindowInsets.isImeVisible
     LaunchedEffect(isImeVisible) {
-        if (!isImeVisible) {
+        if (!isImeVisible && isFieldFocused) {
             focusManager.clearFocus()
         }
     }
@@ -142,7 +150,9 @@ public fun TextInputListItem(
                         enabled = enabled,
                         textStyle = textStyle.copy(color = Theme.color.inkMain),
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .onFocusChanged { isFieldFocused = it.isFocused },
                         cursorBrush = SolidColor(Theme.color.brand),
                         keyboardOptions = keyboardOptions,
                         keyboardActions =

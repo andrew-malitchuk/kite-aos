@@ -13,15 +13,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import presentation.core.localisation.R
+import presentation.core.styling.core.FormFactor
+import presentation.core.styling.core.LocalFormFactor
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.core.ext.fillMaxSquare
@@ -58,17 +64,27 @@ import presentation.feature.about.core.composable.shape.AnimatedCookieShape
  */
 @Composable
 internal fun AboutContent(state: AboutState, onIntent: (AboutIntent) -> Unit) {
+    val isTv = LocalFormFactor.current == FormFactor.TV
+    // On TV this screen is read from across the room: cap the content to a readable measure and
+    // centre it rather than stretching a lone column across the whole 16:9 panel. On mobile it
+    // stays full-width. Inset for overscan so nothing lands in the bezel dead zone.
+    val overscan = if (isTv) Theme.spacing.sizeL else 0.dp
     SafeContainer(
         modifier =
         Modifier
             .fillMaxSize(),
     ) {
-        AnimationSequenceHost {
+        AnimationSequenceHost(
+            modifier =
+            Modifier
+                .fillMaxSize()
+                .background(backgroundGradient()),
+        ) {
             Column(
                 modifier =
                 Modifier
                     .fillMaxSize()
-                    .background(backgroundGradient())
+                    .padding(horizontal = overscan)
                     .padding(Theme.spacing.sizeL),
                 horizontalAlignment = Alignment.Start,
             ) {
@@ -81,15 +97,27 @@ internal fun AboutContent(state: AboutState, onIntent: (AboutIntent) -> Unit) {
                         ),
                     ) { fullHeight -> -fullHeight },
                 ) {
-                    IconButton(
-                        icon = IcArrowLeft24,
-                        onClick = { onIntent(AboutIntent.OnBackIntent) },
-                        sizes = IconButtonDefault.buttonSizeSet().buttonSize48(),
-                        colors = IconButtonDefault.buttonColor(), // Default is Primary (Brand)
-                    )
+                    // Full-width header row pins the back button hard-left; without it the animated
+                    // node is only button-width and can drift horizontally during the slide-in.
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        IconButton(
+                            icon = IcArrowLeft24,
+                            onClick = { onIntent(AboutIntent.OnBackIntent) },
+                            sizes = IconButtonDefault.buttonSizeSet().buttonSize48(),
+                            colors = IconButtonDefault.buttonColor(), // Default is Primary (Brand)
+                        )
+                    }
                 }
                 AnimatedItem(
-                    modifier = Modifier,
+                    // Header stays full-width; only the body is capped and centred on TV.
+                    modifier =
+                    if (isTv) {
+                        Modifier
+                            .widthIn(max = ABOUT_TV_MAX_WIDTH)
+                            .align(Alignment.CenterHorizontally)
+                    } else {
+                        Modifier
+                    },
                     index = 1,
                     enter =
                     slideInVertically(
@@ -172,6 +200,9 @@ internal fun AboutContent(state: AboutState, onIntent: (AboutIntent) -> Unit) {
     }
 }
 
+// Caps the About content width on TV so text and logo stay a comfortable reading measure.
+private val ABOUT_TV_MAX_WIDTH = 720.dp
+
 @Preview
 @Composable
 private fun AboutContentPreview() {
@@ -182,5 +213,20 @@ private fun AboutContentPreview() {
                 isLoading = false,
             ),
         ) { }
+    }
+}
+
+@Preview(name = "TV", device = Devices.TV_1080p, showBackground = true)
+@Composable
+private fun AboutContentTvPreview() {
+    CompositionLocalProvider(LocalFormFactor provides FormFactor.TV) {
+        AppTheme {
+            AboutContent(
+                state =
+                AboutState(
+                    isLoading = false,
+                ),
+            ) { }
+        }
     }
 }

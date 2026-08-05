@@ -4,12 +4,15 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import domain.core.source.model.ThemeModel
+import presentation.core.styling.core.Theme
 import presentation.core.styling.core.provideDynamicThemeColor
 import presentation.core.styling.source.attribute.AttributeTypography
+import presentation.core.styling.source.attribute.TEN_FOOT_SCALE
 import presentation.core.styling.source.attribute.attributeFontSize
 import presentation.core.styling.source.attribute.attributeLineHeight
 import presentation.core.styling.source.attribute.attributeSize
 import presentation.core.styling.source.attribute.attributeSpacing
+import presentation.core.styling.source.attribute.scaledBy
 import presentation.core.styling.source.attribute.color.attributeDarkColorPalette
 import presentation.core.styling.source.attribute.color.attributeLightColorPalette
 import presentation.core.styling.source.provider.LocalThemeColor
@@ -55,14 +58,20 @@ public fun AppTheme(mode: ThemeModel = ThemeModel.Light, content: @Composable ()
     // Build typography styles (remembered internally to avoid re-allocation).
     val typography = AttributeTypography()
 
+    // In the 10-foot (TV / expanded) mode, up-scale spacing, sizing, and typography
+    // once here so every screen consuming Theme.* adapts with no per-screen changes.
+    // Reads LocalFormFactor / LocalWindowSizeClass, which the host provides above AppTheme.
+    val tenFoot = Theme.is10Foot
+
     // Provide all theme tokens to the composition tree via CompositionLocals.
     CompositionLocalProvider(
         LocalThemeColor provides currentColorPalette,
-        LocalThemeFontSize provides attributeFontSize,
-        LocalThemeSize provides attributeSize,
-        LocalThemeLineHeight provides attributeLineHeight,
-        LocalThemeSpacing provides attributeSpacing,
-        LocalThemeTypography provides typography,
+        LocalThemeFontSize provides if (tenFoot) attributeFontSize.scaledBy(TEN_FOOT_SCALE) else attributeFontSize,
+        LocalThemeSize provides if (tenFoot) attributeSize.scaledBy(TEN_FOOT_SCALE) else attributeSize,
+        LocalThemeLineHeight provides
+            if (tenFoot) attributeLineHeight.scaledBy(TEN_FOOT_SCALE) else attributeLineHeight,
+        LocalThemeSpacing provides if (tenFoot) attributeSpacing.scaledBy(TEN_FOOT_SCALE) else attributeSpacing,
+        LocalThemeTypography provides if (tenFoot) typography.scaledBy(TEN_FOOT_SCALE) else typography,
         content = content,
     )
 }

@@ -85,6 +85,10 @@ public class IconButtonColor(
                 !enabled -> disabledContainerColor
                 // Show subtle background on press
                 interactionState has ButtonInteractionState.PRESSED -> Theme.color.brandVariant
+                // D-pad focus (Android TV) gets the same fill so the remote-focused button is
+                // visible — StateIconButton already tracks FOCUSED, it just wasn't surfaced here.
+                // On touch this state effectively never triggers, so mobile is unchanged.
+                interactionState has ButtonInteractionState.FOCUSED -> Theme.color.brandVariant
                 interactionState has ButtonInteractionState.SELECTED -> selectedContainerColor
                 else -> containerColor
             },

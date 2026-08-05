@@ -37,6 +37,7 @@ internal class MqttRepositoryImpl(
      * @param username Username for broker authentication.
      * @param password Password for broker authentication.
      * @param friendlyName Human-readable device name used in Home Assistant discovery payloads.
+     * @param model Device form-factor reported to Home Assistant (`"tv"` or `"tablet"`).
      */
     override suspend fun connect(
         server: String,
@@ -45,8 +46,9 @@ internal class MqttRepositoryImpl(
         username: String,
         password: String,
         friendlyName: String,
+        model: String,
     ) {
-        telemetryMqttSource.connect(server, port, clientId, username, password, friendlyName)
+        telemetryMqttSource.connect(server, port, clientId, username, password, friendlyName, model)
     }
 
     /**

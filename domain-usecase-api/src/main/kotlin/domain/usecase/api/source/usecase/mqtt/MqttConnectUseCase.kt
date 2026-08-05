@@ -15,9 +15,11 @@ public interface MqttConnectUseCase {
      * The call suspends until the connection handshake completes or fails. After a successful
      * connection the client can publish and subscribe to topics.
      *
+     * @param model Device form-factor reported to Home Assistant discovery (`"tv"` or
+     *   `"tablet"`), supplied by the caller from the current form factor.
      * @return `Result.success(Unit)` when the broker accepts the connection, or `Result.failure`
      *   with a `Failure.Technical.Network` if the broker is unreachable, credentials are
      *   rejected, or no configuration has been saved.
      */
-    public suspend operator fun invoke(): Optional
+    public suspend operator fun invoke(model: String): Optional
 }

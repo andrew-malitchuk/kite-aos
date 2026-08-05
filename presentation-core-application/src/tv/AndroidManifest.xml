@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+      TV flavor overlay for the foreground-service type of MotionService.
+
+      The main manifest declares foregroundServiceType="camera", which is correct for the
+      mobile front-camera path. On TV the motion source is chosen at runtime and may be a
+      Camera2 external/USB camera (needs the "camera" type), a UVC webcam, or an MQTT presence
+      topic / no source at all (no camera used). Declaring BOTH types keeps the camera path
+      legal on Android 14+ while also covering the camera-less case via "specialUse", avoiding
+      a startForeground crash when no camera is present.
+
+      Only merged into tv* variants, so the mobile "camera" declaration is untouched.
+    -->
+    <!--
+      android:banner is REQUIRED for the app to show up in the Android TV launcher's "Apps"
+      row — a leanback-launcher activity with no banner is silently hidden. Declared on the
+      <application> so it applies to the LEANBACK_LAUNCHER activity added in the host tv manifest.
+      Merged only into tv* variants, so mobile builds are untouched.
+    -->
+    <application android:banner="@drawable/tv_banner">
+        <service
+            android:name="presentation.core.platform.source.service.MotionService"
+            android:foregroundServiceType="camera|specialUse"
+            tools:replace="android:foregroundServiceType">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="TV presence detection via external/USB camera or MQTT" />
+        </service>
+    </application>
+
+</manifest>

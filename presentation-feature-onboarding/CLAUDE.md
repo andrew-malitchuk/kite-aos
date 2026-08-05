@@ -26,8 +26,16 @@ The module follows the **MVI (Model-View-Intent)** architectural pattern using t
 *   **`WizardPager`**: A reusable, horizontally-scrolling component designed for setup flows, featuring custom alpha-based page transitions.
 *   **`AnimatedCookieShape`**: A custom graphic component that uses `androidx.graphics.shapes` to morph between star-like polygons, providing a unique visual identity during onboarding.
 
+## Android TV
+The wizard adapts to leanback / TV hardware, which frequently lacks a microphone and ships stripped ROMs without every system-settings screen. Form factor is detected via `LocalFormFactor.current == FormFactor.TV`. _(@since 1.2.0)_
+
+*   **`RECORD_AUDIO` skipped on TV**: `RECORD_AUDIO` (used by the WebRTC camera stack) is dropped from the "all permissions granted" gate in `OnboardingContent` when running on TV, since TV boxes commonly have no microphone and would otherwise strand the user on the permissions slide. The `CAMERA` permission stays required (Camera2 external motion needs it), and the audio toggle row itself is still shown.
+*   **Conditional permission-screen availability**: The overlay, device-admin, and write-settings rows depend on the device actually exposing the matching system-settings `Intent`. `OnboardingContent` probes each with `resolveActivity(...)` up front; unavailable rows are hidden in `PermissionsList` and dropped from the completion gate so the user is never blocked by an un-grantable requirement. `OnboardingScreen` additionally wraps every optional system-screen launch (`launchSystemScreen`) in a `try/catch` for `ActivityNotFoundException`, showing an `error_permission_screen_unavailable` snackbar instead of crashing.
+*   **D-pad wizard focus**: `WizardPager` remembers a `FocusRequester` that only the active page attaches (`focusRequester(...).focusGroup()`), and a `LaunchedEffect` keyed on the current page requests focus after a short `FOCUS_REQUEST_DELAY_MS` (200 ms) delay to avoid racing the slide transition. On TV this lands D-pad focus on the current slide's first focusable (permission toggle or URL field); slides with no focusable content leave focus for the user to reach the Prev/Next buttons. The whole effect is gated on `isTv`, so it is a no-op on mobile (touch).
+
 ## Dependencies
 *   **`presentation-core-ui`**: For buttons, input items, and animation hosts.
 *   **`presentation-core-platform`**: For access to the `ApplicationDeviceAdminReceiver`.
+*   **`presentation-core-styling`**: For `FormFactor` / `LocalFormFactor` TV detection.
 *   **`domain-usecase-api`**: For reading/writing configuration state.
 *   **Orbit MVI**: For unidirectional data flow management.

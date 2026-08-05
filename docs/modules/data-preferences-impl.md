@@ -24,3 +24,11 @@ When a preference is requested:
 4.  Implement a `Mapper` in `core/mapper`.
 5.  Create the `SourceImpl` in `source/datasource`.
 6.  Register the `DataStore` and bindings in `DataPreferencesImplModule`.
+
+## Camera-Source Preference *(@since 1.4.0)*
+
+The camera-source preference is a full example of the workflow above. It persists the camera chosen for motion detection and MJPEG streaming (`auto`, `front`, `rear`, or `external`) — on all form-factors, not just TV — through:
+
+*   Schema: `src/main/proto/camera_data.proto` (`message CameraProtoModel { string mode = 1; }`)
+*   `CameraProtoSerializer`, `CameraPreferenceStorage`, `CameraProtobufPreferenceMapper`, `CameraPreferenceSourceImpl`
+*   DI: `cameraDataStore()` (`@Named("cameraDataStore")`) persisting to `camera.pb` (`PreferenceConfigure.Filename.CAMERA`)
