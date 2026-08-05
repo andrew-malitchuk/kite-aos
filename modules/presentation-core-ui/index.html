@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -1586,6 +1605,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2367,6 +2397,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2480,6 +2537,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2526,6 +2594,7 @@
 <li><strong>Glassmorphism</strong>: Side and bottom drawers with real-time background blurring.</li>
 <li><strong>Smart Feedback</strong>: A stacked snackbar system that manages multiple notifications gracefully.</li>
 <li><strong>Branding</strong>: Centralized repository of custom icons and animated splash screen logic.</li>
+<li><strong>Android TV</strong>: A D-pad focus ring modifier and launcher banner assets for the TV form factor.</li>
 </ul>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <h3 id="buttons">Buttons<a class="headerlink" href="#buttons" title="Permanent link">&para;</a></h3>
@@ -2562,6 +2631,35 @@
 <a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="n">style</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Theme</span><span class="p">.</span><span class="na">typography</span><span class="p">.</span><span class="na">title</span>
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">)</span>
 </code></pre></div>
+<h3 id="android-tv">Android TV<a class="headerlink" href="#android-tv" title="Permanent link">&para;</a></h3>
+<p>On Android TV, D-pad users need a visible cue for which element the remote points at (the touch ripple only fires on press). Apply <code>Modifier.tvFocusRing</code> early in the modifier chain — before <code>clip</code>/<code>background</code> — so the brand-colored ring hugs the component's real silhouette.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kd">val</span><span class="w"> </span><span class="nv">interactionSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">remember</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">MutableInteractionSource</span><span class="p">()</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">Box</span><span class="p">(</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="n">modifier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Modifier</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">        </span><span class="p">.</span><span class="na">tvFocusRing</span><span class="p">(</span><span class="n">interactionSource</span><span class="p">,</span><span class="w"> </span><span class="n">SquircleShape</span><span class="p">(</span><span class="n">Theme</span><span class="p">.</span><span class="na">size</span><span class="p">.</span><span class="na">sizeXL</span><span class="p">))</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">        </span><span class="p">.</span><span class="na">clip</span><span class="p">(</span><span class="n">SquircleShape</span><span class="p">(</span><span class="n">Theme</span><span class="p">.</span><span class="na">size</span><span class="p">.</span><span class="na">sizeXL</span><span class="p">))</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="p">.</span><span class="na">clickable</span><span class="p">(</span><span class="n">interactionSource</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">interactionSource</span><span class="p">,</span><span class="w"> </span><span class="n">indication</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="cm">/* action */</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="p">)</span>
+</code></pre></div>
+<p>The ring paints in <code>Theme.color.brand</code> only when <code>LocalFormFactor.current == FormFactor.TV</code>; on mobile it stays transparent, leaving touch UI unchanged. Pass the same <code>interactionSource</code> used by the component's <code>clickable</code>/<code>toggleable</code> so focus state is shared, not duplicated. Available <code>@since 1.2.0</code>.</p>
+<p>The module also ships the TV launcher banner (<code>tv_banner.png</code>) across <code>res/drawable-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/</code> — the artwork Android TV shows on its home-screen launcher row.</p>
+<p>D-pad focus support is applied <strong>kit-wide</strong> (<code>@since 1.2.0</code>) — a remote user can reach and operate every interactive primitive. Each treatment is gated to the TV form factor (or the <code>Theme.is10Foot</code> 10-foot token multiplier) and is a no-op on touch:</p>
+<ul>
+<li><strong>All buttons</strong> (<code>PrimaryButton</code>, <code>SecondaryButton</code>, <code>TextButton</code>, <code>IconButton</code>) respond to a <code>FOCUSED</code> interaction state with the same treatment as <code>PRESSED</code>, so the button the remote points at looks pressed. Touch never raises <code>FOCUSED</code>, so mobile is unchanged.</li>
+<li><strong>The focus ring is attached across the kit</strong> — <code>SquircleCard</code> (and every list-item row built on it), <code>Toggle</code>, the <code>ValueStepper</code> <code>-</code>/<code>+</code> buttons, and <code>SimpleApplicationListItem</code>.</li>
+<li><strong><code>SquircleCard.onClick</code> is nullable</strong> (default <code>null</code>): pass <code>null</code> when the card wraps its own interactive content (e.g. a text field) so the inner control — not the card — receives focus and input.</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// Non-clickable card wrapping its own interactive content.</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">SquircleCard</span><span class="p">(</span><span class="n">onClick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="n">BasicTextField</span><span class="p">(</span><span class="cm">/* the inner field gets focus, not the card */</span><span class="p">)</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong><code>ValueStepper</code></strong> responds to D-pad SELECT / center / Enter; a held key triggers the same accelerating auto-repeat as a touch long-press.</li>
+<li><strong>List items are D-pad aware</strong>: <code>ToggleListItem</code> flips from anywhere on the row (a single focus target), <code>TextInputListItem</code> tracks its own focus so dismissing the keyboard doesn't clear D-pad focus off other rows, and <code>SimpleApplicationListItem</code> scales by <code>TEN_FOOT_SCALE</code> on TV and shows a focus ring.</li>
+<li><strong>Side and bottom drawers</strong> scale their panel by <code>TEN_FOOT_SCALE</code> on TV, and on TV the remote's BACK key dismisses the drawer.</li>
+</ul>
 <h2 id="structure">Structure<a class="headerlink" href="#structure" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>core/</code>: Internal configurations and helper extensions.</li>

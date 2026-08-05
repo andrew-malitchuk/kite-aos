@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -1180,6 +1199,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#build-flavor-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build Flavor Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Build Flavor Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#form-factor-source-set-divergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Form-factor source-set divergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2400,6 +2447,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2537,6 +2611,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#build-flavor-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build Flavor Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Build Flavor Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#form-factor-source-set-divergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Form-factor source-set divergence
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2689,6 +2791,48 @@
 <p class="admonition-title">ExplicitApiMode</p>
 <p>Pure Kotlin library modules (<code>domain-core</code>, <code>common-core</code>, <code>data-core</code>, <code>domain-repository-api</code>, <code>domain-usecase-api</code>) enforce <code>ExplicitApiMode.Strict</code> — all public declarations require explicit visibility modifiers and return types.</p>
 </div>
+<h2 id="build-flavor-matrix">Build Flavor Matrix<a class="headerlink" href="#build-flavor-matrix" title="Permanent link">&para;</a></h2>
+<p>The application module builds across a <strong>two-dimensional flavor matrix</strong> configured in the
+convention plugins:</p>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Values</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>distribution</code></td>
+<td><code>foss</code>, <code>gms</code></td>
+<td>WebView engine — <code>foss</code> = GeckoView (F-Droid friendly, no GMS); <code>gms</code> = system Android WebView + Firebase</td>
+</tr>
+<tr>
+<td><code>formfactor</code></td>
+<td><code>mobile</code>, <code>tv</code></td>
+<td>Target device class</td>
+</tr>
+</tbody>
+</table>
+<p>The two dimensions combine into four flavors — <code>gmsMobile</code>, <code>fossMobile</code>, <code>gmsTv</code>, <code>fossTv</code> —
+each with <code>debug</code> and <code>release</code> build types (8 variants total). All combinations are intentional;
+no <code>variantFilter</code> cuts any of them.</p>
+<p>Mobile and TV share a single <code>applicationId</code> (<code>dev.kite.aos</code>) but receive distinct <code>versionCode</code>s
+(TV offset by <code>1_000_000</code>) so the Play Store can serve the right APK per device via multi-APK
+delivery. A device is either mobile or TV; the two never coexist.</p>
+<h3 id="form-factor-source-set-divergence">Form-factor source-set divergence<a class="headerlink" href="#form-factor-source-set-divergence" title="Permanent link">&para;</a></h3>
+<p>The <code>formfactor</code> dimension does <strong>not</strong> ripple through the whole graph:</p>
+<ul>
+<li><strong>All <code>domain-*</code> and <code>data-*</code> modules are shared and unchanged</strong> across form-factors — business
+  rules, repositories, and data sources are identical on mobile and TV.</li>
+<li><strong>Divergence lives only in <code>presentation-*</code> modules</strong>, via <code>src/tv/</code> source-sets layered over
+  the shared <code>src/main/</code> — this covers motion sources (USB webcam / MQTT presence), D-pad key
+  handling, leanback manifest overlays (launcher entry + TV banner), and 10-foot layouts.</li>
+</ul>
+<p>Runtime form-factor detection is centralised in the <code>AppConfig</code> abstraction. UI then adapts
+through <code>LocalFormFactor</code> combined with <code>WindowSizeClass</code> (TV renders in expanded / 10-foot mode).
+See <a href="../../android-tv/">Android TV support</a> for the full form-factor design.</p>
 <h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
 <p>Errors are modeled as a <code>Failure</code> sealed class in <code>domain-core</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">sealed</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nc">Failure</span><span class="w"> </span><span class="p">{</span>

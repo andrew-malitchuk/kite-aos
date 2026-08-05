@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -1253,6 +1272,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
   
 </li>
       
@@ -2345,6 +2375,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2442,6 +2499,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#internal-structure" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2477,7 +2545,7 @@
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Fullscreen Dashboard</strong>: Optimized for smart home dashboards like Home Assistant.</li>
-<li><strong>Motion-Sensed Controls</strong>: The "Open Drawer" button only appears when motion is detected, ensuring a clean, distraction-free display.</li>
+<li><strong>Motion-Sensed Controls</strong>: The "Open Drawer" button only appears when motion is detected, ensuring a clean, distraction-free display. (On Android TV the button is replaced by a hidden remote key combo — see below.)</li>
 <li><strong>App Hub</strong>: A quick-access drawer to launch other allowed applications without exiting the kiosk mode.</li>
 <li><strong>Glassmorphism</strong>: Modern, blurred UI layers that adapt to your theme.</li>
 <li><strong>Flexible Docking</strong>: Supports positioning the control drawer at either the bottom or the left side of the screen.</li>
@@ -2490,6 +2558,16 @@
 3.  On timer expire → Fade out FAB.</p>
 <h3 id="web-security">Web Security<a class="headerlink" href="#web-security" title="Permanent link">&para;</a></h3>
 <p>The <code>KioskWebView</code> is strictly bounded by a whitelist. If an external link is clicked that doesn't match the configured whitelist domain, the navigation is blocked, keeping the tablet secured to the intended dashboard.</p>
+<h2 id="android-tv">Android TV<a class="headerlink" href="#android-tv" title="Permanent link">&para;</a></h2>
+<p><em>(<code>@since 1.2.0</code>)</em></p>
+<p>The kiosk runs on the <code>tv</code> form factor as a remote-driven, 10-foot experience. Behaviour adapts when <code>LocalFormFactor</code> is <code>TV</code>; see the project <a href="../../android-tv/">Android TV support</a> reference for the full picture.</p>
+<ul>
+<li><strong>Dark overlay instead of screen-off</strong>: Android TV can't power its panel off or lock the device, so a plain full-screen black overlay (<code>DarkOverlay</code>) stands in for the screen-off state. Driven by the <code>isDarkOverlayVisible</code> flag in <code>MainState</code> when <code>ScreenStateModel.DarkOverlay</code> is observed. Unlike the screensaver it shows no images or clock — it just stops the screen glowing, and dismisses on motion or a remote key press.</li>
+<li><strong>Remote key combo opens the drawer</strong>: with no touchscreen there is no FAB. A hidden long-press D-pad combo (handled in <code>HostActivity</code>) is emitted on <code>RemoteCommandBus.openDrawer</code>; the ViewModel turns it into <code>MainSideEffect.OpenDrawerEffect</code>, which raises the control drawer.</li>
+<li><strong>D-pad-ready drawer</strong>: <code>ControlDrawer</code> takes a <code>requestInitialFocus</code> flag so that on TV it lands focus on the first (Settings) button when opened, and <code>BackHandler</code> closes the open drawer with the remote BACK key (there is no scrim to tap).</li>
+<li><strong>WebView remote focus</strong>: both <code>AndroidWebViewEngine</code> and <code>GeckoViewEngine</code> request focus on the underlying view once attached so remote keys reach the Home Assistant dashboard (in-page focus relies on HA's own handling; no custom JS focus manager in v1).</li>
+<li><strong>Leanback app launch</strong>: <code>MainScreen</code> falls back to <code>getLeanbackLaunchIntentForPackage()</code> when the regular launch intent is <code>null</code> (common for TV-only apps).</li>
+</ul>
 <h2 id="internal-structure">Internal Structure<a class="headerlink" href="#internal-structure" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>source/main/</code>: Primary MVI orchestration (Screen, ViewModel, State).</li>

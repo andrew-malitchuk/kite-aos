@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -2066,6 +2085,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#camera-source-preference-since-140" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Camera-Source Preference (@since 1.4.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2317,6 +2347,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2396,6 +2453,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#camera-source-preference-since-140" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Camera-Source Preference (@since 1.4.0)
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2439,6 +2507,13 @@
 <li>Create the <code>SourceImpl</code> in <code>source/datasource</code>.</li>
 <li>Register the <code>DataStore</code> and bindings in <code>DataPreferencesImplModule</code>.</li>
 </ol>
+<h2 id="camera-source-preference-since-140">Camera-Source Preference <em>(@since 1.4.0)</em><a class="headerlink" href="#camera-source-preference-since-140" title="Permanent link">&para;</a></h2>
+<p>The camera-source preference is a full example of the workflow above. It persists the camera chosen for motion detection and MJPEG streaming (<code>auto</code>, <code>front</code>, <code>rear</code>, or <code>external</code>) — on all form-factors, not just TV — through:</p>
+<ul>
+<li>Schema: <code>src/main/proto/camera_data.proto</code> (<code>message CameraProtoModel { string mode = 1; }</code>)</li>
+<li><code>CameraProtoSerializer</code>, <code>CameraPreferenceStorage</code>, <code>CameraProtobufPreferenceMapper</code>, <code>CameraPreferenceSourceImpl</code></li>
+<li>DI: <code>cameraDataStore()</code> (<code>@Named("cameraDataStore")</code>) persisting to <code>camera.pb</code> (<code>PreferenceConfigure.Filename.CAMERA</code>)</li>
+</ul>
 
 
 

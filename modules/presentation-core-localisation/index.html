@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -1612,6 +1631,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#string-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String Categories
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2334,6 +2370,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2388,6 +2451,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#string-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        String Categories
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -2457,7 +2537,13 @@
 <li><strong>Multi-language Support</strong>: Contains localized string resources for English (<code>en</code>) and Ukrainian (<code>uk</code>).</li>
 <li><strong>Dynamic Language Switching</strong>: Provides a utility to change the application's locale at runtime using <code>AppCompatDelegate</code>.</li>
 <li><strong>Centralized Resources</strong>: Acts as the single source of truth for all UI text, ensuring consistency across feature modules.</li>
+<li><strong>EN/UK Parity</strong>: Every string key is maintained in both <code>values</code> (English) and <code>values-uk</code> (Ukrainian); new keys are added to both files together.</li>
 </ul>
+<h3 id="string-categories">String Categories<a class="headerlink" href="#string-categories" title="Permanent link">&para;</a></h3>
+<p>Strings are grouped by feature. Recent additions include:
+- <strong>Camera source</strong> (<code>@since 1.4.0</code>): <code>settings_camera_source</code>, <code>settings_camera_source_auto</code> / <code>_front</code> / <code>_rear</code> / <code>_external</code>, and <code>hint_camera_source</code> — labels for the Settings camera-source selector used by motion detection and MJPEG streaming.
+- <strong>Android TV D-pad hints</strong>: <code>tv_hint_navigate</code>, <code>tv_hint_select</code>, <code>tv_hint_back_to_list</code> — the on-screen remote-control legend for the TV settings layout.
+- <strong>Device-restricted screen warning</strong>: <code>error_permission_screen_unavailable</code> — shown when a screen isn't available on the current device.</p>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <h3 id="accessing-strings">Accessing Strings<a class="headerlink" href="#accessing-strings" title="Permanent link">&para;</a></h3>
 <p>All feature modules should depend on this module and access strings via the generated <code>R</code> class:</p>

@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -2289,6 +2308,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#flavor-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flavor Dimensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Flavor Dimensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#form-factor-build-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Form-factor build config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libraries-mirror-the-dimension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Libraries mirror the dimension
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2348,6 +2406,33 @@
     
   
     Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
   
 
     
@@ -2496,6 +2581,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#flavor-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Flavor Dimensions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Flavor Dimensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#form-factor-build-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Form-factor build config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#libraries-mirror-the-dimension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Libraries mirror the dimension
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2566,6 +2690,20 @@
 - <strong><code>Project.configureAndroidBase</code></strong>: Centralizes SDK versions (compile, min, target) and Java compatibility.
 - <strong><code>Project.configureKotlinBase</code></strong>: Enforces strict explicit API mode, ensuring all public declarations are explicitly typed and scoped.
 - <strong><code>Project.configureSigning</code></strong>: Automatically handles secure signing using local property files.</p>
+<h2 id="flavor-dimensions">Flavor Dimensions<a class="headerlink" href="#flavor-dimensions" title="Permanent link">&para;</a></h2>
+<p>The application module (<code>dev.yahk.convention.application</code>) declares two flavor dimensions, and no <code>variantFilter</code> prunes the matrix, so all combinations are built:</p>
+<ul>
+<li><strong><code>distribution</code></strong>: <code>foss</code> (GeckoView, <code>minSdk = 26</code>) and <code>gms</code> (system Android WebView + Firebase).</li>
+<li><strong><code>formfactor</code></strong>: <code>mobile</code> (phones/tablets) and <code>tv</code> (Android TV). This dimension was added for Android TV support.</li>
+</ul>
+<p>The full cross-product is <code>{foss, gms} × {mobile, tv} × {debug, release}</code> — four flavors (<code>gmsMobile</code>, <code>fossMobile</code>, <code>gmsTv</code>, <code>fossTv</code>), each with a <code>debug</code> and <code>release</code> build type.</p>
+<h3 id="form-factor-build-config">Form-factor build config<a class="headerlink" href="#form-factor-build-config" title="Permanent link">&para;</a></h3>
+<p>The <code>mobile</code> flavor sets <code>buildConfigField("boolean", "IS_TV", "false")</code>; the <code>tv</code> flavor sets it to <code>"true"</code>. The <code>tv</code> flavor also offsets its version code:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">versionCode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getVersionAsInt</span><span class="p">(</span><span class="s">&quot;versionCode&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">TV_VERSION_CODE_OFFSET</span><span class="w"> </span><span class="c1">// 1_000_000</span>
+</code></pre></div>
+<p>Mobile and TV share a single <code>applicationId</code>, so Play multi-APK delivery requires distinct version codes to serve the correct APK per device class. Mobile keeps the base version code for release continuity, while TV is shifted into a separate range that still tracks the base as it increments. The offset (<code>1_000_000</code>) is far above any realistic base value, so the two ranges never overlap.</p>
+<h3 id="libraries-mirror-the-dimension">Libraries mirror the dimension<a class="headerlink" href="#libraries-mirror-the-dimension" title="Permanent link">&para;</a></h3>
+<p>The feature plugin (<code>dev.yahk.convention.feature</code>) mirrors only the <code>formfactor</code> dimension on every feature/core library (<code>mobile</code> + <code>tv</code>), because matching flavor names between the app and its libraries let Gradle's variant-aware dependency matching resolve automatically, and it is what enables <code>src/tv</code> source-sets in libraries. Libraries do <strong>not</strong> declare an <code>IS_TV</code> build config field — the runtime flag lives on the application <code>BuildConfig</code> and is exposed to libraries through the <code>AppConfig</code> abstraction. The app's extra <code>distribution</code> dimension auto-falls-back for libraries, so no <code>missingDimensionStrategy</code> is needed.</p>
 
 
 

@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -2345,6 +2364,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2487,7 +2533,9 @@
 - <code>DashboardModel</code>: URL configurations.
 - <code>ThemeModel</code>: UI theme modes (Light, Dark, Material You).
 - <code>MoveDetectorModel</code>: Motion detection sensitivity and delays.
-- <code>MqttModel</code>: Broker configuration and credentials.</p>
+- <code>MqttModel</code>: Broker configuration and credentials.
+- <code>ScreenStateModel</code>: Kiosk display state — <code>Active</code>, <code>Screensaver</code>, or <code>DarkOverlay</code> (a plain dark overlay used where the panel cannot be powered off, e.g. Android TV; <code>@since 1.2.0</code>).
+- <code>CameraSourceModel</code> (<code>@since 1.4.0</code>): User-selected camera source (<code>Auto</code>, <code>Front</code>, <code>Rear</code>, <code>External</code>) overriding automatic selection for motion detection and MJPEG streaming across all form-factors.</p>
 <h3 id="failure-handling">Failure Handling<a class="headerlink" href="#failure-handling" title="Permanent link">&para;</a></h3>
 <p>Uses the <code>Failure</code> sealed class to represent errors:
 - <code>Failure.Technical</code>: Database, Network, Platform, or Preference issues.

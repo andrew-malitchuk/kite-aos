@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -1479,6 +1498,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2328,6 +2358,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2418,6 +2475,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2448,15 +2516,31 @@
 <li><strong>App Startup</strong>: Manages the transition from the splash screen to the main UI.</li>
 <li><strong>Persistent Services</strong>: Starts and manages the lifecycle of the <code>MqttService</code> and other platform background tasks.</li>
 <li><strong>Permission Management</strong>: Centralized declaration of hardware and system permissions.</li>
+<li><strong>Form-Factor Selection</strong>: Owns the app <code>BuildConfig</code> and the <code>formfactor</code> flavor dimension that produces mobile and Android TV builds.</li>
 </ul>
 <h2 id="key-files">Key Files<a class="headerlink" href="#key-files" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>YahkApplication.kt</code>: Bootstraps the app, DI, and system receivers.</li>
 <li><code>di/AppModule.kt</code>: The master list of all Koin modules in the project.</li>
 <li><code>AndroidManifest.xml</code>: The source of truth for app components and required permissions.</li>
+<li><code>src/tv/AndroidManifest.xml</code>: app-module TV overlay — launcher banner + <code>MotionService</code> service type (leanback declarations live in <code>presentation-feature-host</code>).</li>
 </ul>
 <h2 id="build-configuration">Build Configuration<a class="headerlink" href="#build-configuration" title="Permanent link">&para;</a></h2>
 <p>This module uses the <code>dev.yahk.convention.application</code> plugin, which applies the <code>com.android.application</code> plugin and configures signing, SDK versions, and base Compose dependencies.</p>
+<h2 id="android-tv">Android TV<a class="headerlink" href="#android-tv" title="Permanent link">&para;</a></h2>
+<p>This module makes the app installable and launchable on Android TV via the <code>formfactor</code> flavor dimension.</p>
+<ul>
+<li><strong><code>BuildConfig.IS_TV</code></strong>: The <code>formfactor</code> dimension sets this flag — <code>false</code> for <code>mobile</code>, <code>true</code> for <code>tv</code>. Combined flavor names look like <code>fossTv</code>, so per-dimension fields (<code>FLAVOR_formfactor</code>, <code>FLAVOR_distribution</code>) are used to test one dimension alone.</li>
+<li><strong>Early seeding</strong>: <code>YahkApplication</code> sets <code>AppConfig.buildFlagIsTv = BuildConfig.IS_TV</code> before Koin starts, so a <code>tv</code> build behaves as TV even if the device fails to report the leanback feature (e.g. a sideloaded APK). Feature libraries read this through the injected <code>AppConfig</code> abstraction (in <code>presentation-core-platform</code>), never <code>BuildConfig</code> directly.</li>
+<li><strong>TV-aware startup</strong>: The <code>BatteryReceiver</code> is skipped when <code>AppConfig.isTv</code> is true, since TV boxes have no battery.</li>
+<li><strong><code>src/tv/AndroidManifest.xml</code></strong> (merged only into <code>tv*</code> variants):<ul>
+<li>Declares <code>android:banner="@drawable/tv_banner"</code> on <code>&lt;application&gt;</code>, required for the app to appear in the Android TV launcher's Apps row.</li>
+<li>Redeclares <code>MotionService</code> with <code>foregroundServiceType="camera|specialUse"</code> to cover both the external/USB camera path and the camera-less (MQTT presence) path on Android 14+.</li>
+<li>Carries only these <code>&lt;application&gt;</code>-level bits. The leanback declarations (<code>android.software.leanback</code> / touchscreen / camera / microphone <code>required="false"</code>) and the <code>LEANBACK_LAUNCHER</code> intent-filter live in the <code>presentation-feature-host</code> TV overlay (alongside <code>HostActivity</code>).</li>
+</ul>
+</li>
+<li><strong>App-drawer enumeration</strong>: The main manifest's <code>&lt;queries&gt;</code> block declares both <code>LAUNCHER</code> and <code>LEANBACK_LAUNCHER</code> categories so TV-only apps are enumerable by the kiosk launcher on API 30+.</li>
+</ul>
 
 
 

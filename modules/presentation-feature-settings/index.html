@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -1250,6 +1269,17 @@
     <span class="md-ellipsis">
       
         Features
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
       
     </span>
   </a>
@@ -2339,6 +2369,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2401,6 +2458,17 @@
     <span class="md-ellipsis">
       
         Features
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
       
     </span>
   </a>
@@ -2473,7 +2541,7 @@
 <tbody>
 <tr>
 <td><strong>Mode detector</strong></td>
-<td>Camera-based presence detection: sensitivity, dim delay, screen timeout, FAB appearance delay.</td>
+<td>Camera-based presence detection: camera source, sensitivity, dim delay, screen timeout, FAB appearance delay.</td>
 </tr>
 <tr>
 <td><strong>Camera streaming</strong></td>
@@ -2519,6 +2587,7 @@
 <li><strong>Kiosk Configuration</strong>: Set the dashboard URL and whitelist for the web view. Toggle auto-return to kiosk and SSL certificate trust.</li>
 <li><strong>Browser Engine</strong>: Toggle between Android WebView and GeckoView (Firefox) inline.</li>
 <li><strong>Motion Detector</strong>: Fine-tune sensitivity, dim delay, screen timeout, and FAB appearance delay.</li>
+<li><strong>Camera Source</strong> (<code>@since 1.4.0</code>): Choose which camera drives motion detection and MJPEG streaming — Auto / Front / Rear / External (USB). A tappable <code>SimpleListItem</code> in the Mode-detector section cycles the choices, backed by <code>CameraSourceModel</code> and <code>Get</code>/<code>SetCameraSourceUseCase</code> in <code>SettingsViewModel</code>; the change is applied optimistically and re-picked up by <code>MotionService</code>. Available on every form factor (USB-OTG webcams on phones/tablets included), not just TV — on TV the cycle collapses to Auto ⇄ External since leanback boxes lack a built-in front/rear camera.</li>
 <li><strong>Camera Streaming</strong>: Configure MJPEG server port, quality, FPS, and frame rotation.</li>
 <li><strong>Screensaver</strong>: Configure idle overlay with image slideshow, clock display, and activation timing.</li>
 <li><strong>Auto Reboot</strong>: Set a scheduled daily/weekly/bi-weekly/monthly reboot at a specific time.</li>
@@ -2528,6 +2597,16 @@
 <li><strong>Localization</strong>: Change the application language dynamically (English / Ukrainian).</li>
 <li><strong>Reduce Motion</strong>: Disable all UI animations globally to improve performance on slower devices.</li>
 <li><strong>Config Import / Export</strong>: Backup and restore all settings as a JSON file via the system file picker.</li>
+</ul>
+<h2 id="android-tv">Android TV<a class="headerlink" href="#android-tv" title="Permanent link">&para;</a></h2>
+<p>On Android TV the same settings screen is rendered as a <strong>master/detail layout</strong> driven by a D-pad remote instead of the mobile scrollable column. <code>SettingsContent</code> detects the form factor (<code>LocalFormFactor.current == FormFactor.TV</code>) and delegates to a dedicated <code>SettingsTvContent</code>. Every section composable is reused unchanged, so auto-save, validation, and debouncing behave identically on both form factors.</p>
+<ul>
+<li><strong>Two panes</strong>: A narrow section list (master, ~38% width) sits beside a wider detail pane (~62% width) that renders the selected section in full. Sections come from the <code>SettingsSectionTab</code> enum, which maps one-to-one to the existing mobile section composables.</li>
+<li><strong>Single focus target</strong>: The whole section list is a <em>single</em> focusable target; the rows themselves are non-focusable visuals. Navigation is handled explicitly through <code>Modifier.onPreviewKeyEvent</code> rather than per-row focusable items or <code>focusProperties</code> directional redirects for up/down — Compose's spatial focus search would otherwise hijack the DPAD event and throw focus straight onto the detail pane.</li>
+<li><strong>D-pad controls</strong> (KeyDown only): Up/Down move the highlighted section by mutating a <code>selectedTab</code> state (not focus) and consume the event; OK / Center / Right commit into the detail pane by requesting focus there; Left is swallowed; Up on the first row is passed through so the header actions stay reachable. Inside the detail pane, Left returns focus to the section list (<code>focusProperties { left = listFocusRequester }</code>).</li>
+<li><strong>Highlight &amp; autoscroll</strong>: The selected row is highlighted and scrolled into view via a <code>BringIntoViewRequester</code> plus a <code>LaunchedEffect(selectedTab)</code>, since focus-driven scrolling is unavailable once rows are non-focusable. No control in the detail pane is focusable while the user is merely browsing, so nothing steals focus before the user commits with OK.</li>
+<li><strong>Overscan &amp; focus seeding</strong>: The whole screen is inset (<code>Theme.spacing.sizeL</code>) to avoid the TV overscan dead zone, and initial D-pad focus is seeded onto the section list so the first remote press edits immediately.</li>
+<li><strong>Affordances</strong>: A compact <code>↕ / OK / ←</code> hint legend replaces the mobile FAB. Settings auto-save (no Save button). On TV the screen is opened via a hidden D-pad combo in the host activity — there is no FAB and no PIN gate (home use).</li>
 </ul>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>This module is navigated to via the <code>Destination.Settings</code> route. It provides its own navigation handling and ViewModel.</p>

@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -1390,6 +1409,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2328,6 +2358,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2418,6 +2475,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2446,6 +2514,7 @@
 <li><strong>Intuitive UI</strong>: Uses the "Chosen First" sorting logic to keep active applications at the top of the list.</li>
 <li><strong>Visual Consistency</strong>: Leverages the Design System's <code>ApplicationListItem</code> for a native, high-quality look.</li>
 <li><strong>Smooth Animations</strong>: Implements sequential entrance animations for a modern user experience.</li>
+<li><strong>Android TV Ready</strong>: Adapts the list to a capped, centred, overscan-safe layout on TV form factors, with D-pad-stable focus.</li>
 </ul>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>This screen is typically accessed from the <strong>Settings</strong> menu. When a user toggles an application, it is immediately persisted to the local database via the domain layer.</p>
@@ -2467,6 +2536,15 @@
 </ul>
 </li>
 <li><code>di/</code>: Koin module for dependency injection.</li>
+</ul>
+<h2 id="android-tv">Android TV<a class="headerlink" href="#android-tv" title="Permanent link">&para;</a></h2>
+<p>On a TV form factor (<code>LocalFormFactor.current == FormFactor.TV</code>) the screen adapts its layout:</p>
+<ul>
+<li><strong>Capped, centred list</strong>: The application list body is constrained to a maximum readable width (~840.dp) and centred rather than stretching rows across the full 16:9 panel. Mobile keeps the full-width layout.</li>
+<li><strong>Overscan insets</strong>: Horizontal overscan padding keeps content clear of the bezel dead zone.</li>
+<li><strong>Full-width header</strong>: The back-button header row stays full-width; only the list body is capped and centred.</li>
+<li><strong>D-pad focus stability</strong>: <code>LazyColumn</code> items use <code>packageName</code> as a stable key, so when selecting an app reorders the list (chosen items float to the top), Compose moves the same composable — and its D-pad focus — to the item's new position instead of leaving focus stranded at the old index.</li>
+<li><strong>TV preview</strong>: A dedicated <code>Devices.TV_1080p</code> preview renders the content with <code>FormFactor.TV</code>.</li>
 </ul>
 
 

@@ -10,11 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://andrew-malitchuk.github.io/kite-aos/changelog/">
+        <link rel="canonical" href="https://andrew-malitchuk.github.io/kite-aos/android-tv/">
       
       
-        <link rel="prev" href="../android-tv/">
+        <link rel="prev" href="../roadmap/">
       
+      
+        <link rel="next" href="../changelog/">
       
       
         
@@ -25,7 +27,7 @@
     
     
       
-        <title>Changelog - Kite</title>
+        <title>Android TV - Kite</title>
       
     
     
@@ -76,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#200-2026-08-09" class="md-skip">
+        <a href="#android-tv-support" class="md-skip">
           Skip to content
         </a>
       
@@ -109,7 +111,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Changelog
+              Android TV
             
           </span>
         </div>
@@ -418,9 +420,11 @@
   
   
   
+    
   
-    <li class="md-tabs__item">
-      <a href="../android-tv/" class="md-tabs__link">
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
         
   
   
@@ -437,11 +441,9 @@
   
   
   
-    
   
-  
-    <li class="md-tabs__item md-tabs__item--active">
-      <a href="./" class="md-tabs__link">
+    <li class="md-tabs__item">
+      <a href="../changelog/" class="md-tabs__link">
         
   
   
@@ -2248,33 +2250,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../android-tv/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Android TV
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -2294,7 +2269,7 @@
   <span class="md-ellipsis">
     
   
-    Changelog
+    Android TV
   
 
     
@@ -2312,7 +2287,7 @@
   <span class="md-ellipsis">
     
   
-    Changelog
+    Android TV
   
 
     
@@ -2338,22 +2313,66 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
+  <a href="#0-implementation-map-as-shipped" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Added
+        0. Implementation map (as shipped)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Added">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Goal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-target-hardware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Target hardware
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-decisions-survey-outcomes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Decisions (survey outcomes)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-build-module-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Build &amp; module architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Build &amp; module architecture">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#android-tv" class="md-nav__link">
+  <a href="#41-second-flavor-dimension" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Android TV
+        4.1 Second flavor dimension
       
     </span>
   </a>
@@ -2361,10 +2380,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#motion-pipeline" class="md-nav__link">
+  <a href="#42-app-identity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Motion pipeline
+        4.2 App identity
       
     </span>
   </a>
@@ -2372,10 +2391,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#camera-source-selection" class="md-nav__link">
+  <a href="#43-source-set-layout" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Camera source selection
+        4.3 Source-set layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-manifest-tv-flavor-overlay-srctvandroidmanifestxml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Manifest (TV flavor overlay — src/tv/AndroidManifest.xml)
       
     </span>
   </a>
@@ -2388,10 +2418,82 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#changed" class="md-nav__link">
+  <a href="#5-feature-adaptation-plan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Changed
+        5. Feature adaptation plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Feature adaptation plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#category-1-direct-port-no-logic-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 1 — Direct port (no logic change)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-2-adapted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 2 — Adapted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-3-new-tv-specific" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 3 — New TV-specific
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-phasing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Phasing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-risks-open-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Risks &amp; open items
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-explicitly-out-of-scope-for-v1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Explicitly out of scope for v1
       
     </span>
   </a>
@@ -2402,6 +2504,33 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -2433,22 +2562,66 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
+  <a href="#0-implementation-map-as-shipped" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Added
+        0. Implementation map (as shipped)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Added">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Goal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-target-hardware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Target hardware
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-decisions-survey-outcomes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Decisions (survey outcomes)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-build-module-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Build &amp; module architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Build &amp; module architecture">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#android-tv" class="md-nav__link">
+  <a href="#41-second-flavor-dimension" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Android TV
+        4.1 Second flavor dimension
       
     </span>
   </a>
@@ -2456,10 +2629,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#motion-pipeline" class="md-nav__link">
+  <a href="#42-app-identity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Motion pipeline
+        4.2 App identity
       
     </span>
   </a>
@@ -2467,10 +2640,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#camera-source-selection" class="md-nav__link">
+  <a href="#43-source-set-layout" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Camera source selection
+        4.3 Source-set layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-manifest-tv-flavor-overlay-srctvandroidmanifestxml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Manifest (TV flavor overlay — src/tv/AndroidManifest.xml)
       
     </span>
   </a>
@@ -2483,10 +2667,82 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#changed" class="md-nav__link">
+  <a href="#5-feature-adaptation-plan" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Changed
+        5. Feature adaptation plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Feature adaptation plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#category-1-direct-port-no-logic-change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 1 — Direct port (no logic change)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-2-adapted" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 2 — Adapted
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-3-new-tv-specific" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 3 — New TV-specific
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-phasing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Phasing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-risks-open-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Risks &amp; open items
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-explicitly-out-of-scope-for-v1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Explicitly out of scope for v1
       
     </span>
   </a>
@@ -2513,109 +2769,360 @@
   
 
 
-<h1 id="200-2026-08-09">[2.0.0] - 2026-08-09<a class="headerlink" href="#200-2026-08-09" title="Permanent link">&para;</a></h1>
-<p>Kite AOS 2.0 brings the project to the living room: the kiosk now runs on <strong>Android TV</strong> boxes as a 10-foot, D-pad-driven Home Assistant dashboard from a single codebase, with full parity to the tablet build. This release also lands a pluggable motion-source pipeline and a user-selectable camera source — a USB-OTG webcam now works on phones and tablets too, not just Android TV.</p>
-<h2 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h2>
-<h3 id="android-tv">Android TV<a class="headerlink" href="#android-tv" title="Permanent link">&para;</a></h3>
+<h1 id="android-tv-support">Android TV Support<a class="headerlink" href="#android-tv-support" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Status: <strong>Implemented</strong> (shipped in <strong>v1.2.0</strong>).
+This document began as the Android TV scoping-survey design and is now the <strong>as-built
+reference</strong> for the <code>tv</code> form-factor: §1–§5 describe the shipped architecture, §6 tracks
+phasing, and §7 records which design-time risks were resolved. It supersedes the shorter
+"Android TV Support" entry in <a href="../roadmap/">roadmap.md</a> (now under <em>Done</em>).</p>
+</blockquote>
+<h2 id="0-implementation-map-as-shipped">0. Implementation map (as shipped)<a class="headerlink" href="#0-implementation-map-as-shipped" title="Permanent link">&para;</a></h2>
+<p>Where each decision landed in the codebase:</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Decision</th>
+<th>As built</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Build</td>
+<td><code>formfactor</code> dimension (<code>mobile</code>/<code>tv</code>)</td>
+<td><code>AndroidApplicationConventionPlugin</code> + <code>AndroidFeatureConventionPlugin</code>; 4 flavors <code>gmsMobile</code>/<code>fossMobile</code>/<code>gmsTv</code>/<code>fossTv</code>, <code>BuildConfig.IS_TV</code>, <code>versionCode + TV_VERSION_CODE_OFFSET (1_000_000)</code></td>
+</tr>
+<tr>
+<td>Runtime detection</td>
+<td>Leanback / UI-mode guard</td>
+<td><code>AppConfig</code> / <code>AppConfigImpl</code> in <code>presentation-core-platform</code> (<code>UI_MODE_TYPE_TELEVISION</code> OR <code>FEATURE_LEANBACK</code> OR seeded <code>BuildConfig.IS_TV</code>); seeded by <code>YahkApplication</code></td>
+</tr>
+<tr>
+<td>10-foot UI</td>
+<td>Hybrid adaptive layouts</td>
+<td><code>FormFactor</code> + <code>LocalFormFactor</code> + <code>LocalWindowSizeClass</code>, <code>Theme.is10Foot</code>, <code>AppTheme</code> up-scales tokens by <code>TEN_FOOT_SCALE = 1.3f</code>; D-pad focus rings via <code>Modifier.tvFocusRing</code></td>
+</tr>
+<tr>
+<td>D-pad access</td>
+<td>Long-press combo → drawer, no PIN</td>
+<td><code>HostActivity.dispatchKeyEvent</code> intercepts a hidden Konami D-pad sequence → <code>RemoteCommandBus.emitOpenDrawer()</code>; TV settings use a single-focus-target master/detail list (<code>onPreviewKeyEvent</code>)</td>
+</tr>
+<tr>
+<td>Motion</td>
+<td>USB camera → UVC → MQTT fallback</td>
+<td><code>MotionSourceFactory</code>: <code>Camera2ExternalMotionSource</code> → <code>UvcMotionSource</code> (libausbc) → <code>MqttMotionSource</code> → <code>NoOpMotionSource</code>; <code>HeadlessGlSurfaceTexture</code> for the UVC surface requirement</td>
+</tr>
+<tr>
+<td>Manifest</td>
+<td>Leanback launcher + banner</td>
+<td><code>presentation-feature-host/src/tv/AndroidManifest.xml</code> (leanback + <code>LEANBACK_LAUNCHER</code>); <code>presentation-core-application/src/tv/AndroidManifest.xml</code> (<code>android:banner</code>, <code>MotionService</code> <code>camera\|specialUse</code>); main <code>&lt;queries&gt;</code> adds <code>LEANBACK_LAUNCHER</code></td>
+</tr>
+<tr>
+<td>Deps</td>
+<td>UVC fallback</td>
+<td><code>androidusbcamera-libausbc</code> + <code>libuvc</code> <code>3.2.7</code> (JitPack) as plain <code>implementation</code> on <strong>every</strong> variant (a USB-OTG webcam works on phones too, not just TV), with demo-transitive excludes; <code>material3-window-size-class</code> for WindowSizeClass</td>
+</tr>
+</tbody>
+</table>
+<h2 id="1-goal">1. Goal<a class="headerlink" href="#1-goal" title="Permanent link">&para;</a></h2>
+<p>Run kite-aos on Android TV boxes as a large-screen Home Assistant dashboard from a
+<strong>single codebase</strong>, delivered as a <code>tv</code> form-factor rather than a fork. The target is
+<strong>full feature parity with the tablet build</strong> — including USB-webcam motion detection and
+MJPEG streaming — not a reduced subset.</p>
+<p><strong>Market rationale (from roadmap):</strong> no reliable HA-native kiosk dashboard exists for
+Android TV; the closest competitor is rated 2.6/5 and functionally broken. Android TV holds
+~35 % of the smart-TV OS market.</p>
+<h2 id="2-target-hardware">2. Target hardware<a class="headerlink" href="#2-target-hardware" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Devices</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Primary test</td>
+<td><strong>Android TV emulator</strong> (API 30+)</td>
+<td>UI / D-pad / focus iteration</td>
+</tr>
+<tr>
+<td>Primary test</td>
+<td><strong>NVIDIA Shield TV Pro</strong>, <strong>Xiaomi Mi Box S</strong></td>
+<td>Real USB-host, good performance</td>
+</tr>
+<tr>
+<td>Supported</td>
+<td>Generic Android TV boxes with <strong>USB-A host port</strong> (ONN 4K Pro, Rockchip boxes)</td>
+<td>Field deployment</td>
+</tr>
+<tr>
+<td>Out of scope</td>
+<td>Chromecast with Google TV, Fire TV Stick</td>
+<td>No USB-A / no USB host</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Note:</strong> the primary test devices (emulator + Shield/Mi Box) are strong hardware and do
+<strong>not</strong> surface the performance ceiling of cheap boxes. Before release, smoke-test on at
+least one low-end generic box — see risks §7.</p>
+</blockquote>
+<h2 id="3-decisions-survey-outcomes">3. Decisions (survey outcomes)<a class="headerlink" href="#3-decisions-survey-outcomes" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Question</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>WebView engine on TV</td>
+<td><strong>Both engines available</strong> — GeckoView (foss) and system WebView (gms)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>MVP scope</td>
+<td><strong>Full parity with tablet</strong>, including USB webcam</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Motion detection priority</td>
+<td><strong>USB camera first</strong> (Camera2), then UVC fallback + MQTT</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Test hardware</td>
+<td>Android TV emulator + NVIDIA Shield / Xiaomi Mi Box</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Kiosk lockdown</td>
+<td><strong>Regular app in v1</strong> — no lock-task / no home-app replacement</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Settings access</td>
+<td><strong>Hidden D-pad combo</strong> opens the control drawer; <strong>no PIN</strong> (home use). <em>As built:</em> a Konami-style directional sequence (Up, Up, Down, Down, Left, Right, Left, Right) — long-press was dropped because many remotes lack a MENU key</td>
+</tr>
+<tr>
+<td>7</td>
+<td>USB camera strategy</td>
+<td><strong>Camera2 + UVC (AndroidUSBCamera) fallback immediately</strong></td>
+</tr>
+<tr>
+<td>8</td>
+<td>App identity</td>
+<td><strong>Same <code>applicationId</code></strong> (<code>dev.kite.aos</code>)</td>
+</tr>
+<tr>
+<td>9</td>
+<td>D-pad inside HA WebView</td>
+<td><strong>Rely on HA's own focus</strong> — forward DPAD → key events only</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Screensaver / ambient</td>
+<td><strong>Already shipped on mobile</strong> — mirror the existing ambient/clock for TV</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Acoustic (mic) detection</td>
+<td><strong>Out of scope</strong></td>
+</tr>
+<tr>
+<td>12</td>
+<td>10-foot UI</td>
+<td><strong>Hybrid adaptive layouts</strong> (WindowSizeClass; TV = expanded / 10-foot)</td>
+</tr>
+<tr>
+<td>13</td>
+<td>MJPEG streaming</td>
+<td><strong>Yes</strong>, bundled with the USB camera</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Onboarding on TV</td>
+<td><strong>Adapt the existing wizard for D-pad</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Roadmap correction:</strong> the roadmap lists Screensaver under <em>In Progress / Next</em>, but it is
+already shipped on mobile (including the ambient clock variant). TV reuses it; it is <strong>not</strong>
+a blocker for TV work. Roadmap should be updated to move Screensaver to <em>Done</em>.</p>
+</blockquote>
+<h2 id="4-build-module-architecture">4. Build &amp; module architecture<a class="headerlink" href="#4-build-module-architecture" title="Permanent link">&para;</a></h2>
+<h3 id="41-second-flavor-dimension">4.1 Second flavor dimension<a class="headerlink" href="#41-second-flavor-dimension" title="Permanent link">&para;</a></h3>
+<p>The project already has one flavor dimension <code>distribution</code> (<code>foss</code> = GeckoView, <code>gms</code> =
+system WebView) in
+<code>build-logic/.../AndroidApplicationConventionPlugin.kt</code>. TV is added as a <strong>second dimension</strong>
+<code>formfactor</code> (<code>mobile</code>, <code>tv</code>). Both engines stay available on TV, so <strong>no <code>variantFilter</code>
+cuts any combination</strong> — the full matrix is intentional:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>distribution × formfactor × buildType
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  foss ┐                    ┌ debug
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  gms  ┘ × mobile / tv ×    └ release
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>⇒ 4 flavors:  gmsMobile, fossMobile, gmsTv, fossTv
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>⇒ 8 variants (× debug/release)
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// AndroidApplicationConventionPlugin (sketch)</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">flavorDimensions</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">listOf</span><span class="p">(</span><span class="s">&quot;distribution&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;formfactor&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">productFlavors</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="c1">// existing distribution dimension</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="n">create</span><span class="p">(</span><span class="s">&quot;foss&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">dimension</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;distribution&quot;</span><span class="p">;</span><span class="w"> </span><span class="n">minSdk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">26</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="n">create</span><span class="p">(</span><span class="s">&quot;gms&quot;</span><span class="p">)</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="n">dimension</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;distribution&quot;</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">    </span><span class="c1">// new form-factor dimension</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="n">create</span><span class="p">(</span><span class="s">&quot;mobile&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">dimension</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;formfactor&quot;</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="n">create</span><span class="p">(</span><span class="s">&quot;tv&quot;</span><span class="p">)</span><span class="w">     </span><span class="p">{</span><span class="w"> </span><span class="n">dimension</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;formfactor&quot;</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="42-app-identity">4.2 App identity<a class="headerlink" href="#42-app-identity" title="Permanent link">&para;</a></h3>
+<p>Single <code>applicationId</code> = <code>dev.kite.aos</code> for every flavor. This is compatible with <strong>Play
+Store multi-APK delivery</strong>: mobile and TV APKs share the app listing and are disambiguated by
+the <code>leanback</code> feature declaration + distinct <code>versionCode</code>s. A device is either a phone/tablet
+or a TV, so the two form-factors never need to coexist on one device.</p>
 <ul>
-<li><code>formfactor</code> flavor dimension (<code>mobile</code>/<code>tv</code>) across the convention plugins → <code>gmsMobile</code>/<code>fossMobile</code>/<code>gmsTv</code>/<code>fossTv</code>; <code>BuildConfig.IS_TV</code> and a <code>tv</code> <code>versionCode</code> offset for Play multi-APK delivery</li>
-<li><code>AppConfig</code> runtime form-factor detection (UI-mode / <code>FEATURE_LEANBACK</code> / seeded <code>BuildConfig.IS_TV</code>) surfaced to feature libraries</li>
-<li>Adaptive 10-foot UI: <code>FormFactor</code>, <code>LocalFormFactor</code>, <code>LocalWindowSizeClass</code>, <code>Theme.is10Foot</code> token up-scaling, and <code>Modifier.tvFocusRing</code> D-pad focus rings</li>
-<li>D-pad control-drawer access via a hidden directional combo in <code>HostActivity</code>; TV master/detail settings layout with single-focus-target list navigation</li>
-<li>Leanback launcher + banner (<code>tv</code> manifest overlays); <code>LEANBACK_LAUNCHER</code> added to <code>&lt;queries&gt;</code> for app-drawer enumeration (<code>ApplicationPlatformSourceImpl</code> now enumerates both LAUNCHER and LEANBACK_LAUNCHER, deduped by package)</li>
-<li><code>DarkOverlay</code> screen state — a plain dark overlay stand-in for screen-off on Android TV, where the app cannot lock/power off the panel (<code>ScreenStateModel</code>/<code>ScreenStateResource</code>); <code>DevicePowerManager</code> wake/lock are no-ops on TV</li>
-<li>Home Assistant form-factor entity gating: <code>MqttConnectUseCase</code>/<code>TelemetryMqttSource</code> take a <code>model</code> (<code>tv</code>/<code>tablet</code>) reported in HA Discovery; on TV, brightness/screen/volume/battery entities are not registered and stale ones are cleaned up</li>
-<li><code>material3-window-size-class</code> dependency</li>
+<li>MQTT <code>device_class</code> published as <strong><code>tv</code></strong> instead of <code>tablet</code> (per roadmap).</li>
+<li><code>versionCode</code> scheme for multi-APK to be defined at release time (see §7 open items).</li>
 </ul>
-<h3 id="motion-pipeline">Motion pipeline<a class="headerlink" href="#motion-pipeline" title="Permanent link">&para;</a></h3>
+<h3 id="43-source-set-layout">4.3 Source-set layout<a class="headerlink" href="#43-source-set-layout" title="Permanent link">&para;</a></h3>
+<p>Unchanged (shared) across form-factors: <strong>all <code>domain-*</code>, all <code>data-*</code></strong>. Divergence lives in:</p>
 <ul>
-<li>Pluggable <code>MotionSource</code> abstraction — <code>MotionService</code> no longer hardcodes CameraX; Camera2-external, UVC, and MQTT motion sources sit behind one interface, with a stride-aware <code>MotionAnalyzer</code> overload for padded YUV/NV21 frames</li>
-<li>USB-webcam motion sources: <code>Camera2ExternalMotionSource</code> → <code>UvcMotionSource</code> (libausbc) fallback → <code>MqttMotionSource</code> presence fallback, with <code>HeadlessGlSurfaceTexture</code> for the UVC surface requirement</li>
+<li><code>presentation-core-platform</code> — motion source (USB camera), key handling, kiosk mechanics</li>
+<li><code>presentation-feature-*</code> — D-pad focus, 10-foot layouts, onboarding navigation</li>
 </ul>
-<h3 id="camera-source-selection">Camera source selection<a class="headerlink" href="#camera-source-selection" title="Permanent link">&para;</a></h3>
+<p>TV-specific code and manifest bits go into <code>src/tv/</code> source-sets of the relevant modules;
+shared code stays in <code>src/main/</code>.</p>
+<h3 id="44-manifest-tv-flavor-overlay-srctvandroidmanifestxml">4.4 Manifest (TV flavor overlay — <code>src/tv/AndroidManifest.xml</code>)<a class="headerlink" href="#44-manifest-tv-flavor-overlay-srctvandroidmanifestxml" title="Permanent link">&para;</a></h3>
+<p>The current <code>src/main/AndroidManifest.xml</code> is touch/camera-first and must <strong>not</strong> be edited to
+break mobile. TV additions belong in the flavor overlay:</p>
 <ul>
-<li>User-selectable camera source (<code>Auto</code>/<code>Front</code>/<code>Rear</code>/<code>External</code>) on every form-factor: <code>CameraSourceModel</code> domain model and a <code>camera.pb</code> Proto DataStore preference (<code>CameraPreferenceSource</code>, serializer, mapper, storage)</li>
-<li><code>GetCameraSourceUseCase</code> / <code>SetCameraSourceUseCase</code> / <code>ObserveCameraSourceUseCase</code> and <code>ConfigureRepository</code> camera-source methods</li>
-<li>Settings selector to pick the camera source; localized strings (EN + UK)</li>
-<li><code>MotionSourceFactory.create(choice)</code> honors the preference: <code>Auto</code> picks the highest-priority available source, <code>Front</code>/<code>Rear</code> force the built-in lens, <code>External</code> forces a USB/UVC webcam, with fallback to <code>Auto</code> when the forced source is unavailable</li>
+<li><code>&lt;uses-feature android:name="android.software.leanback" android:required="false" /&gt;</code></li>
+<li><code>&lt;uses-feature android:name="android.hardware.touchscreen" android:required="false" /&gt;</code></li>
+<li><code>&lt;uses-feature android:name="android.hardware.camera" android:required="false" /&gt;</code></li>
+<li><code>&lt;uses-feature android:name="android.hardware.camera.external" android:required="false" /&gt;</code></li>
+<li>Leanback launcher <code>intent-filter</code> (<code>android.intent.category.LEANBACK_LAUNCHER</code>) on the host
+  activity so the app appears on the Android TV home screen.</li>
+<li><strong><code>MotionService</code> <code>foregroundServiceType</code></strong> must not hard-fail when no camera is present.
+  The <code>type="camera"</code> declaration is currently hard-coded in <code>main</code>; on TV without a camera,
+  declaring a camera FGS while never using the camera can crash on Android 14+. Resolve by
+  flavor-specific service declaration or a runtime fallback FGS type. <strong>(Risk — see §7.)</strong></li>
 </ul>
-<h2 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h2>
+<h2 id="5-feature-adaptation-plan">5. Feature adaptation plan<a class="headerlink" href="#5-feature-adaptation-plan" title="Permanent link">&para;</a></h2>
+<h3 id="category-1-direct-port-no-logic-change">Category 1 — Direct port (no logic change)<a class="headerlink" href="#category-1-direct-port-no-logic-change" title="Permanent link">&para;</a></h3>
+<p>HA WebView kiosk, <code>MqttService</code> (telemetry / HA Discovery / control), battery telemetry,
+screen wake/dim/lock, backup/restore, periodic refresh, screensaver + ambient clock.</p>
+<h3 id="category-2-adapted">Category 2 — Adapted<a class="headerlink" href="#category-2-adapted" title="Permanent link">&para;</a></h3>
+<p><strong>D-pad / remote navigation</strong>
+- <code>HostActivity</code> intercepts <code>KEYCODE_DPAD_*</code> / <code>KEYCODE_DPAD_CENTER</code> and forwards them into the
+  WebView as key events. <strong>We rely on the HA dashboard's own focus handling</strong> — no custom JS
+  focus manager in v1. (Fallback: inject a JS focus manager later only if real HA themes focus
+  poorly — tracked, not built.)
+- FAB hidden on TV; swipe gestures suppressed.</p>
+<p><strong>Settings access without touch</strong>
+- A <strong>hidden D-pad combo</strong> opens the control drawer (the same side-effect the FAB fires on
+  mobile). <strong>No PIN gate</strong> — this is for home use. <em>As built:</em> <code>HostActivity.dispatchKeyEvent</code>
+  matches a Konami-style directional sequence (Up, Up, Down, Down, Left, Right, Left, Right) and
+  fires <code>RemoteCommandBus.emitOpenDrawer()</code>; only the completing key is consumed, and the combo
+  resets after a 3s pause. <code>dispatchKeyEvent</code> is used (not a Compose key modifier) because the
+  modifier is bypassed while the <code>AndroidView</code>-hosted WebView owns focus.</p>
+<p><strong>USB-webcam motion detection</strong> (replaces the built-in front camera)
+- <strong>Primary:</strong> Camera2 API + <code>FEATURE_CAMERA_EXTERNAL</code> (API 28+, no extra dependency). Same
+  luma-analysis pipeline as the existing <code>MotionAnalyzer</code> / <code>ImageAnalysis</code> interface.
+- <strong>Fallback (shipped in v1):</strong> <a href="https://github.com/jiangdongguo/AndroidUSBCamera"><code>AndroidUSBCamera</code></a>
+  (UVC, Apache 2.0) for devices exposing a USB camera via USB Host but not Camera2.
+  ⚠️ Last release Feb 2023, 488 open issues — fallback only, guarded behind capability checks.
+- USB permission requested at runtime via <code>UsbManager</code> on first attach.
+- If no camera path is available → MQTT motion fallback (Category 3).</p>
+<p><strong>MJPEG camera streaming</strong>
+- Bundled with the USB camera: reuse the existing <code>MjpegHttpServer</code> in <code>MotionService</code>, sourced
+  from the USB webcam frames (<code>/stream.mjpg</code>, <code>/snapshot.jpg</code>).</p>
+<p><strong>Onboarding</strong>
+- Same wizard and logic; navigation adapted for D-pad (focusable steps, remote-driven
+  permission prompts).</p>
+<p><strong>10-foot UI</strong>
+- <strong>Hybrid adaptive layouts.</strong> Shared Composables with <code>WindowSizeClass</code> branches; TV renders
+  as the expanded / 10-foot mode (larger typography, focus rings, generous spacing). No parallel
+  screen tree unless a specific screen genuinely needs one.</p>
+<h3 id="category-3-new-tv-specific">Category 3 — New TV-specific<a class="headerlink" href="#category-3-new-tv-specific" title="Permanent link">&para;</a></h3>
+<p><strong>MQTT motion fallback</strong>
+- Subscribe to a configurable topic (e.g. a PIR sensor via HA). On message → fire the same
+  <code>MOTION_DETECTED</code> event (wake screen, reset dim timer, publish presence).
+- Enabled automatically when no camera is detected at startup.</p>
+<p><strong>TV remote key mapping</strong>
+- <code>HostActivity.dispatchKeyEvent</code> maps configurable keycodes to app intents (settings bar open,
+  control overlay). Consumed only for mapped combos; all other keys propagate to system / WebView.</p>
+<p><strong>Ambient mode</strong>
+- Reuse the shipped mobile screensaver / ambient clock. On TV it dismisses on MQTT motion or
+  remote keypress instead of camera motion; typography scaled for 10-foot viewing.</p>
+<h2 id="6-phasing">6. Phasing<a class="headerlink" href="#6-phasing" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Deliverable</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Phase 0 — Scaffold (PoC)</strong></td>
+<td><code>formfactor</code> dimension + <code>tv</code> source-sets + leanback manifest; app launches from the TV home screen and loads the HA dashboard; DPAD forwarded to WebView.</td>
+<td>✅ Done</td>
+</tr>
+<tr>
+<td><strong>Phase 1 — Core parity</strong></td>
+<td>MQTT service + telemetry + HA Discovery (<code>device_class = tv</code>); wake/dim/lock; hidden D-pad settings access; hybrid 10-foot layouts for onboarding + settings; ambient/screensaver mirrored.</td>
+<td>✅ Done</td>
+</tr>
+<tr>
+<td><strong>Phase 2 — USB camera</strong></td>
+<td>Camera2 external-camera motion; UVC (<code>AndroidUSBCamera</code>) fallback; MJPEG streaming from USB webcam; MQTT motion fallback when no camera.</td>
+<td>✅ Done</td>
+</tr>
+<tr>
+<td><strong>Phase 3 — Hardening</strong></td>
+<td>Multi-APK <code>versionCode</code> scheme (shipped via <code>TV_VERSION_CODE_OFFSET</code>). Remaining: low-end box smoke tests; kiosk-lockdown investigation (still out of v1).</td>
+<td>🔶 Partial</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-risks-open-items">7. Risks &amp; open items<a class="headerlink" href="#7-risks-open-items" title="Permanent link">&para;</a></h2>
 <ul>
-<li>MQTT publishes <code>device_class = tv</code> on the <code>tv</code> flavor; screensaver reused as the TV ambient mode</li>
-<li>Android TV documentation promoted from design plan to as-built reference (<a href="../android-tv/">android-tv.md</a>)</li>
-<li>Bumped <code>versionName</code> to <code>2.0.0</code> (<code>versionCode</code> 7)</li>
+<li>✅ <strong><code>MotionService</code> camera FGS type on cameraless TV boxes</strong> — <em>Resolved.</em> The <code>tv</code> overlay in
+  <code>presentation-core-application/src/tv/AndroidManifest.xml</code> uses <code>tools:replace</code> to declare
+  <code>foregroundServiceType="camera|specialUse"</code> (+ <code>PROPERTY_SPECIAL_USE_FGS_SUBTYPE</code>), so the FGS
+  is legal on Android 14+ whether or not a camera is present. Mobile keeps <code>type="camera"</code>.</li>
+<li>✅ <strong>Multi-APK <code>versionCode</code> scheme</strong> — <em>Resolved.</em> Shared <code>applicationId</code>; the <code>tv</code> flavor sets
+  <code>versionCode = base + TV_VERSION_CODE_OFFSET</code> (<code>1_000_000</code>) so Play serves mobile vs TV distinctly.</li>
+<li>✅ <strong><code>RECORD_AUDIO</code> / WebRTC permissions</strong> — <em>Resolved.</em> The host <code>tv</code> overlay marks
+  <code>android.hardware.microphone</code> <code>required="false"</code>, and onboarding skips the mic requirement on TV.</li>
+<li>🔶 <strong>UVC library staleness</strong> — <code>AndroidUSBCamera</code> (<code>libausbc</code>) is from 2023 with many open issues;
+  kept as a <strong>guarded fallback</strong> behind Camera2, not the primary path. Pinned to <code>3.2.7</code> (the last
+  real release — <code>3.3.3</code> was a phantom tag JitPack built on request that never published
+  <code>libnative.aar</code>). Demo transitives (immersionbar, glide/webpdecoder, mmkv) are excluded, and
+  <code>libuvc</code> is added explicitly because <code>libausbc</code> leaks <code>UsbControlBlock</code> through its public API.
+  Also needs a non-null render surface (<code>HeadlessGlSurfaceTexture</code>) or <code>openCamera</code> crashes
+  uncatchably on the engine thread.</li>
+<li>🔴 <strong><code>GeckoView</code> performance on low-end TV boxes</strong> — <em>Open.</em> <code>fossTv</code> is in the matrix but
+  GeckoView is heavy; on cheap boxes steer users to <code>gmsTv</code> (no code change — both are built).</li>
+<li>🔴 <strong>HA dashboard native focus quality</strong> — <em>Open.</em> Relying on HA's own focus (decision #9) means
+  D-pad UX depends on the user's HA theme; the JS-focus-manager fallback remains a later item.</li>
+<li>🔴 <strong>Cheap-hardware coverage gap</strong> — <em>Open.</em> Primary test devices are high-end; smoke-test at
+  least one low-end box before broad release.</li>
 </ul>
-<h1 id="110-2026-06-13">[1.1.0] - 2026-06-13<a class="headerlink" href="#110-2026-06-13" title="Permanent link">&para;</a></h1>
-<p>This release adds screensaver overlay, MJPEG streaming, auto-reboot scheduler, analytics infrastructure, and expands settings with five new preference categories.</p>
-<h2 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">&para;</a></h2>
+<h2 id="8-explicitly-out-of-scope-for-v1">8. Explicitly out of scope for v1<a class="headerlink" href="#8-explicitly-out-of-scope-for-v1" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Analytics infrastructure with pluggable provider pattern (console + Firebase for gms flavor)</li>
-<li>Screensaver, auto-reboot, streaming, reduce-motion, and webview-refresh preferences</li>
-<li>Domain models and repository contracts for new features</li>
-<li>Use cases for screensaver, streaming, auto-reboot, screen state, and webview-refresh</li>
-<li>MQTT telemetry extended with screensaver, FAB, and camera URL commands</li>
-<li>Auto-reboot scheduler, MJPEG streaming server, and network resolver to platform</li>
-<li>Screensaver overlay with clock component to main dashboard</li>
-<li>Settings expanded with streaming, screensaver, auto-reboot, and webview-refresh configuration</li>
-<li>Analytics, new modules, and updated services wired into app composition root</li>
-<li>Project documentation, architecture guides, and MkDocs configuration</li>
-</ul>
-<h2 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Guard Application.onCreate against GeckoView child processes</li>
-</ul>
-<h2 id="changed_1">Changed<a class="headerlink" href="#changed_1" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Remove watchdog recovery system from main feature</li>
-<li>Update F-Droid store listing description</li>
-<li>Remove GEMINI.md documentation files from all modules</li>
-</ul>
-<h1 id="100-2026-05-27">[1.0.0] - 2026-05-27<a class="headerlink" href="#100-2026-05-27" title="Permanent link">&para;</a></h1>
-<p>This release marks the first major version of Kite AOS, introducing pluggable WebView engine support, automatic return, Home Assistant network discovery, expanded MQTT telemetry, and Android 7.1 (API 25) compatibility for the GMS flavor.</p>
-<h2 id="added_2">Added<a class="headerlink" href="#added_2" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Pluggable WebView engine support (AndroidWebView / GeckoView) with Proto DataStore preferences</li>
-<li>Auto-return preference source and implementation</li>
-<li>Home Assistant network scanner and host discovery</li>
-<li>GetWebEngineUseCase / SetWebEngineUseCase across all layers</li>
-<li>DiscoverHomeAssistantUseCase, ObserveNetworkStatus, SetAutoReturn use cases</li>
-<li>MQTT network state and watchdog telemetry use cases</li>
-<li>Chrome and Firefox browser icon assets</li>
-</ul>
-<h2 id="fixed_1">Fixed<a class="headerlink" href="#fixed_1" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Lower minSdk to 25 (Android 7.1) for GMS flavor — closes #7</li>
-<li>Scope GeckoView minSdk constraint to FOSS flavor only; add GMS manifest override</li>
-<li>Fallback to AndroidWebView at runtime when GeckoView is selected on API &lt; 26</li>
-<li>Add dontwarn rules for GeckoView bundled Kotlin annotations (R8 fossRelease build)</li>
-</ul>
-<h2 id="changed_2">Changed<a class="headerlink" href="#changed_2" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Update F-Droid short_description.txt</li>
-</ul>
-<h1 id="003-2026-05-06">[0.0.3] - 2026-05-06<a class="headerlink" href="#003-2026-05-06" title="Permanent link">&para;</a></h1>
-<p>This release adds full bidirectional MQTT control with Home Assistant discovery, WebRTC support, Firebase Crashlytics integration, and a new onboarding microphone permission step.</p>
-<h2 id="added_3">Added<a class="headerlink" href="#added_3" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Add RECORD_AUDIO permission step to onboarding</li>
-<li>Publish WebView URL to MQTT broker on page load</li>
-<li>Extend MqttService with bidirectional command routing</li>
-<li>Add domain use cases and repository for MQTT device control</li>
-<li>Expand MQTT data source for bidirectional control</li>
-<li>Add MQTT HA discovery config models for device control</li>
-<li>Add Firebase Crashlytics integration</li>
-</ul>
-<h2 id="fixed_2">Fixed<a class="headerlink" href="#fixed_2" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Add WebRTC permissions and hardware acceleration</li>
-</ul>
-<h2 id="changed_3">Changed<a class="headerlink" href="#changed_3" title="Permanent link">&para;</a></h2>
-<ul>
-<li>Rename convention plugin package to convention</li>
-<li>Remove unused data-network modules from build</li>
-<li>Update documentation</li>
-<li>Upgrade Gradle to 9.3.1 and update version catalog</li>
-<li>Fix indentation in UI components</li>
+<li>Kiosk lockdown (lock-task / home-app replacement) — regular app for now.</li>
+<li>PIN gate on settings access.</li>
+<li>Acoustic / microphone motion detection.</li>
+<li>Chromecast / Fire TV (no USB host).</li>
 </ul>
 
 
@@ -2654,7 +3161,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../android-tv/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Android TV">
+          <a href="../roadmap/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Roadmap">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2664,11 +3171,27 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Android TV
+                Roadmap
               </div>
             </div>
           </a>
         
+        
+          
+          <a href="../changelog/" class="md-footer__link md-footer__link--next" aria-label="Next: Changelog">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Changelog
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
         
       </nav>
     

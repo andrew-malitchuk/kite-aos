@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -1295,6 +1314,17 @@
     <span class="md-ellipsis">
       
         Features
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
       
     </span>
   </a>
@@ -2306,6 +2336,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2364,6 +2421,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2402,6 +2470,15 @@
 <li><strong>Advanced Splash Screen</strong>: Custom splash screen logic with smooth transitions and state-based dismissal.</li>
 <li><strong>Kiosk Mode Enforcement</strong>: Immersive full-screen mode and global back-gesture blocking.</li>
 <li><strong>Boot Persistence</strong>: Automatically launches on device boot via <code>BootReceiver</code>.</li>
+<li><strong>Android TV Support</strong>: Resolves the form factor at the host root and opens the control drawer via a hidden D-pad sequence on TV.</li>
+</ul>
+<h2 id="android-tv">Android TV<a class="headerlink" href="#android-tv" title="Permanent link">&para;</a></h2>
+<p>On Android TV the same <code>HostActivity</code> acts as the shell; TV concerns are resolved at the host root so feature modules stay form-factor agnostic.</p>
+<ul>
+<li><strong>Form-Factor Resolution</strong>: Computes <code>formFactor = if (appConfig.isTv) FormFactor.TV else FormFactor.MOBILE</code> and <code>calculateWindowSizeClass(activity)</code>, publishing both above <code>AppTheme</code> via <code>CompositionLocalProvider(LocalFormFactor provides ..., LocalWindowSizeClass provides ...)</code>. This drives 10-foot scaling and TV input branches without prop-drilling. On mobile both default to <code>MOBILE</code>, so behaviour is unchanged.</li>
+<li><strong>D-pad "Settings Unlock"</strong>: There is no FAB on TV, so the control drawer is opened by a hidden Konami-style D-pad sequence (Up, Up, Down, Down, Left, Right, Left, Right) intercepted in <code>dispatchKeyEvent</code>. <code>dispatchKeyEvent</code> is used instead of a Compose key modifier because the latter is bypassed while the <code>AndroidView</code>-hosted WebView owns focus. Only the completing key is consumed (calling <code>remoteCommandBus.emitOpenDrawer()</code>); intermediate keys pass through to the dashboard, and the combo resets after a &gt;3s pause (<code>UNLOCK_SEQUENCE_TIMEOUT_MS</code>). On mobile it is a pure pass-through, guarded by <code>if (!appConfig.isTv) return super...</code>.</li>
+<li><strong>Leanback Manifest Overlay</strong>: <code>src/tv/AndroidManifest.xml</code> (merged only into <code>tv*</code> variants) adds the <code>android.intent.category.LEANBACK_LAUNCHER</code> intent-filter so the app appears on the Android TV home screen, plus <code>leanback</code> / <code>touchscreen</code> / <code>camera</code> / <code>microphone</code> <code>uses-feature</code> entries marked <code>required="false"</code> so the same APK stays installable on non-TV devices.</li>
+<li><strong>TV Dependencies</strong>: Injects <code>AppConfig</code> (for <code>isTv</code>) and <code>RemoteCommandBus</code> (for <code>emitOpenDrawer()</code>), both from <code>presentation-core-platform</code>.</li>
 </ul>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>This module is the application's entry point. The <code>HostActivity</code> is declared as the launcher activity in the <code>AndroidManifest.xml</code>. No manual instantiation of components from this module is required in other feature modules.</p>

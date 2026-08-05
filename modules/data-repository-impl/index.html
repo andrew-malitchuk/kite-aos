@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -2151,6 +2170,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#screen-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Screen State
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2323,6 +2353,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2403,6 +2460,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#screen-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Screen State
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2441,9 +2509,11 @@
 <h3 id="key-repositories">Key Repositories<a class="headerlink" href="#key-repositories" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong><code>ApplicationRepositoryImpl</code></strong>: Manages applications by coordinating <code>ApplicationDatabaseSource</code> (loading persisted selection) and <code>ApplicationPlatformSource</code> (getting system-installed apps).</li>
-<li><strong><code>ConfigureRepositoryImpl</code></strong>: Manages all user settings by interacting with multiple <code>PreferenceSource</code> implementations.</li>
-<li><strong><code>MqttRepositoryImpl</code></strong>: Handles MQTT connectivity and telemetry reporting.</li>
+<li><strong><code>ConfigureRepositoryImpl</code></strong>: Manages all user settings by interacting with multiple <code>PreferenceSource</code> implementations. <code>@since 1.4.0</code> it also exposes <code>getCameraSource()</code>/<code>setCameraSource()</code>/<code>observeCameraSource()</code>, orchestrating <code>CameraPreferenceSource</code> with the new <code>CameraPreferenceMapper</code> (falls back to <code>CameraSourceModel.Auto</code> for unknown/empty stored modes).</li>
+<li><strong><code>MqttRepositoryImpl</code></strong>: Handles MQTT connectivity and telemetry reporting. Forwards the device <code>model</code> (<code>"tv"</code>/<code>"tablet"</code>) from <code>connect(...)</code> to the telemetry source for form-factor-aware Home Assistant registration.</li>
 </ul>
+<h3 id="screen-state">Screen State<a class="headerlink" href="#screen-state" title="Permanent link">&para;</a></h3>
+<p><code>ScreenStateResourceMapper</code> bidirectionally maps <code>ScreenStateResource</code> and <code>ScreenStateModel</code>, including the <code>DarkOverlay</code> state (<code>@since 1.2.0</code>) — a plain dark overlay used as a stand-in for powering the screen off on devices such as Android TV where the panel cannot be turned off.</p>
 
 
 

@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -2306,6 +2325,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2401,6 +2447,7 @@
 <li><strong>Robust Client</strong>: Built on <code>kmqtt</code> with automatic background reconnection.</li>
 <li><strong>HA MQTT Discovery</strong>: Automatic integration with Home Assistant for effortless device monitoring.</li>
 <li><strong>Telemetry</strong>: Reports real-time motion detection and battery levels.</li>
+<li><strong>Form-Factor Entity Gating</strong> (<code>@since 1.2.0</code>): The reported <code>model</code> (<code>"tv"</code>/<code>"tablet"</code>) is included in discovery payloads. On Android TV the battery, volume, brightness and screen entities are not registered (they cannot be controlled there), their command topics are not subscribed, and any stale registrations from a prior tablet setup are cleared.</li>
 </ul>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <p>The implementation is provided as a singleton via Koin. It manages its own internal coroutine scope for connection handling.</p>

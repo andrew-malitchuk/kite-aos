@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -2306,6 +2325,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2401,6 +2447,8 @@
 <li><strong>Business Operations</strong>: Defines interfaces for all actions the user or system can perform (e.g., <code>SetThemeUseCase</code>, <code>GetDashboardUseCase</code>).</li>
 <li><strong>Standardized Results</strong>: Uses <code>Result&lt;T&gt;</code> for all return types to ensure consistent error handling across the domain layer.</li>
 <li><strong>Optional Alias</strong>: Provides the <code>Optional</code> typealias (<code>Result&lt;Unit&gt;</code>) for operations that return no specific value but can still fail.</li>
+<li><strong>Camera Use Cases</strong> (<code>.camera</code>, <code>@since 1.4.0</code>): <code>GetCameraSourceUseCase</code>, <code>SetCameraSourceUseCase</code>, and <code>ObserveCameraSourceUseCase</code> expose the user's camera-source preference (<code>Auto</code> / <code>Front</code> / <code>Rear</code> / <code>External</code>) that overrides automatic camera selection for motion detection and MJPEG streaming.</li>
+<li><strong>MQTT form-factor reporting</strong> (<code>@since 1.2.0</code>): <code>MqttConnectUseCase.invoke(model: String)</code> requires a <code>model</code> parameter (<code>"tv"</code> or <code>"tablet"</code>), supplied by the caller from the current form-factor and reported to Home Assistant discovery.</li>
 </ul>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>Feature modules (ViewModels) should depend on this module to execute business logic. Use cases are injected as interfaces to maintain decoupling.</p>

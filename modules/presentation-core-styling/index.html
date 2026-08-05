@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -1514,6 +1533,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#android-tv-adaptive-form-factor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV / Adaptive Form-Factor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Android TV / Adaptive Form-Factor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-wires-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it wires together
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#adding-new-tokens" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2317,6 +2364,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2386,6 +2460,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#android-tv-adaptive-form-factor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV / Adaptive Form-Factor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Android TV / Adaptive Form-Factor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-wires-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it wires together
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#adding-new-tokens" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2433,6 +2535,17 @@
 <li><code>source/provider/</code>: Internal <code>CompositionLocal</code> definitions.</li>
 <li><code>source/theme/</code>: The <code>AppTheme</code> implementation.</li>
 </ul>
+<h2 id="android-tv-adaptive-form-factor">Android TV / Adaptive Form-Factor<a class="headerlink" href="#android-tv-adaptive-form-factor" title="Permanent link">&para;</a></h2>
+<p><em>Since <code>1.2.0</code>.</em> The styling engine adapts to remote-driven, across-the-room devices (Android TV) and large expanded windows.</p>
+<ul>
+<li><strong><code>FormFactor</code></strong> (<code>core/</code>): Enum with <code>MOBILE</code> and <code>TV</code>. Describes the <em>input model and viewing distance</em> of the device, which is deliberately distinct from a <code>WindowSizeClass</code> (available space). A TV is remote-driven and viewed from across the room. Both signals feed <code>Theme.is10Foot</code>.</li>
+<li><strong><code>LocalFormFactor</code></strong>: <code>CompositionLocal&lt;FormFactor&gt;</code>, defaults to <code>MOBILE</code> so previews and tests don't crash.</li>
+<li><strong><code>LocalWindowSizeClass</code></strong>: <code>CompositionLocal&lt;WindowSizeClass?&gt;</code>, defaults to <code>null</code> ("unknown / compact").</li>
+<li><strong><code>Theme.is10Foot</code></strong>: <code>true</code> when the form-factor is <code>TV</code> <strong>or</strong> the window width size class is <code>Expanded</code> (large tablets / foldables benefit too); a <code>null</code> size class counts as not expanded.</li>
+</ul>
+<h3 id="how-it-wires-together">How it wires together<a class="headerlink" href="#how-it-wires-together" title="Permanent link">&para;</a></h3>
+<p>Both CompositionLocals are provided at the host level, above <code>AppTheme</code>: <code>LocalFormFactor</code> from <code>AppConfig.isTv</code>, and <code>LocalWindowSizeClass</code> from <code>calculateWindowSizeClass(activity)</code>. When <code>Theme.is10Foot</code> is <code>true</code>, <code>AppTheme</code> up-scales font sizes, sizing, line heights, spacing, and typography by <code>TEN_FOOT_SCALE</code> (<code>1.3f</code>) through the same theme CompositionLocals, so most screens adapt with no per-screen changes.</p>
+<p>The <code>WindowSizeClass</code> API comes from the <code>material3-window-size-class</code> dependency (<code>androidx.compose.material3</code>, version via the Compose BOM).</p>
 <h2 id="adding-new-tokens">Adding New Tokens<a class="headerlink" href="#adding-new-tokens" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Define the token in the appropriate data class in <code>core/</code>.</li>

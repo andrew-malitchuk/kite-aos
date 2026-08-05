@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -1334,6 +1353,17 @@
     <span class="md-ellipsis">
       
         Architecture
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
       
     </span>
   </a>
@@ -2317,6 +2347,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2386,6 +2443,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#usage" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2424,6 +2492,7 @@
 <li><strong>Social Connectivity</strong>: Provides action buttons to open external links (GitHub, LinkedIn, Twitter/X) in a web browser.</li>
 <li><strong>Visual Flair</strong>: Implements a unique <code>AnimatedCookieShape</code> using the Android Graphics Shapes library to provide a dynamic, morphing background for the app logo.</li>
 <li><strong>Navigation</strong>: Handles the "Back" action to return to the previous screen.</li>
+<li><strong>Android TV Ready</strong>: Adapts to a capped, centred, overscan-safe layout on TV form factors, with browser-safe social links.</li>
 </ul>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
 <p>The module follows the MVI (Model-View-Intent) architecture pattern using the Orbit framework:</p>
@@ -2432,6 +2501,15 @@
 <li><strong><code>AboutIntent</code></strong>: User actions such as clicking social links or the back button.</li>
 <li><strong><code>AboutSideEffect</code></strong>: One-off events for navigating back or opening external URLs via Intents.</li>
 <li><strong>ViewModel</strong>: <code>AboutViewModel</code> manages the state and side effects, triggered by intents.</li>
+</ul>
+<h2 id="android-tv">Android TV<a class="headerlink" href="#android-tv" title="Permanent link">&para;</a></h2>
+<p>On a TV form factor (<code>LocalFormFactor.current == FormFactor.TV</code>) the screen adapts its layout and link handling:</p>
+<ul>
+<li><strong>Capped, centred content</strong>: The content body is constrained to a maximum readable width (~720.dp) and centred rather than stretching a lone column across the full 16:9 panel. Mobile keeps the full-width layout.</li>
+<li><strong>Overscan insets</strong>: Horizontal overscan padding keeps text and the logo clear of the bezel dead zone.</li>
+<li><strong>Full-width header</strong>: The back-button header row stays full-width; only the body is capped and centred — the same pattern used in <code>presentation-feature-application</code>.</li>
+<li><strong>Browser-safe social links</strong>: Many Android TV boxes ship without a general-purpose browser, so <code>ACTION_VIEW</code> on a web URL throws <code>ActivityNotFoundException</code>. <code>AboutScreen</code> wraps the launch in <code>runCatching</code>, logging a warning instead of crashing the kiosk.</li>
+<li><strong>TV preview</strong>: A dedicated <code>Devices.TV_1080p</code> preview renders the content with <code>FormFactor.TV</code>.</li>
 </ul>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>The <code>AboutScreen</code> is the entry point for this feature. It should be integrated into the application's navigation graph.</p>

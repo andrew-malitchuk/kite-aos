@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -2306,6 +2325,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2400,6 +2446,8 @@
 <ul>
 <li><strong>Data Contracts</strong>: Defines abstract repository interfaces (e.g., <code>ApplicationRepository</code>, <code>ConfigureRepository</code>, <code>MqttRepository</code>) that describe <em>what</em> data is needed by the domain.</li>
 <li><strong>Abstraction</strong>: Ensures that Use Cases only interact with abstractions, allowing the underlying data implementation (Network, Database, Preferences, MQTT) to change without affecting business logic.</li>
+<li><strong>Camera-source selection</strong> (<code>@since 1.4.0</code>): <code>ConfigureRepository</code> exposes <code>getCameraSource()</code>, <code>setCameraSource()</code>, and <code>observeCameraSource()</code> to persist and observe the user's <code>CameraSourceModel</code> preference for motion detection and MJPEG streaming.</li>
+<li><strong>MQTT form-factor reporting</strong> (<code>@since 1.2.0</code>): <code>MqttRepository.connect(...)</code> takes a <code>model</code> parameter (<code>"tv"</code> or <code>"tablet"</code>) reported to Home Assistant discovery.</li>
 </ul>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>Feature modules and Use Cases should depend on this module to interact with data. The implementation of these interfaces is provided by the <code>data-repository-impl</code> module.</p>

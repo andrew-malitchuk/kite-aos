@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -2306,6 +2325,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2400,6 +2446,7 @@
 <ul>
 <li><strong>Telemetry Contract</strong>: Defines methods for reporting device state via MQTT.</li>
 <li><strong>Connection Management</strong>: Interface for handling broker credentials and lifecycle.</li>
+<li><strong>Form-Factor Reporting</strong> (<code>@since 1.2.0</code>): <code>connect(...)</code> accepts a <code>model</code> parameter (<code>"tv"</code>/<code>"tablet"</code>) that is surfaced to Home Assistant and used to gate form-factor-specific entities.</li>
 </ul>
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
 <p>Interact with this module via the <code>TelemetryMqttSource</code> interface to send updates to an MQTT broker.</p>

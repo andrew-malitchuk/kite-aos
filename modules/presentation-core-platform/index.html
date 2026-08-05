@@ -424,6 +424,25 @@
   
   
     <li class="md-tabs__item">
+      <a href="../../android-tv/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Android TV
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
       <a href="../../changelog/" class="md-tabs__link">
         
   
@@ -1497,6 +1516,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#camera-source-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Camera Source Selection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Android TV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tv-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TV Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#service-management" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2328,6 +2386,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../../android-tv/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Android TV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../changelog/" class="md-nav__link">
         
   
@@ -2408,6 +2493,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#camera-source-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Camera Source Selection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#android-tv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Android TV
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Android TV">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tv-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TV Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#service-management" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2442,7 +2566,7 @@
 <p>The platform and hardware engine for the Home Kiosk application.</p>
 <h2 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Intelligent Motion Guard</strong>: Uses the front camera to detect movement, waking the screen and dimming it when idle.</li>
+<li><strong>Intelligent Motion Guard</strong>: Detects movement from a selectable camera source, waking the screen and dimming it when idle. The <code>CameraSourceModel</code> preference (<code>Auto</code>/<code>Front</code>/<code>Rear</code>/<code>External</code>) chooses the source — see <a href="#camera-source-selection">Camera Source Selection</a>. On Android TV (no built-in camera) the same guard runs off a USB webcam or an MQTT presence topic — see <a href="#android-tv">Android TV</a>.</li>
 <li><strong>Feedback Protection</strong>: Specialized "blindness" logic prevents the service from being triggered by its own light changes.</li>
 <li><strong>Kiosk Security</strong>: Integration with Android Device Administration for programmatic screen locking.</li>
 <li><strong>Background MQTT</strong>: Persistent foreground service for maintaining MQTT connectivity.</li>
@@ -2465,6 +2589,33 @@
 <li><code>source/analyzer/</code>: Mathematical and frame analysis logic (e.g., <code>MotionAnalyzer</code>).</li>
 <li><code>source/receiver/</code>: Broadcast receivers for system events.</li>
 <li><code>source/service/</code>: Foreground services for long-running background tasks.</li>
+</ul>
+<h2 id="camera-source-selection">Camera Source Selection<a class="headerlink" href="#camera-source-selection" title="Permanent link">&para;</a></h2>
+<p><code>MotionService</code> no longer hardcodes the front CameraX camera. The persisted <code>CameraSourceModel</code> preference (<code>Auto</code>/<code>Front</code>/<code>Rear</code>/<code>External</code>, <code>@since 1.4.0</code>) drives which <code>MotionSource</code> is used, via <code>MotionSourceFactory.create(choice)</code>. The service observes the choice and re-selects the source live when it changes.</p>
+<ul>
+<li><strong><code>Auto</code></strong>: the highest-priority <em>available</em> source wins (the historical behaviour) — Camera2-external → UVC → MQTT → no-op on TV; CameraX on mobile.</li>
+<li><strong><code>Front</code> / <code>Rear</code></strong>: force a built-in-lens source (the lens is passed separately via <code>MotionSourceConfig.lens</code>).</li>
+<li><strong><code>External</code></strong>: force a USB/UVC (external) source. Because the UVC engine ships on every variant, this works on a phone or tablet with a USB-OTG webcam too, not only on TV.</li>
+<li>A forced choice with no matching available source falls back to the <code>Auto</code> selection, so the screen never goes dark waiting on a camera that isn't there.</li>
+</ul>
+<h2 id="android-tv">Android TV<a class="headerlink" href="#android-tv" title="Permanent link">&para;</a></h2>
+<p>The <code>tv</code> build flavor turns an Android TV box into the same kiosk, but TV boxes have no built-in camera, so presence detection is sourced from external hardware.</p>
+<ul>
+<li><strong>Form-Factor Detection</strong>: <code>AppConfig</code> (<code>@since 1.2.0</code>) centralises "is this a TV device?" for the whole presentation layer, because feature libraries cannot read the app module's <code>BuildConfig</code>. <code>isTv</code> is <code>true</code> when the system reports a television UI mode, declares the leanback feature, or the app seeded the TV build flag. <code>MotionService</code>, <code>MqttService</code>, and <code>DevicePowerManager</code> branch on it.</li>
+<li><strong>Motion Sources (by priority)</strong>: For the <code>Auto</code> choice, the active source is picked at runtime from the first available of:<ul>
+<li><strong>Camera2 external webcam</strong> (primary): a USB webcam surfaced by the platform as a standard Camera2 external camera. No extra dependency needed.</li>
+<li><strong>UVC USB webcam</strong> (fallback): a USB webcam that Camera2 does not expose, driven through the <code>libausbc</code> UVC engine.</li>
+<li><strong>MQTT presence</strong> (fallback): for camera-less boxes — presence pulses from a configurable MQTT/PIR topic become motion events. No video, so streaming is inactive.</li>
+</ul>
+</li>
+<li><strong>Reused Pipeline</strong>: Whichever camera source is active, its frames flow through the exact same luma-based <code>MotionAnalyzer</code> and the same MJPEG streaming server (<code>/stream.mjpg</code>, <code>/snapshot.jpg</code>) as the mobile front camera. The webcam sources feed padded YUV/NV21 buffers through <code>MotionAnalyzer</code>'s stride-aware <code>analyze(...)</code> overload (<code>@since 1.2.0</code>), which shares the exact luma scoring of the CameraX path.</li>
+<li><strong>MQTT service on TV</strong>: <code>MqttService</code> reports the device class as <code>"tv"</code> (not <code>"tablet"</code>) to Home Assistant discovery, skips the brightness/screen-state observers (the panel is not app-controllable), and bridges inbound MQTT motion pulses onto <code>RemoteCommandBus.motion()</code> so <code>MqttMotionSource</code> can turn them into motion events — the PIR / HA-automation presence fallback when no camera is attached.</li>
+<li><strong>Power management on TV</strong>: <code>DevicePowerManager.wakeUp()</code> and <code>lockDevice()</code> are no-ops on TV — the panel is HDMI-CEC driven and device-admin locking is unavailable. Instead the app uses the <code>DarkOverlay</code> screen state as a screen-off stand-in (and only when a camera source is active, so it can be dismissed locally).</li>
+</ul>
+<h3 id="tv-requirements">TV Requirements<a class="headerlink" href="#tv-requirements" title="Permanent link">&para;</a></h3>
+<ul>
+<li>A USB webcam (UVC) attached to the box's USB host port, <strong>or</strong> an MQTT presence source, for motion detection.</li>
+<li>The <code>androidusbcamera</code> UVC engine is a plain <code>implementation</code> on <strong>every</strong> variant (not <code>tvImplementation</code>), so the <code>External</code> camera source is available to phones/tablets with a USB-OTG webcam as well as TV.</li>
 </ul>
 <h2 id="service-management">Service Management<a class="headerlink" href="#service-management" title="Permanent link">&para;</a></h2>
 <p>The services in this module are typically started and stopped based on user configuration managed by the <code>domain</code> layer. They are designed to be resilient and handle lifecycle transitions (like screen on/off) gracefully.</p>
