@@ -40,8 +40,11 @@ import domain.usecase.api.source.usecase.device.SetDockPositionUseCase
 import domain.usecase.api.source.usecase.device.SetMoveDetectorUseCase
 import domain.usecase.api.source.usecase.mqtt.GetMqttConfigurationUseCase
 import domain.usecase.api.source.usecase.mqtt.SetMqttConfigurationUseCase
+import domain.usecase.api.source.usecase.camera.GetCameraSourceUseCase
+import domain.usecase.api.source.usecase.camera.SetCameraSourceUseCase
 import domain.usecase.api.source.usecase.streaming.GetStreamingConfigurationUseCase
 import domain.usecase.api.source.usecase.streaming.SetStreamingConfigurationUseCase
+import domain.core.source.model.CameraSourceModel
 import domain.core.source.model.StreamingModel
 import domain.core.source.model.ScreensaverModel
 import domain.core.source.model.ScreensaverSource
@@ -114,6 +117,8 @@ public class SettingsViewModel(
     private val setScreensaverUseCase: SetScreensaverUseCase,
     private val getAutoRebootUseCase: GetAutoRebootUseCase,
     private val setAutoRebootUseCase: SetAutoRebootUseCase,
+    private val getCameraSourceUseCase: GetCameraSourceUseCase,
+    private val setCameraSourceUseCase: SetCameraSourceUseCase,
 ) : ContainerHost<SettingsState, SettingsSideEffect>,
     ViewModel() {
     public override val container: Container<SettingsState, SettingsSideEffect> =
@@ -193,6 +198,7 @@ public class SettingsViewModel(
         loadStreaming()
         loadScreensaver()
         loadAutoReboot()
+        loadCameraSource()
     }
 
     /**
@@ -751,6 +757,40 @@ public class SettingsViewModel(
     }
 
     /**
+     * Loads the selected camera source from persistence, defaulting to [CameraSourceModel.Auto].
+     *
+     * @return The [Job] associated with the use case execution.
+     * @since 1.4.0
+     */
+    private fun loadCameraSource(): Job = executeResult(
+        scope = viewModelScope,
+        request = { getCameraSourceUseCase() },
+        result = { camera ->
+            intent { reduce { state.copy(cameraSource = camera ?: CameraSourceModel.Auto) } }
+        },
+        errorBlock = {
+            intent { reduce { state.copy(cameraSource = CameraSourceModel.Auto) } }
+        },
+    )
+
+    /**
+     * Updates and persists the selected camera source. The change is applied optimistically to the
+     * UI and picked up by `MotionService`, which re-selects the frame source on the next emission.
+     *
+     * @param camera The [CameraSourceModel] to apply and persist.
+     * @return The [Job] associated with the use case execution.
+     * @since 1.4.0
+     */
+    public fun onSetCameraSource(camera: CameraSourceModel): Job = executeResult(
+        scope = viewModelScope,
+        request = { setCameraSourceUseCase(camera) },
+        result = {
+            intent { reduce { state.copy(cameraSource = camera) } }
+        },
+        errorBlock = { handleError(it) },
+    )
+
+    /**
      * Loads the screensaver configuration from persistence.
      *
      * @return The [Job] associated with the use case execution.
@@ -875,6 +915,7 @@ public class SettingsViewModel(
             is SettingsIntent.OnSetWebViewRefreshIntent -> onSetWebViewRefresh(intent.refresh)
             is SettingsIntent.OnSetReduceMotionIntent -> onSetReduceMotion(intent.enabled)
             is SettingsIntent.OnSetStreamingIntent -> onSetStreaming(intent.streaming)
+            is SettingsIntent.OnSetCameraSourceIntent -> onSetCameraSource(intent.camera)
             is SettingsIntent.OnSetScreensaverIntent -> onSetScreensaver(intent.screensaver)
             is SettingsIntent.OnSetAutoRebootIntent -> onSetAutoReboot(intent.model)
             is SettingsIntent.OnSetScreensaverFolderIntent -> {

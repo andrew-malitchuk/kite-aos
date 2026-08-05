@@ -8,17 +8,26 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -26,18 +35,33 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import presentation.core.ui.source.kit.atom.button.icon.IconButton
 import presentation.core.ui.source.kit.atom.button.icon.core.IconButtonDefault
@@ -49,6 +73,7 @@ import domain.core.source.model.DockPositionModel
 import domain.core.source.model.HomeAssistantInstanceModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.MqttModel
+import domain.core.source.model.CameraSourceModel
 import domain.core.source.model.ScreensaverModel
 import domain.core.source.model.ScreensaverSource
 import domain.core.source.model.StreamingModel
@@ -56,6 +81,8 @@ import domain.core.source.model.ThemeModel
 import domain.core.source.model.WebEngineModel
 import domain.core.source.model.WebViewRefreshModel
 import presentation.core.localisation.R
+import presentation.core.styling.core.FormFactor
+import presentation.core.styling.core.LocalFormFactor
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.core.theme.CircularReveal
@@ -77,6 +104,7 @@ import presentation.core.ui.source.kit.atom.icon.IcWeb24
 import presentation.core.ui.source.kit.atom.icon.IcWebProtected24
 import presentation.core.ui.source.kit.atom.item.SectionItem
 import presentation.core.ui.source.kit.atom.item.SectionToggleItem
+import presentation.core.ui.source.kit.core.focus.tvFocusRing
 import presentation.core.ui.source.kit.molecule.item.ToggleListItem
 import presentation.core.ui.source.kit.atom.snackbar.StackedSnakbarHostState
 import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHostState
@@ -124,7 +152,10 @@ internal fun SettingsContent(
     discoveryResults: List<HomeAssistantInstanceModel> = emptyList(),
     onShowDiscoveryDialogChange: (Boolean) -> Unit = {},
 ) {
-    val scrollState = rememberScrollState()
+    val isTv = LocalFormFactor.current == FormFactor.TV
+    // TV panels lose the outer ~5% of the picture to bezel overscan and are read from across a
+    // room. Inset the whole screen on TV so no control lands in that dead zone. Zero on mobile.
+    val overscan = if (isTv) Theme.spacing.sizeL else 0.dp
 
     SafeContainer(
         modifier =
@@ -140,78 +171,18 @@ internal fun SettingsContent(
                 animationSpec = tween(500),
             ) { circularTheme ->
                 AppTheme(mode = circularTheme) {
-                    AnimationSequenceHost {
-                        Column(
-                            modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .background(backgroundGradient()),
-                        ) {
-                            AnimatedItem(
-                                index = 0,
-                                enter = slideInVertically(tween(250)) { -it },
-                            ) {
-                                SettingsHeader(
-                                    modifier =
-                                    Modifier.padding(
-                                        horizontal = Theme.spacing.sizeL,
-                                        vertical = Theme.spacing.sizeL,
-                                    ),
-                                    title = stringResource(R.string.settings_title),
-                                ) { action ->
-                                    when (action) {
-                                        SettingsHeaderAction.OnBackClick -> onIntent(SettingsIntent.OnBackIntent)
-                                        SettingsHeaderAction.OnMoreClick -> onIntent(SettingsIntent.OnMoreIntent)
-                                    }
-                                }
-                            }
-
-                            AnimatedItem(
-                                index = 1,
-                                enter = slideInVertically(tween(250)) { it },
-                            ) {
-                                HorizontalAnimatedDivider(isVisible = scrollState.canScrollBackward)
-                                Column(
-                                    modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .weight(1f)
-                                        .padding(horizontal = Theme.spacing.sizeL)
-                                        .padding(top = 2.dp)
-                                        .verticalScroll(scrollState),
-                                    verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL),
-                                ) {
-                                    var isDashboardValid by remember { mutableStateOf(false) }
-
-                                    MoveDetectorSection(state, onIntent)
-                                    StreamingSection(state, onIntent)
-                                    ScreensaverSection(state, onIntent)
-                                    AutoRebootSection(state, onIntent)
-                                    MqttSection(state, onIntent, isDashboardValid)
-                                    WebKioskSection(state, onIntent) { isDashboardValid = it }
-                                    WebViewRefreshSection(state, onIntent)
-                                    UiUxSection(state, onIntent)
-                                    SystemSection(state, onIntent)
-                                    AdvancedSection(onIntent)
-
-                                    val context = LocalContext.current
-                                    val packageInfo = remember(context) {
-                                        context.packageManager.getPackageInfo(context.packageName, 0)
-                                    }
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = Theme.spacing.sizeM),
-                                        text = "v${packageInfo.versionName} (${packageInfo.versionCode})",
-                                        style = Theme.typography.caption,
-                                        color = Theme.color.inkMain.copy(alpha = 0.3f),
-                                        textAlign = TextAlign.Center,
-                                    )
-
-                                    Spacer(modifier = Modifier.height(Theme.spacing.sizeL))
-                                }
-                            }
-                        }
+                    if (isTv) {
+                        SettingsTvContent(
+                            state = state,
+                            onIntent = onIntent,
+                            overscan = overscan,
+                        )
+                    } else {
+                        SettingsMobileContent(
+                            state = state,
+                            onIntent = onIntent,
+                            overscan = overscan,
+                        )
                     }
 
                     if (showLanguageDialog) {
@@ -254,7 +225,7 @@ internal fun SettingsContent(
 // Suppressed: deeply nested Compose layout makes formatter indentation unreliable.
 @Suppress("Indentation")
 @Composable
-private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+internal fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
     val moveDetector =
         state.moveDetector ?: MoveDetectorModel(
             enabled = true,
@@ -278,6 +249,44 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
             enabled = isToggleAllowed,
             onCheckedChange = { isEnabled ->
                 onIntent(SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(enabled = isEnabled)))
+            },
+        )
+
+        // TV boxes have no built-in front/rear camera, so only Auto and External make sense there;
+        // phones/tablets offer the full front/rear/external choice.
+        val isTvForm = LocalFormFactor.current == FormFactor.TV
+        val cameraLabel = stringResource(
+            when (state.cameraSource) {
+                CameraSourceModel.Auto -> R.string.settings_camera_source_auto
+                CameraSourceModel.Front -> R.string.settings_camera_source_front
+                CameraSourceModel.Rear -> R.string.settings_camera_source_rear
+                CameraSourceModel.External -> R.string.settings_camera_source_external
+            },
+        )
+        SimpleListItem(
+            text = stringResource(R.string.settings_camera_source, cameraLabel),
+            subtitle = stringResource(R.string.hint_camera_source),
+            icon = IcCamera24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            onClick = {
+                // Tap to cycle the choices valid for this form-factor. Any unavailable choice still
+                // falls back gracefully at runtime (MotionSourceFactory), so this is only about
+                // hiding the front/rear options that can never apply on a TV box.
+                val next = if (isTvForm) {
+                    when (state.cameraSource) {
+                        CameraSourceModel.External -> CameraSourceModel.Auto
+                        else -> CameraSourceModel.External
+                    }
+                } else {
+                    when (state.cameraSource) {
+                        CameraSourceModel.Auto -> CameraSourceModel.Front
+                        CameraSourceModel.Front -> CameraSourceModel.Rear
+                        CameraSourceModel.Rear -> CameraSourceModel.External
+                        CameraSourceModel.External -> CameraSourceModel.Auto
+                    }
+                }
+                onIntent(SettingsIntent.OnSetCameraSourceIntent(next))
             },
         )
 
@@ -353,7 +362,7 @@ private fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent)
  * @since 0.0.7
  */
 @Composable
-private fun StreamingSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+internal fun StreamingSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
     val streaming = state.streaming ?: StreamingModel(
         enabled = false,
         port = 8080,
@@ -365,10 +374,10 @@ private fun StreamingSection(state: SettingsState, onIntent: (SettingsIntent) ->
     val portRegex = remember {
         Regex("^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$")
     }
-    var streamingPort by remember { mutableStateOf(streaming.port?.toString() ?: "8080") }
+    var streamingPort by remember { mutableStateOf(streaming.port?.takeIf { it != 0 }?.toString() ?: "8080") }
 
     LaunchedEffect(state.streaming) {
-        state.streaming?.let { streamingPort = it.port?.toString() ?: "8080" }
+        state.streaming?.let { streamingPort = it.port?.takeIf { port -> port != 0 }?.toString() ?: "8080" }
     }
 
     LaunchedEffect(streamingPort) {
@@ -453,7 +462,7 @@ private fun StreamingSection(state: SettingsState, onIntent: (SettingsIntent) ->
  * @since 0.0.8
  */
 @Composable
-private fun ScreensaverSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+internal fun ScreensaverSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
     val screensaver = state.screensaver ?: ScreensaverModel(
         enabled = false,
         activationDelay = 60L,
@@ -531,7 +540,7 @@ private fun ScreensaverSection(state: SettingsState, onIntent: (SettingsIntent) 
 }
 
 @Composable
-private fun AutoRebootSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+internal fun AutoRebootSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
     val autoReboot = state.autoReboot ?: AutoRebootModel(
         enabled = false,
         hour = 3,
@@ -606,7 +615,7 @@ private fun AutoRebootSection(state: SettingsState, onIntent: (SettingsIntent) -
  * @since 0.0.1
  */
 @Composable
-private fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit, isDashboardValid: Boolean) {
+internal fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit, isDashboardValid: Boolean) {
     var mqttIp by remember { mutableStateOf(state.mqtt?.ip ?: "") }
     var mqttPort by remember { mutableStateOf(state.mqtt?.port ?: "") }
     var mqttClientId by remember { mutableStateOf(state.mqtt?.clientId ?: "") }
@@ -774,7 +783,7 @@ private fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
  * @since 0.0.1
  */
 @Composable
-private fun WebKioskSection(
+internal fun WebKioskSection(
     state: SettingsState,
     onIntent: (SettingsIntent) -> Unit,
     onValidationChange: (Boolean) -> Unit,
@@ -897,7 +906,7 @@ private fun WebKioskSection(
  * @since 0.0.6
  */
 @Composable
-private fun WebViewRefreshSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+internal fun WebViewRefreshSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
     val refresh = state.webViewRefresh ?: WebViewRefreshModel(enabled = false, intervalSeconds = 300L)
 
     val isToggleAllowed = (refresh.intervalSeconds ?: 0L) != 0L
@@ -980,7 +989,7 @@ private fun WebEngineListItem(
  * @since 0.0.1
  */
 @Composable
-private fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+internal fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
     val isMaterialUAvailable = remember { Build.VERSION.SDK_INT >= Build.VERSION_CODES.S }
     val currentTag = AppCompatDelegate.getApplicationLocales().toLanguageTags()
 
@@ -1061,7 +1070,7 @@ private fun UiUxSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit
  * @since 0.0.1
  */
 @Composable
-private fun SystemSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+internal fun SystemSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
         SectionItem(title = stringResource(R.string.settings_system))
 
@@ -1092,7 +1101,7 @@ private fun SystemSection(state: SettingsState, onIntent: (SettingsIntent) -> Un
  * @since 0.0.5
  */
 @Composable
-private fun AdvancedSection(onIntent: (SettingsIntent) -> Unit) {
+internal fun AdvancedSection(onIntent: (SettingsIntent) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
         SectionItem(title = stringResource(R.string.settings_advanced))
 
@@ -1152,10 +1161,17 @@ private fun HomeAssistantDiscoveryDialog(
                             HomeAssistantInstanceModel.DiscoverySource.Scan ->
                                 stringResource(R.string.settings_discover_ha_source_scan)
                         }
+                        val rowInteraction = remember { MutableInteractionSource() }
+                        val rowShape = RoundedCornerShape(Theme.spacing.sizeS)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { onSelect(instance.url) }
+                                .tvFocusRing(rowInteraction, rowShape)
+                                .clip(rowShape)
+                                .clickable(
+                                    interactionSource = rowInteraction,
+                                    indication = LocalIndication.current,
+                                ) { onSelect(instance.url) }
                                 .padding(Theme.spacing.sizeM),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
@@ -1221,17 +1237,26 @@ public fun LanguageSelectionDialog(
             text = {
                 Column {
                     languages.forEach { lang ->
+                        val rowInteraction = remember { MutableInteractionSource() }
+                        val rowShape = RoundedCornerShape(Theme.spacing.sizeS)
                         Row(
                             modifier =
                             Modifier
                                 .fillMaxWidth()
-                                .clickable { onLanguageSelected(lang) }
+                                .tvFocusRing(rowInteraction, rowShape)
+                                .clip(rowShape)
+                                .clickable(
+                                    interactionSource = rowInteraction,
+                                    indication = LocalIndication.current,
+                                ) { onLanguageSelected(lang) }
                                 .padding(Theme.spacing.sizeM),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
+                            // On TV the whole row is the single D-pad focus/select target, so the
+                            // radio is display-only (onClick = null) to avoid a redundant focus stop.
                             RadioButton(
                                 selected = lang == currentLanguage,
-                                onClick = { onLanguageSelected(lang) },
+                                onClick = null,
                             )
                             Text(
                                 text = languageNames[lang] ?: lang,
@@ -1248,4 +1273,73 @@ public fun LanguageSelectionDialog(
             },
         )
     }
+}
+
+/**
+ * A representative [SettingsState] used by the form-factor previews below.
+ *
+ * A non-null [theme] is required: [SettingsContent] renders nothing until a theme is present.
+ * The individual sections fall back to their own defaults for any null model, so only the
+ * theme and [isLoading] flag need to be seeded here.
+ */
+// Shared by the previews in SettingsContent, SettingsMobileContent, and SettingsTvContent.
+internal val previewSettingsState =
+    SettingsState(
+        theme = ThemeModel.Light,
+        isLoading = false,
+    )
+
+/**
+ * Renders [SettingsContent] with the shared [previewSettingsState] and no-op callbacks.
+ *
+ * @param formFactor The [FormFactor] to provide via [LocalFormFactor]; drives TV overscan/focus.
+ */
+@Composable
+private fun SettingsContentPreview(formFactor: FormFactor) {
+    CompositionLocalProvider(LocalFormFactor provides formFactor) {
+        AppTheme {
+            SettingsContent(
+                state = previewSettingsState,
+                onIntent = {},
+                showLanguageDialog = false,
+                onShowLanguageDialogChange = {},
+            )
+        }
+    }
+}
+
+/**
+ * Phone preview of the settings screen (compact width, touch input).
+ *
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 1.2.0
+ */
+@Preview(name = "Phone", device = Devices.PHONE, showBackground = true)
+@Composable
+private fun SettingsContentPhonePreview() {
+    SettingsContentPreview(formFactor = FormFactor.MOBILE)
+}
+
+/**
+ * Tablet preview of the settings screen (expanded width, touch input).
+ *
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 1.2.0
+ */
+@Preview(name = "Tablet", device = Devices.TABLET, showBackground = true)
+@Composable
+private fun SettingsContentTabletPreview() {
+    SettingsContentPreview(formFactor = FormFactor.MOBILE)
+}
+
+/**
+ * TV preview of the settings screen (1080p leanback, D-pad input with overscan inset).
+ *
+ * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
+ * @since 1.2.0
+ */
+@Preview(name = "TV", device = Devices.TV_1080p, showBackground = true)
+@Composable
+private fun SettingsContentTvPreview() {
+    SettingsContentPreview(formFactor = FormFactor.TV)
 }
