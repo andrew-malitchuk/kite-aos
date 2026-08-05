@@ -22,7 +22,7 @@ internal class MqttConnectUseCaseImpl(
     private val mqttRepository: MqttRepository,
     private val getMqttConfigurationUseCase: GetMqttConfigurationUseCase,
 ) : MqttConnectUseCase {
-    override suspend operator fun invoke(): Optional = resultLauncher(
+    override suspend operator fun invoke(model: String): Optional = resultLauncher(
         errorMapper = Failure.Technical::Network,
     ) {
         // Retrieve persisted MQTT config; propagates NotFound if absent
@@ -37,6 +37,7 @@ internal class MqttConnectUseCaseImpl(
                 username = config.username ?: "",
                 password = config.password ?: "",
                 friendlyName = config.friendlyName ?: "",
+                model = model,
             )
         }
     }

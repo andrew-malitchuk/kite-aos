@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
+import presentation.core.ui.source.kit.core.focus.tvFocusRing
 
 /**
  * A card composable with a squircle (superellipse) shape that provides press-state color
@@ -28,7 +30,10 @@ import presentation.core.ui.source.kit.atom.shape.SquircleShape
  * intercepts all touch events to prevent interaction with child content.
  *
  * @param modifier Modifier to be applied to the [Box].
- * @param onClick callback invoked when the card is clicked. No-op by default.
+ * @param onClick callback invoked when the card is clicked. Pass `null` (the default) to leave the
+ *        card non-clickable — this matters when the card wraps its own interactive content (e.g. a
+ *        text field): an always-clickable card would otherwise swallow focus/taps and the inner
+ *        control could never be activated.
  * @param enabled whether the card is interactive. When `false`, clicks are blocked and the
  *        card appearance is dimmed.
  * @param content the composable content displayed inside the card.
@@ -40,33 +45,49 @@ import presentation.core.ui.source.kit.atom.shape.SquircleShape
 @Composable
 public fun SquircleCard(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = {},
+    onClick: (() -> Unit)? = null,
     enabled: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    // On TV the card is reached by D-pad focus rather than touch; treat focus like press so the
+    // background lifts and (with the ring below) the focused item is unmistakable from across a room.
+    val isFocused by interactionSource.collectIsFocusedAsState()
 
     val backgroundColor by animateColorAsState(
-        targetValue = if (isPressed && enabled) Theme.color.surfaceVariant else Theme.color.surface,
+        targetValue = if ((isPressed || isFocused) && enabled) Theme.color.surfaceVariant else Theme.color.surface,
         label = "SquircleCardBackgroundColor",
     )
+
+    val cardShape = SquircleShape(Theme.size.sizeXL)
 
     Box(
         modifier =
         modifier
-            .clip(SquircleShape(Theme.size.sizeXL))
+            // Ring first (outer bounds) so it hugs the squircle and isn't clipped by the fill.
+            .tvFocusRing(interactionSource = interactionSource, shape = cardShape)
+            .clip(cardShape)
             .background(
                 when (enabled) {
                     true -> backgroundColor
                     false -> Theme.color.canvas.copy(alpha = 0.5f)
                 },
             )
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick,
-                enabled = enabled,
+            .then(
+                // Only intercept clicks/focus when there is an actual handler. A card with no
+                // onClick must stay transparent to input so its inner content (text field, etc.)
+                // can receive focus and taps.
+                if (onClick != null) {
+                    Modifier.clickable(
+                        interactionSource = interactionSource,
+                        indication = null,
+                        onClick = onClick,
+                        enabled = enabled,
+                    )
+                } else {
+                    Modifier
+                },
             )
             .padding(Theme.spacing.sizeS),
     ) {

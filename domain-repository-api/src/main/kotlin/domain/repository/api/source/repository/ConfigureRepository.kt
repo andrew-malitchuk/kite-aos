@@ -1,6 +1,7 @@
 package domain.repository.api.source.repository
 
 import domain.core.source.model.AutoRebootModel
+import domain.core.source.model.CameraSourceModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.HomeAssistantInstanceModel
@@ -144,4 +145,13 @@ public interface ConfigureRepository {
 
     /** Observes changes to the auto reboot schedule configuration. */
     public fun observeAutoReboot(): Flow<AutoRebootModel?>
+
+    /** Retrieves the selected camera source for motion detection / streaming. */
+    public suspend fun getCameraSource(): CameraSourceModel?
+
+    /** Updates the selected [camera] source. */
+    public suspend fun setCameraSource(camera: CameraSourceModel?)
+
+    /** Observes changes to the selected camera source. */
+    public fun observeCameraSource(): Flow<CameraSourceModel?>
 }

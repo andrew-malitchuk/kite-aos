@@ -36,6 +36,7 @@ import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import presentation.core.localisation.R
+import presentation.core.platform.source.command.RemoteCommandBus
 
 /**
  * ViewModel for the Main (Kiosk) screen.
@@ -74,6 +75,7 @@ public class MainViewModel(
     private val observeScreenStateUseCase: ObserveScreenStateUseCase,
     private val emitScreenStateUseCase: EmitScreenStateUseCase,
     private val getScreensaverUseCase: GetScreensaverUseCase,
+    private val remoteCommandBus: RemoteCommandBus,
 ) : ContainerHost<MainState, MainSideEffect>,
     ViewModel() {
     public override val container: Container<MainState, MainSideEffect> =
@@ -98,14 +100,27 @@ public class MainViewModel(
         observeScreensaverCommand()
         observeStreaming()
         observeScreenState()
+        observeRemoteOpenDrawerCommand()
+    }
+
+    // On TV the long-press key combo (detected in HostActivity) arrives via the
+    // RemoteCommandBus and opens the control drawer directly, since there is no FAB.
+    private fun observeRemoteOpenDrawerCommand() = intent {
+        remoteCommandBus.openDrawer.collect {
+            postSideEffect(MainSideEffect.OpenDrawerEffect)
+        }
     }
 
     private fun observeScreenState() = intent {
         observeScreenStateUseCase().collect { screenState ->
             reduce {
                 when (screenState) {
-                    is ScreenStateModel.Screensaver -> state.copy(isScreensaverVisible = true)
-                    is ScreenStateModel.Active -> state.copy(isScreensaverVisible = false)
+                    is ScreenStateModel.Screensaver ->
+                        state.copy(isScreensaverVisible = true, isDarkOverlayVisible = false)
+                    is ScreenStateModel.DarkOverlay ->
+                        state.copy(isDarkOverlayVisible = true, isScreensaverVisible = false)
+                    is ScreenStateModel.Active ->
+                        state.copy(isScreensaverVisible = false, isDarkOverlayVisible = false)
                 }
             }
         }

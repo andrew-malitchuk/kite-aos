@@ -52,3 +52,16 @@ The build logic is designed to be highly reusable:
 - **`Project.configureAndroidBase`**: Centralizes SDK versions (compile, min, target) and Java compatibility.
 - **`Project.configureKotlinBase`**: Enforces strict explicit API mode, ensuring all public declarations are explicitly typed and scoped.
 - **`Project.configureSigning`**: Automatically handles secure signing using local property files.
+
+## Flavor Dimensions
+The `dev.yahk.convention.application` plugin defines two flavor dimensions, and nothing prunes the matrix:
+
+- **`distribution`**: `foss` (GeckoView, `minSdk = 26`) or `gms` (system WebView + Firebase).
+- **`formfactor`**: `mobile` or `tv` (Android TV support).
+
+That gives four flavors — `gmsMobile`, `fossMobile`, `gmsTv`, `fossTv` — each with `debug` and `release` build types.
+
+Key points:
+- `mobile` sets `IS_TV = false`; `tv` sets `IS_TV = true`.
+- `tv` offsets its `versionCode` by `TV_VERSION_CODE_OFFSET` (`1_000_000`). Mobile and TV share one `applicationId`, so distinct version codes let Play multi-APK delivery pick the right APK. Mobile keeps the base code; TV lives in a separate range far above it, so they never collide.
+- `dev.yahk.convention.feature` mirrors the `formfactor` dimension on every library so variant-aware dependency matching resolves automatically and `src/tv` source-sets work. Libraries don't declare `IS_TV` — they read it via `AppConfig`. The extra `distribution` dimension auto-falls-back, so no `missingDimensionStrategy` is required.

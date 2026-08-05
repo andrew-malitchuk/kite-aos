@@ -16,6 +16,11 @@ This is a pure Kotlin module that sits at the center of the architecture. It doe
     *   `Technical`: For infrastructure issues (Database, Network, Platform).
     *   `Logic`: For business rules or "Not Found" scenarios.
 *   **`domain.core.source.model.*`**: Data classes representing the state of various components like Dock position, Onboarding status, and Application info.
+*   **`domain.core.source.model.ScreenStateModel`**: Sealed model of the kiosk display state with three subtypes (`@since 1.2.0` for `DarkOverlay`):
+    *   `Active`: the normal interactive kiosk view.
+    *   `Screensaver`: the inactivity overlay that may show images and a clock.
+    *   `DarkOverlay`: a plain dark overlay shown as a stand-in for powering the panel off, used on devices that cannot lock or turn the screen off (e.g. Android TV). Unlike `Screensaver` it never renders images or a clock.
+*   **`domain.core.source.model.CameraSourceModel`** (`@since 1.4.0`): Enum (`Auto` / `Front` / `Rear` / `External`) representing the user preference that overrides the platform's automatic, capability-based camera selection for motion detection and MJPEG streaming. Applies to all form-factors (including phones with USB-OTG webcams, not just TV). Each entry carries a stable `mode` string persisted in Proto DataStore; an unavailable forced choice falls back to `Auto` at runtime.
 
 ## Dependencies
 *   **`common-core`**: Provides shared utilities and base infrastructure needed by the domain core.

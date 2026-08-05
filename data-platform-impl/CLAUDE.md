@@ -5,7 +5,7 @@ This module provides the concrete Android-specific implementation of the interfa
 
 ## Responsibilities
 *   **Network Status Implementation**: Implements `ConnectivityObserver` using `ConnectivityManager.NetworkCallback` and `callbackFlow` for robust, reactive updates.
-*   **Application Discovery Implementation**: Implements `ApplicationPlatformSource` using the `PackageManager` to filter and retrieve applications that have a launch intent.
+*   **Application Discovery Implementation**: Implements `ApplicationPlatformSource` using the `PackageManager` to enumerate launchable apps. Queries both `CATEGORY_LAUNCHER` and `CATEGORY_LEANBACK_LAUNCHER` (so Android TV apps registered only under leanback are listed on TV), then de-duplicates by package name and sorts alphabetically. Package visibility is granted by the manifest `<queries>` block, avoiding `QUERY_ALL_PACKAGES`.
 *   **System Mapping**: Provides mappers to convert Android framework objects (e.g., `ApplicationInfo`) into platform-agnostic models.
 *   **Dependency Injection**: Configures Koin modules for platform-specific source provision.
 
@@ -14,7 +14,7 @@ This module implements the Platform API using native Android APIs. It bridges th
 
 ### Key Components
 *   **`data.platform.impl.source.connectivity.ConnectivityObserverImpl`**: Handles the registration and unregistration of network callbacks.
-*   **`data.platform.impl.source.datasource.ApplicationPlatformSourceImpl`**: Interacts with `PackageManager` to enumerate installed apps.
+*   **`data.platform.impl.source.datasource.ApplicationPlatformSourceImpl`**: Interacts with `PackageManager` to enumerate installed apps across the touch (`CATEGORY_LAUNCHER`) and TV (`CATEGORY_LEANBACK_LAUNCHER`) launcher categories, merging and de-duplicating the results by package name.
 *   **`data.platform.impl.core.mapper.ApplicationSystemPlatformMapper`**: Maps system application info to the API's `ApplicationPlatform` model.
 *   **`data.platform.impl.di.DataPlatformImplModule`**: Koin module for platform implementations.
 

@@ -65,6 +65,11 @@
     <string name="settings_streaming_quality">Quality</string>
     <string name="settings_streaming_fps">FPS</string>
     <string name="settings_streaming_rotation">Rotation: %d°</string>
+    <string name="settings_camera_source">Camera: %s</string>
+    <string name="settings_camera_source_auto">Auto</string>
+    <string name="settings_camera_source_front">Front</string>
+    <string name="settings_camera_source_rear">Rear</string>
+    <string name="settings_camera_source_external">External (USB)</string>
 
     <!-- Screensaver -->
     <string name="settings_screensaver">Screensaver</string>
@@ -96,6 +101,7 @@
     <string name="error_database">Database error occurred</string>
     <string name="error_preference">Preference storage error</string>
     <string name="error_not_found">Resource not found</string>
+    <string name="error_permission_screen_unavailable">This settings screen isn\'t available on this device</string>
 
     <!-- Watchdog / Network Recovery -->
     <string name="watchdog_recovering">Reconnecting…</string>
@@ -125,6 +131,7 @@
     <string name="hint_streaming_quality">JPEG compression quality · 30 = small, 100 = best</string>
     <string name="hint_streaming_fps">Target frames per second for the MJPEG stream</string>
     <string name="hint_streaming_rotation">Tap to rotate the stream output by 90°</string>
+    <string name="hint_camera_source">Tap to cycle which camera drives motion detection and streaming</string>
     <string name="hint_auto_return">Reloads dashboard when a whitelisted URL is left</string>
     <string name="settings_trust_ssl">Trust all SSL certificates</string>
     <string name="hint_trust_ssl">Allow self-signed or invalid SSL certificates · required for local Home Assistant with custom certs</string>
@@ -146,6 +153,11 @@
     <string name="settings_advanced">Advanced</string>
     <string name="settings_export_config">Export configuration</string>
     <string name="settings_import_config">Import configuration</string>
+
+    <!-- Settings → TV -->
+    <string name="tv_hint_navigate">Navigate</string>
+    <string name="tv_hint_select">Select</string>
+    <string name="tv_hint_back_to_list">Back to list</string>
 
     <!-- Services -->
     <string name="motion_service_notification_title">Motion Detection</string>

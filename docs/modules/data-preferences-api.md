@@ -20,3 +20,7 @@ themePreferenceSource.setData(ThemePreference(mode = "dark"))
 
 *   `source/datasource/`: Specialized interfaces for each setting category.
 *   `source/resource/`: Data models representing the settings structure.
+
+## Available Preferences
+
+Alongside theme, dashboard, MQTT, motion, and onboarding settings, the module exposes `CameraPreferenceSource` / `CameraPreference` (`mode: String`) — the camera source chosen for motion detection and MJPEG streaming (`auto`, `front`, `rear`, or `external`). Available on all form-factors, not just TV. *(@since 1.4.0)*

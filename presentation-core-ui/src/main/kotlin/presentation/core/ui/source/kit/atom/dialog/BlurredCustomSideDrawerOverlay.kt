@@ -1,5 +1,6 @@
 package presentation.core.ui.source.kit.atom.dialog
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -34,7 +35,10 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
+import presentation.core.styling.core.FormFactor
+import presentation.core.styling.core.LocalFormFactor
 import presentation.core.styling.core.Theme
+import presentation.core.styling.source.attribute.TEN_FOOT_SCALE
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -84,7 +88,12 @@ public fun BlurredCustomSideDrawerOverlay(
 ) {
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
-    val drawerWidthPx = remember(density, drawerWidth) { with(density) { drawerWidth.toPx() } }
+    // The panel is a fixed dp, but its contents (icon buttons and their paddings) grow with the
+    // 10-foot token multiplier on TV / expanded windows. If the panel itself doesn't grow too, the
+    // enlarged buttons overflow the 128dp width: the icon collapses to ~0 and each button renders
+    // as a tall, empty blob. Scale the panel by the same factor so proportions match mobile.
+    val panelWidth = if (Theme.is10Foot) drawerWidth * TEN_FOOT_SCALE else drawerWidth
+    val drawerWidthPx = remember(density, panelWidth) { with(density) { panelWidth.toPx() } }
 
     val hazeState = remember { HazeState() }
 
@@ -112,6 +121,12 @@ public fun BlurredCustomSideDrawerOverlay(
     }
 
     val color = Theme.color.surface
+
+    // On TV there is no scrim tap or swipe; BACK is the natural dismissal. Gated to TV so touch
+    // behaviour (and the kiosk's global BACK block on mobile) is unchanged. Any consumer of this
+    // overlay gets remote dismissal for free.
+    val isTv = LocalFormFactor.current == FormFactor.TV
+    BackHandler(enabled = isDrawerOpen && isTv, onBack = onDismiss)
 
     Box(modifier = modifier.fillMaxSize()) {
         // 1. Source content
@@ -153,7 +168,7 @@ public fun BlurredCustomSideDrawerOverlay(
             modifier =
             Modifier
                 .fillMaxHeight()
-                .width(drawerWidth)
+                .width(panelWidth)
                 .offset { IntOffset(x = offsetX.value.roundToInt(), y = 0) }
                 .align(if (drawerSide == DrawerSide.LEFT) Alignment.CenterStart else Alignment.CenterEnd)
                 .padding(Theme.spacing.sizeL)

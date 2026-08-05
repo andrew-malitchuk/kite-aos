@@ -1,6 +1,7 @@
 package presentation.feature.settings.source.settings
 
 import domain.core.source.model.AutoRebootModel
+import domain.core.source.model.CameraSourceModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.HomeAssistantInstanceModel
@@ -44,6 +45,7 @@ public data class SettingsState(
     val streaming: StreamingModel? = null,
     val screensaver: ScreensaverModel? = null,
     val autoReboot: AutoRebootModel? = null,
+    val cameraSource: CameraSourceModel = CameraSourceModel.Auto,
 )
 
 /**
@@ -185,6 +187,9 @@ public sealed class SettingsIntent {
 
     /** Updates the camera streaming configuration. */
     public data class OnSetStreamingIntent(val streaming: StreamingModel) : SettingsIntent()
+
+    /** Sets which camera source (auto / front / rear / external) drives motion + streaming. */
+    public data class OnSetCameraSourceIntent(val camera: CameraSourceModel) : SettingsIntent()
 
     /** Updates the screensaver configuration. */
     public data class OnSetScreensaverIntent(val screensaver: ScreensaverModel) : SettingsIntent()

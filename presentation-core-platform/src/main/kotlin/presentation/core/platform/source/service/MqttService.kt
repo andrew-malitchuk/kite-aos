@@ -30,9 +30,12 @@ import domain.usecase.api.source.usecase.streaming.ObserveStreamingConfiguration
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import domain.usecase.api.source.usecase.mqtt.ObserveMqttMotionCommandUseCase
 import presentation.core.platform.R
 import presentation.core.platform.core.helper.DevicePowerManager
 import presentation.core.platform.core.helper.NetworkAddressResolver
+import presentation.core.platform.source.command.RemoteCommandBus
+import presentation.core.platform.source.config.AppConfig
 
 /**
  * Foreground service that maintains the MQTT connection and handles bidirectional control.
@@ -70,6 +73,9 @@ public class MqttService : LifecycleService() {
     private val mqttSendScreenStateUseCase: MqttSendScreenStateUseCase by inject()
     private val mqttSendCameraUrlUseCase: MqttSendCameraUrlUseCase by inject()
     private val observeStreamingConfigurationUseCase: ObserveStreamingConfigurationUseCase by inject()
+    private val appConfig: AppConfig by inject()
+    private val observeMqttMotionCommandUseCase: ObserveMqttMotionCommandUseCase by inject()
+    private val remoteCommandBus: RemoteCommandBus by inject()
 
     private lateinit var audioManager: AudioManager
     private lateinit var powerManager: PowerManager
@@ -136,18 +142,22 @@ public class MqttService : LifecycleService() {
         super.onCreate()
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         powerManager = getSystemService(POWER_SERVICE) as PowerManager
-        devicePowerManager = DevicePowerManager(this)
+        devicePowerManager = DevicePowerManager(this, appConfig.isTv)
 
-        val screenFilter = IntentFilter(Intent.ACTION_SCREEN_ON).apply {
-            addAction(Intent.ACTION_SCREEN_OFF)
+        // Brightness and screen entities are hidden on Android TV (not reliably controllable
+        // there), so skip the observers that publish their state — there is nothing to mirror.
+        if (!appConfig.isTv) {
+            val screenFilter = IntentFilter(Intent.ACTION_SCREEN_ON).apply {
+                addAction(Intent.ACTION_SCREEN_OFF)
+            }
+            registerReceiver(screenStateReceiver, screenFilter)
+
+            contentResolver.registerContentObserver(
+                Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS),
+                false,
+                brightnessObserver,
+            )
         }
-        registerReceiver(screenStateReceiver, screenFilter)
-
-        contentResolver.registerContentObserver(
-            Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS),
-            false,
-            brightnessObserver,
-        )
 
         setupNotificationChannel()
         // Start foreground immediately to satisfy the Android foreground service timing contract.
@@ -169,11 +179,20 @@ public class MqttService : LifecycleService() {
             observeMqttConfigurationUseCase().collectLatest { config ->
                 if (config?.enabled == true) {
                     Log.d(TAG, "MQTT enabled, attempting to connect...")
-                    val result = mqttConnectUseCase()
+                    // Report the form-factor to HA discovery: "tv" on Android TV, else "tablet".
+                    val result = mqttConnectUseCase(model = if (appConfig.isTv) "tv" else "tablet")
                     if (result.isSuccess) {
                         Log.i(TAG, "MQTT connected successfully.")
                         publishInitialStates()
                         launch { observeStreamingUrl() }
+                        // TV motion fallback: bridge inbound MQTT motion pulses onto the shared
+                        // bus, where MqttMotionSource turns them into motion events. Only on TV
+                        // (mobile uses the camera and has no bus consumer).
+                        if (appConfig.isTv) {
+                            launch {
+                                observeMqttMotionCommandUseCase().collect { remoteCommandBus.emitMotion() }
+                            }
+                        }
                         observeAndRouteCommands(clientId = config.clientId ?: "")
                     } else {
                         Log.e(TAG, "Failed to connect to MQTT broker", result.exceptionOrNull())
@@ -194,19 +213,24 @@ public class MqttService : LifecycleService() {
      */
     private suspend fun publishInitialStates() {
         try {
-            val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
-            val normalizedVolume = if (maxVolume > 0) currentVolume * 100 / maxVolume else 0
-            mqttSendVolumeUseCase(normalizedVolume)
+            // Volume, brightness and screen entities are hidden on Android TV (audio over
+            // HDMI/ARC is owned by the TV/receiver, the panel backlight and lock aren't
+            // app-controllable), so skip publishing their initial state there.
+            if (!appConfig.isTv) {
+                val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+                val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
+                val normalizedVolume = if (maxVolume > 0) currentVolume * 100 / maxVolume else 0
+                mqttSendVolumeUseCase(normalizedVolume)
 
-            val brightness = Settings.System.getInt(
-                contentResolver,
-                Settings.System.SCREEN_BRIGHTNESS,
-                DevicePowerManager.BRIGHTNESS_MAX,
-            )
-            mqttSendBrightnessUseCase(brightness)
+                val brightness = Settings.System.getInt(
+                    contentResolver,
+                    Settings.System.SCREEN_BRIGHTNESS,
+                    DevicePowerManager.BRIGHTNESS_MAX,
+                )
+                mqttSendBrightnessUseCase(brightness)
 
-            mqttSendScreenStateUseCase(powerManager.isInteractive)
+                mqttSendScreenStateUseCase(powerManager.isInteractive)
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to publish initial states", e)
         }
@@ -270,6 +294,11 @@ public class MqttService : LifecycleService() {
      * @param payload Normalized volume level as a string (0–100).
      */
     private suspend fun handleVolumeCommand(payload: String) {
+        // The volume entity and its command topic are not registered on Android TV (audio
+        // over HDMI/ARC is owned by the TV/receiver). Guard here in case a stale command arrives.
+        if (appConfig.isTv) {
+            return
+        }
         val normalizedLevel = payload.trim().toIntOrNull() ?: return
         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
         val targetVolume = normalizedLevel * maxVolume / 100
@@ -322,7 +351,10 @@ public class MqttService : LifecycleService() {
     private fun handleAppLaunchCommand(payload: String) {
         val packageName = payload.trim()
         if (packageName.isEmpty()) return
+        // Fall back to the leanback launch intent for Android TV apps, which expose no regular
+        // CATEGORY_LAUNCHER entry and therefore return null from getLaunchIntentForPackage.
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+            ?: packageManager.getLeanbackLaunchIntentForPackage(packageName)
         if (launchIntent != null) {
             launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(launchIntent)
@@ -380,12 +412,16 @@ public class MqttService : LifecycleService() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        try {
-            unregisterReceiver(screenStateReceiver)
-        } catch (_: Exception) { }
-        try {
-            contentResolver.unregisterContentObserver(brightnessObserver)
-        } catch (_: Exception) { }
+        // Mirror onCreate: the screen receiver and brightness observer are only registered off-TV,
+        // so only tear them down there. (The try/catch stays as a belt-and-braces guard.)
+        if (!appConfig.isTv) {
+            try {
+                unregisterReceiver(screenStateReceiver)
+            } catch (_: Exception) { }
+            try {
+                contentResolver.unregisterContentObserver(brightnessObserver)
+            } catch (_: Exception) { }
+        }
         lifecycleScope.launch {
             mqttDisconnectUseCase().onFailure { e ->
                 Log.e(TAG, "Failed to disconnect MQTT client during service destruction", e)

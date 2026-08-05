@@ -22,6 +22,7 @@ public interface MqttRepository {
      * @param username The username for authentication.
      * @param password The password for authentication.
      * @param friendlyName Human-readable name for the device used in Home Assistant discovery.
+     * @param model Device form-factor reported to Home Assistant (`"tv"` or `"tablet"`).
      */
     public suspend fun connect(
         server: String,
@@ -30,6 +31,7 @@ public interface MqttRepository {
         username: String,
         password: String,
         friendlyName: String,
+        model: String,
     )
 
     /**

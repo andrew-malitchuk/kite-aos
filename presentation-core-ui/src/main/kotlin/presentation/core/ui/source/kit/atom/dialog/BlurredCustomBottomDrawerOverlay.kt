@@ -1,5 +1,6 @@
 package presentation.core.ui.source.kit.atom.dialog
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -34,7 +35,10 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
+import presentation.core.styling.core.FormFactor
+import presentation.core.styling.core.LocalFormFactor
 import presentation.core.styling.core.Theme
+import presentation.core.styling.source.attribute.TEN_FOOT_SCALE
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -75,7 +79,12 @@ public fun BlurredCustomBottomDrawerOverlay(
 ) {
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
-    val drawerHeightPx = remember(density, drawerHeight) { with(density) { drawerHeight.toPx() } }
+    // The panel is a fixed dp, but its contents (icon buttons and their paddings) grow with the
+    // 10-foot token multiplier on TV / expanded windows. If the panel itself doesn't grow too, the
+    // enlarged buttons overflow the 128dp height: the icon collapses to ~0 and each button renders
+    // as a stretched, empty blob. Scale the panel by the same factor so proportions match mobile.
+    val panelHeight = if (Theme.is10Foot) drawerHeight * TEN_FOOT_SCALE else drawerHeight
+    val drawerHeightPx = remember(density, panelHeight) { with(density) { panelHeight.toPx() } }
 
     // Haze state drives the background blur effect; shared between source and effect modifiers
     val hazeState = remember { HazeState() }
@@ -104,6 +113,11 @@ public fun BlurredCustomBottomDrawerOverlay(
     }
 
     val color = Theme.color.surface
+
+    // On TV there is no scrim tap or swipe; BACK is the natural dismissal. Gated to TV so touch
+    // behaviour (and the kiosk's global BACK block on mobile) is unchanged.
+    val isTv = LocalFormFactor.current == FormFactor.TV
+    BackHandler(enabled = isDrawerOpen && isTv, onBack = onDismiss)
 
     Box(modifier = modifier.fillMaxSize()) {
         // 1. Source content
@@ -144,7 +158,7 @@ public fun BlurredCustomBottomDrawerOverlay(
                 modifier =
                 Modifier
                     .fillMaxWidth()
-                    .height(drawerHeight)
+                    .height(panelHeight)
                     .offset { IntOffset(x = 0, y = offsetY.value.roundToInt()) }
                     .align(Alignment.BottomCenter)
                     .padding(Theme.spacing.sizeL)

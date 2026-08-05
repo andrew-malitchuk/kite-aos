@@ -2,6 +2,8 @@ package presentation.core.ui.source.kit.molecule.item
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -20,9 +22,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import domain.core.source.model.ApplicationModel
 import presentation.core.styling.core.Theme
+import presentation.core.styling.source.attribute.TEN_FOOT_SCALE
 import presentation.core.styling.source.theme.AppTheme
-import presentation.core.ui.core.ext.noRippleClickable
 import presentation.core.ui.source.kit.atom.shape.SquircleShape
+import presentation.core.ui.source.kit.core.focus.tvFocusRing
 
 /**
  * A compact application list item that displays only the application icon inside a squircle container.
@@ -44,14 +47,22 @@ public fun SimpleApplicationListItem(
     applicationModel: ApplicationModel,
     onClick: () -> Unit,
 ) {
-    // Fixed 56 dp container for the application icon
+    // Container for the application icon. Scales with the 10-foot token multiplier on TV so the
+    // shortcut matches the (scaled) control buttons instead of staying a fixed 56dp — otherwise the
+    // scaled inner icon overflows the box and the shortcut looks tiny beside the buttons.
+    val interactionSource = remember { MutableInteractionSource() }
+    val itemShape = SquircleShape(Theme.size.sizeXL)
+    val itemSize = if (Theme.is10Foot) 56.dp * TEN_FOOT_SCALE else 56.dp
     Box(
         modifier =
-        Modifier
-            .size(56.dp)
-            .clip(SquircleShape(Theme.size.sizeXL))
+        modifier
+            .size(itemSize)
+            // TV: draw a D-pad focus ring so the remote user can see the shortcut is focused.
+            // Without it the item was reachable but gave no visual cue, so it read as "unreachable".
+            .tvFocusRing(interactionSource, itemShape)
+            .clip(itemShape)
             .background(Theme.color.surfaceVariant)
-            .noRippleClickable(onClick),
+            .clickable(interactionSource = interactionSource, indication = null, onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
         val context = LocalContext.current

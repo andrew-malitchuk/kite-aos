@@ -1,5 +1,6 @@
 package presentation.core.styling.core
 
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import presentation.core.styling.source.provider.LocalThemeColor
 import presentation.core.styling.source.provider.LocalThemeFontSize
@@ -112,4 +113,23 @@ public object Theme {
     public val typography: ThemeTypography
         @Composable
         get() = LocalThemeTypography.current
+
+    /**
+     * `true` when the UI should render in the "10-foot" (large-screen, remote-driven)
+     * mode: either the form-factor is [FormFactor.TV] or the window is
+     * [WindowWidthSizeClass.Expanded] (large tablets / foldables benefit too).
+     *
+     * When this is `true`, [AppTheme] provides up-scaled spacing, sizing, and
+     * typography through the same theme CompositionLocals, so most screens adapt
+     * with no per-screen changes. Use it directly only where a screen needs a
+     * genuinely different layout arrangement or focus affordance.
+     *
+     * @see LocalFormFactor
+     * @see LocalWindowSizeClass
+     * @since 1.2.0
+     */
+    public val is10Foot: Boolean
+        @Composable
+        get() = LocalFormFactor.current == FormFactor.TV ||
+            LocalWindowSizeClass.current?.widthSizeClass == WindowWidthSizeClass.Expanded
 }

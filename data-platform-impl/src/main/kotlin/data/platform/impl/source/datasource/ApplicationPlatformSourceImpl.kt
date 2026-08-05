@@ -11,9 +11,10 @@ import org.koin.core.annotation.Single
 /**
  * Android implementation of [ApplicationPlatformSource] using the system's [PackageManager].
  *
- * Uses [PackageManager.queryIntentActivities] with MAIN+LAUNCHER to enumerate launchable apps
- * without requiring QUERY_ALL_PACKAGES — the manifest's <queries> block grants the necessary
- * package visibility on Android 11+.
+ * Uses [PackageManager.queryIntentActivities] with MAIN+LAUNCHER and MAIN+LEANBACK_LAUNCHER to
+ * enumerate launchable apps without requiring QUERY_ALL_PACKAGES — the manifest's <queries> block
+ * grants the necessary package visibility on Android 11+. The leanback category is included so
+ * Android TV apps (which register only under LEANBACK_LAUNCHER) are also listed.
  *
  * @param context The Android [Context] used to obtain the [PackageManager].
  * @see ApplicationPlatformSource
@@ -29,12 +30,19 @@ internal class ApplicationPlatformSourceImpl(
      */
     override suspend fun getApplications(): List<ApplicationPlatform> {
         val packageManager = context.packageManager
-        val launcherIntent = Intent(Intent.ACTION_MAIN).apply {
-            addCategory(Intent.CATEGORY_LAUNCHER)
-        }
+
+        // Query both the touch launcher category and the Android TV leanback launcher category.
+        // TV-only apps register solely under LEANBACK_LAUNCHER and would otherwise be missing;
+        // querying both keeps the same code path working on mobile (no leanback apps present)
+        // and on TV. Results are merged and de-duplicated by package name.
+        val categories = listOf(Intent.CATEGORY_LAUNCHER, Intent.CATEGORY_LEANBACK_LAUNCHER)
 
         @Suppress("QueryPermissionsNeeded")
-        return packageManager.queryIntentActivities(launcherIntent, 0)
+        return categories
+            .flatMap { category ->
+                val intent = Intent(Intent.ACTION_MAIN).apply { addCategory(category) }
+                packageManager.queryIntentActivities(intent, 0)
+            }
             .map { resolveInfo ->
                 ApplicationPlatform(
                     name = resolveInfo.loadLabel(packageManager).toString(),
@@ -42,6 +50,7 @@ internal class ApplicationPlatformSourceImpl(
                     icon = resolveInfo.activityInfo.applicationInfo.icon,
                 )
             }
+            .distinctBy { it.packageName }
             .sortedBy { it.name.lowercase() }
     }
 

@@ -2,7 +2,10 @@ package presentation.core.platform.source.analyzer
 
 import android.util.Log
 import androidx.camera.core.ImageProxy
+import java.nio.ByteBuffer
 import kotlin.math.abs
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 /**
  * Encapsulates the logic for analyzing camera frames to detect motion.
@@ -92,6 +95,9 @@ public class MotionAnalyzer {
             if (++frameCounter % FRAME_SKIP_COUNT != 0) return false
 
             // CameraX ImageProxy planes[0] is the Y (luminance) plane in YUV format.
+            // This path is intentionally left flat (ignoring rowStride) so the mobile
+            // CameraX behaviour is byte-for-byte unchanged. The stride-aware overload
+            // below is used by the TV frame sources.
             val buffer = image.planes[0].buffer
             val remaining = buffer.remaining()
             if (remaining == 0) return false
@@ -107,29 +113,102 @@ public class MotionAnalyzer {
             }
 
             val currentAvg = sum.toDouble() / pixelCount
-
-            // First frame after reset — store baseline and skip detection.
-            if (lastAverageLuma < 0) {
-                lastAverageLuma = currentAvg
-                return false
-            }
-
-            // Calculate difference from previous frame's average luma.
-            val frameDiff = abs(currentAvg - lastAverageLuma)
-
-            // Update baseline with a low-pass filter: 90% old value + 10% new value.
-            // This smooths out gradual illumination changes (e.g., clouds passing).
-            lastAverageLuma = (lastAverageLuma * 0.9) + (currentAvg * 0.1)
-
-            // Update motion score with exponential decay. Only differences above the noise
-            // threshold contribute to the score.
-            val effectiveDiff = (frameDiff - MOTION_THRESHOLD).coerceAtLeast(0.0)
-            motionScore = (motionScore * DECAY_FACTOR) + effectiveDiff
-
-            return motionScore > sensitivity
+            return scoreFrame(currentAvg, sensitivity)
         } catch (e: Exception) {
             Log.e(TAG, "Frame analysis failed", e)
             return false
         }
+    }
+
+    /**
+     * Analyzes a raw Y (luminance) plane for motion, honoring row/pixel strides.
+     *
+     * Shares the exact scoring algorithm with the [ImageProxy] overload but samples in a
+     * stride-aware 2D grid, so it works for both contiguous NV21 buffers (UVC webcams,
+     * `rowStride == width`, `pixelStride == 1`) and row-padded `YUV_420_888` planes
+     * (Camera2 external cameras, where `rowStride > width` and padding bytes must be
+     * skipped). The caller owns the buffer's lifecycle.
+     *
+     * @param yPlane The Y-plane bytes. Read by absolute index; position is not modified.
+     * @param rowStride Bytes between the start of consecutive rows (≥ [width]).
+     * @param pixelStride Bytes between consecutive luma samples in a row (1 for NV21).
+     * @param width Frame width in pixels.
+     * @param height Frame height in pixels.
+     * @param sensitivity Threshold the accumulated motion score must exceed. See the
+     * [ImageProxy] overload.
+     * @return `true` if motion was detected, `false` otherwise (including skipped and
+     * initialization frames).
+     * @see reset
+     * @since 1.2.0
+     */
+    public fun analyze(
+        yPlane: ByteBuffer,
+        rowStride: Int,
+        pixelStride: Int,
+        width: Int,
+        height: Int,
+        sensitivity: Float,
+    ): Boolean {
+        try {
+            if (++frameCounter % FRAME_SKIP_COUNT != 0) return false
+            if (width <= 0 || height <= 0) return false
+
+            // Sample on a square grid whose spacing matches the flat ANALYZER_STEP density
+            // (step ≈ sqrt(ANALYZER_STEP)), so sensitivity is comparable to the mobile path.
+            val gridStep = sqrt(ANALYZER_STEP.toDouble()).roundToInt().coerceAtLeast(1)
+
+            var sum = 0L
+            var pixelCount = 0
+            var row = 0
+            while (row < height) {
+                val rowStart = row * rowStride
+                var col = 0
+                while (col < width) {
+                    val index = rowStart + col * pixelStride
+                    if (index >= yPlane.limit()) break
+                    sum += yPlane.get(index).toInt() and 0xFF
+                    pixelCount++
+                    col += gridStep
+                }
+                row += gridStep
+            }
+
+            if (pixelCount == 0) return false
+            val currentAvg = sum.toDouble() / pixelCount
+            return scoreFrame(currentAvg, sensitivity)
+        } catch (e: Exception) {
+            Log.e(TAG, "Frame analysis failed", e)
+            return false
+        }
+    }
+
+    /**
+     * Applies the low-pass baseline filter and decaying motion score to a frame's average
+     * luma. Shared by both [analyze] overloads so the detection algorithm stays in one place.
+     *
+     * @param currentAvg The average luma of the current frame.
+     * @param sensitivity The threshold the motion score must exceed.
+     * @return `true` if motion is detected; `false` on the first (baseline) frame.
+     */
+    private fun scoreFrame(currentAvg: Double, sensitivity: Float): Boolean {
+        // First frame after reset — store baseline and skip detection.
+        if (lastAverageLuma < 0) {
+            lastAverageLuma = currentAvg
+            return false
+        }
+
+        // Calculate difference from previous frame's average luma.
+        val frameDiff = abs(currentAvg - lastAverageLuma)
+
+        // Update baseline with a low-pass filter: 90% old value + 10% new value.
+        // This smooths out gradual illumination changes (e.g., clouds passing).
+        lastAverageLuma = (lastAverageLuma * 0.9) + (currentAvg * 0.1)
+
+        // Update motion score with exponential decay. Only differences above the noise
+        // threshold contribute to the score.
+        val effectiveDiff = (frameDiff - MOTION_THRESHOLD).coerceAtLeast(0.0)
+        motionScore = (motionScore * DECAY_FACTOR) + effectiveDiff
+
+        return motionScore > sensitivity
     }
 }

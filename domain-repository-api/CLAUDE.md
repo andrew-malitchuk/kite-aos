@@ -12,8 +12,8 @@ This module depends on `domain-core` for domain models and failures. It is purel
 
 ### Key Interfaces
 *   **`ApplicationRepository`**: Contract for managing applications. Uses `loadApplications()` for database retrieval and `getApplications()` for system-installed apps.
-*   **`ConfigureRepository`**: Contract for managing system and user configurations (Theme, Dashboard, Dock, Onboarding).
-*   **`MqttRepository`**: Contract for MQTT telemetry operations and configuration.
+*   **`ConfigureRepository`**: Contract for managing system and user configurations (Theme, Dashboard, Dock, Onboarding). Includes camera-source selection (`@since 1.4.0`) via `getCameraSource()`, `setCameraSource()`, and `observeCameraSource()`, which persist and observe the user's `CameraSourceModel` preference used for motion detection and streaming.
+*   **`MqttRepository`**: Contract for MQTT telemetry operations and configuration. `connect(...)` takes a `model` parameter (`"tv"` or `"tablet"`; `@since 1.2.0`) that reports the device form-factor to Home Assistant discovery.
 
 ## Dependencies
 *   **`domain-core`**: Provides the domain models used in repository method signatures.

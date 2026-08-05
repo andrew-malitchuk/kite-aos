@@ -17,6 +17,8 @@ All domain models implement the `Model` marker interface:
 - `ThemeModel`: UI theme modes (Light, Dark, Material You).
 - `MoveDetectorModel`: Motion detection sensitivity and delays.
 - `MqttModel`: Broker configuration and credentials.
+- `ScreenStateModel`: Kiosk display state — `Active`, `Screensaver`, or `DarkOverlay` (a plain dark overlay used where the panel cannot be powered off, e.g. Android TV; `@since 1.2.0`).
+- `CameraSourceModel` (`@since 1.4.0`): User-selected camera source (`Auto`, `Front`, `Rear`, `External`) overriding automatic selection for motion detection and MJPEG streaming across all form-factors.
 
 ### Failure Handling
 Uses the `Failure` sealed class to represent errors:

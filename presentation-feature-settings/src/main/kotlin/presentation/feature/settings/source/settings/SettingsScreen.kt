@@ -4,6 +4,7 @@ import android.app.role.RoleManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -20,6 +21,8 @@ import presentation.core.navigation.api.core.composition.LocalAppNavigator
 import presentation.core.navigation.api.source.destination.Destination
 import presentation.core.platform.core.extension.openAppLanguageSettings
 import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHostState
+
+private const val TAG = "SettingsScreen"
 
 /**
  * Entry point for the settings feature.
@@ -109,16 +112,19 @@ public fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     val roleManager = context.getSystemService(RoleManager::class.java)
                     if (roleManager.isRoleAvailable(RoleManager.ROLE_HOME)) {
-                        launcherRoleLauncher.launch(
-                            roleManager.createRequestRoleIntent(RoleManager.ROLE_HOME),
-                        )
+                        runCatching {
+                            launcherRoleLauncher.launch(
+                                roleManager.createRequestRoleIntent(RoleManager.ROLE_HOME),
+                            )
+                        }.onFailure { Log.w(TAG, "HOME role request unavailable", it) }
                     }
                 } else {
                     // Pre-API 29: open the Home settings chooser
                     val homeIntent = Intent(Intent.ACTION_MAIN).apply {
                         addCategory(Intent.CATEGORY_HOME)
                     }
-                    context.startActivity(Intent.createChooser(homeIntent, null))
+                    runCatching { context.startActivity(Intent.createChooser(homeIntent, null)) }
+                        .onFailure { Log.w(TAG, "Home chooser unavailable", it) }
                 }
             }
             is SettingsSideEffect.ShowError -> {
@@ -128,17 +134,22 @@ public fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
             }
             is SettingsSideEffect.ExportConfigEffect -> {
                 pendingExportJson = effect.json
-                exportLauncher.launch("kite-config.json")
+                // SAF's DocumentsUI may be absent on stripped-down TV boxes; don't crash if the
+                // create-document picker can't be launched.
+                runCatching { exportLauncher.launch("kite-config.json") }
+                    .onFailure { pendingExportJson = null; Log.w(TAG, "Export picker unavailable", it) }
             }
             SettingsSideEffect.ImportConfigEffect -> {
-                importLauncher.launch(arrayOf("application/json", "text/plain"))
+                runCatching { importLauncher.launch(arrayOf("application/json", "text/plain")) }
+                    .onFailure { Log.w(TAG, "Import picker unavailable", it) }
             }
             is SettingsSideEffect.ShowDiscoveryResultEffect -> {
                 discoveryResults = effect.instances
                 showDiscoveryDialog = true
             }
             SettingsSideEffect.PickScreensaverFolderEffect -> {
-                screensaverFolderLauncher.launch(null)
+                runCatching { screensaverFolderLauncher.launch(null) }
+                    .onFailure { Log.w(TAG, "Folder picker unavailable", it) }
             }
         }
     }

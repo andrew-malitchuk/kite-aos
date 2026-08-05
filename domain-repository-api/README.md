@@ -6,6 +6,8 @@ This module defines the repository interfaces for the Domain layer. These interf
 
 - **Data Contracts**: Defines abstract repository interfaces (e.g., `ApplicationRepository`, `ConfigureRepository`, `MqttRepository`) that describe *what* data is needed by the domain.
 - **Abstraction**: Ensures that Use Cases only interact with abstractions, allowing the underlying data implementation (Network, Database, Preferences, MQTT) to change without affecting business logic.
+- **Camera-source selection** (`@since 1.4.0`): `ConfigureRepository` exposes `getCameraSource()`, `setCameraSource()`, and `observeCameraSource()` to persist and observe the user's `CameraSourceModel` preference for motion detection and MJPEG streaming.
+- **MQTT form-factor reporting** (`@since 1.2.0`): `MqttRepository.connect(...)` takes a `model` parameter (`"tv"` or `"tablet"`) reported to Home Assistant discovery.
 
 ## Usage
 

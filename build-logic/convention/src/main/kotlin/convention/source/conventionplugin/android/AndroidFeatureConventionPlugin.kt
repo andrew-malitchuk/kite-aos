@@ -53,6 +53,20 @@ public class AndroidFeatureConventionPlugin : Plugin<Project> {
             buildFeatures {
                 compose = true
             }
+
+            // Mirror the application module's `formfactor` dimension on every
+            // feature/core library so variant-aware dependency matching resolves
+            // automatically (app and libs share the same flavor names). Libraries
+            // only need the `src/tv` source-set gating this enables; the runtime
+            // IS_TV flag lives on the application BuildConfig and is surfaced to
+            // libraries via AppConfig, so no buildConfigField is declared here.
+            // The application's extra `distribution` dimension auto-falls-back for
+            // these libraries, so no missingDimensionStrategy is required.
+            flavorDimensions += "formfactor"
+            productFlavors {
+                create("mobile") { dimension = "formfactor" }
+                create("tv") { dimension = "formfactor" }
+            }
         }
 
         dependencies {

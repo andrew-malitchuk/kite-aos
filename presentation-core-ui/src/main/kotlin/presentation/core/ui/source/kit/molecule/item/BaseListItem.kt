@@ -59,7 +59,9 @@ public fun BaseListItem(
 ) {
     SquircleCard(
         modifier = modifier.fillMaxWidth(),
-        onClick = onClick ?: {},
+        // Pass through as-is: a null onClick keeps the card non-clickable so items that host their
+        // own interactive content (e.g. TextInputListItem) don't have focus/taps stolen by the card.
+        onClick = onClick,
         enabled = enabled,
     ) {
         Row(

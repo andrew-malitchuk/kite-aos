@@ -30,6 +30,7 @@ public interface TelemetryMqttSource {
      * @param username The username for authentication.
      * @param password The password for authentication.
      * @param friendlyName A human-readable name for the device, used in Home Assistant discovery.
+     * @param model The device form-factor reported to Home Assistant (`"tv"` or `"tablet"`).
      */
     public suspend fun connect(
         server: String,
@@ -38,6 +39,7 @@ public interface TelemetryMqttSource {
         username: String,
         password: String,
         friendlyName: String,
+        model: String,
     )
 
     /**

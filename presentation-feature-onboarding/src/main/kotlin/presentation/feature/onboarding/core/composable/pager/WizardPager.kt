@@ -3,6 +3,7 @@ package presentation.feature.onboarding.core.composable.pager
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,14 +20,21 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
+import kotlinx.coroutines.delay
+import presentation.core.styling.core.FormFactor
+import presentation.core.styling.core.LocalFormFactor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,6 +73,9 @@ public sealed interface WizardPagerAction {
  * @see WizardPager
  * @since 0.0.1
  */
+// Lets a slide finish composing/animating before the initial D-pad focus is requested.
+private const val FOCUS_REQUEST_DELAY_MS = 200L
+
 public data class WizardPageData(
     val title: String,
     val description: String,
@@ -104,6 +115,18 @@ public fun WizardPager(
     val focusManager = androidx.compose.ui.platform.LocalFocusManager.current
     val keyboardController = androidx.compose.ui.platform.LocalSoftwareKeyboardController.current
     val currentPageData = pages[pagerState.currentPage]
+
+    // TV: move D-pad focus into the current slide's content when the page changes, so the first
+    // focusable (a permission toggle or URL field) is selected. Slides with no focusable content
+    // simply leave focus for the user to reach the Prev/Next buttons. No-op on mobile (touch).
+    val isTv = LocalFormFactor.current == FormFactor.TV
+    val contentFocusRequester = remember { FocusRequester() }
+    LaunchedEffect(pagerState.currentPage, isTv) {
+        if (isTv) {
+            delay(FOCUS_REQUEST_DELAY_MS)
+            runCatching { contentFocusRequester.requestFocus() }
+        }
+    }
     val animatedBackgroundColor by animateColorAsState(
         targetValue = currentPageData.backgroundColor,
         label = "background color",
@@ -130,6 +153,17 @@ public fun WizardPager(
                 modifier =
                 Modifier
                     .fillMaxSize()
+                    .then(
+                        // Only the active page owns the focus requester + group, so requesting
+                        // focus lands in the visible slide's content.
+                        if (page == pagerState.currentPage) {
+                            Modifier
+                                .focusRequester(contentFocusRequester)
+                                .focusGroup()
+                        } else {
+                            Modifier
+                        },
+                    )
                     .graphicsLayer {
                         alpha = 1f - kotlin.math.abs(pageOffset)
 

@@ -120,4 +120,5 @@ nav:
     - Build System: modules/build-logic.md
     - Common Core: modules/common-core.md
   - Roadmap: roadmap.md
+  - Android TV: android-tv.md
   - Changelog: changelog.md

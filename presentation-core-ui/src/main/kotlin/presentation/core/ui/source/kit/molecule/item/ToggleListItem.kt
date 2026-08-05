@@ -54,6 +54,10 @@ public fun ToggleListItem(
         textStyle = textStyle,
         iconBackgroundColor = iconBackgroundColor,
         iconForegroundColor = iconForegroundColor,
+        // Tapping (or D-pad clicking) anywhere on the row flips the toggle. Without this the card
+        // was focusable but its onClick was a no-op, so a remote/keyboard user could focus the row
+        // yet never reach or operate the switch. The row is now the single interactive target.
+        onClick = { onCheckedChange(!isChecked) },
         trailingContent = {
             Toggle(
                 checked = isChecked,

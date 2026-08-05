@@ -7,17 +7,13 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import android.util.Size
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
-import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
-import android.graphics.Bitmap
-import android.graphics.Matrix
+import domain.core.source.model.CameraSourceModel
 import domain.core.source.model.ScreenStateModel
+import domain.usecase.api.source.usecase.camera.GetCameraSourceUseCase
+import domain.usecase.api.source.usecase.camera.ObserveCameraSourceUseCase
 import domain.usecase.api.source.usecase.device.EmitMoveDetectorMotionUseCase
 import domain.usecase.api.source.usecase.device.EmitScreenStateUseCase
 import domain.usecase.api.source.usecase.device.GetMoveDetectorUseCase
@@ -42,10 +38,15 @@ import org.koin.android.ext.android.inject
 import presentation.core.platform.R
 import presentation.core.platform.core.helper.DevicePowerManager
 import presentation.core.platform.source.analyzer.MotionAnalyzer
+import presentation.core.platform.source.config.AppConfig
+import presentation.core.platform.source.motion.CameraLens
+import presentation.core.platform.source.motion.MotionFrame
+import presentation.core.platform.source.motion.MotionSource
+import presentation.core.platform.source.motion.MotionSourceConfig
+import presentation.core.platform.source.motion.MotionSourceFactory
+import presentation.core.platform.source.motion.NoOpMotionSource
+import presentation.core.platform.source.streaming.JpegFrameEncoder
 import presentation.core.platform.source.streaming.MjpegHttpServer
-import java.io.ByteArrayOutputStream
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
@@ -80,17 +81,29 @@ public class MotionService : LifecycleService() {
     private val emitMoveDetectorMotionUseCase: EmitMoveDetectorMotionUseCase by inject()
     private val mqttSendMotionUseCase: MqttSendMotionUseCase by inject()
     private val observeStreamingConfigurationUseCase: ObserveStreamingConfigurationUseCase by inject()
+    private val getCameraSourceUseCase: GetCameraSourceUseCase by inject()
+    private val observeCameraSourceUseCase: ObserveCameraSourceUseCase by inject()
     private val mjpegHttpServer: MjpegHttpServer by inject()
     private val getScreensaverUseCase: GetScreensaverUseCase by inject()
     private val emitScreenStateUseCase: EmitScreenStateUseCase by inject()
+    private val motionSourceFactory: MotionSourceFactory by inject()
+    private val jpegFrameEncoder: JpegFrameEncoder by inject()
+    private val appConfig: AppConfig by inject()
     // endregion
 
     // SupervisorJob ensures a single coroutine failure does not cancel all service coroutines.
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
 
-    /** Dedicated single-thread executor for CameraX image analysis callbacks. */
-    private lateinit var cameraExecutor: ExecutorService
+    /** The active frame source (CameraX on mobile; Camera2/UVC/MQTT on TV), chosen at startup. */
+    private var motionSource: MotionSource? = null
+
+    /**
+     * User camera preference driving source selection and, for built-in cameras, the lens. Read
+     * when (re)selecting the source and when building [currentConfig]; updated by
+     * [startCameraSourceObserver]. Defaults to [CameraSourceModel.Auto] (legacy auto-selection).
+     */
+    @Volatile private var cameraChoice: CameraSourceModel = CameraSourceModel.Auto
 
     // region Streaming State
     private val frameFlow = MutableSharedFlow<ByteArray>(
@@ -98,15 +111,14 @@ public class MotionService : LifecycleService() {
         extraBufferCapacity = 4,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
-    // Written on serviceScope (Main), read on cameraExecutor — @Volatile ensures cross-thread visibility.
+    // Written on serviceScope (Main), read on the source's frame thread — @Volatile ensures
+    // cross-thread visibility.
     @Volatile private var isStreamingEnabled = false
     @Volatile private var streamingPort = DEFAULT_STREAMING_PORT
     @Volatile private var streamingQuality = DEFAULT_STREAMING_QUALITY
     @Volatile private var streamingFps = DEFAULT_STREAMING_FPS
     @Volatile private var streamingRotation = DEFAULT_STREAMING_ROTATION
     @Volatile private var lastStreamFrameTime = 0L
-    private val jpegOutputStream = ByteArrayOutputStream(64 * 1024)
-    private var cameraProvider: ProcessCameraProvider? = null
     // endregion
 
     // region Helpers
@@ -150,6 +162,7 @@ public class MotionService : LifecycleService() {
 
     /** Tracks whether the screensaver is currently shown to avoid repeated emissions. */
     private var wasScreensaverActive = false
+    private var wasDarkOverlayActive = false
     // endregion
 
     /**
@@ -214,9 +227,8 @@ public class MotionService : LifecycleService() {
      */
     override fun onCreate() {
         super.onCreate()
-        cameraExecutor = Executors.newSingleThreadExecutor()
         motionAnalyzer = MotionAnalyzer()
-        devicePowerManager = DevicePowerManager(this)
+        devicePowerManager = DevicePowerManager(this, appConfig.isTv)
 
         setupNotificationChannel()
         // startForeground must be called within 5 seconds of the service being started,
@@ -274,15 +286,22 @@ public class MotionService : LifecycleService() {
                     startInactivityChecker()
                 }
 
-                // Camera and streaming must always initialize — streaming may run without motion.
-                setupCamera()
+                // Load the persisted camera choice before the first selection so the factory picks
+                // the right source (and lens) up front, avoiding a visible source swap on launch.
+                cameraChoice = getCameraSourceUseCase().getOrNull() ?: CameraSourceModel.Auto
+
+                // The frame source and streaming must always initialize — streaming may run
+                // without motion detection enabled.
+                startMotionSource()
                 startStreamingObserver()
+                startCameraSourceObserver()
             } catch (e: CancellationException) {
                 Log.i(TAG, "Initialization cancelled.")
             } catch (e: Exception) {
                 Log.e(TAG, "Initialization failed, using defaults.", e)
-                setupCamera()
+                startMotionSource()
                 startStreamingObserver()
+                startCameraSourceObserver()
             }
         }
     }
@@ -313,7 +332,10 @@ public class MotionService : LifecycleService() {
      * Evaluates the current idle duration and transitions the device screen accordingly.
      *
      * The state machine has three tiers:
-     * 1. **Lock** — idle time >= [lockDelaySeconds]: lock the device.
+     * 1. **Lock** — idle time >= [lockDelaySeconds]: lock the device. On Android TV, where the
+     *    panel can't be powered off, a plain dark overlay is shown instead (see
+     *    [ScreenStateModel.DarkOverlay]) — but only when a camera motion source is active, so the
+     *    overlay can be dismissed locally.
      * 2. **Dim** — idle time >= [dimDelaySeconds]: reduce brightness to [DevicePowerManager.BRIGHTNESS_DIM].
      * 3. **Bright** — otherwise: restore brightness to [DevicePowerManager.BRIGHTNESS_MAX].
      *
@@ -336,7 +358,21 @@ public class MotionService : LifecycleService() {
         when {
             lockDelaySeconds > 0 && idleTimeSeconds >= lockDelaySeconds -> {
                 enterBlindnessMode()
-                devicePowerManager.lockDevice()
+                if (appConfig.isTv) {
+                    // Android TV can't power the panel down (device locking is unavailable), so
+                    // show a plain dark overlay instead — the screen simply stops glowing.
+                    // Only engage it when a camera motion source is active: the overlay must be
+                    // locally dismissable, otherwise (e.g. MQTT-only presence, or no source) the
+                    // screen could get stuck dark with nothing to clear it.
+                    if (motionSource?.isCameraBased == true && !wasDarkOverlayActive) {
+                        wasDarkOverlayActive = true
+                        lifecycleScope.launch {
+                            emitScreenStateUseCase(ScreenStateModel.DarkOverlay)
+                        }
+                    }
+                } else {
+                    devicePowerManager.lockDevice()
+                }
             }
 
             screensaverEnabled && idleTimeSeconds >= (dimDelaySeconds + screensaverActivationDelay) -> {
@@ -388,118 +424,119 @@ public class MotionService : LifecycleService() {
 
                 when {
                     isStreamingEnabled && !wasEnabled -> {
-                        // Streaming turned on — bind camera at stream resolution and start server.
-                        rebindCamera()
+                        // Streaming turned on — reconfigure source to stream resolution, start server.
+                        motionSource?.updateConfig(currentConfig())
                         mjpegHttpServer.start(streamingPort, frameFlow)
                     }
                     !isStreamingEnabled && wasEnabled -> {
                         // Streaming turned off — stop server and drop back to motion-only resolution.
                         mjpegHttpServer.stop()
-                        rebindCamera()
+                        motionSource?.updateConfig(currentConfig())
                     }
                     isStreamingEnabled && streamingPort != prevPort -> {
                         // Port changed while streaming — restart server on new port only.
                         mjpegHttpServer.start(streamingPort, frameFlow)
                     }
                     // rotation / quality / fps changed while streaming: variables updated above,
-                    // processImageProxy picks them up on the next frame — no restart needed.
+                    // handleFrame picks them up on the next frame — no source reconfigure needed.
                 }
             }
         }
     }
 
-    /** Rebinds CameraX with the appropriate resolution for the current streaming state. */
-    private fun rebindCamera() {
-        val provider = cameraProvider ?: return
-        ContextCompat.getMainExecutor(this).execute { bindCamera(provider) }
+    /** Builds the current source configuration snapshot from the streaming state flags. */
+    private fun currentConfig(): MotionSourceConfig =
+        MotionSourceConfig(
+            streamingEnabled = isStreamingEnabled,
+            motionResolution = LOW_RES_SIZE,
+            streamResolution = STREAM_RES_SIZE,
+            fps = streamingFps,
+            quality = streamingQuality,
+            rotationDegrees = streamingRotation,
+            lens = cameraChoice.toLens(),
+        )
+
+    /** Maps the user camera choice to a built-in lens; non-built-in sources ignore this. */
+    private fun CameraSourceModel.toLens(): CameraLens = when (this) {
+        CameraSourceModel.Rear -> CameraLens.REAR
+        else -> CameraLens.FRONT
     }
 
     /**
-     * Obtains the [ProcessCameraProvider] and performs the initial camera bind.
+     * Selects the [MotionSource] matching [cameraChoice] via [MotionSourceFactory] and starts it,
+     * routing every frame through [handleFrame].
      *
-     * Resolution is [LOW_RES_SIZE] by default; once [startStreamingObserver] fires and
-     * streaming is enabled, [rebindCamera] switches to [STREAM_RES_SIZE].
-     *
-     * @see bindCamera
-     * @see processImageProxy
-     * @since 0.0.1
+     * @since 1.2.0
      */
-    private fun setupCamera() {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
-        cameraProviderFuture.addListener({
-            try {
-                val provider = cameraProviderFuture.get()
-                cameraProvider = provider
-                bindCamera(provider)
-            } catch (e: Exception) {
-                Log.e(TAG, "Camera setup failed", e)
+    private fun startMotionSource() {
+        val source = motionSourceFactory.create(cameraChoice)
+        motionSource = source
+        // A source failing to start (e.g. a webcam unplugged mid-switch, or a camera the OS
+        // won't hand over) must not take the whole service — and process — down. Fall back to
+        // the inert no-op source so power management keeps working.
+        try {
+            source.start(currentConfig(), ::handleFrame)
+        } catch (e: Exception) {
+            Log.e(TAG, "Motion source ${source::class.simpleName} failed to start; using no-op.", e)
+            motionSource = NoOpMotionSource().also { it.start(currentConfig(), ::handleFrame) }
+        }
+    }
+
+    /**
+     * Observes the user's camera choice and re-selects the frame source when it changes.
+     *
+     * The first emission matches [cameraChoice] (seeded in [initializeService]) and is skipped;
+     * later changes stop the active source and start the one the factory selects for the new
+     * choice. Streaming state is preserved because [startMotionSource] rebuilds [currentConfig]
+     * from the current flags, and the MJPEG server is independent of the source lifecycle.
+     *
+     * @since 1.4.0
+     */
+    private fun startCameraSourceObserver() {
+        serviceScope.launch {
+            observeCameraSourceUseCase().collectLatest { model ->
+                val newChoice = model ?: CameraSourceModel.Auto
+                if (newChoice == cameraChoice) return@collectLatest
+                Log.i(TAG, "Camera choice changed: $cameraChoice -> $newChoice; restarting source.")
+                cameraChoice = newChoice
+                restartMotionSource()
             }
-        }, ContextCompat.getMainExecutor(this))
+        }
+    }
+
+    /** Stops the active source and starts the one selected for the current [cameraChoice]. */
+    private fun restartMotionSource() {
+        motionSource?.stop()
+        startMotionSource()
     }
 
     /**
-     * Binds CameraX use cases to this service's lifecycle.
+     * Source-agnostic frame handler: applies the blindness cooldown, runs motion detection,
+     * and (when streaming) encodes and emits a JPEG. Preserves the original CameraX ordering
+     * — analysis before encoding — which the [MotionFrame] contract also requires.
      *
-     * When [isStreamingEnabled] is true, [STREAM_RES_SIZE] (640×480) is used so that JPEG
-     * frames are usable for video; otherwise [LOW_RES_SIZE] (176×144) is used for efficiency.
-     * Both cases share the same [processImageProxy] callback — streaming encoding is skipped
-     * when [isStreamingEnabled] is false.
+     * Blindness mode applies ONLY to motion analysis; streaming continues uninterrupted so the
+     * MJPEG client does not freeze for 2.5 s after each motion event.
      *
-     * Must be called on the main thread.
-     *
-     * @param provider The [ProcessCameraProvider] obtained during [setupCamera].
-     * @since 0.1.0
-     */
-    private fun bindCamera(provider: ProcessCameraProvider) {
-        val resolution = if (isStreamingEnabled) STREAM_RES_SIZE else LOW_RES_SIZE
-        val imageAnalysis =
-            ImageAnalysis.Builder()
-                .setTargetResolution(resolution)
-                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .build()
-                .also {
-                    it.setAnalyzer(cameraExecutor) { imageProxy -> processImageProxy(imageProxy) }
-                }
-        provider.unbindAll()
-        provider.bindToLifecycle(this, CameraSelector.DEFAULT_FRONT_CAMERA, imageAnalysis)
-    }
-
-    /**
-     * Processes a single incoming [ImageProxy] frame, applying the blindness cooldown and
-     * delegating to [MotionAnalyzer.analyze] for motion detection.
-     *
-     * During the blindness period (after a screen state change), frames are silently discarded
-     * to avoid false positives. Once the cooldown expires, the analyzer is reset and analysis
-     * resumes.
-     *
-     * @param imageProxy The CameraX [ImageProxy] frame to process. Always closed in the
-     * `finally` block regardless of outcome.
+     * @param frame The frame to process. Always [MotionFrame.close]d in the `finally` block.
      * @see MotionAnalyzer.analyze
      * @see enterBlindnessMode
-     * @since 0.0.1
+     * @since 1.2.0
      */
     @Suppress("MagicNumber")
-    private fun processImageProxy(imageProxy: ImageProxy) {
+    private fun handleFrame(frame: MotionFrame) {
         try {
             val now = System.currentTimeMillis()
 
-            // Motion analysis runs first — MotionAnalyzer uses absolute-index buffer.get(i)
-            // and does NOT advance the buffer position. Running it before toBitmap() is
-            // required because toBitmap() advances the Y-plane position to its limit,
-            // which would make buffer.remaining() == 0 and silently kill detection.
-            //
-            // Blindness mode applies ONLY to motion analysis — streaming must continue
-            // uninterrupted so the MJPEG client does not freeze for 2.5 s after each
-            // motion event.
             val isMotion: Boolean = when {
                 isChangingState && now - lastStateChangeTime > STATE_CHANGE_COOLDOWN_MS -> {
                     isChangingState = false
                     motionAnalyzer.reset()
                     Log.d(TAG, "Blindness period ended. Resuming analysis.")
-                    motionAnalyzer.analyze(imageProxy, sensitivity)
+                    frame.analyze(motionAnalyzer, sensitivity)
                 }
                 isChangingState -> false
-                else -> motionAnalyzer.analyze(imageProxy, sensitivity)
+                else -> frame.analyze(motionAnalyzer, sensitivity)
             }
 
             // MJPEG streaming: runs unconditionally, independent of blindness state.
@@ -508,19 +545,8 @@ public class MotionService : LifecycleService() {
                 if (now - lastStreamFrameTime >= minIntervalMs) {
                     lastStreamFrameTime = now
                     try {
-                        val raw = imageProxy.toBitmap()
-                        val frame = if (streamingRotation != 0) {
-                            val matrix = Matrix().apply { postRotate(streamingRotation.toFloat()) }
-                            val rotated = Bitmap.createBitmap(raw, 0, 0, raw.width, raw.height, matrix, false)
-                            raw.recycle()
-                            rotated
-                        } else {
-                            raw
-                        }
-                        jpegOutputStream.reset()
-                        frame.compress(Bitmap.CompressFormat.JPEG, streamingQuality, jpegOutputStream)
-                        frame.recycle()
-                        frameFlow.tryEmit(jpegOutputStream.toByteArray())
+                        val jpeg = frame.encodeJpeg(jpegFrameEncoder, streamingRotation, streamingQuality)
+                        if (jpeg != null) frameFlow.tryEmit(jpeg)
                     } catch (e: Exception) {
                         Log.w(TAG, "JPEG encode failed", e)
                     }
@@ -533,8 +559,7 @@ public class MotionService : LifecycleService() {
         } catch (e: Exception) {
             Log.e(TAG, "Analysis error", e)
         } finally {
-            // ImageProxy must always be closed to release the underlying buffer back to CameraX.
-            imageProxy.close()
+            frame.close()
         }
     }
 
@@ -556,8 +581,9 @@ public class MotionService : LifecycleService() {
         devicePowerManager.wakeUp()
         devicePowerManager.setBrightness(DevicePowerManager.BRIGHTNESS_MAX)
 
-        if (wasScreensaverActive) {
+        if (wasScreensaverActive || wasDarkOverlayActive) {
             wasScreensaverActive = false
+            wasDarkOverlayActive = false
             lifecycleScope.launch { emitScreenStateUseCase(ScreenStateModel.Active) }
         }
 
@@ -658,7 +684,8 @@ public class MotionService : LifecycleService() {
     override fun onDestroy() {
         super.onDestroy()
         serviceJob.cancel()
-        cameraExecutor.shutdown()
+        motionSource?.stop()
+        motionSource = null
         runBlocking { mjpegHttpServer.stop() }
     }
 }
