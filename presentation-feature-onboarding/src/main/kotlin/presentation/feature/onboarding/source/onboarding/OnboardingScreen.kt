@@ -2,6 +2,7 @@ package presentation.feature.onboarding.source.onboarding
 
 import android.Manifest
 import android.app.admin.DevicePolicyManager
+import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -10,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -90,6 +92,20 @@ public fun OnboardingScreen(viewModel: OnboardingViewModel = koinViewModel()) {
             viewModel.onWriteSettingsPermission(Settings.System.canWrite(context))
         }
 
+    // Guards launches of optional system-settings screens (overlay, device admin, write settings).
+    // Several device profiles (notably TV boxes / stripped ROMs) ship no Activity for these screens,
+    // so launching throws ActivityNotFoundException and crashes the app — fail with a snackbar instead.
+    val launchSystemScreen: suspend (Intent, ActivityResultLauncher<Intent>) -> Unit =
+        { intent, launcher ->
+            try {
+                launcher.launch(intent)
+            } catch (_: ActivityNotFoundException) {
+                snackbarHostState.showSnackbar(
+                    title = context.getString(R.string.error_permission_screen_unavailable),
+                )
+            }
+        }
+
     LaunchedEffect(Unit) {
         val cameraGranted =
             ContextCompat.checkSelfPermission(
@@ -148,7 +164,7 @@ public fun OnboardingScreen(viewModel: OnboardingViewModel = koinViewModel()) {
                         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:${context.packageName}"),
                     )
-                overlayLauncher.launch(intent)
+                launchSystemScreen(intent, overlayLauncher)
             }
 
             OnboardingSideEffect.AskDeviceAdminEffect -> {
@@ -163,7 +179,7 @@ public fun OnboardingScreen(viewModel: OnboardingViewModel = koinViewModel()) {
                             context.getString(R.string.permission_device_admin_explanation),
                         )
                     }
-                adminLauncher.launch(intent)
+                launchSystemScreen(intent, adminLauncher)
             }
 
             OnboardingSideEffect.AskWriteSettingsEffect -> {
@@ -172,7 +188,7 @@ public fun OnboardingScreen(viewModel: OnboardingViewModel = koinViewModel()) {
                         Settings.ACTION_MANAGE_WRITE_SETTINGS,
                         Uri.parse("package:${context.packageName}"),
                     )
-                writeLauncher.launch(intent)
+                launchSystemScreen(intent, writeLauncher)
             }
 
             OnboardingSideEffect.GoToMainEffect -> {
