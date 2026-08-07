@@ -1,3 +1,37 @@
+# [1.4.0] - Unreleased
+
+Adds user-selectable camera source for motion detection and MJPEG streaming, on every form-factor (a USB-OTG webcam works on phones/tablets too, not just Android TV).
+
+## Added
+- `CameraSourceModel` (`Auto`/`Front`/`Rear`/`External`) domain model and a `camera.pb` Proto DataStore preference (`CameraPreferenceSource`, serializer, mapper, storage)
+- `GetCameraSourceUseCase` / `SetCameraSourceUseCase` / `ObserveCameraSourceUseCase` and `ConfigureRepository` camera-source methods
+- Settings selector to pick the camera source; localized strings (EN + UK)
+- `MotionSourceFactory.create(choice)` honors the preference: `Auto` picks the highest-priority available source, `Front`/`Rear` force the built-in lens, `External` forces a USB/UVC webcam, with fallback to `Auto` when the forced source is unavailable
+
+# [1.3.0] - Unreleased
+
+## Changed
+- Introduced the pluggable `MotionSource` abstraction (`MotionService` no longer hardcodes CameraX); enables Camera2-external, UVC, and MQTT motion sources behind one interface, with a stride-aware `MotionAnalyzer` overload for padded YUV/NV21 frames
+
+# [1.2.0] - Unreleased
+
+Adds Android TV support: kite-aos now runs on Android TV boxes as a 10-foot, D-pad-driven Home Assistant dashboard from a single codebase, with full parity to the tablet build.
+
+## Added
+- `formfactor` flavor dimension (`mobile`/`tv`) across the convention plugins → `gmsMobile`/`fossMobile`/`gmsTv`/`fossTv`; `BuildConfig.IS_TV` and a `tv` `versionCode` offset for Play multi-APK delivery
+- `AppConfig` runtime form-factor detection (UI-mode / `FEATURE_LEANBACK` / seeded `BuildConfig.IS_TV`) surfaced to feature libraries
+- Adaptive 10-foot UI: `FormFactor`, `LocalFormFactor`, `LocalWindowSizeClass`, `Theme.is10Foot` token up-scaling, and `Modifier.tvFocusRing` D-pad focus rings
+- USB-webcam motion sources for TV: `Camera2ExternalMotionSource` → `UvcMotionSource` (libausbc) fallback → `MqttMotionSource` presence fallback, with `HeadlessGlSurfaceTexture` for the UVC surface requirement
+- D-pad control-drawer access via a hidden directional combo in `HostActivity`; TV master/detail settings layout with single-focus-target list navigation
+- Leanback launcher + banner (`tv` manifest overlays); `LEANBACK_LAUNCHER` added to `<queries>` for app-drawer enumeration (`ApplicationPlatformSourceImpl` now enumerates both LAUNCHER and LEANBACK_LAUNCHER, deduped by package)
+- `DarkOverlay` screen state — a plain dark overlay stand-in for screen-off on Android TV, where the app cannot lock/power off the panel (`ScreenStateModel`/`ScreenStateResource`); `DevicePowerManager` wake/lock are no-ops on TV
+- Home Assistant form-factor entity gating: `MqttConnectUseCase`/`TelemetryMqttSource` take a `model` (`tv`/`tablet`) reported in HA Discovery; on TV, brightness/screen/volume/battery entities are not registered and stale ones are cleaned up
+- `material3-window-size-class` dependency
+
+## Changed
+- MQTT publishes `device_class = tv` on the `tv` flavor; screensaver reused as the TV ambient mode
+- Android TV documentation promoted from design plan to as-built reference ([android-tv.md](android-tv.md))
+
 # [1.1.0] - 2026-06-13
 
 This release adds screensaver overlay, MJPEG streaming, auto-reboot scheduler, analytics infrastructure, and expands settings with five new preference categories.

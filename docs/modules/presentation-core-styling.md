@@ -15,6 +15,20 @@ The styling engine for the Home Kiosk application.
 - `source/provider/`: Internal `CompositionLocal` definitions.
 - `source/theme/`: The `AppTheme` implementation.
 
+## Android TV / Adaptive Form-Factor
+
+_Since `1.2.0`._ The styling engine adapts to remote-driven, across-the-room devices (Android TV) and large expanded windows.
+
+- **`FormFactor`** (`core/`): Enum with `MOBILE` and `TV`. Describes the *input model and viewing distance* of the device, which is deliberately distinct from a `WindowSizeClass` (available space). A TV is remote-driven and viewed from across the room. Both signals feed `Theme.is10Foot`.
+- **`LocalFormFactor`**: `CompositionLocal<FormFactor>`, defaults to `MOBILE` so previews and tests don't crash.
+- **`LocalWindowSizeClass`**: `CompositionLocal<WindowSizeClass?>`, defaults to `null` ("unknown / compact").
+- **`Theme.is10Foot`**: `true` when the form-factor is `TV` **or** the window width size class is `Expanded` (large tablets / foldables benefit too); a `null` size class counts as not expanded.
+
+### How it wires together
+Both CompositionLocals are provided at the host level, above `AppTheme`: `LocalFormFactor` from `AppConfig.isTv`, and `LocalWindowSizeClass` from `calculateWindowSizeClass(activity)`. When `Theme.is10Foot` is `true`, `AppTheme` up-scales font sizes, sizing, line heights, spacing, and typography by `TEN_FOOT_SCALE` (`1.3f`) through the same theme CompositionLocals, so most screens adapt with no per-screen changes.
+
+The `WindowSizeClass` API comes from the `material3-window-size-class` dependency (`androidx.compose.material3`, version via the Compose BOM).
+
 ## Adding New Tokens
 1. Define the token in the appropriate data class in `core/`.
 2. Add the default value in `source/attribute/`.

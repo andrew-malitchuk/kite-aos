@@ -4,21 +4,6 @@ Community-driven feature backlog. Items sourced from GitHub issues and Reddit fe
 
 ---
 
-## In Progress / Next
-
-### Screensaver
-Idle screensaver that activates after a configurable timeout, overlaid on the dimmed WebView.
-
-- Fullscreen slideshow from a local folder or Unsplash (configurable source)
-- Clock overlay (time + date)
-- Entity-status display: show live Home Assistant sensor values (temperature, humidity, etc.) via JS bridge from the already-loaded WebView session — no separate HA client needed
-- Configurable activation delay and transition interval
-- Dismisses on motion detection (integrates with existing CameraX pipeline)
-- MQTT command to force-activate / dismiss
-- `MotionService` emits `ACTIVE | SCREENSAVER | LOCKED` screen-state via a new use case; `MainScreen` renders the overlay in reaction to that state
-
----
-
 ## Planned
 
 ### Companion HA Entities
@@ -115,6 +100,28 @@ Use the device's microphone to detect ambient sound as a presence signal — an 
 
 ## Done
 
+### Android TV Support ✓
+Runs kite-aos on Android TV boxes as a 10-foot Home Assistant dashboard from a single codebase — a `tv` build flavor, not a fork. Full parity with the tablet build, including USB-webcam motion detection and MJPEG streaming. See the [Android TV](android-tv.md) as-built reference for the complete design and implementation map.
+
+- New `formfactor` flavor dimension (`mobile`/`tv`) in the convention plugins; shares all `domain-*`/`data-*` modules unchanged, diverges only in `presentation-*` via `src/tv/` source-sets
+- Runtime TV detection centralised in `AppConfig` (UI-mode / `FEATURE_LEANBACK` / `BuildConfig.IS_TV`); leanback launcher + banner so the app appears on the TV home screen
+- Hybrid 10-foot UI: `FormFactor` + `WindowSizeClass` drive `Theme.is10Foot` token up-scaling; D-pad focus rings via `Modifier.tvFocusRing`
+- D-pad control-drawer access via a hidden directional combo (no FAB, no PIN); TV settings use a single-focus-target master/detail list
+- USB-webcam motion: `Camera2ExternalMotionSource` → UVC (`libausbc`) fallback → MQTT presence fallback when no camera; MJPEG streaming reused from the webcam frames
+- `device_class` published via MQTT as `tv`; shared `applicationId` with a `versionCode` offset for Play multi-APK delivery
+
+### Screensaver ✓
+Idle screensaver that activates after a configurable timeout, overlaid on the dimmed WebView.
+
+- Fullscreen slideshow from a local folder or Unsplash (configurable source)
+- Clock overlay (time + date)
+- Entity-status display: show live Home Assistant sensor values (temperature, humidity, etc.) via JS bridge from the already-loaded WebView session — no separate HA client needed
+- Configurable activation delay and transition interval
+- Dismisses on motion detection (integrates with existing CameraX pipeline)
+- MQTT command to force-activate / dismiss
+- `MotionService` emits `ACTIVE | SCREENSAVER | LOCKED` screen-state via a new use case; `MainScreen` renders the overlay in reaction to that state
+- Reused as the TV ambient mode (see [Android TV](android-tv.md)); dismisses on MQTT motion or remote keypress
+
 ### Camera Streaming (MJPEG) ✓
 Expose the tablet's front camera as an MJPEG stream consumable by Home Assistant or any browser.
 
@@ -190,76 +197,6 @@ Replaced Material3 defaults with design system components; added shimmer loading
 
 - All toggle controls use the custom `Toggle` component via `ToggleListItem` / `SectionToggleItem` — no Material3 Switch remains
 - `ShimmerImage` overlay displayed over the WebView while the page loads; debounced 400 ms to suppress auth-redirect flicker
-
----
-
-## Long-term / Exploratory
-
-### Android TV Support
-Run kite-aos on Android TV boxes as a large-screen Home Assistant dashboard — delivered as a dedicated `tv` build flavor rather than branching the existing tablet flow.
-
-**Market context:** No reliable, HA-native kiosk dashboard exists for Android TV. The closest competitor (`HA TV Dashboard`, Play Store) is rated 2.6/5 and functionally broken as of 2025. Homey launched a TV app but requires the Homey ecosystem — not compatible with Home Assistant. Android TV holds 35% of the smart TV OS market; 1.1B smart TV households projected by 2026.
-
-**Target hardware:** Android TV boxes with USB-A host port (NVIDIA Shield TV Pro, Xiaomi Mi Box S+, ONN 4K Pro, generic Android TV boxes). Chromecast with Google TV and Fire TV Sticks are out of scope (no USB-A / no USB host).
-
-#### Build & Architecture
-
-- New `tv` product flavor in `build-logic` convention plugin; shares all `domain-*` and `data-*` modules unchanged; diverges only at `presentation-feature-*` and `presentation-core-platform`
-- TV detection at runtime via `PackageManager.hasSystemFeature(FEATURE_LEANBACK)` as a fallback guard inside `HostActivity`
-- `android.software.leanback` declared as `required=false` in the manifest + Leanback launcher `intent-filter` so the app appears on the Android TV home screen
-- `device_class` published via MQTT as `tv` instead of `tablet`
-
-#### Category 1 — Direct Port (no logic changes)
-
-All core features transfer unchanged:
-
-- Home Assistant WebView kiosk (same `KioskWebView` + JS injection)
-- `MqttService` — telemetry, HA Discovery, screen control commands
-- Battery telemetry (TV boxes expose battery state API identically)
-- Screen wake / dim / lock via `PowerManager` + `WindowManager`
-- `MotionService` interface preserved — implementation swapped per flavor
-- Onboarding flow (layout adapted, logic unchanged)
-- Settings screen (layout adapted, logic unchanged)
-- Kiosk lockdown (launcher replacement; mechanism differs on TV but result identical)
-
-#### Category 2 — Adapted Features
-
-**D-pad / Remote Navigation (replaces all touch)**
-- `HostActivity` intercepts `KEYCODE_DPAD_*` and `KEYCODE_DPAD_CENTER`; translates to WebView scroll and click via `evaluateJavascript` — no touch events assumed
-- JS focus manager injected on page load: sets `document.activeElement` traversal via Tab/arrow keys so HA dashboard cards receive proper focus rings
-- All Compose UI components audited for `Modifier.focusable()` + visual focus indicators (10-foot UI scale)
-- FAB hidden in TV flavor; swipe gestures suppressed
-
-**USB Webcam Motion Detection (replaces CameraX front camera)**
-- Primary path: Camera2 API with `FEATURE_CAMERA_EXTERNAL` (API 28+, official Android mechanism, no extra dependency)
-  - Check `PackageManager.hasSystemFeature(FEATURE_CAMERA_EXTERNAL)` at runtime; skip `MotionService` camera binding if absent
-  - Luma analysis pipeline identical to existing CameraX implementation — same `ImageAnalysis` callback interface
-- Fallback path: [`AndroidUSBCamera`](https://github.com/jiangdongguo/AndroidUSBCamera) (UVC, Apache 2.0) for devices that expose USB camera via USB Host but not through Camera2
-  - Risk: last release v3.3.3 (Feb 2023), 488 open issues — use only as fallback, not primary
-- USB permissions requested at runtime via `UsbManager`; user prompted once on first attach
-- If neither path is available: `MotionService` falls back to MQTT trigger mode (see below)
-
-#### Category 3 — New TV-Specific Features
-
-**MQTT Motion Fallback**
-- Subscribe to a configurable MQTT topic (e.g. from a PIR sensor connected to Home Assistant)
-- On message received: fire the same `MOTION_DETECTED` event that CameraX would fire — wakes screen, resets dim timer, publishes presence state
-- Configured in Settings → Motion section; enabled automatically if no camera is detected at startup
-- Allows motion-based screen wake even on devices with no USB webcam attached
-
-**TV Remote Key Mapping**
-- `HostActivity.dispatchKeyEvent` intercepts configurable remote keycodes and maps them to app intents
-- Default mappings:
-  - Long-press `KEYCODE_BACK` (1 s) → open Settings (with optional PIN gate)
-  - `KEYCODE_MENU` → toggle control overlay
-  - Configurable N-press combo on any button (default: 5× `KEYCODE_DPAD_CENTER`) → PIN-protected kiosk exit
-- Configurable in Settings → Access section (same pattern as volume-button gesture on tablet)
-- Key events consumed only for mapped combos; all others propagate normally to system / WebView
-
-**Ambient Mode (Screensaver)**
-- Reuses the existing `Screensaver` roadmap item (clock overlay, entity-status display, configurable timeout)
-- On TV: dismisses on MQTT motion event or remote keypress (D-pad center) instead of camera motion
-- TV-specific: fullscreen clock uses larger typography scaled for 10-foot viewing distance
 
 ---
 
