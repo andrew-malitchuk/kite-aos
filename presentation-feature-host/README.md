@@ -15,7 +15,8 @@ HostActivity  ──►  NavGraph (presentation-core-navigation-impl)
      ├── Initial route selection (onboarding vs. main)
      ├── Immersive mode enforcement
      ├── Back-gesture blocking (kiosk lockdown)
-     └── Theme observation
+     ├── Theme observation
+     └── Form-factor resolution (mobile / TV) + D-pad drawer unlock
 ```
 
 ### Key Components
@@ -30,7 +31,8 @@ HostActivity  ──►  NavGraph (presentation-core-navigation-impl)
 | Module | Purpose |
 |---|---|
 | `presentation-core-navigation-impl` | Hosts the application navigation graph |
-| `presentation-core-styling` | Applies the global Material 3 theme |
+| `presentation-core-styling` | Applies the global Material 3 theme; provides `FormFactor`, `LocalFormFactor`, `LocalWindowSizeClass` |
+| `presentation-core-platform` | Provides `AppConfig` (form-factor) and `RemoteCommandBus` (TV drawer command) |
 | `domain-usecase-api` | Reads onboarding completion status and observes theme preference |
 
 ## Kiosk Lockdown
@@ -39,6 +41,49 @@ HostActivity  ──►  NavGraph (presentation-core-navigation-impl)
 
 1. **Immersive mode** — hides status bar and navigation bar using `WindowInsetsController`. Re-applied in `onWindowFocusChanged` to survive focus loss from dialogs or notifications.
 2. **Back-gesture blocking** — a `OnBackPressedCallback` with `isEnabled = true` consumes every back event and never calls through, preventing users from leaving the kiosk screen.
+
+## Android TV
+
+On Android TV the same `HostActivity` acts as the shell. TV concerns are resolved once at the host root so downstream feature modules stay form-factor agnostic.
+
+### Form-Factor Resolution
+
+At the top of `setContent`, `HostActivity` resolves the form factor and window size class and publishes both above `AppTheme`:
+
+```
+formFactor      = if (appConfig.isTv) FormFactor.TV else FormFactor.MOBILE
+windowSizeClass = calculateWindowSizeClass(activity)
+
+CompositionLocalProvider(
+    LocalFormFactor provides formFactor,
+    LocalWindowSizeClass provides windowSizeClass,
+) { AppTheme { ... } }
+```
+
+This lets 10-foot scaling and TV input branches read the form factor without prop-drilling. On mobile both default to `MOBILE`, so behaviour is unchanged.
+
+### D-pad "Settings Unlock"
+
+There is no FAB on TV, so the control drawer is opened by a hidden Konami-style D-pad sequence — **Up, Up, Down, Down, Left, Right, Left, Right** (`SETTINGS_UNLOCK_SEQUENCE`) — intercepted in `dispatchKeyEvent`:
+
+- `dispatchKeyEvent` is used rather than a Compose key modifier because Compose key modifiers are bypassed while the `AndroidView`-hosted WebView owns focus.
+- Only the key that **completes** the sequence is consumed; it calls `remoteCommandBus.emitOpenDrawer()`. Intermediate keys pass through so the dashboard still reacts to them.
+- The combo resets if the user pauses more than `UNLOCK_SEQUENCE_TIMEOUT_MS` (3s) between keys, so a stale prefix never lingers.
+- On mobile `dispatchKeyEvent` is a pure pass-through, guarded by `if (!appConfig.isTv) return super...`, leaving touch behaviour untouched.
+
+### Leanback Manifest Overlay
+
+`src/tv/AndroidManifest.xml` is merged only into `tv*` variants:
+
+- Adds a separate `intent-filter` carrying `android.intent.category.LEANBACK_LAUNCHER` (merged by `android:name` onto the launcher activity) so the app appears on the Android TV home screen. The touch `LAUNCHER` filter stays in the main manifest; neither is duplicated.
+- Declares `leanback`, `touchscreen`, `camera` / `camera.external`, and `microphone` as `uses-feature` with `required="false"` so the same APK stays installable on non-TV devices and on TV boxes that lack a touchscreen, camera, or mic.
+
+### TV Injected Dependencies
+
+| Dependency | Module | Purpose |
+|---|---|---|
+| `AppConfig` | `presentation-core-platform` | Exposes `isTv` for form-factor resolution and key-event gating |
+| `RemoteCommandBus` | `presentation-core-platform` | Receives `emitOpenDrawer()` when the D-pad unlock sequence completes |
 
 ## Splash Screen
 

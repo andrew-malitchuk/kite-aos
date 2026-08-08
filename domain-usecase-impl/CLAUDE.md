@@ -15,8 +15,9 @@ The module implements the `domain-usecase-api` contracts. It interacts with `dom
 Implementations are organized into sub-packages mirroring the API:
 *   **`application`**: `LoadApplicationsUseCaseImpl`, `SaveApplicationUseCaseImpl`, etc.
 *   **`configuration`**: `SetThemeUseCaseImpl`, `GetOnboardingStatusUseCaseImpl`, etc.
+*   **`camera`** (`@since 1.4.0`): `GetCameraSourceUseCaseImpl`, `SetCameraSourceUseCaseImpl`, `ObserveCameraSourceUseCaseImpl` — back the user's `CameraSourceModel` preference used for motion detection and MJPEG streaming.
 *   **`device`**: `SetMoveDetectorUseCaseImpl`, `ObserveMoveDetectorMotionUseCaseImpl`, etc.
-*   **`mqtt`**: `MqttConnectUseCaseImpl`, `MqttSendMotionUseCaseImpl`, etc.
+*   **`mqtt`**: `MqttConnectUseCaseImpl` (forwards the `model` form-factor argument `"tv"`/`"tablet"` to the repository for Home Assistant discovery; `@since 1.2.0`), `MqttSendMotionUseCaseImpl`, etc.
 
 ### Utilities
 *   **`resultLauncher`**: An internal utility that wraps suspendable blocks, handles `CancellationException` (for coroutine safety), and maps other errors using a provided mapper.

@@ -49,6 +49,9 @@ issue!
   scalability.
 * **Kiosk Lockdown:** Full restriction of navigation gestures, status bars, and system
   notifications.
+* **Android TV:** Runs on Android TV boxes as a 10-foot, D-pad-driven dashboard from the same
+  codebase (dedicated `tv` build flavor). Full parity with the tablet build, including USB-webcam
+  motion detection. See the [Android TV guide](docs/android-tv.md).
 
 ## Functional Capabilities
 
@@ -70,6 +73,7 @@ issue!
 | **Reduce Motion**          | Disables Android animations globally for smoother performance on low-end hardware.                   |
 | **MQTT Remote Control**    | Bidirectional MQTT: control brightness, volume, FAB visibility, and receive device telemetry.        |
 | **Analytics**              | Pluggable analytics provider (console logging; Firebase Crashlytics in GMS flavor).                  |
+| **Android TV**             | 10-foot leanback dashboard on the `tv` flavor: D-pad navigation, adaptive `WindowSizeClass` layouts, USB-webcam motion (Camera2 → UVC fallback) or MQTT presence, hidden D-pad combo for the control drawer. |
 
 ## Technical Specifications
 
@@ -81,7 +85,7 @@ issue!
 * **MQTT:** kmqtt-client-jvm with bidirectional telemetry and Home Assistant Discovery.
 * **Analytics:** Pluggable provider pattern — console in FOSS, Firebase Crashlytics in GMS.
 * **Build System:** Gradle Convention Plugins for centralized build logic.
-* **Build Flavors:** `foss` (no GMS/Firebase) and `gms` (full Firebase suite).
+* **Build Flavors:** Two dimensions — `distribution` (`foss` = no GMS/Firebase; `gms` = full Firebase suite) × `formfactor` (`mobile` = phone/tablet; `tv` = Android TV) → `gmsMobile`, `fossMobile`, `gmsTv`, `fossTv`.
 
 ## Installation & Deployment
 
@@ -107,9 +111,17 @@ Download the latest APK directly from [GitHub Releases](https://github.com/andre
 # Clone the repository
 git clone https://github.com/andrew-malitchuk/kite-aos.git
 
-# Generate debug APK
+# Generate debug APK (all flavors)
 ./gradlew assembleDebug
+
+# Build/install a specific flavor (distribution × formfactor)
+./gradlew :presentation-core-application:installFossMobileDebug   # phone/tablet
+./gradlew :presentation-core-application:installFossTvDebug       # Android TV box
 ```
+
+> **Android TV:** sideload the `tv` APK (`adb install`); the app appears on the TV home-screen
+> launcher row (leanback launcher + banner). Target hardware: Android TV boxes with a USB-A host
+> port (NVIDIA Shield TV Pro, Xiaomi Mi Box S, ONN 4K Pro). See the [Android TV guide](docs/android-tv.md).
 
 #### Setup
 
