@@ -144,6 +144,14 @@
 # retrieved via Message.obj — keep it so the onCreateWindow child-window wiring works.
 -keep class android.webkit.WebView$WebViewTransport { *; }
 
+# --- libausbc (UVC external webcam) ---
+# libausbc bundles a full demo layer (Glide image loading, Tencent MMKV key-value
+# store) that we don't use — only its UVC camera-open path is exercised by the
+# External/UVC motion source. R8 full-mode fails on these missing optional
+# transitive classes; suppress them (referenced only from unused demo utilities).
+-dontwarn com.bumptech.glide.request.RequestListener
+-dontwarn com.tencent.mmkv.MMKV
+
 # --- Firebase Crashlytics ---
 # Firebase uses a component system where ComponentRegistrar class names are declared
 # as meta-data strings in AndroidManifest.xml and instantiated via Class.forName().
