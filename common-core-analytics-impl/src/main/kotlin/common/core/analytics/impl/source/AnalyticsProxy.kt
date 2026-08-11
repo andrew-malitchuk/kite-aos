@@ -40,10 +40,9 @@ public object AnalyticsProxy {
      * @return A proxy instance implementing [T].
      */
     @Suppress("UNCHECKED_CAST")
-    public fun <T : Any> create(clazz: Class<T>, manager: AnalyticsManager): T =
-        Proxy.newProxyInstance(
-            clazz.classLoader,
-            arrayOf(clazz),
-            AnalyticsProxyInvocationHandler(manager),
-        ) as T
+    public fun <T : Any> create(clazz: Class<T>, manager: AnalyticsManager): T = Proxy.newProxyInstance(
+        clazz.classLoader,
+        arrayOf(clazz),
+        AnalyticsProxyInvocationHandler(manager),
+    ) as T
 }

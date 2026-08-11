@@ -39,11 +39,7 @@ internal class AnalyticsProxyInvocationHandler(
      * @param args The method arguments, or `null` if the method takes no parameters.
      * @return An appropriate return value depending on the method type.
      */
-    override fun invoke(
-        proxy: Any?,
-        method: Method?,
-        args: Array<out Any?>?,
-    ): Any? {
+    override fun invoke(proxy: Any?, method: Method?, args: Array<out Any?>?): Any? {
         val m = method ?: return null
 
         // Delegate Object methods to identity-based implementations to avoid infinite recursion.
@@ -74,10 +70,7 @@ internal class AnalyticsProxyInvocationHandler(
      * @param args The argument values corresponding to [method]'s parameters.
      * @return A map of parameter name to value for all [Param]-annotated arguments.
      */
-    private fun buildParams(
-        method: Method,
-        args: Array<out Any?>?,
-    ): Map<String, Any?> {
+    private fun buildParams(method: Method, args: Array<out Any?>?): Map<String, Any?> {
         if (args == null) return emptyMap()
         return method.parameterAnnotations
             .mapIndexedNotNull { idx, annotations ->
