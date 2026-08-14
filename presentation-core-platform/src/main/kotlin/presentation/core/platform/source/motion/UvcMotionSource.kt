@@ -45,6 +45,7 @@ public class UvcMotionSource(
     // libausbc delivers preview data without dimensions; cache the size we opened with so the
     // NV21 buffer can be interpreted. Written when a camera opens, read on the preview thread.
     @Volatile private var frameWidth = 0
+
     @Volatile private var frameHeight = 0
 
     override val priority: Int = PRIORITY

@@ -106,23 +106,27 @@ public class Camera2ExternalMotionSource(
             return
         }
         try {
-            manager.openCamera(cameraId, object : CameraDevice.StateCallback() {
-                override fun onOpened(device: CameraDevice) {
-                    cameraDevice = device
-                    createSession(device)
-                }
+            manager.openCamera(
+                cameraId,
+                object : CameraDevice.StateCallback() {
+                    override fun onOpened(device: CameraDevice) {
+                        cameraDevice = device
+                        createSession(device)
+                    }
 
-                override fun onDisconnected(device: CameraDevice) {
-                    device.close()
-                    cameraDevice = null
-                }
+                    override fun onDisconnected(device: CameraDevice) {
+                        device.close()
+                        cameraDevice = null
+                    }
 
-                override fun onError(device: CameraDevice, error: Int) {
-                    Log.e(TAG, "Camera2 open error: $error")
-                    device.close()
-                    cameraDevice = null
-                }
-            }, backgroundHandler)
+                    override fun onError(device: CameraDevice, error: Int) {
+                        Log.e(TAG, "Camera2 open error: $error")
+                        device.close()
+                        cameraDevice = null
+                    }
+                },
+                backgroundHandler
+            )
         } catch (e: SecurityException) {
             Log.e(TAG, "Camera permission not granted", e)
         } catch (e: Exception) {
