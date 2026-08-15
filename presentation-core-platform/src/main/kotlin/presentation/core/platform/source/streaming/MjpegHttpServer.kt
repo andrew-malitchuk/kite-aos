@@ -40,7 +40,19 @@ public class MjpegHttpServer {
 
     private companion object {
         private const val TAG = "MjpegHttpServer"
-        private const val BUFFER_SIZE = 8192
+
+        /** Response head for the continuous multipart stream; frames follow, each with its own part header. */
+        private const val STREAM_HEADER =
+            "HTTP/1.0 200 OK\r\n" +
+                "Content-Type: multipart/x-mixed-replace; boundary=frame\r\n" +
+                "Cache-Control: no-cache\r\n\r\n"
+
+        /** Response head for a single snapshot, whose length is known up front. */
+        private fun snapshotHeader(contentLength: Int) =
+            "HTTP/1.0 200 OK\r\n" +
+                "Content-Type: image/jpeg\r\n" +
+                "Content-Length: $contentLength\r\n" +
+                "Cache-Control: no-cache\r\n\r\n"
     }
 
     /**
@@ -129,15 +141,14 @@ public class MjpegHttpServer {
 
     private suspend fun serveStream(socket: Socket, frames: SharedFlow<ByteArray>): Unit = withContext(Dispatchers.IO) {
         val output = socket.getOutputStream()
-        output.write(
-            "HTTP/1.0 200 OK\r\nContent-Type: multipart/x-mixed-replace; boundary=frame\r\nCache-Control: no-cache\r\n\r\n"
-                .toByteArray(),
-        )
+        output.write(STREAM_HEADER.toByteArray())
         output.flush()
 
         frames.collect { jpeg ->
             try {
-                output.write("--frame\r\nContent-Type: image/jpeg\r\nContent-Length: ${jpeg.size}\r\n\r\n".toByteArray())
+                output.write(
+                    "--frame\r\nContent-Type: image/jpeg\r\nContent-Length: ${jpeg.size}\r\n\r\n".toByteArray()
+                )
                 output.write(jpeg)
                 output.write("\r\n".toByteArray())
                 output.flush()
@@ -154,10 +165,7 @@ public class MjpegHttpServer {
             send404(socket)
             return
         }
-        output.write(
-            "HTTP/1.0 200 OK\r\nContent-Type: image/jpeg\r\nContent-Length: ${jpeg.size}\r\nCache-Control: no-cache\r\n\r\n"
-                .toByteArray(),
-        )
+        output.write(snapshotHeader(jpeg.size).toByteArray())
         output.write(jpeg)
         output.flush()
     }
