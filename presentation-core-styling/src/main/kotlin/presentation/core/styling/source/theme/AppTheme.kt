@@ -12,9 +12,9 @@ import presentation.core.styling.source.attribute.attributeFontSize
 import presentation.core.styling.source.attribute.attributeLineHeight
 import presentation.core.styling.source.attribute.attributeSize
 import presentation.core.styling.source.attribute.attributeSpacing
-import presentation.core.styling.source.attribute.scaledBy
 import presentation.core.styling.source.attribute.color.attributeDarkColorPalette
 import presentation.core.styling.source.attribute.color.attributeLightColorPalette
+import presentation.core.styling.source.attribute.scaledBy
 import presentation.core.styling.source.provider.LocalThemeColor
 import presentation.core.styling.source.provider.LocalThemeFontSize
 import presentation.core.styling.source.provider.LocalThemeLineHeight
