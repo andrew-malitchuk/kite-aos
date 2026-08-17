@@ -3,8 +3,8 @@ package presentation.feature.application.source.application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import common.core.core.execute.executeResult
-import domain.core.source.monad.Failure
 import domain.core.source.model.ApplicationModel
+import domain.core.source.monad.Failure
 import domain.usecase.api.source.usecase.application.LoadApplicationsUseCase
 import domain.usecase.api.source.usecase.application.RemoveApplicationUseCase
 import domain.usecase.api.source.usecase.application.SaveApplicationUseCase
