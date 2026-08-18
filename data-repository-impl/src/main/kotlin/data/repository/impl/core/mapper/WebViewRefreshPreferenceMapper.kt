@@ -2,8 +2,8 @@ package data.repository.impl.core.mapper
 
 import common.core.core.mapper.Mapper
 import data.preferences.api.source.resource.WebViewRefreshPreference
-import domain.core.source.model.WebViewRefreshModel
 import data.repository.impl.core.mapper.base.ModelResourceMapper
+import domain.core.source.model.WebViewRefreshModel
 
 /**
  * Bidirectional mapper between [WebViewRefreshModel] and [WebViewRefreshPreference].

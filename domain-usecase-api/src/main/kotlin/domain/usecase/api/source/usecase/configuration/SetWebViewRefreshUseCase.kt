@@ -1,7 +1,7 @@
 package domain.usecase.api.source.usecase.configuration
 
-import domain.usecase.api.source.common.Optional
 import domain.core.source.model.WebViewRefreshModel
+import domain.usecase.api.source.common.Optional
 
 /**
  * Use case for persisting the periodic WebView refresh configuration.

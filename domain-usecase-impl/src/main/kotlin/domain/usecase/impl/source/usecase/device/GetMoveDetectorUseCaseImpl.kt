@@ -1,7 +1,7 @@
 package domain.usecase.impl.source.usecase.device
 
-import domain.core.source.monad.Failure
 import domain.core.source.model.MoveDetectorModel
+import domain.core.source.monad.Failure
 import domain.repository.api.source.repository.ConfigureRepository
 import domain.usecase.api.source.usecase.device.GetMoveDetectorUseCase
 import domain.usecase.impl.core.resultLauncher

@@ -20,7 +20,9 @@ import java.io.IOException
  */
 @Single
 internal class WebViewRefreshPreferenceStorage(
-    @Named("webViewRefreshDataStore") private val preference: DataStore<WebViewRefreshDataProto.WebViewRefreshProtoModel>,
+    @Named(
+        "webViewRefreshDataStore"
+    ) private val preference: DataStore<WebViewRefreshDataProto.WebViewRefreshProtoModel>,
 ) : BasePreferenceStorage<WebViewRefreshDataProto.WebViewRefreshProtoModel> {
 
     /**

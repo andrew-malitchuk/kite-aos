@@ -26,14 +26,15 @@ internal class AutoReturnPreferenceStorage(
     private val preference: DataStore<AutoReturnDataProto.AutoReturnProtoModel>,
 ) : BasePreferenceStorage<AutoReturnDataProto.AutoReturnProtoModel> {
 
-    override fun subscribeToData(): Flow<AutoReturnDataProto.AutoReturnProtoModel?> = preference.data.catch { exception ->
-        if (exception is IOException) {
-            Log.e("Error", exception.message.toString())
-            emit(AutoReturnDataProto.AutoReturnProtoModel.getDefaultInstance())
-        } else {
-            throw exception
+    override fun subscribeToData(): Flow<AutoReturnDataProto.AutoReturnProtoModel?> =
+        preference.data.catch { exception ->
+            if (exception is IOException) {
+                Log.e("Error", exception.message.toString())
+                emit(AutoReturnDataProto.AutoReturnProtoModel.getDefaultInstance())
+            } else {
+                throw exception
+            }
         }
-    }
 
     override suspend fun getData(): AutoReturnDataProto.AutoReturnProtoModel? = preference.data.firstOrNull()
 
