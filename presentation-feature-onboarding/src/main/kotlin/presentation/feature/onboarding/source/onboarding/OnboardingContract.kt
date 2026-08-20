@@ -11,7 +11,10 @@ import domain.core.source.model.DashboardModel
  * @property isAudioPermissionGranted Status of the Manifest.permission.RECORD_AUDIO.
  *   Required for WebRTC camera streams — RTCPeerConnection negotiates audio tracks even when
  *   the user only views a video feed.
- * @property isOverlayPermissionGranted Status of the Settings.canDrawOverlays check.
+ * @property isOverlayPermissionGranted Status of the Settings.canDrawOverlays check. Optional —
+ *   it does not gate wizard completion. The app draws no overlay window; the permission only
+ *   lifts the background-activity-start restriction for kiosk auto-return, the MQTT
+ *   `app/launch` command and boot auto-start.
  * @property isPostNotificationPermissionGranted Status of the notification permission.
  * @property isDeviceAdminGranted Status of the Device Administration privilege.
  * @property isWriteSettingsGranted Status of the Settings.System.canWrite check.

@@ -1,7 +1,7 @@
 package presentation.feature.onboarding.source.onboarding
 
-import android.content.pm.PackageManager
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.LocalActivity
@@ -143,7 +143,8 @@ internal fun OnboardingContent(
     // Some device profiles (TV boxes / stripped ROMs) ship no system Settings Activity for these
     // permissions. Probe availability up front so we can hide the unusable rows and drop them from
     // the "all granted" gate below — otherwise the user is stranded on an impossible requirement and
-    // can never advance past the permissions slide.
+    // can never advance past the permissions slide. The overlay probe only hides the row (tapping it
+    // would open nothing); overlay is optional regardless — see the gate below.
     val context = LocalContext.current
     val isOverlaySettingAvailable =
         remember {
@@ -163,10 +164,15 @@ internal fun OnboardingContent(
                 .resolveActivity(context.packageManager) != null
         }
 
+    // SYSTEM_ALERT_WINDOW is deliberately absent from this gate. The app never draws an overlay
+    // window; the permission only lifts the Android 10+ background-activity-start restriction for
+    // kiosk auto-return (HostActivity.onStop), the MQTT `app/launch` command and boot auto-start.
+    // Locked-down ROMs (Frameo photo frames and similar) expose the settings screen — so the
+    // resolveActivity probe reports it available — but refuse the grant outright, which stranded the
+    // user on this slide with no way forward. The row stays visible and requestable, just optional.
     val allPermissionsGranted =
         state.isCameraPermissionGranted &&
             (isTv || state.isAudioPermissionGranted) &&
-            (!isOverlaySettingAvailable || state.isOverlayPermissionGranted) &&
             state.isPostNotificationPermissionGranted &&
             (!isDeviceAdminAvailable || state.isDeviceAdminGranted) &&
             (!isWriteSettingsAvailable || state.isWriteSettingsGranted)
@@ -335,12 +341,14 @@ private fun PermissionsList(
             onIntent(OnboardingIntent.OnAskPostNotificationPermissionIntent)
         }
         // Only surface these when the device actually has the matching system Settings screen;
-        // otherwise the row is un-grantable and would block the user (see the gate in OnboardingContent).
+        // otherwise the row is un-grantable, and for device admin / write settings it would also
+        // block the user (see the gate in OnboardingContent).
         if (isOverlaySettingAvailable) {
             PermissionItem(
                 stringResource(R.string.permission_overlay_access),
                 IcOverlay24,
                 state.isOverlayPermissionGranted,
+                subtitle = stringResource(R.string.permission_overlay_access_hint),
             ) {
                 onIntent(OnboardingIntent.OnAskOverlayPermissionIntent)
             }
@@ -367,9 +375,16 @@ private fun PermissionsList(
 }
 
 @Composable
-private fun PermissionItem(text: String, icon: ImageVector, isChecked: Boolean, onClick: () -> Unit) {
+private fun PermissionItem(
+    text: String,
+    icon: ImageVector,
+    isChecked: Boolean,
+    subtitle: String? = null,
+    onClick: () -> Unit,
+) {
     ToggleListItem(
         text = text,
+        subtitle = subtitle,
         icon = icon,
         iconBackgroundColor = Theme.color.brand,
         iconForegroundColor = Theme.color.inkMain,
