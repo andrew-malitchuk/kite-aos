@@ -15,18 +15,27 @@ An introduction screen explaining what Kite does. No input required — tap **Ne
 
 ## Step 2 — System Permissions
 
-Kite requires six Android permissions to operate as a kiosk. The **Next** button stays disabled until every permission is granted.
+Kite asks for six Android permissions. Five of them are required — the **Next** button stays disabled until they are granted. **Overlay is optional**, so a device that blocks it will not trap you on this step.
 
 | Permission | Why it's needed |
 |---|---|
 | **Camera** | Powers motion detection — the camera watches for movement to wake or dim the screen. |
 | **Microphone** | Required by WebRTC for Home Assistant's camera and video-call streams, even if you only plan to watch (not talk). |
 | **Post Notifications** | Lets Kite show a persistent notification for its background services (required on Android 13+). |
-| **Overlay (Draw over other apps)** | Keeps the kiosk interface on top whenever another app tries to surface. |
+| **Overlay (Draw over other apps)** | _Optional._ Kite never draws a floating window — this only lets it bring the kiosk back to the foreground by itself (auto-return after another app opens, the MQTT `app/launch` command, and start on boot). |
 | **Device Administrator** | Allows Kite to lock the screen programmatically (used by the MQTT lock command). |
 | **System Settings (Write Settings)** | Lets Kite control screen brightness automatically. |
 
 Tap each toggle. Android will open the relevant system settings screen for the more sensitive permissions (Device Admin, Overlay, Write Settings) — grant access there, then return to Kite.
+
+!!! note "Locked-down devices"
+    Some vendor ROMs (digital photo frames such as Frameo, and stripped TV-box firmware) refuse the overlay grant no matter what you tap. That is fine — leave it off and continue. Kite's dashboard, motion detection, screensaver, and MQTT telemetry all work without it; you only lose automatic return to the kiosk and start on boot.
+
+    If you want it anyway and the settings screen is blocked, you can set the app-op directly over adb:
+
+    ```bash
+    adb shell appops set dev.kite.aos SYSTEM_ALERT_WINDOW allow
+    ```
 
 !!! warning "Device Administrator"
     Without Device Administrator, the MQTT screen-lock command will not work. You can grant it later in **Settings → Security → Device admin apps**, but the toggle will remain unavailable in Kite until you do.
