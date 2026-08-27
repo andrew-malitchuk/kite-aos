@@ -96,5 +96,16 @@ internal object PreferenceConfigure {
          * The filename for storing the selected camera source (auto / front / rear / external).
          */
         internal const val CAMERA = "camera.pb"
+
+        /**
+         * The filename for storing the unattended-operation safeguards (crash relaunch,
+         * scheduled reload, memory recovery, connection monitor).
+         */
+        internal const val RESILIENCE = "resilience.pb"
+
+        /**
+         * The filename for storing the interaction settings (inactivity reset, volume gesture).
+         */
+        internal const val INTERACTION = "interaction.pb"
     }
 }
