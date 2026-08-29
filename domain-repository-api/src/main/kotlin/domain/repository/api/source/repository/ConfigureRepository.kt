@@ -5,8 +5,10 @@ import domain.core.source.model.CameraSourceModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.HomeAssistantInstanceModel
+import domain.core.source.model.InteractionModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.OnboardingModel
+import domain.core.source.model.ResilienceModel
 import domain.core.source.model.ScreenStateModel
 import domain.core.source.model.ScreensaverModel
 import domain.core.source.model.StreamingModel
@@ -154,4 +156,52 @@ public interface ConfigureRepository {
 
     /** Observes changes to the selected camera source. */
     public fun observeCameraSource(): Flow<CameraSourceModel?>
+
+    /**
+     * Retrieves the unattended-operation safeguard settings.
+     *
+     * @return the current [ResilienceModel], or `null` if not yet configured.
+     * @since 2.2.0
+     */
+    public suspend fun getResilience(): ResilienceModel?
+
+    /**
+     * Persists the unattended-operation safeguard settings.
+     *
+     * @param resilience the settings to store, or `null` to reset to defaults.
+     * @since 2.2.0
+     */
+    public suspend fun setResilience(resilience: ResilienceModel?)
+
+    /**
+     * Observes changes to the unattended-operation safeguard settings.
+     *
+     * @return a [Flow] emitting the current [ResilienceModel] whenever it changes.
+     * @since 2.2.0
+     */
+    public fun observeResilience(): Flow<ResilienceModel?>
+
+    /**
+     * Retrieves the interaction settings (inactivity reset, volume gesture).
+     *
+     * @return the current [InteractionModel], or `null` if not yet configured.
+     * @since 2.2.0
+     */
+    public suspend fun getInteraction(): InteractionModel?
+
+    /**
+     * Persists the interaction settings.
+     *
+     * @param interaction the settings to store, or `null` to reset to defaults.
+     * @since 2.2.0
+     */
+    public suspend fun setInteraction(interaction: InteractionModel?)
+
+    /**
+     * Observes changes to the interaction settings.
+     *
+     * @return a [Flow] emitting the current [InteractionModel] whenever it changes.
+     * @since 2.2.0
+     */
+    public fun observeInteraction(): Flow<InteractionModel?>
 }
