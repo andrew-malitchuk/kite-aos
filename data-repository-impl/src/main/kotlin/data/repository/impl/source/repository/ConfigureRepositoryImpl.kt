@@ -2,46 +2,52 @@ package data.repository.impl.source.repository
 
 import data.platform.api.source.connectivity.ConnectivityObserver
 import data.platform.api.source.scanner.HomeAssistantScanner
-import data.repository.impl.core.mapper.ScreenStateResourceMapper
-import data.runtime.api.source.datasource.ScreenStateSource
 import data.preferences.api.source.datasource.AutoRebootPreferenceSource
+import data.preferences.api.source.datasource.AutoReturnPreferenceSource
 import data.preferences.api.source.datasource.CameraPreferenceSource
 import data.preferences.api.source.datasource.DashboardPreferenceSource
 import data.preferences.api.source.datasource.DockPositionPreferenceSource
+import data.preferences.api.source.datasource.InteractionPreferenceSource
 import data.preferences.api.source.datasource.LanguagePreferenceSource
 import data.preferences.api.source.datasource.MoveDetectorPreferenceSource
 import data.preferences.api.source.datasource.OnboardingPreferenceSource
-import data.preferences.api.source.datasource.ScreensaverPreferenceSource
-import data.preferences.api.source.datasource.ThemePreferenceSource
-import data.preferences.api.source.datasource.AutoReturnPreferenceSource
-import data.preferences.api.source.datasource.StreamingPreferenceSource
-import data.preferences.api.source.datasource.WebEnginePreferenceSource
 import data.preferences.api.source.datasource.ReduceMotionPreferenceSource
+import data.preferences.api.source.datasource.ResiliencePreferenceSource
+import data.preferences.api.source.datasource.ScreensaverPreferenceSource
+import data.preferences.api.source.datasource.StreamingPreferenceSource
+import data.preferences.api.source.datasource.ThemePreferenceSource
+import data.preferences.api.source.datasource.WebEnginePreferenceSource
 import data.preferences.api.source.datasource.WebViewRefreshPreferenceSource
+import data.preferences.api.source.resource.AutoReturnPreference
+import data.preferences.api.source.resource.ReduceMotionPreference
 import data.repository.impl.core.mapper.AutoRebootPreferenceMapper
 import data.repository.impl.core.mapper.CameraPreferenceMapper
 import data.repository.impl.core.mapper.DashboardPreferenceMapper
 import data.repository.impl.core.mapper.DockPositionPreferenceMapper
+import data.repository.impl.core.mapper.InteractionPreferenceMapper
 import data.repository.impl.core.mapper.LanguagePreferenceMapper
 import data.repository.impl.core.mapper.MoveDetectorPreferenceMapper
 import data.repository.impl.core.mapper.OnboardingPreferenceMapper
+import data.repository.impl.core.mapper.ResiliencePreferenceMapper
+import data.repository.impl.core.mapper.ScreenStateResourceMapper
 import data.repository.impl.core.mapper.ScreensaverPreferenceMapper
-import data.repository.impl.core.mapper.ThemePreferenceMapper
 import data.repository.impl.core.mapper.StreamingPreferenceMapper
+import data.repository.impl.core.mapper.ThemePreferenceMapper
 import data.repository.impl.core.mapper.WebEnginePreferenceMapper
 import data.repository.impl.core.mapper.WebViewRefreshPreferenceMapper
-import data.preferences.api.source.resource.AutoReturnPreference
-import data.preferences.api.source.resource.ReduceMotionPreference
+import data.runtime.api.source.datasource.ScreenStateSource
 import domain.core.source.model.AutoRebootModel
 import domain.core.source.model.CameraSourceModel
-import domain.core.source.model.ScreenStateModel
-import domain.core.source.model.ScreensaverModel
-import domain.core.source.model.StreamingModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.HomeAssistantInstanceModel
+import domain.core.source.model.InteractionModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.OnboardingModel
+import domain.core.source.model.ResilienceModel
+import domain.core.source.model.ScreenStateModel
+import domain.core.source.model.ScreensaverModel
+import domain.core.source.model.StreamingModel
 import domain.core.source.model.ThemeModel
 import domain.core.source.model.WebEngineModel
 import domain.core.source.model.WebViewRefreshModel
@@ -92,6 +98,8 @@ internal class ConfigureRepositoryImpl(
     private val screensaverPreferenceSource: ScreensaverPreferenceSource,
     private val autoRebootPreferenceSource: AutoRebootPreferenceSource,
     private val cameraPreferenceSource: CameraPreferenceSource,
+    private val resiliencePreferenceSource: ResiliencePreferenceSource,
+    private val interactionPreferenceSource: InteractionPreferenceSource,
     private val connectivityObserver: ConnectivityObserver,
     private val homeAssistantScanner: HomeAssistantScanner,
     private val screenStateSource: ScreenStateSource,
@@ -468,5 +476,59 @@ internal class ConfigureRepositoryImpl(
      */
     override fun observeCameraSource(): Flow<CameraSourceModel?> {
         return cameraPreferenceSource.observeData().map { it?.let(CameraPreferenceMapper.toModel::map) }
+    }
+
+    /**
+     * Retrieves the unattended-operation safeguard settings.
+     *
+     * @return the current [ResilienceModel], or `null` if not yet configured.
+     */
+    override suspend fun getResilience(): ResilienceModel? {
+        return resiliencePreferenceSource.getData()?.let(ResiliencePreferenceMapper.toModel::map)
+    }
+
+    /**
+     * Persists the unattended-operation safeguard settings.
+     *
+     * @param resilience the [ResilienceModel] to store, or `null` to reset to defaults.
+     */
+    override suspend fun setResilience(resilience: ResilienceModel?) {
+        resiliencePreferenceSource.setData(resilience?.let(ResiliencePreferenceMapper.toResource::map))
+    }
+
+    /**
+     * Observes changes to the unattended-operation safeguard settings.
+     *
+     * @return a [Flow] emitting the current [ResilienceModel] whenever it changes.
+     */
+    override fun observeResilience(): Flow<ResilienceModel?> {
+        return resiliencePreferenceSource.observeData().map { it?.let(ResiliencePreferenceMapper.toModel::map) }
+    }
+
+    /**
+     * Retrieves the interaction settings.
+     *
+     * @return the current [InteractionModel], or `null` if not yet configured.
+     */
+    override suspend fun getInteraction(): InteractionModel? {
+        return interactionPreferenceSource.getData()?.let(InteractionPreferenceMapper.toModel::map)
+    }
+
+    /**
+     * Persists the interaction settings.
+     *
+     * @param interaction the [InteractionModel] to store, or `null` to reset to defaults.
+     */
+    override suspend fun setInteraction(interaction: InteractionModel?) {
+        interactionPreferenceSource.setData(interaction?.let(InteractionPreferenceMapper.toResource::map))
+    }
+
+    /**
+     * Observes changes to the interaction settings.
+     *
+     * @return a [Flow] emitting the current [InteractionModel] whenever it changes.
+     */
+    override fun observeInteraction(): Flow<InteractionModel?> {
+        return interactionPreferenceSource.observeData().map { it?.let(InteractionPreferenceMapper.toModel::map) }
     }
 }
