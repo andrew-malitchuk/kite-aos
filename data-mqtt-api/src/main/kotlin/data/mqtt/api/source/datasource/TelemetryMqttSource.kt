@@ -31,6 +31,10 @@ public interface TelemetryMqttSource {
      * @param password The password for authentication.
      * @param friendlyName A human-readable name for the device, used in Home Assistant discovery.
      * @param model The device form-factor reported to Home Assistant (`"tv"` or `"tablet"`).
+     * @param diagnostics Ids of the optional diagnostic entities to register (`"uptime"`,
+     *   `"app_version"`, `"ip_address"`, `"ram_usage"`). Ids absent from this set are actively
+     *   unregistered so that opting one out removes it from Home Assistant instead of leaving it
+     *   stranded at its last published value.
      */
     public suspend fun connect(
         server: String,
@@ -40,15 +44,32 @@ public interface TelemetryMqttSource {
         password: String,
         friendlyName: String,
         model: String,
+        diagnostics: Set<String>,
     )
 
     /**
      * Safely disconnects from the broker and cleans up internal resources.
      *
+     * Publishes a retained `offline` availability payload before sending DISCONNECT. A graceful
+     * disconnect makes the broker discard the Last Will, so without this explicit publish Home
+     * Assistant would keep showing the panel as available after it deliberately went away.
+     *
      * After calling this method, no further telemetry will be published until
      * [connect] is called again.
      */
     public suspend fun disconnect()
+
+    /**
+     * Removes every Home Assistant discovery entity this client has registered.
+     *
+     * Publishes an empty retained payload to each entity's `config` topic, which is how MQTT
+     * Discovery expresses deletion. Call this when the user turns MQTT off — a plain [disconnect]
+     * leaves the retained config messages on the broker, so the panel's entities would linger in
+     * Home Assistant permanently and have to be removed by hand.
+     *
+     * Must be called while still connected; it is a no-op once the client is gone.
+     */
+    public suspend fun purgeDiscovery()
 
     /**
      * Sends the current motion detection state to the broker.
@@ -136,11 +157,43 @@ public interface TelemetryMqttSource {
     public suspend fun sendCameraUrl(url: String)
 
     /**
+     * Sends whether the dashboard backend is currently reachable.
+     *
+     * Reported as its own Home Assistant entity rather than through device availability: the panel
+     * itself is healthy during a backend outage, so marking the whole device unavailable would be
+     * wrong and would hide the panel's own working controls.
+     *
+     * @param isReachable `true` when the dashboard backend is answering.
+     */
+    public suspend fun sendDashboardState(isReachable: Boolean)
+
+    /**
+     * Publishes the low-frequency companion telemetry values to the broker.
+     *
+     * Each value goes to its own state topic as a plain scalar. Values whose entity was not
+     * requested in the [connect] `diagnostics` set are skipped, so a disabled entity costs no
+     * traffic.
+     *
+     * @param uptimeSeconds Seconds since the device last booted.
+     * @param appVersion Installed app `versionName`; blank values are skipped.
+     * @param ipAddress Current LAN IPv4 address; blank values are skipped.
+     * @param ramUsagePercent Device-wide memory usage percentage (0-100).
+     */
+    public suspend fun sendCompanionTelemetry(
+        uptimeSeconds: Long,
+        appVersion: String,
+        ipAddress: String,
+        ramUsagePercent: Int,
+    )
+
+    /**
      * Returns a [Flow] that emits every inbound MQTT command as a [Pair] of (topic, payload).
      *
-     * Only topics that the client is subscribed to (command topics for volume, brightness,
-     * screen, and app launch) will be emitted. Collectors should filter by topic prefix to
-     * route commands to the appropriate handler.
+     * Only topics that the client is subscribed to are emitted: the per-entity command topics
+     * (volume, brightness, screen, app launch, FAB, screensaver, clear cache, motion) and the
+     * shared remote-command topic `{clientId}/command/set`, which carries a JSON envelope
+     * `{ "action": "...", "value": "..." }` rather than a bare value. Collectors should filter by
+     * topic to route commands to the appropriate handler.
      *
      * The flow never completes; it emits until the source is disconnected and the scope is cancelled.
      */
