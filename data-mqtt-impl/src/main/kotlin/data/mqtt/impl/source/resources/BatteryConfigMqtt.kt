@@ -27,6 +27,11 @@ import kotlinx.serialization.Serializable
  * @property stateTopic MQTT topic where battery level state updates are published.
  * @property unitOfMeasurement Unit of measurement for the sensor value (default: `"%"`).
  * @property uniqueId Unique identifier for the sensor, must be stable across restarts.
+ * @property availabilityTopic MQTT topic carrying the device-wide `online`/`offline`
+ *   availability payload. Home Assistant marks this entity unavailable while the payload is
+ *   `offline`, which the broker publishes from the MQTT Last Will when the panel drops off.
+ * @property entityCategory Home Assistant entity category. `"diagnostic"` keeps this entity
+ *   off the device's primary control card, where it would otherwise crowd out the actual controls.
  *
  * @see DeviceMqtt
  * @see DeviceConfigMqtt
@@ -44,6 +49,10 @@ internal data class BatteryConfigMqtt(
     val stateTopic: String,
     @SerialName("unit_of_measurement")
     val unitOfMeasurement: String = "%",
+    @SerialName("availability_topic")
+    val availabilityTopic: String,
+    @SerialName("entity_category")
+    val entityCategory: String = "diagnostic",
     @SerialName("unique_id")
     val uniqueId: String,
 )

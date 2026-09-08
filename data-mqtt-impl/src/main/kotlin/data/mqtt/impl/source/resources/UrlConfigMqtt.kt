@@ -27,6 +27,11 @@ import kotlinx.serialization.Serializable
  * @property stateTopic MQTT topic where the current WebView URL is published.
  * @property icon Material Design icon identifier shown in Home Assistant.
  * @property uniqueId Unique identifier for the entity, must be stable across restarts.
+ * @property availabilityTopic MQTT topic carrying the device-wide `online`/`offline`
+ *   availability payload. Home Assistant marks this entity unavailable while the payload is
+ *   `offline`, which the broker publishes from the MQTT Last Will when the panel drops off.
+ * @property entityCategory Home Assistant entity category. `"diagnostic"` keeps this entity
+ *   off the device's primary control card, where it would otherwise crowd out the actual controls.
  *
  * @see DeviceMqtt
  * @since 0.0.2
@@ -41,6 +46,10 @@ internal data class UrlConfigMqtt(
     val stateTopic: String,
     @SerialName("icon")
     val icon: String = "mdi:web",
+    @SerialName("availability_topic")
+    val availabilityTopic: String,
+    @SerialName("entity_category")
+    val entityCategory: String = "diagnostic",
     @SerialName("unique_id")
     val uniqueId: String,
 )

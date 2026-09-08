@@ -36,6 +36,9 @@ import kotlinx.serialization.Serializable
  * @property stateOff State string representing "screen off" (default: `"OFF"`).
  * @property icon Material Design icon identifier shown in Home Assistant.
  * @property uniqueId Unique identifier for the entity, must be stable across restarts.
+ * @property availabilityTopic MQTT topic carrying the device-wide `online`/`offline`
+ *   availability payload. Home Assistant marks this entity unavailable while the payload is
+ *   `offline`, which the broker publishes from the MQTT Last Will when the panel drops off.
  *
  * @see DeviceMqtt
  * @since 0.0.2
@@ -60,6 +63,8 @@ internal data class ScreenConfigMqtt(
     val stateOff: String = "OFF",
     @SerialName("icon")
     val icon: String = "mdi:monitor",
+    @SerialName("availability_topic")
+    val availabilityTopic: String,
     @SerialName("unique_id")
     val uniqueId: String,
 )
