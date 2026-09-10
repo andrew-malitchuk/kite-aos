@@ -15,6 +15,11 @@ import data.preferences.impl.proto.MqttDataProto
  * Null string fields are replaced with empty strings when writing to Protobuf, and null
  * booleans default to `false`.
  *
+ * The diagnostic opt-out flags invert on the way through: the preference states them positively
+ * (`uptimeEnabled`) while Protobuf stores them negatively (`uptime_disabled`), so that a config
+ * written before those fields existed reads back as *enabled* rather than as off. See
+ * `mqtt_data.proto` for why the storage side has to be the negative one.
+ *
  * @see MqttPreference
  * @see MqttDataProto.MqttProtoModel
  * @see ProtobufPreferenceMapper
@@ -36,6 +41,11 @@ internal object MqttProtobufPreferenceMapper :
                 .setPassword(input.password ?: "")
                 .setEnabled(input.enabled ?: false)
                 .setFriendlyName(input.friendlyName ?: "")
+                // Only an explicit `false` counts as opted out; null means "never chosen" = on.
+                .setUptimeDisabled(input.uptimeEnabled == false)
+                .setAppVersionDisabled(input.appVersionEnabled == false)
+                .setIpAddressDisabled(input.ipAddressEnabled == false)
+                .setRamUsageDisabled(input.ramUsageEnabled == false)
                 .build()
         }
 
@@ -50,6 +60,10 @@ internal object MqttProtobufPreferenceMapper :
                 password = input.password,
                 enabled = input.enabled,
                 friendlyName = input.friendlyName,
+                uptimeEnabled = !input.uptimeDisabled,
+                appVersionEnabled = !input.appVersionDisabled,
+                ipAddressEnabled = !input.ipAddressDisabled,
+                ramUsageEnabled = !input.ramUsageDisabled,
             )
         }
 }
