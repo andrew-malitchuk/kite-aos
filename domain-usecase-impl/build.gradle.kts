@@ -8,4 +8,5 @@ dependencies {
     implementation(projects.domainCore)
     implementation(projects.domainRepositoryApi)
     implementation(projects.domainUsecaseApi)
+    implementation(libs.kotlinx.serialization.json)
 }

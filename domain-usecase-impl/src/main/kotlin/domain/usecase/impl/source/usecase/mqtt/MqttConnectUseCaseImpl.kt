@@ -38,6 +38,9 @@ internal class MqttConnectUseCaseImpl(
                 password = config.password ?: "",
                 friendlyName = config.friendlyName ?: "",
                 model = model,
+                // Resolved from the config's per-entity flags, defaulting each absent flag to
+                // enabled so an upgrade from a build without these entities keeps publishing them.
+                diagnostics = config.enabledDiagnostics,
             )
         }
     }
