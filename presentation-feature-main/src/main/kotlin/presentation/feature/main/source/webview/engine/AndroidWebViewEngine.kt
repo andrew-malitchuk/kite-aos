@@ -57,6 +57,33 @@ internal fun AndroidWebViewEngine(state: KioskEngineState, modifier: Modifier = 
                         override fun reload() = this@apply.reload()
                         override fun goBack() = this@apply.goBack()
                         override fun goForward() = this@apply.goForward()
+
+                        override fun pause() {
+                            // onPause() alone only stops drawing; pauseTimers() is the one that
+                            // halts JS timers and therefore the frontend's reconnect loop. Both
+                            // are needed, and pauseTimers is process-wide by design.
+                            this@apply.onPause()
+                            this@apply.pauseTimers()
+                        }
+
+                        override fun resume() {
+                            this@apply.resumeTimers()
+                            this@apply.onResume()
+                        }
+
+                        override fun evaluateJs(script: String) {
+                            // Null callback: remote scripts are fire-and-forget side effects on
+                            // the page, and there is no channel to return a result on anyway.
+                            this@apply.evaluateJavascript(script, null)
+                        }
+
+                        override fun clearCache() {
+                            // `true` also drops the on-disk cache, not just the in-memory one.
+                            // Note this clears caches only — cookies and local storage survive, so
+                            // the Home Assistant session is preserved and the panel stays signed in.
+                            this@apply.clearCache(true)
+                            this@apply.reload()
+                        }
                     }
 
                     // addDocumentStartJavaScript runs BEFORE any page scripts — unlike
@@ -155,7 +182,10 @@ internal fun AndroidWebViewEngine(state: KioskEngineState, modifier: Modifier = 
                             resultMsg: Message?,
                         ): Boolean {
                             if (BuildConfig.DEBUG) {
-                                Log.d("AndroidWebViewEngine", "onCreateWindow isDialog=$isDialog isUserGesture=$isUserGesture")
+                                Log.d(
+                                    "AndroidWebViewEngine",
+                                    "onCreateWindow isDialog=$isDialog isUserGesture=$isUserGesture",
+                                )
                             }
                             val child = WebView(view!!.context).apply {
                                 settings.apply {

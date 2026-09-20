@@ -24,6 +24,7 @@ import org.mozilla.geckoview.GeckoSession.NavigationDelegate
 import org.mozilla.geckoview.GeckoSession.ProgressDelegate
 import org.mozilla.geckoview.GeckoSessionSettings
 import org.mozilla.geckoview.GeckoView
+import org.mozilla.geckoview.StorageController
 import presentation.core.styling.core.FormFactor
 import presentation.core.styling.core.LocalFormFactor
 import presentation.feature.main.BuildConfig
@@ -222,6 +223,31 @@ internal fun GeckoViewEngine(state: KioskEngineState, modifier: Modifier = Modif
                         override fun reload() = session.reload()
                         override fun goBack() = session.goBack()
                         override fun goForward() = session.goForward()
+
+                        override fun pause() {
+                            // An inactive GeckoSession stops running page script and network
+                            // activity, and drops the content process to background priority.
+                            session.setActive(false)
+                        }
+
+                        override fun resume() = session.setActive(true)
+
+                        override fun evaluateJs(script: String) {
+                            // GeckoView refuses javascript: URIs and offers evaluation only via a
+                            // signed WebExtension, so there is nothing to delegate to here. Log
+                            // rather than fail silently: the command was accepted upstream, and a
+                            // user watching logcat should see why nothing happened.
+                            Log.w(TAG, "evaluate_js is not supported on GeckoView; ignoring")
+                        }
+
+                        override fun clearCache() {
+                            // ALL_CACHES is NETWORK_CACHE | IMAGE_CACHE — deliberately not ALL,
+                            // which would also drop COOKIES and AUTH_SESSIONS and sign the panel
+                            // out of Home Assistant.
+                            runtime.storageController
+                                .clearData(StorageController.ClearFlags.ALL_CACHES)
+                                .accept { session.reload() }
+                        }
                     }
                     session.open(runtime)
                     geckoView.setSession(session)
