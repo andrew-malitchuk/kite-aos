@@ -26,10 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
@@ -42,6 +42,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import domain.core.source.model.DockPositionModel
+import kotlinx.coroutines.delay
 import presentation.core.platform.source.service.MotionService
 import presentation.core.styling.core.FormFactor
 import presentation.core.styling.core.LocalFormFactor
@@ -58,6 +59,7 @@ import presentation.feature.main.source.drawer.ControlAction
 import presentation.feature.main.source.drawer.ControlDrawer
 import presentation.feature.main.source.screensaver.DarkOverlay
 import presentation.feature.main.source.screensaver.ScreensaverOverlay
+import presentation.feature.main.source.webview.EngineCommand
 import presentation.feature.main.source.webview.KioskWebView
 import presentation.feature.main.source.webview.rememberKioskEngineState
 import kotlin.math.roundToInt
@@ -74,6 +76,10 @@ import kotlin.math.roundToInt
  *   [MainIntent.OnSettingsClickAction] for navigating to settings,
  *   and [MainIntent.OnOpenApplicationIntent] for launching an external application.
  * @param snackbarHostState State for the Design System's snackbar.
+ * @param openDrawerTrigger Incremented to raise the control drawer from outside the composition.
+ * @param engineCommand The latest one-shot instruction for the mounted kiosk engine, or `null`
+ *   before the first one is dispatched.
+ * @param onUserInteraction Reports deliberate user input, resetting the inactivity countdown.
  * @see MainScreen
  * @see MainViewModel
  * @see <a href="https://www.figma.com/design/STUB_REPLACE_ME">Figma</a>
@@ -84,8 +90,9 @@ internal fun MainContent(
     state: MainState,
     onIntent: (MainIntent) -> Unit = {},
     snackbarHostState: StackedSnakbarHostState = rememberStackedSnackbarHostState(),
-    reloadTrigger: Int = 0,
     openDrawerTrigger: Int = 0,
+    engineCommand: EngineCommand? = null,
+    onUserInteraction: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val isTv = LocalFormFactor.current == FormFactor.TV
@@ -141,8 +148,33 @@ internal fun MainContent(
         }
     }
 
-    LaunchedEffect(reloadTrigger) {
-        if (reloadTrigger > 0) webViewState.reload()
+    // Keyed on the whole command, whose id changes on every dispatch, so repeating an action —
+    // two reloads, or navigating twice to the same URL — runs it twice rather than being
+    // swallowed as an unchanged key.
+    LaunchedEffect(engineCommand) {
+        val command = engineCommand ?: return@LaunchedEffect
+        when (command.action) {
+            EngineCommand.Action.RELOAD -> webViewState.reload()
+            EngineCommand.Action.CLEAR_CACHE -> webViewState.clearCache()
+            EngineCommand.Action.PAUSE -> webViewState.pause()
+            EngineCommand.Action.RESUME -> webViewState.resume()
+            // Assigning `url` rather than calling reload() is the difference that matters for both
+            // navigation actions — the whole point is to discard the page currently shown.
+            EngineCommand.Action.NAVIGATE_HOME ->
+                state.dashboardUrls?.dashboardUrl?.let { home -> webViewState.url = home }
+
+            EngineCommand.Action.NAVIGATE ->
+                command.value.takeIf { it.isNotEmpty() }?.let { url -> webViewState.url = url }
+
+            EngineCommand.Action.BACK -> webViewState.goBack()
+            EngineCommand.Action.FORWARD -> webViewState.goForward()
+            EngineCommand.Action.EVALUATE_JS -> webViewState.evaluateJs(command.value)
+        }
+    }
+
+    // Feed page-load failures to the connection monitor via the ViewModel.
+    LaunchedEffect(webViewState.isError) {
+        if (webViewState.isError) onIntent(MainIntent.OnPageErrorIntent)
     }
 
     // Publish the URL to MQTT whenever the WebView finishes loading a new page.
@@ -259,7 +291,19 @@ internal fun MainContent(
                         KioskWebView(
                             modifier =
                             Modifier
-                                .fillMaxSize(),
+                                .fillMaxSize()
+                                .pointerInput(Unit) {
+                                    awaitPointerEventScope {
+                                        while (true) {
+                                            // Initial pass + never consuming: this observes the
+                                            // touch on its way down and lets it through untouched,
+                                            // so the dashboard still receives every gesture. A
+                                            // normal gesture detector here would swallow them.
+                                            awaitPointerEvent(PointerEventPass.Initial)
+                                            onUserInteraction()
+                                        }
+                                    }
+                                },
                             state = webViewState,
                             engineType = state.webEngine,
                         )
@@ -327,7 +371,6 @@ internal fun MainContent(
                             imageVector = IcLogo48,
                         )
                     }
-
                 }
             },
         )

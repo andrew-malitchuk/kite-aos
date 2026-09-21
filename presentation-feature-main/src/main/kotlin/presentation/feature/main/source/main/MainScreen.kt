@@ -3,6 +3,7 @@ package presentation.feature.main.source.main
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
@@ -12,6 +13,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 import presentation.core.navigation.api.core.composition.LocalAppNavigator
 import presentation.core.navigation.api.source.destination.Destination
 import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHostState
+import presentation.feature.main.source.webview.EngineCommand
 
 /**
  * Entry point for the Main feature (Kiosk Dashboard).
@@ -32,10 +34,18 @@ public fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
 
     val snackbarHostState = rememberStackedSnackbarHostState()
     val state = viewModel.collectAsState()
-    var webViewReloadTrigger by remember { mutableIntStateOf(0) }
     var openDrawerTrigger by remember { mutableIntStateOf(0) }
+    // One channel for every engine instruction, rather than a counter per action: the list grew
+    // with each remote command, and each new one meant another parameter threaded into MainContent.
+    var engineCommandId by remember { mutableIntStateOf(0) }
+    var engineCommand by remember { mutableStateOf<EngineCommand?>(null) }
 
     viewModel.collectSideEffect { effect ->
+        fun send(action: EngineCommand.Action, value: String = "") {
+            engineCommandId += 1
+            engineCommand = EngineCommand(id = engineCommandId, action = action, value = value)
+        }
+
         when (effect) {
             MainSideEffect.GoToSettingsEffect -> appNavigator?.navigate(Destination.Settings)
             is MainSideEffect.OpenApplicationEffect -> {
@@ -55,8 +65,20 @@ public fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
                 )
             }
 
-            MainSideEffect.ReloadWebViewEffect -> webViewReloadTrigger++
             MainSideEffect.OpenDrawerEffect -> openDrawerTrigger++
+
+            MainSideEffect.ReloadWebViewEffect -> send(EngineCommand.Action.RELOAD)
+            MainSideEffect.ClearWebViewCacheEffect -> send(EngineCommand.Action.CLEAR_CACHE)
+            MainSideEffect.NavigateHomeEffect -> send(EngineCommand.Action.NAVIGATE_HOME)
+            MainSideEffect.PauseWebViewEffect -> send(EngineCommand.Action.PAUSE)
+            MainSideEffect.ResumeWebViewEffect -> send(EngineCommand.Action.RESUME)
+            MainSideEffect.GoBackEffect -> send(EngineCommand.Action.BACK)
+            MainSideEffect.GoForwardEffect -> send(EngineCommand.Action.FORWARD)
+            is MainSideEffect.NavigateUrlEffect ->
+                send(EngineCommand.Action.NAVIGATE, effect.url)
+
+            is MainSideEffect.EvaluateJsEffect ->
+                send(EngineCommand.Action.EVALUATE_JS, effect.script)
         }
     }
 
@@ -64,7 +86,8 @@ public fun MainScreen(viewModel: MainViewModel = koinViewModel()) {
         state = state.value,
         onIntent = viewModel::handleIntent,
         snackbarHostState = snackbarHostState,
-        reloadTrigger = webViewReloadTrigger,
         openDrawerTrigger = openDrawerTrigger,
+        engineCommand = engineCommand,
+        onUserInteraction = viewModel::onUserInteraction,
     )
 }

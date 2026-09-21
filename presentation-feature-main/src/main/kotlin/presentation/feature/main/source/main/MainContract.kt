@@ -24,6 +24,8 @@ import domain.core.source.model.WebEngineModel
  * @property screensaverFolderUri URI of the local image folder used for slideshow mode.
  * @property screensaverSlideInterval Seconds between image transitions in slideshow mode.
  * @property screensaverSource The screensaver background source type.
+ * @property inactivityResetMinutes Minutes of inactivity before the dashboard returns to its
+ *   home URL; `0` disables the behaviour.
  * @see MainViewModel
  * @see MainScreen
  * @since 0.0.1
@@ -47,6 +49,8 @@ public data class MainState(
     val screensaverFolderUri: String? = null,
     val screensaverSlideInterval: Long = 30L,
     val screensaverSource: ScreensaverSource = ScreensaverSource.BLACK,
+    /** Minutes of inactivity before returning to the home URL; `0` disables the reset. */
+    val inactivityResetMinutes: Int = 0,
 )
 
 /**
@@ -71,6 +75,60 @@ public sealed class MainSideEffect {
 
     /** Signals the WebView to perform a full page reload. */
     public data object ReloadWebViewEffect : MainSideEffect()
+
+    /**
+     * Signals the WebView to return to the configured home URL.
+     *
+     * Raised by the inactivity reset. Distinct from [ReloadWebViewEffect] because the point here is
+     * to *discard* wherever a passer-by navigated to, not to preserve it.
+     */
+    public data object NavigateHomeEffect : MainSideEffect()
+
+    /**
+     * Signals the WebView to suspend page execution while the dashboard backend is unreachable.
+     *
+     * Stops the Home Assistant frontend's ~1/second WebSocket retry loop, which a reverse proxy or
+     * intrusion-prevention layer would otherwise read as an attack and ban the panel for.
+     */
+    public data object PauseWebViewEffect : MainSideEffect()
+
+    /**
+     * Signals the WebView to resume after [PauseWebViewEffect].
+     */
+    public data object ResumeWebViewEffect : MainSideEffect()
+
+    /**
+     * Signals the WebView to drop its cached assets and reload.
+     *
+     * Raised by the Home Assistant `clear_cache` button — the remote recovery path for a panel
+     * wedged on stale assets. Distinct from [ReloadWebViewEffect] because a plain reload will
+     * happily re-serve the very cache entries that wedged it.
+     */
+    public data object ClearWebViewCacheEffect : MainSideEffect()
+
+    /**
+     * Signals the WebView to load an arbitrary [url].
+     *
+     * Raised by the Home Assistant `navigate` command. Distinct from [NavigateHomeEffect] because
+     * the destination comes from the command rather than from the stored configuration, and the
+     * navigation whitelist does not apply — it guards against a passer-by wandering off the
+     * dashboard, which a publish to the broker is not.
+     */
+    public data class NavigateUrlEffect(val url: String) : MainSideEffect()
+
+    /** Signals the WebView to step one entry back in its history. */
+    public data object GoBackEffect : MainSideEffect()
+
+    /** Signals the WebView to step one entry forward in its history. */
+    public data object GoForwardEffect : MainSideEffect()
+
+    /**
+     * Signals the WebView to run [script] inside the loaded page.
+     *
+     * Raised by the Home Assistant `evaluate_js` command. Honoured on the Android WebView engine
+     * only; GeckoView has no evaluation entry point and ignores it.
+     */
+    public data class EvaluateJsEffect(val script: String) : MainSideEffect()
 
     /**
      * Requests the control drawer (settings bar) be opened.

@@ -3,7 +3,6 @@ package presentation.feature.main.source.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import common.core.core.execute.executeResult
-import domain.core.source.monad.Failure
 import domain.core.source.model.ApplicationModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
@@ -13,18 +12,20 @@ import domain.core.source.model.ScreensaverModel
 import domain.core.source.model.ScreensaverSource
 import domain.core.source.model.WebEngineModel
 import domain.core.source.model.WebViewRefreshModel
+import domain.core.source.monad.Failure
 import domain.usecase.api.source.usecase.application.LoadApplicationsUseCase
 import domain.usecase.api.source.usecase.configuration.GetDashboardUseCase
 import domain.usecase.api.source.usecase.configuration.GetWebEngineUseCase
 import domain.usecase.api.source.usecase.configuration.GetWebViewRefreshUseCase
+import domain.usecase.api.source.usecase.configuration.ObserveInteractionUseCase
 import domain.usecase.api.source.usecase.configuration.ObserveNetworkStatusUseCase
+import domain.usecase.api.source.usecase.device.EmitScreenStateUseCase
 import domain.usecase.api.source.usecase.device.GetDockPositionUseCase
 import domain.usecase.api.source.usecase.device.GetMoveDetectorUseCase
 import domain.usecase.api.source.usecase.device.ObserveMoveDetectorMotionUseCase
 import domain.usecase.api.source.usecase.device.ObserveScreenStateUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttSendNetworkStateUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttSendUrlUseCase
-import domain.usecase.api.source.usecase.device.EmitScreenStateUseCase
 import domain.usecase.api.source.usecase.mqtt.ObserveMqttFabCommandUseCase
 import domain.usecase.api.source.usecase.mqtt.ObserveMqttScreensaverCommandUseCase
 import domain.usecase.api.source.usecase.screensaver.GetScreensaverUseCase
@@ -37,6 +38,8 @@ import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.viewmodel.container
 import presentation.core.localisation.R
 import presentation.core.platform.source.command.RemoteCommandBus
+import presentation.core.platform.source.connection.DashboardConnectionMachine
+import presentation.core.platform.source.connection.DashboardConnectionMonitor
 
 /**
  * ViewModel for the Main (Kiosk) screen.
@@ -76,6 +79,8 @@ public class MainViewModel(
     private val emitScreenStateUseCase: EmitScreenStateUseCase,
     private val getScreensaverUseCase: GetScreensaverUseCase,
     private val remoteCommandBus: RemoteCommandBus,
+    private val observeInteractionUseCase: ObserveInteractionUseCase,
+    private val dashboardConnectionMonitor: DashboardConnectionMonitor,
 ) : ContainerHost<MainState, MainSideEffect>,
     ViewModel() {
     public override val container: Container<MainState, MainSideEffect> =
@@ -90,8 +95,14 @@ public class MainViewModel(
         else -> R.string.error_unknown
     }
 
+    private companion object {
+        /** Milliseconds in a minute; the idle timeout is configured in minutes. */
+        private const val MILLIS_PER_MINUTE = 60_000L
+    }
+
     private var fabTimerJob: Job? = null
     private var webViewRefreshJob: Job? = null
+    private var inactivityJob: Job? = null
 
     init {
         observeMotion()
@@ -101,6 +112,16 @@ public class MainViewModel(
         observeStreaming()
         observeScreenState()
         observeRemoteOpenDrawerCommand()
+        observeRemoteClearCacheCommand()
+        observeRemoteReloadCommand()
+        observeRemoteHomeResetCommand()
+        observeRemoteNavigateCommand()
+        observeRemoteBackCommand()
+        observeRemoteForwardCommand()
+        observeRemoteEvaluateJsCommand()
+        observeInteractionSettings()
+        observeConnectionEffects()
+        observeRemoteInteraction()
     }
 
     // On TV the long-press key combo (detected in HostActivity) arrives via the
@@ -108,6 +129,129 @@ public class MainViewModel(
     private fun observeRemoteOpenDrawerCommand() = intent {
         remoteCommandBus.openDrawer.collect {
             postSideEffect(MainSideEffect.OpenDrawerEffect)
+        }
+    }
+
+    // TV D-pad input is seen by HostActivity, above the composition, so it cannot reach the
+    // Compose pointer pipeline that reports touches on mobile.
+    private fun observeRemoteInteraction() = intent {
+        remoteCommandBus.interaction.collect {
+            restartInactivityTimer()
+        }
+    }
+
+    // The scheduled daily reload and memory-pressure recovery both arrive on the bus, because the
+    // alarm and the Application callback that raise them live outside the composition.
+    private fun observeRemoteReloadCommand() = intent {
+        remoteCommandBus.reload.collect {
+            postSideEffect(MainSideEffect.ReloadWebViewEffect)
+        }
+    }
+
+    // Inactivity reset can also be forced remotely, so the trigger is shared with the local timer.
+    private fun observeRemoteHomeResetCommand() = intent {
+        remoteCommandBus.homeReset.collect {
+            postSideEffect(MainSideEffect.NavigateHomeEffect)
+        }
+    }
+
+    // The remaining MQTT remote commands act on the mounted engine, which only this screen owns,
+    // so MqttService routes them through the bus exactly as it does the clear-cache button.
+    private fun observeRemoteNavigateCommand() = intent {
+        remoteCommandBus.navigate.collect { url ->
+            postSideEffect(MainSideEffect.NavigateUrlEffect(url))
+        }
+    }
+
+    private fun observeRemoteBackCommand() = intent {
+        remoteCommandBus.back.collect { postSideEffect(MainSideEffect.GoBackEffect) }
+    }
+
+    private fun observeRemoteForwardCommand() = intent {
+        remoteCommandBus.forward.collect { postSideEffect(MainSideEffect.GoForwardEffect) }
+    }
+
+    private fun observeRemoteEvaluateJsCommand() = intent {
+        remoteCommandBus.evaluateJs.collect { script ->
+            postSideEffect(MainSideEffect.EvaluateJsEffect(script))
+        }
+    }
+
+    private fun observeInteractionSettings() = intent {
+        observeInteractionUseCase().collect { model ->
+            val minutes = model?.inactivityResetMinutes ?: 0
+            reduce { state.copy(inactivityResetMinutes = minutes) }
+            restartInactivityTimer()
+        }
+    }
+
+    private fun observeConnectionEffects() = intent {
+        dashboardConnectionMonitor.effects.collect { effect ->
+            when (effect) {
+                DashboardConnectionMachine.Effect.PAUSE ->
+                    postSideEffect(MainSideEffect.PauseWebViewEffect)
+
+                DashboardConnectionMachine.Effect.RESUME_AND_RELOAD -> {
+                    postSideEffect(MainSideEffect.ResumeWebViewEffect)
+                    postSideEffect(MainSideEffect.ReloadWebViewEffect)
+                }
+
+                // PROBE is handled inside the monitor; NONE is the idle value.
+                DashboardConnectionMachine.Effect.PROBE,
+                DashboardConnectionMachine.Effect.NONE,
+                -> Unit
+            }
+            if (effect != DashboardConnectionMachine.Effect.NONE) {
+                dashboardConnectionMonitor.consumeEffect()
+            }
+        }
+    }
+
+    /**
+     * Restarts the inactivity countdown.
+     *
+     * The timer is deliberately *not* running while the screensaver or dark overlay is up: an idle
+     * panel is already showing nothing, so resetting its URL then would be pointless work, and it
+     * would also mean the dashboard silently jumps home behind the screensaver.
+     *
+     * @since 2.2.0
+     */
+    private fun restartInactivityTimer() = intent {
+        inactivityJob?.cancel()
+        val minutes = state.inactivityResetMinutes
+        if (minutes <= 0 || state.isScreensaverVisible || state.isDarkOverlayVisible) return@intent
+        inactivityJob = intent {
+            delay(minutes * MILLIS_PER_MINUTE)
+            postSideEffect(MainSideEffect.NavigateHomeEffect)
+        }
+    }
+
+    /**
+     * Reports deliberate user interaction, restarting the inactivity countdown.
+     *
+     * Called for touches on mobile and D-pad keys on TV. Cheap enough to call on every event: it
+     * only cancels and re-launches a single coroutine.
+     *
+     * @since 2.2.0
+     */
+    public fun onUserInteraction() {
+        restartInactivityTimer()
+    }
+
+    /**
+     * Reports that the current page failed to load, feeding the connection monitor.
+     *
+     * @since 2.2.0
+     */
+    public fun onPageError(): Job = intent {
+        dashboardConnectionMonitor.onLoadError()
+    }
+
+    // The Home Assistant `clear_cache` button is routed by MqttService onto the RemoteCommandBus,
+    // because only the Main screen holds the mounted engine whose cache has to be dropped.
+    private fun observeRemoteClearCacheCommand() = intent {
+        remoteCommandBus.clearCache.collect {
+            postSideEffect(MainSideEffect.ClearWebViewCacheEffect)
         }
     }
 
@@ -123,6 +267,15 @@ public class MainViewModel(
                         state.copy(isScreensaverVisible = false, isDarkOverlayVisible = false)
                 }
             }
+            if (screenState is ScreenStateModel.Active) {
+                // Waking is the moment to retry a backend that died while the panel slept: Doze
+                // freezes the monitor's in-process ticker, so an overnight outage would otherwise
+                // leave the dashboard paused until the next tick after wake.
+                dashboardConnectionMonitor.onScreenWake()
+            }
+            // The idle countdown only runs while the dashboard is actually on screen, so it has to
+            // be restarted (or cancelled) on every screen-state transition.
+            restartInactivityTimer()
         }
     }
 
@@ -221,6 +374,7 @@ public class MainViewModel(
                         screensaverFolderUri = result?.screensaver?.localFolderUri,
                         screensaverSlideInterval = result?.screensaver?.slideInterval ?: 30L,
                         screensaverSource = result?.screensaver?.source ?: ScreensaverSource.BLACK,
+                        inactivityResetMinutes = state.inactivityResetMinutes,
                     )
                 }
                 if (state.isMoveDetectorEnabled) {
@@ -280,6 +434,11 @@ public class MainViewModel(
      */
     public fun onPageLoaded(url: String): Job = intent {
         mqttSendUrlUseCase(url)
+        // A completed load is the strongest available signal that the backend is answering, and
+        // the URL is what the monitor's TCP probe targets while paused.
+        dashboardConnectionMonitor.onUrlChanged(url)
+        dashboardConnectionMonitor.onLoadSuccess()
+        restartInactivityTimer()
     }
 
     /**
@@ -298,6 +457,7 @@ public class MainViewModel(
             MainIntent.OnSettingsClickAction -> onGoToSettings()
             is MainIntent.OnOpenApplicationIntent -> onOpenApplication(intent.packageName)
             is MainIntent.OnPageLoadedIntent -> onPageLoaded(intent.url)
+            MainIntent.OnPageErrorIntent -> onPageError()
         }
     }
 

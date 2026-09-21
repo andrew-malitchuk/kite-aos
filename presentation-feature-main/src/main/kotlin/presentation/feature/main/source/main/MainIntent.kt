@@ -24,4 +24,7 @@ public sealed class MainIntent {
 
     /** WebView finished loading a page; the [url] is the fully-loaded URL. */
     public data class OnPageLoadedIntent(val url: String) : MainIntent()
+
+    /** WebView failed to load the current page; feeds the dashboard connection monitor. */
+    public data object OnPageErrorIntent : MainIntent()
 }
