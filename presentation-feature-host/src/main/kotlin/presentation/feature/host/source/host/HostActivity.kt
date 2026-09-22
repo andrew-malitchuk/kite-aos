@@ -1,5 +1,6 @@
 package presentation.feature.host.source.host
 
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -9,7 +10,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import android.animation.ValueAnimator
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
@@ -20,6 +20,8 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
+import domain.core.source.model.InteractionModel
+import domain.usecase.api.source.usecase.configuration.ObserveInteractionUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -57,6 +59,13 @@ public class HostActivity : AppCompatActivity() {
     private val appConfig: AppConfig by inject()
     private val remoteCommandBus: RemoteCommandBus by inject()
     private var autoReturnJob: Job? = null
+    private val observeInteractionUseCase: ObserveInteractionUseCase by inject()
+
+    // Volume-gesture state. Read and written only from dispatchKeyEvent (main thread).
+    private var volumePressCount = 0
+    private var lastVolumePressTime = 0L
+    private var volumeGestureEnabled = false
+    private var volumeGestureThreshold = InteractionModel.DEFAULT_PRESS_COUNT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,6 +80,7 @@ public class HostActivity : AppCompatActivity() {
 
         setupSplashScreen()
         setupContent()
+        observeVolumeGestureSettings()
     }
 
     override fun onStart() {
@@ -137,17 +147,66 @@ public class HostActivity : AppCompatActivity() {
      * modifiers are bypassed while the `AndroidView`-hosted WebView owns focus.
      */
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (!appConfig.isTv) return super.dispatchKeyEvent(event)
-
         // Count each physical press once (repeatCount == 0 skips auto-repeat while a key is held).
-        if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
-            if (advanceUnlockSequence(event.keyCode, event.eventTime)) {
+        val isFreshPress = event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0
+
+        if (isFreshPress) {
+            // Any deliberate key press counts as interaction for the inactivity reset. On TV this
+            // is the only signal available — D-pad input never reaches Compose's pointer pipeline.
+            remoteCommandBus.emitInteraction()
+
+            if (advanceVolumeGesture(event.keyCode, event.eventTime)) {
                 remoteCommandBus.emitOpenDrawer()
-                unlockProgress = 0
+                volumePressCount = 0
                 return true
             }
         }
+
+        if (!appConfig.isTv) return super.dispatchKeyEvent(event)
+
+        if (isFreshPress && advanceUnlockSequence(event.keyCode, event.eventTime)) {
+            remoteCommandBus.emitOpenDrawer()
+            unlockProgress = 0
+            return true
+        }
         return super.dispatchKeyEvent(event)
+    }
+
+    /**
+     * Feeds one key press into the volume-button gesture matcher.
+     *
+     * Returns `true` only on the press that completes the gesture. Every earlier press returns
+     * `false` and is therefore **not** consumed, so the hardware volume keys keep adjusting volume
+     * normally — consuming them unconditionally would break the device's volume control for the
+     * sake of a shortcut.
+     *
+     * @return `true` when [keyCode] completes the configured press count.
+     */
+    private fun advanceVolumeGesture(keyCode: Int, eventTime: Long): Boolean {
+        if (!volumeGestureEnabled) return false
+        if (keyCode != KeyEvent.KEYCODE_VOLUME_UP && keyCode != KeyEvent.KEYCODE_VOLUME_DOWN) {
+            return false
+        }
+
+        // Drop a partial run if the user paused: the presses have to be a deliberate burst, not
+        // ordinary volume adjustment spread over time.
+        if (eventTime - lastVolumePressTime > VOLUME_GESTURE_WINDOW_MS) {
+            volumePressCount = 0
+        }
+        lastVolumePressTime = eventTime
+        volumePressCount++
+
+        return volumePressCount >= volumeGestureThreshold
+    }
+
+    /** Keeps the volume-gesture settings current without a DataStore read on the key path. */
+    private fun observeVolumeGestureSettings() {
+        lifecycleScope.launch {
+            observeInteractionUseCase().collect { model ->
+                volumeGestureEnabled = model?.isVolumeGestureOn ?: false
+                volumeGestureThreshold = model?.pressCountOrDefault ?: InteractionModel.DEFAULT_PRESS_COUNT
+            }
+        }
     }
 
     /**
@@ -319,5 +378,13 @@ public class HostActivity : AppCompatActivity() {
 
         /** Max pause (ms) allowed between two keys before the unlock combo resets. */
         const val UNLOCK_SEQUENCE_TIMEOUT_MS = 3_000L
+
+        /**
+         * Rolling window for the volume-button gesture, in milliseconds.
+         *
+         * Two seconds is short enough that ordinary volume adjustment never accumulates the
+         * full count, and long enough for a deliberate burst of presses.
+         */
+        const val VOLUME_GESTURE_WINDOW_MS = 2_000L
     }
 }
