@@ -60,6 +60,21 @@
     <string name="settings_mqtt_password">Password</string>
     <string name="settings_mqtt_topic">Topic</string>
     <string name="settings_mqtt_friendly_name">Friendly Name</string>
+    <string name="settings_mqtt_entity_uptime">Uptime sensor</string>
+    <string name="settings_mqtt_entity_app_version">App version sensor</string>
+    <string name="settings_mqtt_entity_ip_address">IP address sensor</string>
+    <string name="settings_mqtt_entity_ram_usage">RAM usage sensor</string>
+    <string name="settings_resilience">Resilience</string>
+    <string name="settings_interaction">Interaction</string>
+    <string name="settings_crash_relaunch">Restart after a crash</string>
+    <string name="settings_connection_monitor">Pause when dashboard is down</string>
+    <string name="settings_memory_recovery">Recover from memory pressure</string>
+    <string name="settings_wifi_lock">Keep Wi-Fi awake</string>
+    <string name="settings_scheduled_reload">Daily reload</string>
+    <string name="settings_scheduled_reload_hour">Reload hour</string>
+    <string name="settings_inactivity_reset">Return home after (minutes)</string>
+    <string name="settings_volume_gesture">Volume button gesture</string>
+    <string name="settings_volume_gesture_count">Presses required</string>
 
     <string name="settings_streaming">Camera streaming</string>
     <string name="settings_streaming_port">Port</string>
@@ -128,6 +143,19 @@
     <string name="hint_screen_timeout">Seconds after dim before screen locks</string>
     <string name="hint_fab_delay">Seconds of motion before control button appears</string>
     <string name="hint_mqtt_section">All fields below must be valid to enable</string>
+    <string name="hint_mqtt_entity_uptime">Seconds since boot — reveals silent restarts</string>
+    <string name="hint_mqtt_entity_app_version">Installed version — useful across several panels</string>
+    <string name="hint_mqtt_entity_ip_address">Current LAN address of this device</string>
+    <string name="hint_mqtt_entity_ram_usage">Device memory usage — early warning before a reload</string>
+    <string name="hint_crash_relaunch">Reopens the kiosk a few seconds after a crash. Stops after 3 crashes in 10 minutes</string>
+    <string name="hint_connection_monitor">Stops the page retrying while the server is unreachable, so it is not rate-limited</string>
+    <string name="hint_memory_recovery">Reloads while the screensaver is up, so you never see it happen</string>
+    <string name="hint_wifi_lock">Stops the radio sleeping with the screen, so MQTT survives the night. Turn off if Wi-Fi drops and will not reconnect</string>
+    <string name="hint_scheduled_reload">Reloads once a day even if the panel never idles</string>
+    <string name="hint_scheduled_reload_hour">Hour of day, 0–23</string>
+    <string name="hint_inactivity_reset">Go back to the dashboard home page when untouched. 0 turns this off</string>
+    <string name="hint_volume_gesture">Open the control drawer with the hardware volume buttons</string>
+    <string name="hint_volume_gesture_count">Presses within 2 seconds. Below 3 would trigger on normal volume changes</string>
     <string name="hint_streaming_section">Serves a live MJPEG stream from the front camera over HTTP</string>
     <string name="hint_streaming_quality">JPEG compression quality · 30 = small, 100 = best</string>
     <string name="hint_streaming_fps">Target frames per second for the MJPEG stream</string>

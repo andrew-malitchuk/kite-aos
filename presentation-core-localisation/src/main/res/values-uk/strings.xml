@@ -60,6 +60,21 @@
     <string name="settings_mqtt_password">Пароль</string>
     <string name="settings_mqtt_topic">Тема (Topic)</string>
     <string name="settings_mqtt_friendly_name">Зрозуміла назва</string>
+    <string name="settings_mqtt_entity_uptime">Сенсор часу роботи</string>
+    <string name="settings_mqtt_entity_app_version">Сенсор версії застосунку</string>
+    <string name="settings_mqtt_entity_ip_address">Сенсор IP-адреси</string>
+    <string name="settings_mqtt_entity_ram_usage">Сенсор використання RAM</string>
+    <string name="settings_resilience">Стійкість</string>
+    <string name="settings_interaction">Взаємодія</string>
+    <string name="settings_crash_relaunch">Перезапуск після збою</string>
+    <string name="settings_connection_monitor">Пауза, коли панель недоступна</string>
+    <string name="settings_memory_recovery">Відновлення при браку памʼяті</string>
+    <string name="settings_wifi_lock">Тримати Wi-Fi активним</string>
+    <string name="settings_scheduled_reload">Щоденне перезавантаження</string>
+    <string name="settings_scheduled_reload_hour">Година перезавантаження</string>
+    <string name="settings_inactivity_reset">Повернення додому через (хвилин)</string>
+    <string name="settings_volume_gesture">Жест кнопками гучності</string>
+    <string name="settings_volume_gesture_count">Потрібно натискань</string>
 
     <string name="settings_streaming">Стрімінг з камери</string>
     <string name="settings_streaming_port">Порт</string>
@@ -128,6 +143,19 @@
     <string name="hint_screen_timeout">Секунди після затемнення до блокування</string>
     <string name="hint_fab_delay">Секунди руху до появи кнопки керування</string>
     <string name="hint_mqtt_section">Всі поля нижче мають бути заповнені для увімкнення</string>
+    <string name="hint_mqtt_entity_uptime">Секунди від завантаження — виявляє тихі перезапуски</string>
+    <string name="hint_mqtt_entity_app_version">Встановлена версія — корисно за кількох панелей</string>
+    <string name="hint_mqtt_entity_ip_address">Поточна адреса пристрою в локальній мережі</string>
+    <string name="hint_mqtt_entity_ram_usage">Використання памʼяті — раннє попередження перед перезавантаженням</string>
+    <string name="hint_crash_relaunch">Відкриває кіоск за кілька секунд після збою. Спиняється після 3 збоїв за 10 хвилин</string>
+    <string name="hint_connection_monitor">Спиняє повторні спроби, поки сервер недоступний, щоб панель не заблокували</string>
+    <string name="hint_memory_recovery">Перезавантажує під заставкою, тож ви цього не побачите</string>
+    <string name="hint_wifi_lock">Не дає радіо засинати разом з екраном, тому MQTT переживає ніч. Вимкніть, якщо Wi-Fi відвалюється і не перепідключається</string>
+    <string name="hint_scheduled_reload">Перезавантажує раз на добу, навіть якщо панель не простоює</string>
+    <string name="hint_scheduled_reload_hour">Година доби, 0–23</string>
+    <string name="hint_inactivity_reset">Повертає на головну сторінку дашборда без взаємодії. 0 вимикає</string>
+    <string name="hint_volume_gesture">Відкривати панель керування апаратними кнопками гучності</string>
+    <string name="hint_volume_gesture_count">Натискань за 2 секунди. Менше 3 спрацьовувало б при звичайній зміні гучності</string>
     <string name="hint_streaming_section">Транслює живе MJPEG-відео з фронтальної камери через HTTP</string>
     <string name="hint_streaming_quality">Якість JPEG-стиснення · 30 = мало, 100 = максимум</string>
     <string name="hint_streaming_fps">Цільова частота кадрів для MJPEG-потоку</string>
