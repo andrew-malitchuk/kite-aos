@@ -13,10 +13,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import domain.core.source.model.HomeAssistantInstanceModel
 import org.koin.androidx.compose.koinViewModel
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
-import domain.core.source.model.HomeAssistantInstanceModel
 import presentation.core.navigation.api.core.composition.LocalAppNavigator
 import presentation.core.navigation.api.source.destination.Destination
 import presentation.core.platform.core.extension.openAppLanguageSettings
@@ -137,7 +137,10 @@ public fun SettingsScreen(viewModel: SettingsViewModel = koinViewModel()) {
                 // SAF's DocumentsUI may be absent on stripped-down TV boxes; don't crash if the
                 // create-document picker can't be launched.
                 runCatching { exportLauncher.launch("kite-config.json") }
-                    .onFailure { pendingExportJson = null; Log.w(TAG, "Export picker unavailable", it) }
+                    .onFailure {
+                        pendingExportJson = null
+                        Log.w(TAG, "Export picker unavailable", it)
+                    }
             }
             SettingsSideEffect.ImportConfigEffect -> {
                 runCatching { importLauncher.launch(arrayOf("application/json", "text/plain")) }

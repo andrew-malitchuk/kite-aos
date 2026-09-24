@@ -116,6 +116,8 @@ internal fun SettingsMobileContent(
                     MqttSection(state, onIntent, isDashboardValid)
                     WebKioskSection(state, onIntent) { isDashboardValid = it }
                     WebViewRefreshSection(state, onIntent)
+                    ResilienceSection(state, onIntent)
+                    InteractionSection(state, onIntent)
                     UiUxSection(state, onIntent)
                     SystemSection(state, onIntent)
                     AdvancedSection(onIntent)

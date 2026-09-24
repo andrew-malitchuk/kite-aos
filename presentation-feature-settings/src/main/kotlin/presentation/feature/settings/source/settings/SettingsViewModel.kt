@@ -5,54 +5,60 @@ import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import common.core.core.execute.executeResult
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import domain.core.source.monad.Failure
 import domain.core.source.model.AutoRebootModel
+import domain.core.source.model.CameraSourceModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
+import domain.core.source.model.InteractionModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.MqttModel
+import domain.core.source.model.ResilienceModel
+import domain.core.source.model.ScreensaverModel
+import domain.core.source.model.ScreensaverSource
+import domain.core.source.model.StreamingModel
 import domain.core.source.model.ThemeModel
 import domain.core.source.model.WebEngineModel
+import domain.core.source.model.WebViewRefreshModel
+import domain.core.source.monad.Failure
+import domain.usecase.api.source.usecase.camera.GetCameraSourceUseCase
+import domain.usecase.api.source.usecase.camera.SetCameraSourceUseCase
 import domain.usecase.api.source.usecase.configuration.DiscoverHomeAssistantUseCase
+import domain.usecase.api.source.usecase.configuration.GetApplicationLanguageUseCase
 import domain.usecase.api.source.usecase.configuration.GetAutoRebootUseCase
 import domain.usecase.api.source.usecase.configuration.GetAutoReturnUseCase
-import domain.usecase.api.source.usecase.configuration.GetApplicationLanguageUseCase
-import domain.usecase.api.source.usecase.configuration.GetReduceMotionUseCase
-import domain.usecase.api.source.usecase.configuration.GetWebViewRefreshUseCase
-import domain.usecase.api.source.usecase.configuration.SetAutoRebootUseCase
-import domain.usecase.api.source.usecase.configuration.SetReduceMotionUseCase
-import domain.usecase.api.source.usecase.configuration.SetWebViewRefreshUseCase
-import domain.core.source.model.WebViewRefreshModel
 import domain.usecase.api.source.usecase.configuration.GetDashboardUseCase
+import domain.usecase.api.source.usecase.configuration.GetInteractionUseCase
+import domain.usecase.api.source.usecase.configuration.GetReduceMotionUseCase
+import domain.usecase.api.source.usecase.configuration.GetResilienceUseCase
 import domain.usecase.api.source.usecase.configuration.GetThemeUseCase
 import domain.usecase.api.source.usecase.configuration.GetWebEngineUseCase
+import domain.usecase.api.source.usecase.configuration.GetWebViewRefreshUseCase
 import domain.usecase.api.source.usecase.configuration.SetApplicationLanguageUseCase
-import domain.usecase.api.source.usecase.configuration.SetDashboardUseCase
-import domain.usecase.api.source.usecase.configuration.SetThemeUseCase
+import domain.usecase.api.source.usecase.configuration.SetAutoRebootUseCase
 import domain.usecase.api.source.usecase.configuration.SetAutoReturnUseCase
+import domain.usecase.api.source.usecase.configuration.SetDashboardUseCase
+import domain.usecase.api.source.usecase.configuration.SetInteractionUseCase
+import domain.usecase.api.source.usecase.configuration.SetReduceMotionUseCase
+import domain.usecase.api.source.usecase.configuration.SetResilienceUseCase
+import domain.usecase.api.source.usecase.configuration.SetThemeUseCase
 import domain.usecase.api.source.usecase.configuration.SetWebEngineUseCase
+import domain.usecase.api.source.usecase.configuration.SetWebViewRefreshUseCase
 import domain.usecase.api.source.usecase.device.GetDockPositionUseCase
 import domain.usecase.api.source.usecase.device.GetMoveDetectorUseCase
 import domain.usecase.api.source.usecase.device.SetDockPositionUseCase
 import domain.usecase.api.source.usecase.device.SetMoveDetectorUseCase
 import domain.usecase.api.source.usecase.mqtt.GetMqttConfigurationUseCase
 import domain.usecase.api.source.usecase.mqtt.SetMqttConfigurationUseCase
-import domain.usecase.api.source.usecase.camera.GetCameraSourceUseCase
-import domain.usecase.api.source.usecase.camera.SetCameraSourceUseCase
-import domain.usecase.api.source.usecase.streaming.GetStreamingConfigurationUseCase
-import domain.usecase.api.source.usecase.streaming.SetStreamingConfigurationUseCase
-import domain.core.source.model.CameraSourceModel
-import domain.core.source.model.StreamingModel
-import domain.core.source.model.ScreensaverModel
-import domain.core.source.model.ScreensaverSource
 import domain.usecase.api.source.usecase.screensaver.GetScreensaverUseCase
 import domain.usecase.api.source.usecase.screensaver.SetScreensaverUseCase
+import domain.usecase.api.source.usecase.streaming.GetStreamingConfigurationUseCase
+import domain.usecase.api.source.usecase.streaming.SetStreamingConfigurationUseCase
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.koin.android.annotation.KoinViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -119,6 +125,10 @@ public class SettingsViewModel(
     private val setAutoRebootUseCase: SetAutoRebootUseCase,
     private val getCameraSourceUseCase: GetCameraSourceUseCase,
     private val setCameraSourceUseCase: SetCameraSourceUseCase,
+    private val getResilienceUseCase: GetResilienceUseCase,
+    private val setResilienceUseCase: SetResilienceUseCase,
+    private val getInteractionUseCase: GetInteractionUseCase,
+    private val setInteractionUseCase: SetInteractionUseCase,
 ) : ContainerHost<SettingsState, SettingsSideEffect>,
     ViewModel() {
     public override val container: Container<SettingsState, SettingsSideEffect> =
@@ -199,6 +209,8 @@ public class SettingsViewModel(
         loadScreensaver()
         loadAutoReboot()
         loadCameraSource()
+        loadResilience()
+        loadInteraction()
     }
 
     /**
@@ -366,7 +378,11 @@ public class SettingsViewModel(
      * @return The [Job] associated with the use case execution.
      * @since 0.0.1
      */
-    public fun onSetDashboard(dashboardUrl: String, whitelistUrl: String, trustAllSsl: Boolean = false): Job = executeResult(
+    public fun onSetDashboard(
+        dashboardUrl: String,
+        whitelistUrl: String,
+        trustAllSsl: Boolean = false
+    ): Job = executeResult(
         scope = viewModelScope,
         request = {
             setDashboardUseCase(DashboardModel(dashboardUrl.trim(), whitelistUrl.trim(), trustAllSsl))
@@ -648,7 +664,13 @@ public class SettingsViewModel(
             intent { reduce { state.copy(webViewRefresh = refresh) } }
         },
         errorBlock = {
-            intent { reduce { state.copy(webViewRefresh = WebViewRefreshModel(enabled = false, intervalSeconds = 300L)) } }
+            intent {
+                reduce {
+                    state.copy(
+                        webViewRefresh = WebViewRefreshModel(enabled = false, intervalSeconds = 300L)
+                    )
+                }
+            }
         },
     )
 
@@ -805,14 +827,20 @@ public class SettingsViewModel(
         errorBlock = {
             // NOTE: Default screensaver is disabled with sensible fallbacks so the UI renders
             // correctly even when the DataStore is empty on first launch.
-            intent { reduce { state.copy(screensaver = ScreensaverModel(
-                enabled = false,
-                activationDelay = 60L,
-                slideInterval = 30L,
-                showClock = true,
-                source = ScreensaverSource.BLACK,
-                localFolderUri = null,
-            )) } }
+            intent {
+                reduce {
+                    state.copy(
+                        screensaver = ScreensaverModel(
+                            enabled = false,
+                            activationDelay = 60L,
+                            slideInterval = 30L,
+                            showClock = true,
+                            source = ScreensaverSource.BLACK,
+                            localFolderUri = null,
+                        )
+                    )
+                }
+            }
         },
     )
 
@@ -907,6 +935,8 @@ public class SettingsViewModel(
             is SettingsIntent.OnSetWebEngineIntent -> onSetWebEngine(intent.engine)
             SettingsIntent.OnSetDefaultLauncherIntent -> onSetDefaultLauncher()
             is SettingsIntent.OnSetAutoReturnIntent -> onSetAutoReturn(intent.enabled)
+            is SettingsIntent.OnSetResilienceIntent -> onSetResilience(intent.resilience)
+            is SettingsIntent.OnSetInteractionIntent -> onSetInteraction(intent.interaction)
             SettingsIntent.OnExportConfigIntent -> onExportConfig()
             SettingsIntent.OnImportConfigIntent -> onImportConfig()
             is SettingsIntent.OnImportConfigContentIntent -> onImportConfigContent(intent.json)
@@ -968,6 +998,10 @@ public class SettingsViewModel(
             mqttUsername = state.mqtt?.username ?: "",
             mqttFriendlyName = state.mqtt?.friendlyName ?: "",
             isMqttEnabled = state.mqtt?.enabled ?: false,
+            isMqttUptimeEnabled = state.mqtt?.uptimeEnabled ?: true,
+            isMqttAppVersionEnabled = state.mqtt?.appVersionEnabled ?: true,
+            isMqttIpAddressEnabled = state.mqtt?.ipAddressEnabled ?: true,
+            isMqttRamUsageEnabled = state.mqtt?.ramUsageEnabled ?: true,
             motionSensitivity = state.moveDetector?.sensitivity ?: 50,
             motionDimDelay = state.moveDetector?.dimDelay ?: 30L,
             motionScreenTimeout = state.moveDetector?.screenTimeout ?: 60L,
@@ -1002,59 +1036,63 @@ public class SettingsViewModel(
         // inside the CoroutineScope receiver context of executeResult's request block.
         val currentMqtt = container.stateFlow.value.mqtt ?: MqttModel()
         return executeResult(
-        scope = viewModelScope,
-        request = {
-            val snapshot = configJson.decodeFromString<ConfigSnapshot>(json)
+            scope = viewModelScope,
+            request = {
+                val snapshot = configJson.decodeFromString<ConfigSnapshot>(json)
 
-            val theme = ThemeModel.entries.find { it.name == snapshot.theme } ?: ThemeModel.Light
-            setThemeUseCase(theme)
+                val theme = ThemeModel.entries.find { it.name == snapshot.theme } ?: ThemeModel.Light
+                setThemeUseCase(theme)
 
-            val dockPos = DockPositionModel.Position.entries.find { it.name == snapshot.dockPosition }
-                ?: DockPositionModel.Position.Left
-            setDockPositionUseCase(DockPositionModel(dockPos))
+                val dockPos = DockPositionModel.Position.entries.find { it.name == snapshot.dockPosition }
+                    ?: DockPositionModel.Position.Left
+                setDockPositionUseCase(DockPositionModel(dockPos))
 
-            setDashboardUseCase(DashboardModel(snapshot.dashboardUrl, snapshot.whitelistUrl, snapshot.trustAllSsl))
+                setDashboardUseCase(DashboardModel(snapshot.dashboardUrl, snapshot.whitelistUrl, snapshot.trustAllSsl))
 
-            setAutoReturnUseCase(snapshot.isAutoReturnEnabled)
+                setAutoReturnUseCase(snapshot.isAutoReturnEnabled)
 
-            val engine = WebEngineModel.entries.find { it.name == snapshot.webEngine }
-                ?: WebEngineModel.AndroidWebView
-            setWebEngineUseCase(engine)
+                val engine = WebEngineModel.entries.find { it.name == snapshot.webEngine }
+                    ?: WebEngineModel.AndroidWebView
+                setWebEngineUseCase(engine)
 
-            setMqttConfigurationUseCase(
-                currentMqtt.copy(
-                    ip = snapshot.mqttIp,
-                    port = snapshot.mqttPort,
-                    clientId = snapshot.mqttClientId,
-                    username = snapshot.mqttUsername,
-                    friendlyName = snapshot.mqttFriendlyName,
-                    enabled = snapshot.isMqttEnabled,
-                ),
-            )
+                setMqttConfigurationUseCase(
+                    currentMqtt.copy(
+                        ip = snapshot.mqttIp,
+                        port = snapshot.mqttPort,
+                        clientId = snapshot.mqttClientId,
+                        username = snapshot.mqttUsername,
+                        friendlyName = snapshot.mqttFriendlyName,
+                        enabled = snapshot.isMqttEnabled,
+                        uptimeEnabled = snapshot.isMqttUptimeEnabled,
+                        appVersionEnabled = snapshot.isMqttAppVersionEnabled,
+                        ipAddressEnabled = snapshot.isMqttIpAddressEnabled,
+                        ramUsageEnabled = snapshot.isMqttRamUsageEnabled,
+                    ),
+                )
 
-            setMoveDetectorUseCase(
-                MoveDetectorModel(
-                    enabled = snapshot.isMotionEnabled,
-                    sensitivity = snapshot.motionSensitivity,
-                    dimDelay = snapshot.motionDimDelay,
-                    screenTimeout = snapshot.motionScreenTimeout,
-                    fabDelay = snapshot.motionFabDelay,
-                ),
-            )
+                setMoveDetectorUseCase(
+                    MoveDetectorModel(
+                        enabled = snapshot.isMotionEnabled,
+                        sensitivity = snapshot.motionSensitivity,
+                        dimDelay = snapshot.motionDimDelay,
+                        screenTimeout = snapshot.motionScreenTimeout,
+                        fabDelay = snapshot.motionFabDelay,
+                    ),
+                )
 
-            Result.success(Unit)
-        },
-        result = {
-            // Reload all state from persistence to reflect the imported values.
-            loadTheme()
-            loadDashboardUrls()
-            loadDockPosition()
-            loadMoveDetector()
-            loadMqtt()
-            loadWebEngine()
-            loadAutoReturn()
-        },
-        errorBlock = { handleError(it) },
+                Result.success(Unit)
+            },
+            result = {
+                // Reload all state from persistence to reflect the imported values.
+                loadTheme()
+                loadDashboardUrls()
+                loadDockPosition()
+                loadMoveDetector()
+                loadMqtt()
+                loadWebEngine()
+                loadAutoReturn()
+            },
+            errorBlock = { handleError(it) },
         )
     }
 
@@ -1111,7 +1149,44 @@ public class SettingsViewModel(
         )
     }
 
-    private val configJson = Json { ignoreUnknownKeys = true; encodeDefaults = true }
+    /**
+     * Persists the unattended-operation safeguard settings and reflects them in state.
+     *
+     * @param resilience The settings to store.
+     * @return The [Job] associated with the intent coroutine.
+     * @since 2.2.0
+     */
+    public fun onSetResilience(resilience: ResilienceModel): Job = intent {
+        reduce { state.copy(resilience = resilience) }
+        setResilienceUseCase(resilience)
+    }
+
+    /**
+     * Persists the interaction settings and reflects them in state.
+     *
+     * @param interaction The settings to store.
+     * @return The [Job] associated with the intent coroutine.
+     * @since 2.2.0
+     */
+    public fun onSetInteraction(interaction: InteractionModel): Job = intent {
+        reduce { state.copy(interaction = interaction) }
+        setInteractionUseCase(interaction)
+    }
+
+    private fun loadResilience(): Job = intent {
+        val model = getResilienceUseCase().getOrNull()
+        reduce { state.copy(resilience = model ?: ResilienceModel()) }
+    }
+
+    private fun loadInteraction(): Job = intent {
+        val model = getInteractionUseCase().getOrNull()
+        reduce { state.copy(interaction = model ?: InteractionModel()) }
+    }
+
+    private val configJson = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
 
     /**
      * Internal JSON snapshot model for config import/export.
@@ -1133,11 +1208,17 @@ public class SettingsViewModel(
         val mqttUsername: String = "",
         val mqttFriendlyName: String = "",
         val isMqttEnabled: Boolean = false,
+        // Diagnostic entity opt-outs default to true so a config file exported before these
+        // existed imports with the sensors on, matching a fresh install rather than silently
+        // switching them off on the target device.
+        val isMqttUptimeEnabled: Boolean = true,
+        val isMqttAppVersionEnabled: Boolean = true,
+        val isMqttIpAddressEnabled: Boolean = true,
+        val isMqttRamUsageEnabled: Boolean = true,
         val motionSensitivity: Int = 50,
         val motionDimDelay: Long = 30L,
         val motionScreenTimeout: Long = 60L,
         val motionFabDelay: Long = 60L,
         val isMotionEnabled: Boolean = false,
     )
-
 }

@@ -5,8 +5,10 @@ import domain.core.source.model.CameraSourceModel
 import domain.core.source.model.DashboardModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.HomeAssistantInstanceModel
+import domain.core.source.model.InteractionModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.MqttModel
+import domain.core.source.model.ResilienceModel
 import domain.core.source.model.ScreensaverModel
 import domain.core.source.model.StreamingModel
 import domain.core.source.model.ThemeModel
@@ -25,6 +27,9 @@ import domain.core.source.model.WebViewRefreshModel
  * @property mqtt The configuration for the MQTT telemetry connection.
  * @property isLoading Whether initial data is still being loaded from repositories.
  * @property currentLanguage The current application language code (e.g., "en", "uk").
+ * @property resilience The unattended-operation safeguards (crash relaunch, scheduled reload,
+ *   memory recovery, connection monitor).
+ * @property interaction The inactivity reset and volume-gesture settings.
  * @see SettingsViewModel
  * @see SettingsScreen
  * @since 0.0.1
@@ -46,6 +51,8 @@ public data class SettingsState(
     val screensaver: ScreensaverModel? = null,
     val autoReboot: AutoRebootModel? = null,
     val cameraSource: CameraSourceModel = CameraSourceModel.Auto,
+    val resilience: ResilienceModel? = null,
+    val interaction: InteractionModel? = null,
 )
 
 /**
@@ -181,6 +188,12 @@ public sealed class SettingsIntent {
 
     /** Updates the periodic WebView refresh configuration. */
     public data class OnSetWebViewRefreshIntent(val refresh: WebViewRefreshModel) : SettingsIntent()
+
+    /** Updates the unattended-operation safeguard settings. */
+    public data class OnSetResilienceIntent(val resilience: ResilienceModel) : SettingsIntent()
+
+    /** Updates the inactivity reset and volume-gesture settings. */
+    public data class OnSetInteractionIntent(val interaction: InteractionModel) : SettingsIntent()
 
     /** Sets the reduce motion / disable animations preference. */
     public data class OnSetReduceMotionIntent(val enabled: Boolean) : SettingsIntent()
