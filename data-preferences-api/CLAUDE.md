@@ -24,6 +24,8 @@ This is a pure API module following Clean Architecture principles. It depends on
 *   `ThemePreferenceSource`: Visual mode (Light/Dark/MaterialU).
 *   `OnboardingPreferenceSource`: Setup completion state.
 *   `CameraPreferenceSource`: Selected camera source (`auto` / `front` / `rear` / `external`) used by motion detection and MJPEG streaming. Available on all form-factors, not just TV. *(@since 1.4.0)*
+*   `InteractionPreferenceSource`: Inactivity-reset timeout (`inactivityResetMinutes`) and the volume-button gesture (`volumeGestureEnabled`, `volumeGesturePressCount`) that opens the control drawer. *(@since 2.2.0)*
+*   `ResiliencePreferenceSource`: Unattended-operation safeguards — crash-relaunch, scheduled reload (with hour), memory recovery, connection monitor, and WifiLock — each individually toggleable. *(@since 2.2.0)*
 
 ## Dependencies
 *   **`data-core`**: Provides the foundational `Resource` markers.

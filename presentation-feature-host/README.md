@@ -85,6 +85,16 @@ There is no FAB on TV, so the control drawer is opened by a hidden Konami-style 
 | `AppConfig` | `presentation-core-platform` | Exposes `isTv` for form-factor resolution and key-event gating |
 | `RemoteCommandBus` | `presentation-core-platform` | Receives `emitOpenDrawer()` when the D-pad unlock sequence completes |
 
+## Volume-Button Gesture (`@since 2.2.0`)
+
+Unlike the D-pad unlock sequence above, this gesture opens the control drawer on **both mobile and TV** — anywhere the on-screen FAB is impractical to reach (behind glass, wall-mounted, or simply out of the user's habit).
+
+- `dispatchKeyEvent` feeds every fresh press (`ACTION_DOWN`, `repeatCount == 0`) of `KEYCODE_VOLUME_UP` or `KEYCODE_VOLUME_DOWN` into `advanceVolumeGesture()`, gated by `InteractionModel.isVolumeGestureOn` (off by default).
+- Presses must land within a rolling `VOLUME_GESTURE_WINDOW_MS` (2s) window of the previous one, or the count resets — a deliberate burst is required, not volume adjustment spread out over time.
+- Only the press that **completes** the configured count is consumed (`remoteCommandBus.emitOpenDrawer()`, count reset to 0); every earlier press returns `false` so the hardware keys keep adjusting volume normally.
+- The required count comes from `InteractionModel.pressCountOrDefault` (edited on the Settings screen's "Interaction" section, `presentation-feature-settings`), kept live via `observeVolumeGestureSettings()` collecting `ObserveInteractionUseCase` — this avoids a DataStore read on the hot key-event path.
+- Every fresh key press, whether or not it advances the gesture, also calls `remoteCommandBus.emitInteraction()`. On TV this is the only interaction signal available for the shared inactivity-reset timer, since D-pad input never reaches Compose's pointer-input pipeline; on mobile, touch events cover that separately.
+
 ## Splash Screen
 
 The splash screen uses the Android 12+ `SplashScreen` API (`androidx.core.splashscreen`). Dismissal is deferred until the `HostViewModel` signals that the initial data load (onboarding status check) is complete. A custom exit animation fades and scales the splash icon out before the first Compose frame is drawn.

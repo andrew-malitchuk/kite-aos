@@ -119,7 +119,12 @@ ViewModels use `intent { reduce { ... } }` for state and `postSideEffect()` for 
 ### Key Services
 
 - **MotionService** — Foreground service using CameraX for presence detection (luma analysis at 176x144). Controls screen wake/dim/lock based on motion. On the `tv` flavor it sources frames from a USB webcam via `Camera2ExternalMotionSource` → `UvcMotionSource` (libausbc) fallback, or presence pulses from `MqttMotionSource` when no camera exists.
-- **MqttService** — Foreground service for MQTT telemetry (battery, motion events, Home Assistant discovery). Publishes `device_class = tv` on the `tv` flavor.
+- **MqttService** — Foreground service for MQTT telemetry (battery, motion events, Home Assistant discovery). Publishes `device_class = tv` on the `tv` flavor. Also publishes the diagnostic sensor set (`uptime`, `app_version`, `ip_address`, `ram_usage`) once a minute and consumes remote commands from `{clientId}/command/set`.
+- **Survivability suite** (`presentation-core-platform`, `@since 2.2.0`) — four independent, individually toggleable safeguards for unattended panels, all configured under Settings → Resilience:
+  - `LockManager` (`source/power/`) — holds a `PARTIAL_WAKE_LOCK` plus a `WifiLock` for the process lifetime, started from `Application.onCreate` so a deployment running neither foreground service still keeps the radio alive through screen-off.
+  - `CrashRelaunchHandler` (`source/diagnostics/`) — `UncaughtExceptionHandler` that persists a report via `CrashDiagnosticsStore` and schedules an `AlarmManager` relaunch of `HostActivity`, rate-limited to suppress boot loops. Chains to the previous handler so Crashlytics still sees the crash on `gms`.
+  - `MemoryRecoveryCoordinator` / `WebViewReloadScheduler` (`source/scheduler/`) — stealth WebView reload while the screensaver is up, plus a daily scheduled reload at a configured hour; both use `setAndAllowWhileIdle()` since Doze freezes in-process timers.
+  - `DashboardConnectionMonitor` / `DashboardConnectionMachine` (`source/connection/`) — `HEALTHY → SUSPECT → PAUSED → HEALTHY` state machine that pauses the WebView during a backend outage instead of hammering it; published as its own `dashboard` connectivity binary sensor.
 
 ## Code Style
 

@@ -24,3 +24,5 @@ themePreferenceSource.setData(ThemePreference(mode = "dark"))
 ## Available Preferences
 
 Alongside theme, dashboard, MQTT, motion, and onboarding settings, the module exposes `CameraPreferenceSource` / `CameraPreference` (`mode: String`) — the camera source chosen for motion detection and MJPEG streaming (`auto`, `front`, `rear`, or `external`). Available on all form-factors, not just TV. *(@since 1.4.0)*
+
+It also exposes the "T2 Survivability" preferences: `InteractionPreferenceSource` / `InteractionPreference` (`inactivityResetMinutes`, `volumeGestureEnabled`, `volumeGesturePressCount`) for the idle-reset timeout and the volume-button gesture, and `ResiliencePreferenceSource` / `ResiliencePreference` (`crashRelaunchEnabled`, `scheduledReloadEnabled`, `scheduledReloadHour`, `memoryRecoveryEnabled`, `connectionMonitorEnabled`, `wifiLockEnabled`) for the unattended-operation safeguards. *(@since 2.2.0)*

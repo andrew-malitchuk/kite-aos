@@ -32,3 +32,27 @@ The camera-source preference is a full example of the workflow above. It persist
 *   Schema: `src/main/proto/camera_data.proto` (`message CameraProtoModel { string mode = 1; }`)
 *   `CameraProtoSerializer`, `CameraPreferenceStorage`, `CameraProtobufPreferenceMapper`, `CameraPreferenceSourceImpl`
 *   DI: `cameraDataStore()` (`@Named("cameraDataStore")`) persisting to `camera.pb` (`PreferenceConfigure.Filename.CAMERA`)
+
+## Interaction Preference *(@since 2.2.0)*
+
+Persists the idle-reset timeout and volume-button gesture, following the same workflow:
+
+*   Schema: `src/main/proto/interaction_data.proto` (`message InteractionProtoModel { int32 inactivity_reset_minutes = 1; bool volume_gesture_enabled = 2; int32 volume_gesture_press_count = 3; }`)
+*   `InteractionProtoSerializer`, `InteractionPreferenceStorage`, `InteractionProtobufPreferenceMapper`, `InteractionPreferenceSourceImpl`
+*   DI: `interactionDataStore()` (`@Named("interactionDataStore")`) persisting to `interaction.pb` (`PreferenceConfigure.Filename.INTERACTION`)
+
+No proto3 encoding trick is needed here — every default already coincides with the zero value.
+
+## Resilience Preference *(@since 2.2.0)*
+
+Persists the T2 Survivability safeguards (crash relaunch, scheduled reload, memory recovery, connection monitor, WifiLock), following the same workflow:
+
+*   Schema: `src/main/proto/resilience_data.proto` (`message ResilienceProtoModel { bool crash_relaunch_disabled = 1; bool scheduled_reload_enabled = 2; int32 scheduled_reload_hour_plus_one = 3; bool memory_recovery_disabled = 4; bool connection_monitor_disabled = 5; bool wifi_lock_disabled = 6; }`)
+*   `ResilienceProtoSerializer`, `ResiliencePreferenceStorage`, `ResilienceProtobufPreferenceMapper`, `ResiliencePreferenceSourceImpl`
+*   DI: `resilienceDataStore()` (`@Named("resilienceDataStore")`) persisting to `resilience.pb` (`PreferenceConfigure.Filename.RESILIENCE`)
+
+Most of these toggles default **on**, which proto3's zero-value default can't express, so
+`ResilienceProtobufPreferenceMapper` stores them inverted (`*_disabled`) — an explicit `false` from
+the preference layer is what writes a `true` disabled flag; `null` round-trips as enabled. The
+scheduled-reload hour is stored as `hour + 1` (`scheduled_reload_hour_plus_one`) so hour `0`
+(midnight) is never confused with "unconfigured".

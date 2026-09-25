@@ -25,6 +25,16 @@ This module follows the Repository Pattern implementation. It depends on various
 ### Screen-State Mapping — `DarkOverlay` (`@since 1.2.0`, Android TV)
 `ScreenStateResourceMapper` maps the new `ScreenStateResource.DarkOverlay` both ways to `ScreenStateModel.DarkOverlay`. `DarkOverlay` is a plain dark overlay used as a stand-in for powering the screen off on devices where the app cannot turn the panel off (e.g. Android TV, where device locking is unavailable).
 
+### Resilience & Interaction Plumbing (`@since 2.2.0`)
+`ConfigureRepositoryImpl` implements `get`/`set`/`observeResilience()` and `get`/`set`/`observeInteraction()` over `ResiliencePreferenceSource` and `InteractionPreferenceSource`, through the new `ResiliencePreferenceMapper` and `InteractionPreferenceMapper`.
+
+Both mappers are deliberately trivial field-for-field pass-throughs, and that is the point: the awkward part of these settings is the proto3 zero-value problem (an untouched `bool` reads as `false`, an untouched `int32` as `0`, so "unconfigured" is indistinguishable from "explicitly off / midnight"). That is solved once, at the storage boundary, by `ResilienceProtobufPreferenceMapper` in `data-preferences-impl` — inverted `*_disabled` fields and an offset-by-one reload hour. By the time a value reaches this module it is already a plain nullable with its intended meaning, so keeping these mappers dumb prevents the same correction being applied twice.
+
+### MQTT Companion Surface (`@since 2.1.0` / `2.2.0`)
+`MqttRepositoryImpl` grew the companion-device surface: `purgeDiscovery()`, `sendDashboardState(isReachable)` and `sendCompanionTelemetry(CompanionTelemetryModel)`, each a thin forward to `TelemetryMqttSource`.
+
+The one piece of real logic is in `connect(...)`: it maps `Set<MqttDiagnosticEntityModel>` to `Set<String>` via `it.id`. This module is the seam where that translation has to happen — `data-mqtt-api`/`data-mqtt-impl` do not depend on `domain-core`, so the data layer speaks plain topic ids while the domain speaks an enum. `MqttPreferenceMapper` likewise gained the four diagnostic opt-out flags (`uptimeEnabled`, `appVersionEnabled`, `ipAddressEnabled`, `ramUsageEnabled`).
+
 ## Dependencies
 *   **`domain-repository-api`**: The interfaces being implemented.
 *   **`data-database-api`**, **`data-preferences-api`**, **`data-platform-api`**, **`data-mqtt-api`**: The data sources used by the repositories.

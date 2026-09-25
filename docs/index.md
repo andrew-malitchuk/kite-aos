@@ -61,6 +61,7 @@ issue!
 | **Custom Launcher**        | Set Kite as the default Android launcher to prevent users from leaving the kiosk.                     |
 | **Auto-Return to Kiosk**   | Automatically returns to the dashboard 30 s after leaving to an external app.                         |
 | **Network Recovery**       | Detects connectivity loss and automatically reloads the dashboard on restoration.                     |
+| **Unattended Survivability** | Auto-relaunches after a crash, pauses the dashboard during a Home Assistant outage instead of hammering it with reconnects, periodically recovers WebView memory, and keeps the WiFi radio awake through screen-off — all individually toggleable in Settings → Resilience. |
 | **Config Import / Export** | Back up and restore all settings as a JSON file via the system file picker.                           |
 | **HA Auto-Discovery**      | Scans the local network for Home Assistant instances and populates the dashboard URL automatically.    |
 | **Screensaver**            | Image slideshow overlay with optional clock display; configurable activation delay and slide interval; dismisses automatically when motion is detected. |
@@ -121,11 +122,7 @@ git clone https://github.com/andrew-malitchuk/kite-aos.git
 
 The full roadmap is tracked in [ROADMAP.md](roadmap.md). Highlights currently in progress:
 
-* **Companion HA Entities** — expose uptime, app version, IP address, and current URL as Home Assistant sensors.
-* **Inactivity Page Reset** — navigate back to the home URL after a configurable idle period.
-* **Volume Button Gesture** — open the control drawer by pressing a physical volume button N times.
 * **Time-Based Sleep / Wake Scheduler** — define daily on/off rules without requiring Home Assistant automations.
-* **Remote MQTT Commands** — accept inbound commands to control WebView navigation remotely.
 
 Community-sourced items and votes live in [GitHub Issues](https://github.com/andrew-malitchuk/kite-aos/issues).
 

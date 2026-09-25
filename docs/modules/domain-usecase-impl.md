@@ -7,6 +7,8 @@ This module provides the concrete implementations of the Use Case interfaces def
 - **Logic Execution**: Implements business rules by coordinating repository calls.
 - **Unified Error Handling**: Utilizes `resultLauncher` to consistently wrap operations in `Result<T>` and map exceptions to domain `Failure` types.
 - **Automated DI**: Uses Koin annotations for automatic dependency discovery and injection.
+- **Survivability & Interaction Backing** (`@since 2.2.0`): `GetInteractionUseCaseImpl`/`SetInteractionUseCaseImpl`/`ObserveInteractionUseCaseImpl` and `GetResilienceUseCaseImpl`/`SetResilienceUseCaseImpl`/`ObserveResilienceUseCaseImpl` delegate to `ConfigureRepository`, substituting a default model on read and accepting `null` to reset to defaults on write.
+- **MQTT Discovery, Telemetry & Remote Commands** (`.mqtt`): `MqttPurgeDiscoveryUseCaseImpl` and `MqttSendCompanionTelemetryUseCaseImpl` (`@since 2.1.0`), plus `MqttSendDashboardStateUseCaseImpl` (`@since 2.2.0`), forward to `MqttRepository`. `ObserveMqttClearCacheCommandUseCaseImpl` (`@since 2.1.0`) and `ObserveMqttRemoteCommandUseCaseImpl` (`@since 2.2.0`) filter the repository's shared inbound-command `Flow` by topic suffix, the latter decoding the JSON payload into a `RemoteCommandModel` via `kotlinx.serialization.json`.
 
 ## Implementation Details
 

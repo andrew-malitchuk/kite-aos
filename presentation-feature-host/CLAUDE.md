@@ -30,8 +30,18 @@ This module also serves as the host on Android TV. The TV-specific behaviour is 
 *   **`AppConfig`** (`presentation-core-platform`): Provides `isTv` for form-factor resolution and key-event gating.
 *   **`RemoteCommandBus`** (`presentation-core-platform`): Receives `emitOpenDrawer()` when the D-pad unlock sequence completes.
 
+## Volume-Button Gesture
+
+Unlike the D-pad unlock sequence, which is TV-only, this gesture opens the control drawer on **both mobile and TV** via the hardware volume keys — an alternative entry point for panels where the on-screen FAB is impractical to reach.
+
+*   **Mechanism**: `dispatchKeyEvent` runs `advanceVolumeGesture(keyCode, eventTime)` for every fresh press (`ACTION_DOWN`, `repeatCount == 0`) of `KEYCODE_VOLUME_UP`/`KEYCODE_VOLUME_DOWN`, gated on `InteractionModel.isVolumeGestureOn` (off by default). Presses accumulate `volumePressCount`; if `eventTime - lastVolumePressTime` exceeds `VOLUME_GESTURE_WINDOW_MS` (2s), the count resets — the presses must form a deliberate burst, not ordinary volume adjustment spread over time.
+*   **Non-destructive by design**: Only the press that completes `volumeGestureThreshold` is consumed (returns `true`, calls `remoteCommandBus.emitOpenDrawer()`, resets the count); every earlier press returns `false` and is **not** consumed, so the hardware keys keep adjusting device volume normally throughout the burst.
+*   **Live settings, no hot-path I/O**: `observeVolumeGestureSettings()` (called once from `onCreate`) collects `ObserveInteractionUseCase` for the lifetime of the activity and mirrors `isVolumeGestureOn`/`pressCountOrDefault` into the plain `volumeGestureEnabled`/`volumeGestureThreshold` fields read by `dispatchKeyEvent`, so the key-event path never awaits a DataStore read. These fields are documented as read/written only from `dispatchKeyEvent`/`onCreate` (main thread), so no synchronization is needed.
+*   **Feeds the shared inactivity timer**: every fresh key press — independent of whether it advances the volume gesture — also calls `remoteCommandBus.emitInteraction()`. On TV this is the only interaction signal available to reset an inactivity timer, since D-pad key events never pass through Compose's pointer-input pipeline the way touch does.
+*   **Backing model**: `InteractionModel` (`domain-core`), edited on the Settings screen's "Interaction" section (`presentation-feature-settings`) via `SettingsIntent.OnSetInteractionIntent`.
+
 ## Dependencies
 *   **`presentation-core-navigation-impl`**: To host the application's navigation graph.
 *   **`presentation-core-styling`**: For global theme application, plus `FormFactor` / `LocalFormFactor` / `LocalWindowSizeClass`.
-*   **`presentation-core-platform`**: For `AppConfig` (form-factor) and `RemoteCommandBus` (TV drawer command).
-*   **`domain-usecase-api`**: For checking onboarding status and observing theme settings.
+*   **`presentation-core-platform`**: For `AppConfig` (form-factor) and `RemoteCommandBus` (TV drawer command and shared interaction events).
+*   **`domain-usecase-api`**: For checking onboarding status, observing theme settings, and observing the volume-gesture configuration (`ObserveInteractionUseCase`).
