@@ -1,3 +1,39 @@
+# [2.2.0] - 2026-09-27
+
+Kite AOS 2.2 is about panels nobody is standing in front of. Four independent, individually toggleable safeguards keep an unattended wall panel alive through crashes, memory pressure, overnight WiFi power-save and backend outages. Home Assistant also gains a proper companion surface — diagnostic sensors, a dashboard reachability sensor, discovery teardown, and a single remote command channel that drives the kiosk without one discovery entity per verb.
+
+## Added
+
+### Survivability
+- `LockManager` — a `PARTIAL_WAKE_LOCK` plus a `WifiLock` held for the process lifetime, started from `Application.onCreate` so a deployment running neither foreground service still keeps its radio alive through screen-off
+- `CrashRelaunchHandler` / `CrashDiagnosticsStore` — an `UncaughtExceptionHandler` that persists the crash report and schedules an `AlarmManager` relaunch of `HostActivity`, rate-limited to three crashes in ten minutes so a broken build cannot boot-loop; chains to the previous handler, so Crashlytics still sees the crash on `gms`
+- `MemoryRecoveryCoordinator` / `WebViewReloadScheduler` — stealth WebView reload under memory pressure while the screensaver is up, plus an optional daily reload at a chosen hour; both use `setAndAllowWhileIdle()` since Doze freezes in-process timers
+- `DashboardConnectionMonitor` / `DashboardConnectionMachine` — a `HEALTHY → SUSPECT → PAUSED → HEALTHY` state machine that pauses the WebView during a backend outage instead of letting the page retry in a tight loop
+
+### Home Assistant companion surface
+- Diagnostic sensors `uptime`, `app_version`, `ip_address` and `ram_usage`, published once a minute, each with its own opt-out; entities absent from the enabled set are actively unregistered rather than left frozen at a stale value
+- `binary_sensor.<clientId>_dashboard` reachability entity, deliberately separate from device availability — during a Home Assistant restart the panel itself is healthy and its own controls must stay usable
+- Discovery teardown: `purgeDiscovery()` clears every retained `config` topic when MQTT is switched off, and `disconnect()` publishes a retained `offline` payload because a graceful disconnect makes the broker discard the Last Will
+- Remote command channel on `{clientId}/command/set` carrying a `{ "action", "value" }` JSON envelope, driving navigation, reload, history, cache clearing and JS evaluation from a single entity
+- `EngineCommand` surface on the kiosk WebView engines for those verbs
+
+### Interaction
+- Inactivity page reset — returns the dashboard to the home URL after N minutes of no input (0–240, off by default)
+- Volume-button gesture — a burst of hardware volume presses opens the control drawer, for panels behind glass or wall-mounted where the FAB is impractical; only the press completing the gesture is consumed, so the keys keep adjusting volume otherwise
+
+### Settings & storage
+- Two new top-level settings sections, **Resilience** and **Interaction**, exposing every safeguard individually so anything that misbehaves on a given device can be turned off without losing the rest
+- `resilience.pb` and `interaction.pb` Proto DataStore files, with `ResilienceModel` / `InteractionModel`, repository plumbing and get/set/observe use cases
+- Localized strings (EN + UK) for all new settings and hints
+
+## Fixed
+- Onboarding could never complete on locked-down ROMs such as Frameo, which never grant `SYSTEM_ALERT_WINDOW`. The overlay permission is only needed for kiosk auto-return and boot launch, so it is now advertised as optional and excluded from the completion gate
+
+## Changed
+- Detekt and Ktlint cleanup across analytics, motion, streaming, theming and use-case modules to keep the strict `maxIssues: 0` run green
+- Module `README.md` / `CLAUDE.md` refreshed for the new MQTT, preferences and platform surfaces, MkDocs mirrors regenerated, and a new [Resilience & Interaction](user-guide/resilience.md) user guide added
+- Bumped `versionName` to `2.2.0` (`versionCode` 8)
+
 # [2.0.0] - 2026-08-09
 
 Kite AOS 2.0 brings the project to the living room: the kiosk now runs on **Android TV** boxes as a 10-foot, D-pad-driven Home Assistant dashboard from a single codebase, with full parity to the tablet build. This release also lands a pluggable motion-source pipeline and a user-selectable camera source — a USB-OTG webcam now works on phones and tablets too, not just Android TV.
