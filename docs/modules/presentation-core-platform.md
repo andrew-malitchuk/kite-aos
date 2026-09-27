@@ -8,6 +8,11 @@ The platform and hardware engine for the Home Kiosk application.
 - **Kiosk Security**: Integration with Android Device Administration for programmatic screen locking.
 - **Background MQTT**: Persistent foreground service for maintaining MQTT connectivity.
 - **Battery Tracking**: Real-time battery status reporting via MQTT.
+- **Device Telemetry** (`@since 2.1.0`): `DeviceTelemetryProvider` samples uptime, app version, LAN IP address, and device-wide RAM usage on a timer for the companion diagnostics sensors — all permission-free reads, published to Home Assistant every 60 s.
+- **Wake & WiFi Lock** (`@since 2.2.0`): `LockManager` holds a CPU wake lock for the life of the process and a WiFi lock through the screen-off window, so an idle panel keeps its MQTT session alive instead of silently dropping off overnight. The CPU lock is unconditional; the WiFi lock is user-disableable, because some budget WiFi chipsets wedge their driver if kept out of power-save for hours.
+- **Crash Auto-Relaunch** (`@since 2.2.0`): `CrashRelaunchHandler` schedules a one-shot alarm to relaunch the kiosk after an uncaught crash, then lets the process die — no overlay permission or surviving service required. A mandatory rate limiter (`CrashDiagnosticsStore`) suppresses the relaunch after 3 crashes in 10 minutes so a startup crash loop can't flatten the battery on a wall-mounted panel.
+- **Memory Recovery & Scheduled Reload** (`@since 2.2.0`): `MemoryRecoveryCoordinator` reloads the dashboard on system memory pressure, holding the request until the screensaver is up so nobody watching the panel sees it blank. `WebViewReloadScheduler` optionally arms a daily reload via `AlarmManager`, re-arming itself after each firing so the schedule survives Doze and DST shifts.
+- **Dashboard Connection Monitor** (`@since 2.2.0`): `DashboardConnectionMonitor` pauses the WebView when the Home Assistant backend goes unreachable — stopping its ~1/second WebSocket retry storm, which can otherwise get the panel rate-limited or IP-banned — and resumes it once the backend answers again. Reported to Home Assistant as its own `dashboard` binary sensor, independent of device availability.
 
 ## Requirements
 - **Permissions**:
@@ -18,9 +23,14 @@ The platform and hardware engine for the Home Kiosk application.
 
 ## Internal Structure
 - `core/extension/`: Useful Android platform extensions (e.g., `Context.openAppLanguageSettings`).
-- `core/helper/`: System interaction helpers (e.g., `DevicePowerManager`).
+- `core/helper/`: System interaction helpers (e.g., `DevicePowerManager`, `DeviceTelemetryProvider`).
 - `source/analyzer/`: Mathematical and frame analysis logic (e.g., `MotionAnalyzer`).
-- `source/receiver/`: Broadcast receivers for system events.
+- `source/command/`: `RemoteCommandBus`, the seam that carries motion, drawer, reload, home-reset, interaction and clear-cache events raised outside the composition.
+- `source/connection/`: `DashboardConnectionMonitor` and the pure `DashboardConnectionMachine` state machine behind the connection guard.
+- `source/diagnostics/`: `CrashRelaunchHandler`, `CrashDiagnosticsStore`, `CrashRelaunchSettingMirror`, and `MemoryRecoveryCoordinator`.
+- `source/power/`: `LockManager`, the CPU wake lock and WiFi lock owner.
+- `source/scheduler/`: `WebViewReloadScheduler`, the `AlarmManager`-backed daily reload.
+- `source/receiver/`: Broadcast receivers for system events, including `KioskRelaunchReceiver` and `WebViewReloadReceiver`.
 - `source/service/`: Foreground services for long-running background tasks.
 
 ## Camera Source Selection
@@ -30,6 +40,16 @@ The platform and hardware engine for the Home Kiosk application.
 - **`Front` / `Rear`**: force a built-in-lens source (the lens is passed separately via `MotionSourceConfig.lens`).
 - **`External`**: force a USB/UVC (external) source. Because the UVC engine ships on every variant, this works on a phone or tablet with a USB-OTG webcam too, not only on TV.
 - A forced choice with no matching available source falls back to the `Auto` selection, so the screen never goes dark waiting on a camera that isn't there.
+
+## Survivability (`@since 2.2.0`)
+A wall-mounted dashboard is judged on uptime, so this module carries a small set of features aimed purely at keeping the panel alive and reachable overnight, unattended.
+
+- **Wake & WiFi Lock**: `LockManager` acquires a `PARTIAL_WAKE_LOCK` for the life of the process and a WiFi lock while the screen is off, so aggressive OEM power management can't park the WiFi radio or deprioritise the process and silently kill the MQTT session. The WiFi lock can be switched off per-user for WiFi chipsets that misbehave under sustained full-power mode.
+- **Crash Auto-Relaunch**: an uncaught crash schedules a one-shot alarm that relaunches the app after the process dies, so a panel recovers from a crash on its own. A built-in rate limiter (3 crashes / 10 min) stops a boot-looping crash from being relaunched forever.
+- **Memory Recovery & Scheduled Reload**: the dashboard reloads itself when Android reports memory pressure (deferred until the screensaver is up, so nobody sees a blank page), and can optionally reload once a day on a schedule that survives Doze and DST changes. Both kinds of reload keep the current page — only the inactivity reset returns to the home URL.
+- **Dashboard Connection Monitor**: pauses the WebView when the Home Assistant backend stops responding, so its frontend's rapid WebSocket retries don't get the panel rate-limited or banned by a reverse proxy, and resumes it automatically once the backend is healthy again. Surfaced to Home Assistant as its own `dashboard` binary sensor, independent from whether the device itself is online.
+
+`RemoteCommandBus` carries the events these features raise outside the composition — `reload` (scheduled/memory recovery), `homeReset` (inactivity reset) and `interaction` (D-pad presses on Android TV, which never reach the Compose pointer pipeline) — over to the `presentation-feature-main` screen that owns the mounted engine.
 
 ## Android TV
 The `tv` build flavor turns an Android TV box into the same kiosk, but TV boxes have no built-in camera, so presence detection is sourced from external hardware.

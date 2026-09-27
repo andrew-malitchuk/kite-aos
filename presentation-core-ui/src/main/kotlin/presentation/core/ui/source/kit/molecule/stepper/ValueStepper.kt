@@ -199,8 +199,14 @@ private fun StepperButton(text: String, onAction: () -> Unit, enabled: Boolean) 
                     return@onKeyEvent false
                 }
                 when (event.type) {
-                    KeyEventType.KeyDown -> { isPressed = true; true }
-                    KeyEventType.KeyUp -> { isPressed = false; true }
+                    KeyEventType.KeyDown -> {
+                        isPressed = true
+                        true
+                    }
+                    KeyEventType.KeyUp -> {
+                        isPressed = false
+                        true
+                    }
                     else -> false
                 }
             }

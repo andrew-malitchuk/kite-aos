@@ -111,13 +111,19 @@ public class MotionService : LifecycleService() {
         extraBufferCapacity = 4,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
+
     // Written on serviceScope (Main), read on the source's frame thread — @Volatile ensures
     // cross-thread visibility.
     @Volatile private var isStreamingEnabled = false
+
     @Volatile private var streamingPort = DEFAULT_STREAMING_PORT
+
     @Volatile private var streamingQuality = DEFAULT_STREAMING_QUALITY
+
     @Volatile private var streamingFps = DEFAULT_STREAMING_FPS
+
     @Volatile private var streamingRotation = DEFAULT_STREAMING_ROTATION
+
     @Volatile private var lastStreamFrameTime = 0L
     // endregion
 
@@ -212,7 +218,6 @@ public class MotionService : LifecycleService() {
         internal const val DEFAULT_STREAMING_QUALITY = 75
         internal const val DEFAULT_STREAMING_FPS = 10
         internal const val DEFAULT_STREAMING_ROTATION = 0
-
     }
 
     /**
@@ -540,18 +545,7 @@ public class MotionService : LifecycleService() {
             }
 
             // MJPEG streaming: runs unconditionally, independent of blindness state.
-            if (isStreamingEnabled) {
-                val minIntervalMs = 1000L / maxOf(1, streamingFps)
-                if (now - lastStreamFrameTime >= minIntervalMs) {
-                    lastStreamFrameTime = now
-                    try {
-                        val jpeg = frame.encodeJpeg(jpegFrameEncoder, streamingRotation, streamingQuality)
-                        if (jpeg != null) frameFlow.tryEmit(jpeg)
-                    } catch (e: Exception) {
-                        Log.w(TAG, "JPEG encode failed", e)
-                    }
-                }
-            }
+            streamFrameIfDue(frame, now)
 
             if (isMotion) {
                 onMotionDetected()
@@ -560,6 +554,32 @@ public class MotionService : LifecycleService() {
             Log.e(TAG, "Analysis error", e)
         } finally {
             frame.close()
+        }
+    }
+
+    /**
+     * Publishes [frame] to the MJPEG stream when the configured frame interval has elapsed.
+     *
+     * Kept out of [handleFrame] so neither function nests deeply enough to become unreadable; the
+     * FPS gate lives here rather than in the frame source because streaming and motion analysis
+     * share one source but need different rates.
+     *
+     * @param frame The frame to encode. Not closed here — [handleFrame] owns its lifetime.
+     * @param now The timestamp [handleFrame] already read, reused so both paths agree on "now".
+     * @since 2.2.0
+     */
+    private fun streamFrameIfDue(frame: MotionFrame, now: Long) {
+        if (!isStreamingEnabled) return
+
+        val minIntervalMs = 1000L / maxOf(1, streamingFps)
+        if (now - lastStreamFrameTime < minIntervalMs) return
+        lastStreamFrameTime = now
+
+        try {
+            val jpeg = frame.encodeJpeg(jpegFrameEncoder, streamingRotation, streamingQuality)
+            if (jpeg != null) frameFlow.tryEmit(jpeg)
+        } catch (e: Exception) {
+            Log.w(TAG, "JPEG encode failed", e)
         }
     }
 

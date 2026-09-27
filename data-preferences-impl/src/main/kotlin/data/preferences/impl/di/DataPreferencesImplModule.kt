@@ -10,30 +10,34 @@ import data.preferences.impl.core.serializer.AutoReturnProtoSerializer
 import data.preferences.impl.core.serializer.CameraProtoSerializer
 import data.preferences.impl.core.serializer.DashboardProtoSerializer
 import data.preferences.impl.core.serializer.DockProtoSerializer
+import data.preferences.impl.core.serializer.InteractionProtoSerializer
 import data.preferences.impl.core.serializer.LanguageProtoSerializer
 import data.preferences.impl.core.serializer.MoveDetectorProtoSerializer
 import data.preferences.impl.core.serializer.MqttProtoSerializer
 import data.preferences.impl.core.serializer.OnboardingProtoSerializer
-import data.preferences.impl.core.serializer.ThemeProtoSerializer
-import data.preferences.impl.core.serializer.WebEngineProtoSerializer
 import data.preferences.impl.core.serializer.ReduceMotionProtoSerializer
+import data.preferences.impl.core.serializer.ResilienceProtoSerializer
 import data.preferences.impl.core.serializer.ScreensaverProtoSerializer
 import data.preferences.impl.core.serializer.StreamingProtoSerializer
+import data.preferences.impl.core.serializer.ThemeProtoSerializer
+import data.preferences.impl.core.serializer.WebEngineProtoSerializer
 import data.preferences.impl.core.serializer.WebViewRefreshProtoSerializer
 import data.preferences.impl.proto.AutoRebootDataProto
 import data.preferences.impl.proto.AutoReturnDataProto
 import data.preferences.impl.proto.CameraDataProto
 import data.preferences.impl.proto.DashboardDataProto
 import data.preferences.impl.proto.DockDataProto
+import data.preferences.impl.proto.InteractionDataProto
 import data.preferences.impl.proto.LanguagePreferenceProto
 import data.preferences.impl.proto.MoveDetectorDataProto
 import data.preferences.impl.proto.MqttDataProto
 import data.preferences.impl.proto.OnboardingDataProto
-import data.preferences.impl.proto.ThemeDataProto
-import data.preferences.impl.proto.WebEngineDataProto
 import data.preferences.impl.proto.ReduceMotionDataProto
+import data.preferences.impl.proto.ResilienceDataProto
 import data.preferences.impl.proto.ScreensaverDataProto
 import data.preferences.impl.proto.StreamingDataProto
+import data.preferences.impl.proto.ThemeDataProto
+import data.preferences.impl.proto.WebEngineDataProto
 import data.preferences.impl.proto.WebViewRefreshDataProto
 import org.koin.core.annotation.ComponentScan
 import org.koin.core.annotation.Module
@@ -302,6 +306,40 @@ public class DataPreferencesImplModule {
         return DataStoreFactory.create(
             serializer = CameraProtoSerializer(),
             produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.CAMERA) },
+        )
+    }
+
+    /**
+     * Provides the [DataStore] instance for the unattended-operation safeguard preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [ResilienceProtoSerializer] and stored in
+     *   [PreferenceConfigure.Filename.RESILIENCE].
+     * @see ResilienceProtoSerializer
+     */
+    @Single
+    @Named("resilienceDataStore")
+    public fun resilienceDataStore(context: Context): DataStore<ResilienceDataProto.ResilienceProtoModel> {
+        return DataStoreFactory.create(
+            serializer = ResilienceProtoSerializer(),
+            produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.RESILIENCE) },
+        )
+    }
+
+    /**
+     * Provides the [DataStore] instance for the interaction preferences.
+     *
+     * @param context the Android [Context] used to resolve the DataStore file location.
+     * @return a [DataStore] backed by [InteractionProtoSerializer] and stored in
+     *   [PreferenceConfigure.Filename.INTERACTION].
+     * @see InteractionProtoSerializer
+     */
+    @Single
+    @Named("interactionDataStore")
+    public fun interactionDataStore(context: Context): DataStore<InteractionDataProto.InteractionProtoModel> {
+        return DataStoreFactory.create(
+            serializer = InteractionProtoSerializer(),
+            produceFile = { context.dataStoreFile(PreferenceConfigure.Filename.INTERACTION) },
         )
     }
 }

@@ -69,9 +69,42 @@ When MQTT is active, Kite publishes standard Home Assistant discovery payloads. 
 
 - Battery level and charging state
 - Motion detected (binary sensor)
+- Current dashboard URL and dashboard reachability (see [Diagnostic Sensors](#diagnostic-sensors) below)
 - Camera stream URL (when [Camera Streaming](camera-streaming.md) is enabled)
 
 No YAML configuration required on the HA side.
+
+#### Diagnostic Sensors
+
+Kite also publishes device-health sensors, grouped under the device's *Diagnostic* category in HA so they don't crowd the main entity card:
+
+| Entity | Reports |
+|---|---|
+| `binary_sensor.<clientId>_dashboard` | Whether the panel can currently reach the dashboard backend. Deliberately separate from the device's own MQTT availability — during a Home Assistant restart the panel itself is healthy, so it stays "on" here even while HA is down. |
+| `sensor.<clientId>_uptime` | Seconds since the app last (re)started. |
+| `sensor.<clientId>_app_version` | The installed Kite version. |
+| `sensor.<clientId>_ip_address` | The tablet's current WiFi IP. |
+| `sensor.<clientId>_ram_usage` | Current RAM usage percentage. |
+
+Each of the four diagnostic sensors can be turned off individually in **Settings → MQTT** if you don't want it cluttering your entity list.
+
+#### Remote Commands
+
+A `text.<clientId>_navigate` entity and two buttons — `button.<clientId>_reload` and `button.<clientId>_navigate_home` — let you drive the kiosk from Home Assistant automations without touching the tablet. There's also a `button.<clientId>_clear_cache` for the one-click fix when a dashboard is stuck showing stale assets: it flushes the WebView's HTTP/image caches and reloads, without signing you out of Home Assistant.
+
+For scripting beyond what those entities expose (back/forward navigation, or evaluating a snippet of JavaScript in the page), publish directly to the command topic:
+
+```
+{clientId}/command/set
+```
+
+with a JSON payload:
+
+```json
+{ "action": "navigate", "value": "http://192.168.1.100:8123/lovelace/kiosk" }
+```
+
+Supported `action` values: `navigate` (needs `value`, the URL to load), `reload`, `back`, `forward`, `clear_cache`, `navigate_home`, and `evaluate_js` (needs `value`, the JS to run — Android WebView engine only; ignored on GeckoView).
 
 #### Camera Stream URL Sensor
 

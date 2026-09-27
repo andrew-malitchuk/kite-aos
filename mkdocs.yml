@@ -81,6 +81,7 @@ nav:
     - Web Kiosk: user-guide/web-kiosk.md
     - Appearance: user-guide/appearance.md
     - System Controls: user-guide/system-controls.md
+    - Resilience & Interaction: user-guide/resilience.md
     - Backup & Restore: user-guide/backup-restore.md
   - Architecture:
     - Overview: architecture/overview.md

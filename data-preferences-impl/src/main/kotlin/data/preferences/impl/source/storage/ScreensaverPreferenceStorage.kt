@@ -39,14 +39,15 @@ internal class ScreensaverPreferenceStorage(
      *
      * @return a [Flow] emitting the current [ScreensaverDataProto.ScreensaverProtoModel].
      */
-    override fun subscribeToData(): Flow<ScreensaverDataProto.ScreensaverProtoModel?> = preference.data.catch { exception ->
-        if (exception is IOException) {
-            Log.e("Error", exception.message.toString())
-            emit(ScreensaverDataProto.ScreensaverProtoModel.getDefaultInstance())
-        } else {
-            throw exception
+    override fun subscribeToData(): Flow<ScreensaverDataProto.ScreensaverProtoModel?> =
+        preference.data.catch { exception ->
+            if (exception is IOException) {
+                Log.e("Error", exception.message.toString())
+                emit(ScreensaverDataProto.ScreensaverProtoModel.getDefaultInstance())
+            } else {
+                throw exception
+            }
         }
-    }
 
     /**
      * Retrieves the current screensaver preference data as a single snapshot.

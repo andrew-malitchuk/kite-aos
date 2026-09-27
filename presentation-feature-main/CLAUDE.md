@@ -35,6 +35,41 @@ On the `tv` form factor the kiosk is driven by a remote D-pad rather than touch.
 *   **WebView D-pad focus**: both `AndroidWebViewEngine` and `GeckoViewEngine` request focus on the underlying view once it is attached (in their `AndroidView` `update` block) so remote key events reach the Home Assistant dashboard. In v1 focus quality inside the page relies on HA's own focus handling — there is no custom in-page JS focus manager.
 *   **Leanback launch fallback**: when launching an external app, `MainScreen` falls back to `PackageManager.getLeanbackLaunchIntentForPackage()` if the regular `getLaunchIntentForPackage()` returns `null` (common for TV-only apps that have no `CATEGORY_LAUNCHER` entry).
 
+## Survivability & Interaction (`@since 2.2.0`)
+The Main screen owns the mounted engine, so every behaviour that has to touch it is routed here —
+even when the trigger lives outside the composition (an `AlarmManager` alarm, an
+`Application.onTrimMemory` callback, an MQTT button). Those arrive on `RemoteCommandBus` and are
+turned into side effects by `MainViewModel`.
+
+*   **`EngineHandle` gained `pause()` / `resume()` / `clearCache()`**, implemented by both engines.
+    `pause()` is what stops the Home Assistant frontend's ~1/second WebSocket retry loop while the
+    backend is down. On GeckoView that is `session.setActive(false)`; on Android WebView it needs
+    **both** `onPause()` and `pauseTimers()` — `onPause()` alone only stops drawing, leaving the JS
+    reconnect loop running.
+*   **`clearCache()` preserves the session.** Only HTTP and image caches are dropped
+    (`ClearFlags.ALL_CACHES` / `clearCache(true)`). Clearing cookies or local storage would sign the
+    panel out of Home Assistant, turning a remote recovery into a physical visit.
+*   **`ReloadWebViewEffect` vs `NavigateHomeEffect`.** A reload re-requests the current page, so the
+    dashboard's path survives — that is what the scheduled and memory-pressure reloads want. The
+    inactivity reset wants the opposite, so it assigns the home URL directly.
+*   **Interaction detection.** The idle countdown is reset by a `pointerInput` attached to
+    `KioskWebView` that observes the `PointerEventPass.Initial` pass and **never consumes** — a
+    normal gesture detector there would swallow the touches the dashboard needs. TV has no touch, so
+    D-pad presses arrive instead via `RemoteCommandBus.interaction` from `HostActivity`.
+*   **Remote commands run through one channel.** `MainScreen` no longer keeps a counter per
+    engine action; every instruction is dispatched as a single `EngineCommand(id, action, value)`
+    that `MainContent` applies in one `LaunchedEffect`. The `id` matters: these are events, not
+    state, so two reloads or two navigations to the same URL must act twice — an unchanged key
+    would swallow the second. `EngineHandle` gained `evaluateJs(script)` for the MQTT `evaluate_js`
+    command; it is honoured on Android WebView and **ignored (with a log) on GeckoView**, which
+    blocks `javascript:` loads and evaluates only through a signed WebExtension.
+*   **`navigate` bypasses the whitelist by design.** The whitelist stops a passer-by wandering off
+    the dashboard, and a publish to the broker is not a passer-by. It works out that way in
+    practice too: assigning `state.url` reaches the engine through `loadUrl()`, which does not run
+    `shouldOverrideUrlLoading`.
+*   The countdown does not run while the screensaver or dark overlay is up: an idle panel is already
+    showing nothing, and resetting behind the screensaver would silently discard the user's page.
+
 ## Dependencies
 *   **`presentation-core-ui`**: For design system atoms, molecules (like `SimpleApplicationListItem`), and shimmer effects.
 *   **`presentation-core-platform`**: For direct integration with the `MotionService`.

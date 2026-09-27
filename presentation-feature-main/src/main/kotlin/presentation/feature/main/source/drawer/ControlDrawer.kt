@@ -26,8 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import kotlinx.coroutines.delay
 import domain.core.source.model.ApplicationModel
+import kotlinx.coroutines.delay
 import presentation.core.styling.core.Theme
 import presentation.core.ui.source.kit.atom.button.icon.IconButton
 import presentation.core.ui.source.kit.atom.button.icon.core.IconButtonDefault

@@ -106,6 +106,25 @@
             </intent-filter>
         </receiver>
 
+        <!-- Brings the kiosk back after a fatal crash, via an alarm fired from a fresh process -->
+        <receiver
+            android:name="presentation.core.platform.source.receiver.KioskRelaunchReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="presentation.core.platform.ACTION_RELAUNCH_KIOSK" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Daily dashboard reload alarm; re-armed on boot because alarms do not survive reboot -->
+        <receiver
+            android:name="presentation.core.platform.source.receiver.WebViewReloadReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="presentation.core.platform.ACTION_SCHEDULED_RELOAD" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
         <!-- Persistent service for camera-based motion detection -->
         <service
             android:name="presentation.core.platform.source.service.MotionService"

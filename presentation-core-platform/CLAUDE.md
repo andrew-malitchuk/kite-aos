@@ -8,7 +8,7 @@ This module provides low-level platform integration and system services required
 *   **Power & Display Management**: Automatically manages screen brightness, wakes the device on motion, and enforces inactivity-based locking.
 *   **Device Administration**: Provides `ApplicationDeviceAdminReceiver` to handle administrative privileges required for kiosk-mode features like programmatically locking the screen.
 *   **MQTT Lifecycle**: Manages the MQTT connection as a foreground service, ensuring telemetry can be reported even when the UI is not active.
-*   **Telemetry**: Monitors system events like battery level changes and reports them to the telemetry system.
+*   **Telemetry**: Monitors system events like battery level changes and reports them to the telemetry system, and samples the low-frequency companion diagnostics (uptime, app version, LAN IP, device RAM usage) on a timer.
 *   **System Navigation**: Contains extensions to simplify interaction with Android system settings (e.g., language settings).
 
 ## Architecture
@@ -39,6 +39,95 @@ This module carries the platform-level support for the `tv` build flavor. TV box
 *   **`MqttService`**: A reactive service that observes the MQTT configuration and manages the connection state automatically.
 *   **`ApplicationDeviceAdminReceiver`**: Entry point for device administrator policies, primarily used for the `force-lock` capability.
 *   **`BatteryReceiver`**: A broadcast receiver that calculates battery percentage and triggers MQTT telemetry updates.
+*   **`CrashRelaunchHandler` / `CrashDiagnosticsStore`** (`@since 2.2.0`): Crash recovery with a mandatory boot-loop rate limiter.
+*   **`WebViewReloadScheduler` / `MemoryRecoveryCoordinator`** (`@since 2.2.0`): Scheduled and pressure-driven dashboard reloads.
+*   **`DashboardConnectionMonitor` / `DashboardConnectionMachine`** (`@since 2.2.0`): Pauses the WebView while the backend is unreachable; the machine is pure and testable.
+*   **`DeviceTelemetryProvider`** (`@since 2.1.0`): Samples the four companion diagnostic values published to Home Assistant. All are permission-free reads, which is what makes polling them acceptable instead of wiring four observers. `versionName` is resolved once and cached (it cannot change without a process restart). RAM usage is **device-wide** (`ActivityManager.MemoryInfo`), not per-process, because Android's low-memory killer decides from free system memory — so that is the number that actually predicts the blank-page renderer kill a long-running dashboard hits.
+
+### Companion Telemetry & Discovery Lifecycle (`@since 2.1.0`)
+`MqttService` gains two peer coroutines inside its connected block, so both are cancelled
+automatically when the configuration changes or the connection drops:
+
+*   **`publishCompanionTelemetry()`** publishes a `DeviceTelemetryProvider` sample every 60 s,
+    immediately before the first delay so Home Assistant is populated on connect rather than showing
+    unknown sensors for the first minute. A plain coroutine loop is deliberate here, unlike the
+    scheduled work that must survive Doze via `AlarmManager`: being frozen while the device sleeps is
+    correct for telemetry — it reports on a *running* app, and the availability topic already tells
+    Home Assistant when the panel has stopped reporting.
+*   **`observeClearCacheCommand()`** bridges Home Assistant `clear_cache` button presses onto
+    `RemoteCommandBus.emitClearCache()`. The cache belongs to whichever engine the Main feature has
+    mounted, which the service has no handle on, so the bus is the seam — the same route the MQTT FAB
+    command already takes.
+*   **`observeRemoteCommands()`** (`@since 2.2.0`) bridges the shared command topic
+    (`{clientId}/command/set`) onto the same bus, translating each decoded `RemoteCommandModel`
+    into one `emit*` call. The service handles none of them itself — navigation, history and script
+    evaluation all act on the WebView the Main feature owns. Keeping this a pure translation step is
+    what will let a second transport (a local HTTP control API) reuse the behaviour instead of
+    reimplementing it. `navigate_home` maps onto `emitHomeReset()` and `clear_cache` onto
+    `emitClearCache()`, so the remote commands and their dedicated entities share one code path.
+
+On the **disabled** branch, `MqttPurgeDiscoveryUseCase` runs *before* `MqttDisconnectUseCase`.
+Order matters: discovery configs are retained messages, so disconnecting first would strand every
+entity in Home Assistant with nothing left to update it, leaving the user to delete them by hand.
+
+### Survivability (`@since 2.2.0`)
+A wall-mounted dashboard is judged on uptime. Each piece here exists because a specific class of
+Android behaviour will otherwise take the panel down silently, overnight, with nobody watching.
+
+**Crash auto-relaunch (2.2)** — `CrashRelaunchHandler` is a `Thread.UncaughtExceptionHandler` that
+schedules a one-shot `AlarmManager` relaunch and then lets the process die. The alarm fires from
+*outside* the dead process, so this needs no overlay permission, no device-owner privilege and no
+surviving service. Three constraints shape the implementation:
+*   **The rate limiter is mandatory, not optional.** A deterministic startup crash plus an
+    unconditional relaunch is a boot loop that flattens the battery and leaves a wall-mounted panel
+    unrecoverable without physically attaching ADB. `CrashDiagnosticsStore` suppresses the relaunch
+    after `MAX_CRASHES_IN_WINDOW` (3) crashes inside `CRASH_WINDOW_MS` (10 min).
+*   **`SharedPreferences`, not DataStore.** This is the only preference in the app not on Proto
+    DataStore. The crash path runs in a process being torn down, where a `suspend` DataStore write
+    is not guaranteed to complete; `SharedPreferences.commit()` writes on the calling thread. For
+    the same reason the user's on/off setting is mirrored ahead of time by
+    `CrashRelaunchSettingMirror` rather than read at crash time.
+*   **The previous handler is always chained**, so Firebase Crashlytics (gms) still receives the
+    crash. `install()` is therefore called *after* `CrashlyticsInitializer.init()`.
+
+**Memory recovery & scheduled reload (2.3)** — two triggers, one reload.
+*   `MemoryRecoveryCoordinator` turns `Application.onTrimMemory` into a reload, but **gates it on
+    the screensaver being up**. Reloading blanks the page, so when pressure arrives while somebody
+    is looking at the panel the request is held and executed the moment it next idles.
+*   `WebViewReloadScheduler` arms the optional daily reload. **It must use `AlarmManager`, never a
+    coroutine `delay` or a `Handler`**: in Doze, in-process timers do not fire, and the overnight
+    idle window is exactly when the reload is both most needed and least disruptive. A timer-based
+    implementation looks correct in testing and silently never runs in production.
+*   The alarm is one-shot and re-armed by `WebViewReloadReceiver` after each firing. Recomputing the
+    *next future* occurrence each time is what keeps the schedule correct across a DST shift, where
+    a fixed 24-hour repeat would drift by an hour.
+*   Path preservation needs no machinery: a reload re-requests the current page, so the dashboard
+    stays where it was. (Only the inactivity reset deliberately discards the path.)
+
+**Dashboard connection monitor (2.4)** — `DashboardConnectionMonitor` +
+`DashboardConnectionMachine`, `HEALTHY → SUSPECT → PAUSED → HEALTHY`.
+*   **Why pause at all:** when Home Assistant restarts, its frontend retries the WebSocket about
+    once a second, indefinitely. Behind a reverse proxy or intrusion-prevention layer that is
+    indistinguishable from an attack — the panel gets rate-limited or IP-banned and then stays
+    broken *after* Home Assistant is healthy again. Pausing stops the storm at its source.
+*   The `SUSPECT` grace period (20 s) exists so a brief hiccup never causes a pause/resume cycle.
+*   `DashboardConnectionMachine` is deliberately free of Android types, coroutines and I/O — clock
+    and probe are parameters — so the timing-dependent logic is unit-testable with a fake clock.
+    This is the one piece of the survivability work worth real test coverage, because its failure
+    mode (a panel stuck paused) is silent.
+*   The probe is a bare TCP connect, not an HTTP request: it is the cheapest "something is
+    listening" signal and adds no request to the rate limiter that caused the outage to persist.
+*   `onScreenWake()` forces recovery when the panel slept while unhealthy — Doze freezes the
+    in-process ticker, so an overnight outage would otherwise leave the panel paused after waking.
+*   State is published to Home Assistant as its own `dashboard` binary sensor, **not** folded into
+    device availability: the panel is healthy during a backend outage, and marking the whole device
+    unavailable would hide its own working controls exactly when someone is diagnosing the server.
+
+### Interaction (`@since 2.2.0`)
+`RemoteCommandBus` carries three further channels for behaviour raised outside the composition:
+`reload` (scheduled/memory recovery), `homeReset` (inactivity reset) and `interaction`. The last is
+needed because Android TV D-pad input is seen by `HostActivity`, above the navigation graph, and
+never reaches the Compose pointer pipeline that reports touches on mobile.
 
 ## Dependencies
 *   **CameraX**: For frame analysis.

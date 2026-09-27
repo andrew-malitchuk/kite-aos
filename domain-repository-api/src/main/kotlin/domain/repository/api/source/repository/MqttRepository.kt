@@ -1,5 +1,7 @@
 package domain.repository.api.source.repository
 
+import domain.core.source.model.CompanionTelemetryModel
+import domain.core.source.model.MqttDiagnosticEntityModel
 import domain.core.source.model.MqttModel
 import kotlinx.coroutines.flow.Flow
 
@@ -23,6 +25,8 @@ public interface MqttRepository {
      * @param password The password for authentication.
      * @param friendlyName Human-readable name for the device used in Home Assistant discovery.
      * @param model Device form-factor reported to Home Assistant (`"tv"` or `"tablet"`).
+     * @param diagnostics The optional diagnostic entities to register. Entities absent from this
+     *   set are actively unregistered, so opting one out removes it from Home Assistant.
      */
     public suspend fun connect(
         server: String,
@@ -32,12 +36,41 @@ public interface MqttRepository {
         password: String,
         friendlyName: String,
         model: String,
+        diagnostics: Set<MqttDiagnosticEntityModel>,
     )
 
     /**
      * Safely disconnects from the MQTT broker and cleans up resources.
+     *
+     * Publishes an `offline` availability payload first, so a deliberate shutdown still shows up
+     * in Home Assistant as an unavailable device.
      */
     public suspend fun disconnect()
+
+    /**
+     * Removes every Home Assistant discovery entity registered by this device.
+     *
+     * Call this when the user turns MQTT off. Discovery configs are retained messages, so without
+     * an explicit purge the panel's entities stay in Home Assistant indefinitely with nothing left
+     * to update them, and have to be deleted by hand.
+     *
+     * Must be called before [disconnect], while the broker connection is still up.
+     */
+    public suspend fun purgeDiscovery()
+
+    /**
+     * Publishes whether the dashboard backend is reachable.
+     *
+     * @param isReachable `true` when the dashboard backend is answering.
+     */
+    public suspend fun sendDashboardState(isReachable: Boolean)
+
+    /**
+     * Publishes the low-frequency companion telemetry to the MQTT broker.
+     *
+     * @param telemetry The sampled uptime, app version, IP address and RAM usage.
+     */
+    public suspend fun sendCompanionTelemetry(telemetry: CompanionTelemetryModel)
 
     /**
      * Sends the current motion detection state to the MQTT broker.

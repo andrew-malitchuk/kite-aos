@@ -3,6 +3,8 @@ package data.repository.impl.source.repository
 import data.mqtt.api.source.datasource.TelemetryMqttSource
 import data.preferences.api.source.datasource.MqttPreferenceSource
 import data.repository.impl.core.mapper.MqttPreferenceMapper
+import domain.core.source.model.CompanionTelemetryModel
+import domain.core.source.model.MqttDiagnosticEntityModel
 import domain.core.source.model.MqttModel
 import domain.repository.api.source.repository.MqttRepository
 import kotlinx.coroutines.flow.Flow
@@ -38,6 +40,7 @@ internal class MqttRepositoryImpl(
      * @param password Password for broker authentication.
      * @param friendlyName Human-readable device name used in Home Assistant discovery payloads.
      * @param model Device form-factor reported to Home Assistant (`"tv"` or `"tablet"`).
+     * @param diagnostics The optional diagnostic entities to register.
      */
     override suspend fun connect(
         server: String,
@@ -47,8 +50,20 @@ internal class MqttRepositoryImpl(
         password: String,
         friendlyName: String,
         model: String,
+        diagnostics: Set<MqttDiagnosticEntityModel>,
     ) {
-        telemetryMqttSource.connect(server, port, clientId, username, password, friendlyName, model)
+        telemetryMqttSource.connect(
+            server = server,
+            port = port,
+            clientId = clientId,
+            username = username,
+            password = password,
+            friendlyName = friendlyName,
+            model = model,
+            // This is the seam between the domain enum and the data layer's plain topic ids: the
+            // data modules do not depend on domain-core, so the mapping lives here.
+            diagnostics = diagnostics.mapTo(mutableSetOf()) { it.id },
+        )
     }
 
     /**
@@ -56,6 +71,36 @@ internal class MqttRepositoryImpl(
      */
     override suspend fun disconnect() {
         telemetryMqttSource.disconnect()
+    }
+
+    /**
+     * Removes every Home Assistant discovery entity registered by this device.
+     */
+    override suspend fun purgeDiscovery() {
+        telemetryMqttSource.purgeDiscovery()
+    }
+
+    /**
+     * Publishes whether the dashboard backend is reachable.
+     *
+     * @param isReachable `true` when the dashboard backend is answering.
+     */
+    override suspend fun sendDashboardState(isReachable: Boolean) {
+        telemetryMqttSource.sendDashboardState(isReachable)
+    }
+
+    /**
+     * Publishes the low-frequency companion telemetry to the MQTT broker.
+     *
+     * @param telemetry The sampled uptime, app version, IP address and RAM usage.
+     */
+    override suspend fun sendCompanionTelemetry(telemetry: CompanionTelemetryModel) {
+        telemetryMqttSource.sendCompanionTelemetry(
+            uptimeSeconds = telemetry.uptimeSeconds,
+            appVersion = telemetry.appVersion,
+            ipAddress = telemetry.ipAddress,
+            ramUsagePercent = telemetry.ramUsagePercent,
+        )
     }
 
     /**

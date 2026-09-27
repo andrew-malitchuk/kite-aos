@@ -21,6 +21,11 @@ import kotlinx.serialization.Serializable
  * @property optimistic When `true`, HA assumes state matches the last command without a state topic.
  * @property icon Material Design icon identifier shown in Home Assistant.
  * @property uniqueId Unique identifier for the entity, must be stable across restarts.
+ * @property availabilityTopic MQTT topic carrying the device-wide `online`/`offline`
+ *   availability payload. Home Assistant marks this entity unavailable while the payload is
+ *   `offline`, which the broker publishes from the MQTT Last Will when the panel drops off.
+ * @property entityCategory Home Assistant entity category. `"config"` marks this as an entity
+ *   that changes device configuration rather than a primary control.
  *
  * @see DeviceMqtt
  * @since 0.0.6
@@ -41,6 +46,10 @@ internal data class FabConfigMqtt(
     val optimistic: Boolean = true,
     @SerialName("icon")
     val icon: String = "mdi:gesture-tap-button",
+    @SerialName("availability_topic")
+    val availabilityTopic: String,
+    @SerialName("entity_category")
+    val entityCategory: String = "config",
     @SerialName("unique_id")
     val uniqueId: String,
 )

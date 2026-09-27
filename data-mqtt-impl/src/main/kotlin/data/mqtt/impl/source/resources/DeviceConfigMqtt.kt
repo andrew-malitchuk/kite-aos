@@ -29,6 +29,9 @@ import kotlinx.serialization.Serializable
  * @property payloadOn Payload string that represents the "motion detected" state (default: `"ON"`).
  * @property stateTopic MQTT topic where motion state updates are published.
  * @property uniqueId Unique identifier for the sensor, must be stable across restarts.
+ * @property availabilityTopic MQTT topic carrying the device-wide `online`/`offline`
+ *   availability payload. Home Assistant marks this entity unavailable while the payload is
+ *   `offline`, which the broker publishes from the MQTT Last Will when the panel drops off.
  *
  * @see DeviceMqtt
  * @see BatteryConfigMqtt
@@ -48,6 +51,8 @@ internal data class DeviceConfigMqtt(
     val payloadOn: String = "ON",
     @SerialName("state_topic")
     val stateTopic: String,
+    @SerialName("availability_topic")
+    val availabilityTopic: String,
     @SerialName("unique_id")
     val uniqueId: String,
 )

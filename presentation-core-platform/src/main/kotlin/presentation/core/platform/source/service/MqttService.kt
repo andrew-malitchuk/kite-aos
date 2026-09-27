@@ -18,24 +18,34 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
+import domain.core.source.model.RemoteCommandModel
 import domain.usecase.api.source.usecase.mqtt.MqttConnectUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttDisconnectUseCase
+import domain.usecase.api.source.usecase.mqtt.MqttPurgeDiscoveryUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttSendBrightnessUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttSendCameraUrlUseCase
+import domain.usecase.api.source.usecase.mqtt.MqttSendCompanionTelemetryUseCase
+import domain.usecase.api.source.usecase.mqtt.MqttSendDashboardStateUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttSendScreenStateUseCase
 import domain.usecase.api.source.usecase.mqtt.MqttSendVolumeUseCase
+import domain.usecase.api.source.usecase.mqtt.ObserveMqttClearCacheCommandUseCase
 import domain.usecase.api.source.usecase.mqtt.ObserveMqttCommandsUseCase
 import domain.usecase.api.source.usecase.mqtt.ObserveMqttConfigurationUseCase
+import domain.usecase.api.source.usecase.mqtt.ObserveMqttMotionCommandUseCase
+import domain.usecase.api.source.usecase.mqtt.ObserveMqttRemoteCommandUseCase
 import domain.usecase.api.source.usecase.streaming.ObserveStreamingConfigurationUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import domain.usecase.api.source.usecase.mqtt.ObserveMqttMotionCommandUseCase
 import presentation.core.platform.R
 import presentation.core.platform.core.helper.DevicePowerManager
+import presentation.core.platform.core.helper.DeviceTelemetryProvider
 import presentation.core.platform.core.helper.NetworkAddressResolver
 import presentation.core.platform.source.command.RemoteCommandBus
 import presentation.core.platform.source.config.AppConfig
+import presentation.core.platform.source.connection.DashboardConnectionMonitor
+import presentation.core.platform.source.connection.DashboardConnectionState
 
 /**
  * Foreground service that maintains the MQTT connection and handles bidirectional control.
@@ -76,10 +86,17 @@ public class MqttService : LifecycleService() {
     private val appConfig: AppConfig by inject()
     private val observeMqttMotionCommandUseCase: ObserveMqttMotionCommandUseCase by inject()
     private val remoteCommandBus: RemoteCommandBus by inject()
+    private val mqttSendCompanionTelemetryUseCase: MqttSendCompanionTelemetryUseCase by inject()
+    private val mqttPurgeDiscoveryUseCase: MqttPurgeDiscoveryUseCase by inject()
+    private val observeMqttClearCacheCommandUseCase: ObserveMqttClearCacheCommandUseCase by inject()
+    private val observeMqttRemoteCommandUseCase: ObserveMqttRemoteCommandUseCase by inject()
+    private val mqttSendDashboardStateUseCase: MqttSendDashboardStateUseCase by inject()
+    private val dashboardConnectionMonitor: DashboardConnectionMonitor by inject()
 
     private lateinit var audioManager: AudioManager
     private lateinit var powerManager: PowerManager
     private lateinit var devicePowerManager: DevicePowerManager
+    private lateinit var deviceTelemetryProvider: DeviceTelemetryProvider
 
     /**
      * BroadcastReceiver that listens for [Intent.ACTION_SCREEN_ON] and [Intent.ACTION_SCREEN_OFF]
@@ -130,6 +147,14 @@ public class MqttService : LifecycleService() {
          * (distinct from [MotionService.NOTIFICATION_ID]).
          */
         private const val NOTIFICATION_ID = 2
+
+        /**
+         * Interval between companion telemetry publishes, in milliseconds.
+         *
+         * Uptime, IP address and RAM usage all change slowly, so a minute is frequent enough to be
+         * useful in an automation while keeping the broker traffic of a wall panel negligible.
+         */
+        private const val TELEMETRY_INTERVAL_MS = 60_000L
     }
 
     /**
@@ -143,6 +168,7 @@ public class MqttService : LifecycleService() {
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         powerManager = getSystemService(POWER_SERVICE) as PowerManager
         devicePowerManager = DevicePowerManager(this, appConfig.isTv)
+        deviceTelemetryProvider = DeviceTelemetryProvider(applicationContext)
 
         // Brightness and screen entities are hidden on Android TV (not reliably controllable
         // there), so skip the observers that publish their state — there is nothing to mirror.
@@ -185,6 +211,10 @@ public class MqttService : LifecycleService() {
                         Log.i(TAG, "MQTT connected successfully.")
                         publishInitialStates()
                         launch { observeStreamingUrl() }
+                        launch { publishCompanionTelemetry() }
+                        launch { observeClearCacheCommand() }
+                        launch { observeRemoteCommands() }
+                        launch { publishDashboardState() }
                         // TV motion fallback: bridge inbound MQTT motion pulses onto the shared
                         // bus, where MqttMotionSource turns them into motion events. Only on TV
                         // (mobile uses the camera and has no bus consumer).
@@ -199,6 +229,13 @@ public class MqttService : LifecycleService() {
                     }
                 } else {
                     Log.d(TAG, "MQTT disabled or configuration missing, disconnecting...")
+                    // Order matters: discovery configs are retained messages, so they have to be
+                    // cleared while the connection is still up. Disconnecting first would leave
+                    // every entity stranded in Home Assistant with nothing left to update it, and
+                    // the user would have to delete them by hand.
+                    mqttPurgeDiscoveryUseCase().onFailure { e ->
+                        Log.e(TAG, "Failed to purge MQTT discovery entities", e)
+                    }
                     mqttDisconnectUseCase().onFailure { e ->
                         Log.e(TAG, "Failed to disconnect MQTT client", e)
                     }
@@ -253,6 +290,82 @@ public class MqttService : LifecycleService() {
                 ""
             }
             mqttSendCameraUrlUseCase(url)
+        }
+    }
+
+    /**
+     * Publishes the companion diagnostic telemetry on a fixed interval for as long as the MQTT
+     * connection lives.
+     *
+     * Publishes immediately before the first delay so Home Assistant is populated on connect
+     * rather than showing four unknown sensors for the first minute.
+     *
+     * A plain coroutine loop is deliberate here, unlike the scheduled work that has to survive
+     * Doze via `AlarmManager`. Being frozen while the device sleeps is the correct behaviour for
+     * telemetry: it is a report on a running app, and the availability topic already tells Home
+     * Assistant when the panel has stopped reporting.
+     *
+     * Runs as a peer coroutine inside the MQTT-connected block, so it is cancelled automatically
+     * when the configuration changes or the connection drops.
+     */
+    private suspend fun publishCompanionTelemetry() {
+        while (true) {
+            val telemetry = deviceTelemetryProvider.sample()
+            mqttSendCompanionTelemetryUseCase(telemetry).onFailure { e ->
+                Log.e(TAG, "Failed to publish companion telemetry", e)
+            }
+            delay(TELEMETRY_INTERVAL_MS)
+        }
+    }
+
+    /**
+     * Mirrors the dashboard connection monitor's state onto its Home Assistant binary sensor.
+     *
+     * Kept separate from the device availability topic on purpose: during a Home Assistant restart
+     * the panel is perfectly healthy, so marking the whole device unavailable would both be wrong
+     * and hide the panel's own working controls just when someone is trying to diagnose the server.
+     */
+    private suspend fun publishDashboardState() {
+        dashboardConnectionMonitor.state.collect { state ->
+            mqttSendDashboardStateUseCase(state == DashboardConnectionState.HEALTHY)
+        }
+    }
+
+    /**
+     * Bridges Home Assistant `clear_cache` button presses onto the shared command bus, where
+     * `MainViewModel` turns each one into a cache flush followed by a reload.
+     *
+     * The cache belongs to whichever engine the Main feature has mounted, which this service has
+     * no handle on, so the bus is the seam — the same route the MQTT FAB command already takes.
+     */
+    private suspend fun observeClearCacheCommand() {
+        observeMqttClearCacheCommandUseCase().collect {
+            Log.i(TAG, "Clear cache requested over MQTT")
+            remoteCommandBus.emitClearCache()
+        }
+    }
+
+    /**
+     * Bridges the shared remote-command topic onto [RemoteCommandBus], where `MainViewModel`
+     * applies each command to the mounted engine.
+     *
+     * The service handles none of these itself: navigation, history and script evaluation all act
+     * on the WebView the Main feature owns, and this service has no handle on it. Routing is a
+     * pure translation step, which is what keeps a second transport (a local HTTP API) from having
+     * to reimplement any of the behaviour.
+     */
+    private suspend fun observeRemoteCommands() {
+        observeMqttRemoteCommandUseCase().collect { command ->
+            Log.d(TAG, "Remote command over MQTT: ${command.action}")
+            when (command) {
+                is RemoteCommandModel.Navigate -> remoteCommandBus.emitNavigate(command.url)
+                RemoteCommandModel.Reload -> remoteCommandBus.emitReload()
+                RemoteCommandModel.Back -> remoteCommandBus.emitBack()
+                RemoteCommandModel.Forward -> remoteCommandBus.emitForward()
+                RemoteCommandModel.ClearCache -> remoteCommandBus.emitClearCache()
+                RemoteCommandModel.NavigateHome -> remoteCommandBus.emitHomeReset()
+                is RemoteCommandModel.EvaluateJs -> remoteCommandBus.emitEvaluateJs(command.script)
+            }
         }
     }
 

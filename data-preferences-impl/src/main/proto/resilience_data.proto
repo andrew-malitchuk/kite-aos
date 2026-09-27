@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package resilience;
+
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "ResilienceDataProto";
+
+// Unattended-operation safeguards: crash recovery, scheduled reload, memory recovery and the
+// dashboard connection monitor.
+//
+// Encoding note: proto3 has no field presence for scalars, so a field added later reads back as
+// its zero value for every config written before it existed. Two idioms work around that here,
+// matching the convention already used in mqtt_data.proto:
+//   * Settings that should default to ON are stored inverted (*_disabled), so the zero value
+//     `false` correctly means "not disabled".
+//   * scheduled_reload_hour is stored offset by one, because 0 is a legitimate hour (midnight)
+//     and would otherwise be indistinguishable from "never configured".
+message ResilienceProtoModel {
+  // Relaunch the kiosk after a fatal crash. Default ON.
+  bool crash_relaunch_disabled = 1;
+
+  // Reload the dashboard once a day at a fixed hour. Default OFF — the stealth reload below
+  // already covers most deployments, and a forced daily reload is visible if the panel never idles.
+  bool scheduled_reload_enabled = 2;
+
+  // Hour of the daily reload, stored as hour + 1. 0 means "not configured" and resolves to the
+  // domain default; 1..24 map to hours 0..23.
+  int32 scheduled_reload_hour_plus_one = 3;
+
+  // Reload on memory pressure / while the screensaver is up, to reset accumulated renderer memory.
+  // Default ON.
+  bool memory_recovery_disabled = 4;
+
+  // Pause the WebView while the dashboard backend is unreachable. Default ON.
+  bool connection_monitor_disabled = 5;
+
+  // Hold a WifiLock so the radio stays out of power-save while the screen is off. Default ON.
+  // This one is genuinely user-disableable rather than defensively so: on some budget WiFi
+  // chipsets holding the radio out of power-save for hours wedges the driver. See LockManager.
+  bool wifi_lock_disabled = 6;
+}

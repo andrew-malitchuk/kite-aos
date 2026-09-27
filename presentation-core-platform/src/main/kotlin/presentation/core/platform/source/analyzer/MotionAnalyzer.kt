@@ -157,29 +157,54 @@ public class MotionAnalyzer {
             // (step ≈ sqrt(ANALYZER_STEP)), so sensitivity is comparable to the mobile path.
             val gridStep = sqrt(ANALYZER_STEP.toDouble()).roundToInt().coerceAtLeast(1)
 
-            var sum = 0L
-            var pixelCount = 0
-            var row = 0
-            while (row < height) {
-                val rowStart = row * rowStride
-                var col = 0
-                while (col < width) {
-                    val index = rowStart + col * pixelStride
-                    if (index >= yPlane.limit()) break
-                    sum += yPlane.get(index).toInt() and 0xFF
-                    pixelCount++
-                    col += gridStep
-                }
-                row += gridStep
-            }
-
-            if (pixelCount == 0) return false
-            val currentAvg = sum.toDouble() / pixelCount
+            val currentAvg = averageLuma(yPlane, rowStride, pixelStride, width, height, gridStep)
+                ?: return false
             return scoreFrame(currentAvg, sensitivity)
         } catch (e: Exception) {
             Log.e(TAG, "Frame analysis failed", e)
             return false
         }
+    }
+
+    /**
+     * Averages the luma of a square sample grid over a raw Y plane.
+     *
+     * Extracted from [analyze] so the two nested sampling loops do not sit inside its
+     * `try`/`catch` — the same arithmetic, one nesting level shallower.
+     *
+     * @param yPlane The Y (luma) plane buffer.
+     * @param rowStride Bytes per row in [yPlane].
+     * @param pixelStride Bytes per pixel in [yPlane].
+     * @param width Frame width in pixels.
+     * @param height Frame height in pixels.
+     * @param gridStep Spacing between sampled pixels, in both axes.
+     * @return The average luma, or `null` when the buffer yielded no sample at all.
+     * @since 2.2.0
+     */
+    private fun averageLuma(
+        yPlane: ByteBuffer,
+        rowStride: Int,
+        pixelStride: Int,
+        width: Int,
+        height: Int,
+        gridStep: Int,
+    ): Double? {
+        var sum = 0L
+        var pixelCount = 0
+        var row = 0
+        while (row < height) {
+            val rowStart = row * rowStride
+            var col = 0
+            while (col < width) {
+                val index = rowStart + col * pixelStride
+                if (index >= yPlane.limit()) break
+                sum += yPlane.get(index).toInt() and 0xFF
+                pixelCount++
+                col += gridStep
+            }
+            row += gridStep
+        }
+        return if (pixelCount == 0) null else sum.toDouble() / pixelCount
     }
 
     /**

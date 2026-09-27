@@ -2,10 +2,6 @@ package data.platform.impl.source.scanner
 
 import data.platform.api.source.resource.HomeAssistantHost
 import data.platform.api.source.scanner.HomeAssistantScanner
-import java.net.HttpURLConnection
-import java.net.Inet4Address
-import java.net.NetworkInterface
-import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -15,6 +11,10 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.core.annotation.Single
+import java.net.HttpURLConnection
+import java.net.Inet4Address
+import java.net.NetworkInterface
+import java.net.URL
 
 /**
  * Android implementation of [HomeAssistantScanner].
@@ -120,13 +120,20 @@ internal class HomeAssistantScannerImpl : HomeAssistantScanner {
                 ?.let { ifAddr ->
                     val ip = (ifAddr.address as? Inet4Address)?.hostAddress ?: return null
                     val parts = ip.split(".")
-                    if (parts.size == 4) "${parts[0]}.${parts[1]}.${parts[2]}" else null
+                    if (parts.size == IPV4_OCTET_COUNT) {
+                        "${parts[0]}.${parts[1]}.${parts[2]}"
+                    } else {
+                        null
+                    }
                 }
         } catch (_: Exception) {
             null
         }
 
     private companion object {
+        /** Number of dot-separated octets in a well-formed IPv4 address. */
+        private const val IPV4_OCTET_COUNT = 4
+
         /** mDNS hostnames tried during the quick-probe phase before the full subnet scan. */
         val QUICK_HOSTS = listOf("homeassistant.local", "hass.local")
 

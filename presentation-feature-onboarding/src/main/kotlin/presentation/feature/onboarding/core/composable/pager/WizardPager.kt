@@ -32,14 +32,14 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
-import kotlinx.coroutines.delay
-import presentation.core.styling.core.FormFactor
-import presentation.core.styling.core.LocalFormFactor
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import presentation.core.localisation.R
+import presentation.core.styling.core.FormFactor
+import presentation.core.styling.core.LocalFormFactor
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.source.kit.atom.button.primary.PrimaryButton

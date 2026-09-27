@@ -21,21 +21,15 @@ Idle screensaver that activates after a configurable timeout, overlaid on the di
 
 ## Planned
 
-### Companion HA Entities
+### Companion HA Entities ✓
 Expand Home Assistant Discovery so the tablet appears as a full companion device — not just a brightness/volume MQTT client.
 
-- New published entities alongside existing ones:
-  - `sensor` — `uptime` (seconds since last boot, via `SystemClock.elapsedRealtime()`)
-  - `sensor` — `app_version` (versionName from `BuildConfig`)
-  - `sensor` — `ip_address` (current WiFi IP via `WifiManager`)
-  - `sensor` — `current_url` (URL currently loaded in the WebView; updated on every `onPageFinished`)
-  - `binary_sensor` — `last_seen` (timestamp of last MQTT publish; HA marks unavailable if broker stops receiving)
-- All entities follow the existing `*ConfigMqtt` pattern in `data-mqtt-impl` — new `CompanionTelemetryMqtt` data class + corresponding `MqttPublisher`
-- `current_url` published reactively: `MainViewModel` emits URL changes into a `StateFlow`; `MqttService` collects and publishes on change with a 1-second debounce
-- `uptime` and `ip_address` refreshed on a configurable interval (default 60 s) alongside the existing battery telemetry ticker
-- Configurable toggle per entity in Settings → MQTT section so users can opt out of individual sensors
+- New diagnostic sensors: `uptime` (`SystemClock.elapsedRealtime()`, `total_increasing` so a reboot reads as a counter reset), `app_version`, `ip_address`, `ram_usage` — all `entity_category: diagnostic`, sampled once a minute by `DeviceTelemetryProvider` and published via `MqttSendCompanionTelemetryUseCase`
+- Each of the four sensors is individually opt-outable in Settings → MQTT; the dashboard URL was already published as the `url` sensor, so no separate `current_url` entity was needed
+- The originally-planned `last_seen` binary sensor was superseded by a purpose-built `dashboard` reachability binary sensor instead — see Dashboard Connection Monitor below
+- Diagnostic opt-outs thread end-to-end via a `diagnostics: Set<String>` param on `TelemetryMqttSource.connect(...)`, translated from the domain `MqttDiagnosticEntityModel` enum in `MqttRepositoryImpl`
 
-### Inactivity Page Reset
+### Inactivity Page Reset ✓
 Automatically navigate back to the configured home URL after the user stops interacting with the dashboard for a configurable period.
 
 - Idle timeout (minutes) stored in Proto DataStore; configurable in Settings → WebView section
@@ -45,7 +39,7 @@ Automatically navigate back to the configured home URL after the user stops inte
 - Setting of `0` disables the feature entirely
 - MQTT command `inactivity_reset/trigger` forces an immediate reset remotely
 
-### Volume Button Gesture for Settings
+### Volume Button Gesture for Settings ✓
 Open the control drawer by pressing a physical volume button N times in quick succession — no visible UI required during kiosk operation.
 
 - `HostActivity.dispatchKeyEvent` intercepts `KEYCODE_VOLUME_UP` / `KEYCODE_VOLUME_DOWN`; counts presses within a 2-second rolling window
@@ -65,15 +59,16 @@ Define daily on/off rules so the kiosk screen powers down overnight and wakes at
 - Requires `SCHEDULE_EXACT_ALARM` permission (already targeted API 31+); prompts user if not granted
 - Overnight schedules (e.g. sleep 23:00 → wake 07:00) handled by sorting rules chronologically and scheduling the next future alarm
 
-### Remote MQTT Commands
+### Remote MQTT Commands ✓
 Accept inbound MQTT commands to control WebView navigation and state remotely from Home Assistant or any MQTT client.
 
-- New subscription topic: `{clientId}/command/set`; payload is a JSON object `{ "action": "...", "value": "..." }`
+- Subscription topic: `{clientId}/command/set`; payload is a JSON object `{ "action": "...", "value": "..." }`
 - Supported actions: `navigate` (load arbitrary URL), `reload` (refresh current page), `back` (WebView history back), `forward`, `clear_cache`, `navigate_home` (load configured home URL), `evaluate_js` (execute a JS snippet in the page)
-- `ObserveMqttRemoteCommandUseCase` filters the shared MQTT command flow and maps payloads to a `RemoteCommand` sealed class in `domain-core`
-- `MainViewModel.observeRemoteCommands()` collects the flow and translates each command to the appropriate `MainIntent`; WebView/GeckoView executes via existing `webViewClient` hooks
-- HA Discovery: `button` entity per action for `reload` and `navigate_home`; `text` entity for `navigate` URL input
-- All commands logged at DEBUG level via the existing analytics pipeline
+- `ObserveMqttRemoteCommandUseCase` filters the shared MQTT command flow and maps payloads to the `RemoteCommandModel` sealed class in `domain-core`; malformed JSON, unknown actions and missing values are dropped rather than tearing down the collector
+- `MqttService.observeRemoteCommands()` translates each command onto `RemoteCommandBus`; `MainViewModel` turns bus emissions into side effects, and `MainContent` applies them to the mounted engine through a single `EngineCommand` channel
+- `evaluate_js` needs an evaluation entry point the engine must expose — honoured on Android WebView, ignored with a log on GeckoView, which blocks `javascript:` loads
+- HA Discovery: `button` entity for `reload` and `navigate_home`; optimistic `text` entity for `navigate` URL input. The remaining actions stay reachable on the topic without an entity, so the device card is not buried under buttons nobody presses by hand
+- All commands logged at DEBUG level
 
 ### Auto Reboot
 Schedule automatic device reboots (e.g. 2 AM every two weeks) for long-running kiosk deployments.
@@ -114,6 +109,38 @@ Use the device's microphone to detect ambient sound as a presence signal — an 
 ---
 
 ## Done
+
+### Wake & WiFi Lock ✓
+Keep the MQTT session and dashboard alive through the screen-off window instead of losing the WiFi radio to OEM power management or Doze.
+
+- `LockManager` (`presentation-core-platform/source/power/`) holds a `PARTIAL_WAKE_LOCK` unconditionally for the life of the process, plus a `WifiLock` (`WIFI_MODE_FULL_LOW_LATENCY` on API 29+, `WIFI_MODE_FULL_HIGH_PERF` below)
+- WiFi lock is a user-disableable toggle in Settings → Resilience, defaulted on — some budget WiFi chipsets wedge the driver if the radio is held out of power-save for hours
+- Started once from `Application.onCreate` rather than tied to the motion/MQTT foreground services, so a plain-dashboard deployment running neither still gets the locks
+- No explicit teardown — both locks live for the process lifetime; the framework reclaims them on death
+
+### Crash Auto-Relaunch ✓
+Bring the kiosk back automatically after a fatal crash instead of leaving an unattended device sitting on the launcher.
+
+- Custom `UncaughtExceptionHandler` (`presentation-core-platform/source/diagnostics/`) persists a crash report and schedules a one-shot `AlarmManager` alarm to relaunch `HostActivity`, then lets the process die — chains to the previous handler so Crashlytics still sees the crash on the `gms` flavor
+- Rate-limited: three crashes within a rolling 10-minute window suppress the relaunch to avoid a battery-draining boot loop
+- Toggle in Settings → Resilience, default on; the flag is mirrored into `SharedPreferences` rather than DataStore since a crashing process cannot reliably await a suspend call
+- Crash reports land in app-private storage via `CrashDiagnosticsStore`; a Settings → Diagnostics viewer is still to come
+
+### Memory Recovery & Scheduled Reload ✓
+Reset the WebView's accumulated GPU/JS memory before it turns into a renderer kill or OOM on a dashboard that runs for weeks.
+
+- Stealth reload fires only while the screensaver is active, invisible to the user; a separate daily scheduled reload fires at a configured hour regardless of state
+- Both scheduled via `AlarmManager.setAndAllowWhileIdle()` rather than an in-process timer, since Doze freezes coroutine delays during exactly the overnight window the reload exists for
+- `onTrimMemory`/low-memory callbacks trigger the same reload path, deferred until the screensaver engages if the screen is currently on
+- Configurable in Settings → Resilience: memory-recovery toggle, scheduled-reload toggle, and reload hour (0–23)
+
+### Dashboard Connection Monitor ✓
+Detect that the Home Assistant backend has gone away and pause the WebView for the outage instead of hammering it with reconnect traffic that gets the panel rate-limited or IP-banned.
+
+- State machine `HEALTHY → SUSPECT (20 s grace) → PAUSED (WebView paused, TCP probe every 10 s) → HEALTHY (resume + reload)`; clock, probe and backoff timings are injected so it is unit-testable
+- Also fires an immediate reload on screen wake if the last known state was unhealthy, covering a backend restart that happened while the tablet was asleep and in-process timers were frozen by Doze
+- Published as its own `dashboard` binary sensor (`device_class: connectivity`, `entity_category: diagnostic`) — deliberately separate from device availability, since the panel itself stays healthy during a backend outage
+- Toggle in Settings → Resilience
 
 ### Camera Streaming (MJPEG) ✓
 Expose the tablet's front camera as an MJPEG stream consumable by Home Assistant or any browser.

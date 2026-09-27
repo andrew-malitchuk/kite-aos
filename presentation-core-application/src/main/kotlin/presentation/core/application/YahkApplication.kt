@@ -13,8 +13,14 @@ import org.koin.core.context.startKoin
 import presentation.core.application.BuildConfig
 import presentation.core.application.di.appModule
 import presentation.core.platform.source.config.AppConfig
+import presentation.core.platform.source.connection.DashboardConnectionMonitor
+import presentation.core.platform.source.diagnostics.CrashRelaunchHandler
+import presentation.core.platform.source.diagnostics.CrashRelaunchSettingMirror
+import presentation.core.platform.source.diagnostics.MemoryRecoveryCoordinator
+import presentation.core.platform.source.power.LockManager
 import presentation.core.platform.source.receiver.BatteryReceiver
 import presentation.core.platform.source.scheduler.AutoRebootScheduler
+import presentation.core.platform.source.scheduler.WebViewReloadScheduler
 import presentation.feature.main.source.webview.engine.preWarmGeckoRuntime
 
 /**
@@ -29,6 +35,8 @@ import presentation.feature.main.source.webview.engine.preWarmGeckoRuntime
  * @since 0.0.1
  */
 public class YahkApplication : Application() {
+
+    private val memoryRecoveryCoordinator: MemoryRecoveryCoordinator by inject()
 
     /**
      * Called when the application is first created.
@@ -80,6 +88,50 @@ public class YahkApplication : Application() {
         autoRebootScheduler.start()
 
         CrashlyticsInitializer.init()
+
+        // Install the crash handler *after* Crashlytics, so the previous default handler this
+        // chains to is Crashlytics' own and fatal crashes are still reported upstream.
+        val crashRelaunchHandler: CrashRelaunchHandler by inject()
+        crashRelaunchHandler.install()
+
+        // Keeps the crash-relaunch setting readable synchronously from the dying process.
+        val crashRelaunchSettingMirror: CrashRelaunchSettingMirror by inject()
+        crashRelaunchSettingMirror.start()
+
+        // Daily dashboard reload, armed via AlarmManager so it still fires in Doze.
+        val webViewReloadScheduler: WebViewReloadScheduler by inject()
+        webViewReloadScheduler.start()
+
+        memoryRecoveryCoordinator.start()
+
+        // Pauses the WebView while the dashboard backend is unreachable.
+        val dashboardConnectionMonitor: DashboardConnectionMonitor by inject()
+        dashboardConnectionMonitor.start()
+
+        // Holds the CPU and WiFi locks that keep the panel reachable while its screen is off.
+        val lockManager: LockManager by inject()
+        lockManager.start()
+    }
+
+    /**
+     * Turns system memory pressure into a deferred dashboard reload.
+     *
+     * A `WebView`/`GeckoView` rendering a live dashboard for weeks accumulates GPU texture and JS
+     * heap until the renderer is killed and the panel shows a blank page. Reloading resets that,
+     * but only once the screensaver is up, so the reload is never visible to someone standing at
+     * the panel — see [MemoryRecoveryCoordinator].
+     *
+     * @param level The trim level reported by the system.
+     * @since 2.2.0
+     */
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        if (!isMainProcess()) return
+        // Only react to genuine pressure. The lighter UI-hidden levels fire on every backgrounding
+        // and would schedule a pointless reload every time the panel idles.
+        if (level >= TRIM_MEMORY_RUNNING_LOW) {
+            memoryRecoveryCoordinator.onMemoryPressure()
+        }
     }
 
     // Returns true only when the current process is the main app process, identified by packageName.

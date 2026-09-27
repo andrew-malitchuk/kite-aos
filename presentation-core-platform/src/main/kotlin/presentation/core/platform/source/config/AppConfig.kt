@@ -2,8 +2,8 @@ package presentation.core.platform.source.config
 
 import android.app.UiModeManager
 import android.content.Context
-import android.content.res.Configuration
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import org.koin.core.annotation.Single
 
 /**

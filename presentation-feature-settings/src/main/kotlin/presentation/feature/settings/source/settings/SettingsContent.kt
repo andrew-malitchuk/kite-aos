@@ -14,8 +14,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -26,6 +24,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -63,17 +63,14 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import presentation.core.ui.source.kit.atom.button.icon.IconButton
-import presentation.core.ui.source.kit.atom.button.icon.core.IconButtonDefault
-import presentation.core.ui.source.kit.atom.icon.IcChrome24
-import presentation.core.ui.source.kit.atom.icon.IcFirefox24
-import presentation.core.ui.source.kit.molecule.item.BaseListItem
 import domain.core.source.model.AutoRebootModel
+import domain.core.source.model.CameraSourceModel
 import domain.core.source.model.DockPositionModel
 import domain.core.source.model.HomeAssistantInstanceModel
+import domain.core.source.model.InteractionModel
 import domain.core.source.model.MoveDetectorModel
 import domain.core.source.model.MqttModel
-import domain.core.source.model.CameraSourceModel
+import domain.core.source.model.ResilienceModel
 import domain.core.source.model.ScreensaverModel
 import domain.core.source.model.ScreensaverSource
 import domain.core.source.model.StreamingModel
@@ -86,17 +83,21 @@ import presentation.core.styling.core.LocalFormFactor
 import presentation.core.styling.core.Theme
 import presentation.core.styling.source.theme.AppTheme
 import presentation.core.ui.core.theme.CircularReveal
+import presentation.core.ui.source.kit.atom.button.icon.IconButton
+import presentation.core.ui.source.kit.atom.button.icon.core.IconButtonDefault
 import presentation.core.ui.source.kit.atom.container.SafeContainer
 import presentation.core.ui.source.kit.atom.divider.HorizontalAnimatedDivider
 import presentation.core.ui.source.kit.atom.gradient.backgroundGradient
 import presentation.core.ui.source.kit.atom.icon.IcApp24
+import presentation.core.ui.source.kit.atom.icon.IcCamera24
+import presentation.core.ui.source.kit.atom.icon.IcChrome24
 import presentation.core.ui.source.kit.atom.icon.IcDim24
 import presentation.core.ui.source.kit.atom.icon.IcDock24
-import presentation.core.ui.source.kit.atom.icon.IcLang24
+import presentation.core.ui.source.kit.atom.icon.IcFirefox24
 import presentation.core.ui.source.kit.atom.icon.IcForward24
+import presentation.core.ui.source.kit.atom.icon.IcLang24
 import presentation.core.ui.source.kit.atom.icon.IcOpen24
 import presentation.core.ui.source.kit.atom.icon.IcRefresh24
-import presentation.core.ui.source.kit.atom.icon.IcCamera24
 import presentation.core.ui.source.kit.atom.icon.IcSensor24
 import presentation.core.ui.source.kit.atom.icon.IcTheme24
 import presentation.core.ui.source.kit.atom.icon.IcTimeout24
@@ -104,12 +105,12 @@ import presentation.core.ui.source.kit.atom.icon.IcWeb24
 import presentation.core.ui.source.kit.atom.icon.IcWebProtected24
 import presentation.core.ui.source.kit.atom.item.SectionItem
 import presentation.core.ui.source.kit.atom.item.SectionToggleItem
-import presentation.core.ui.source.kit.core.focus.tvFocusRing
-import presentation.core.ui.source.kit.molecule.item.ToggleListItem
 import presentation.core.ui.source.kit.atom.snackbar.StackedSnakbarHostState
 import presentation.core.ui.source.kit.atom.snackbar.rememberStackedSnackbarHostState
+import presentation.core.ui.source.kit.core.focus.tvFocusRing
 import presentation.core.ui.source.kit.molecule.header.SettingsHeader
 import presentation.core.ui.source.kit.molecule.header.SettingsHeaderAction
+import presentation.core.ui.source.kit.molecule.item.BaseListItem
 import presentation.core.ui.source.kit.molecule.item.DockPosition
 import presentation.core.ui.source.kit.molecule.item.LanguageListItem
 import presentation.core.ui.source.kit.molecule.item.NumberInputListItem
@@ -119,6 +120,7 @@ import presentation.core.ui.source.kit.molecule.item.SimpleListItem
 import presentation.core.ui.source.kit.molecule.item.TextInputListItem
 import presentation.core.ui.source.kit.molecule.item.ThemeListItem
 import presentation.core.ui.source.kit.molecule.item.ThemeOption
+import presentation.core.ui.source.kit.molecule.item.ToggleListItem
 import presentation.core.ui.source.kit.organism.animatedsequence.AnimatedItem
 import presentation.core.ui.source.kit.organism.animatedsequence.AnimationSequenceHost
 
@@ -588,8 +590,12 @@ internal fun AutoRebootSection(state: SettingsState, onIntent: (SettingsIntent) 
         )
 
         val currentInterval = autoReboot.intervalDays ?: 1
-        val nextInterval = intervalCycle[(intervalCycle.indexOf(currentInterval).takeIf { it >= 0 }
-            ?.let { (it + 1) % intervalCycle.size } ?: 1)]
+        val nextInterval = intervalCycle[
+            (
+                intervalCycle.indexOf(currentInterval).takeIf { it >= 0 }
+                    ?.let { (it + 1) % intervalCycle.size } ?: 1
+                )
+        ]
         SimpleListItem(
             text = stringResource(R.string.settings_auto_reboot_interval, currentInterval),
             subtitle = stringResource(R.string.hint_auto_reboot_interval),
@@ -766,6 +772,201 @@ internal fun MqttSection(state: SettingsState, onIntent: (SettingsIntent) -> Uni
             enabled = true,
             validationRegex = commonRegex,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Text),
+        )
+
+        // Per-entity opt-outs for the Home Assistant diagnostic sensors. Each defaults to on
+        // (`?: true`), matching the domain default for an unset flag. Switching one off does not
+        // merely stop publishing it — the entity is removed from Home Assistant on the next
+        // connection, so it cannot linger there frozen at its last value.
+        val mqtt = state.mqtt ?: MqttModel()
+        ToggleListItem(
+            text = stringResource(R.string.settings_mqtt_entity_uptime),
+            subtitle = stringResource(R.string.hint_mqtt_entity_uptime),
+            icon = IcTimeout24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = mqtt.uptimeEnabled ?: true,
+            onCheckedChange = { onIntent(SettingsIntent.OnSetMqttIntent(mqtt.copy(uptimeEnabled = it))) },
+        )
+        ToggleListItem(
+            text = stringResource(R.string.settings_mqtt_entity_app_version),
+            subtitle = stringResource(R.string.hint_mqtt_entity_app_version),
+            icon = IcApp24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = mqtt.appVersionEnabled ?: true,
+            onCheckedChange = { onIntent(SettingsIntent.OnSetMqttIntent(mqtt.copy(appVersionEnabled = it))) },
+        )
+        ToggleListItem(
+            text = stringResource(R.string.settings_mqtt_entity_ip_address),
+            subtitle = stringResource(R.string.hint_mqtt_entity_ip_address),
+            icon = IcWeb24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = mqtt.ipAddressEnabled ?: true,
+            onCheckedChange = { onIntent(SettingsIntent.OnSetMqttIntent(mqtt.copy(ipAddressEnabled = it))) },
+        )
+        ToggleListItem(
+            text = stringResource(R.string.settings_mqtt_entity_ram_usage),
+            subtitle = stringResource(R.string.hint_mqtt_entity_ram_usage),
+            icon = IcSensor24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = mqtt.ramUsageEnabled ?: true,
+            onCheckedChange = { onIntent(SettingsIntent.OnSetMqttIntent(mqtt.copy(ramUsageEnabled = it))) },
+        )
+    }
+}
+
+/**
+ * Section for the unattended-operation safeguards.
+ *
+ * These are the settings that decide whether a wall-mounted panel survives the night, so every one
+ * of them defaults to on except the daily reload — which is off because it is visible on a panel
+ * that never idles, and the memory-pressure path already covers most deployments.
+ *
+ * @param state The current [SettingsState].
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetResilienceIntent].
+ * @since 2.2.0
+ */
+@Composable
+internal fun ResilienceSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+    val resilience = state.resilience ?: ResilienceModel()
+
+    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
+        ToggleListItem(
+            text = stringResource(R.string.settings_crash_relaunch),
+            subtitle = stringResource(R.string.hint_crash_relaunch),
+            icon = IcRefresh24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = resilience.isCrashRelaunchOn,
+            onCheckedChange = {
+                onIntent(SettingsIntent.OnSetResilienceIntent(resilience.copy(crashRelaunchEnabled = it)))
+            },
+        )
+        ToggleListItem(
+            text = stringResource(R.string.settings_connection_monitor),
+            subtitle = stringResource(R.string.hint_connection_monitor),
+            icon = IcWebProtected24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = resilience.isConnectionMonitorOn,
+            onCheckedChange = {
+                onIntent(SettingsIntent.OnSetResilienceIntent(resilience.copy(connectionMonitorEnabled = it)))
+            },
+        )
+        ToggleListItem(
+            text = stringResource(R.string.settings_memory_recovery),
+            subtitle = stringResource(R.string.hint_memory_recovery),
+            icon = IcSensor24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = resilience.isMemoryRecoveryOn,
+            onCheckedChange = {
+                onIntent(SettingsIntent.OnSetResilienceIntent(resilience.copy(memoryRecoveryEnabled = it)))
+            },
+        )
+        ToggleListItem(
+            text = stringResource(R.string.settings_wifi_lock),
+            subtitle = stringResource(R.string.hint_wifi_lock),
+            icon = IcWeb24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = resilience.isWifiLockOn,
+            onCheckedChange = {
+                onIntent(SettingsIntent.OnSetResilienceIntent(resilience.copy(wifiLockEnabled = it)))
+            },
+        )
+        SectionToggleItem(
+            title = stringResource(R.string.settings_scheduled_reload),
+            subtitle = stringResource(R.string.hint_scheduled_reload),
+            checked = resilience.isScheduledReloadOn,
+            enabled = true,
+            onCheckedChange = { isEnabled ->
+                onIntent(
+                    SettingsIntent.OnSetResilienceIntent(
+                        // Write the hour alongside the toggle so enabling never lands on the
+                        // proto3 zero value (midnight) just because the hour was never touched.
+                        resilience.copy(
+                            scheduledReloadEnabled = isEnabled,
+                            scheduledReloadHour = resilience.reloadHourOrDefault,
+                        ),
+                    ),
+                )
+            },
+        )
+        NumberInputListItem(
+            text = stringResource(R.string.settings_scheduled_reload_hour),
+            subtitle = stringResource(R.string.hint_scheduled_reload_hour),
+            icon = IcTimeout24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = resilience.reloadHourOrDefault,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetResilienceIntent(resilience.copy(scheduledReloadHour = it)))
+            },
+            range = 0..23,
+            enabled = true,
+        )
+    }
+}
+
+/**
+ * Section for how user interaction is interpreted: the idle reset and the volume-button gesture.
+ *
+ * @param state The current [SettingsState].
+ * @param onIntent Callback to dispatch [SettingsIntent.OnSetInteractionIntent].
+ * @since 2.2.0
+ */
+@Composable
+internal fun InteractionSection(state: SettingsState, onIntent: (SettingsIntent) -> Unit) {
+    val interaction = state.interaction ?: InteractionModel()
+
+    Column(verticalArrangement = Arrangement.spacedBy(Theme.spacing.sizeL)) {
+        NumberInputListItem(
+            text = stringResource(R.string.settings_inactivity_reset),
+            subtitle = stringResource(R.string.hint_inactivity_reset),
+            icon = IcTimeout24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = interaction.inactivityResetMinutes ?: 0,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetInteractionIntent(interaction.copy(inactivityResetMinutes = it)))
+            },
+            range = 0..240,
+            enabled = true,
+        )
+        SectionToggleItem(
+            title = stringResource(R.string.settings_volume_gesture),
+            subtitle = stringResource(R.string.hint_volume_gesture),
+            checked = interaction.isVolumeGestureOn,
+            enabled = true,
+            onCheckedChange = { isEnabled ->
+                onIntent(
+                    SettingsIntent.OnSetInteractionIntent(
+                        interaction.copy(
+                            volumeGestureEnabled = isEnabled,
+                            volumeGesturePressCount = interaction.pressCountOrDefault,
+                        ),
+                    ),
+                )
+            },
+        )
+        NumberInputListItem(
+            text = stringResource(R.string.settings_volume_gesture_count),
+            subtitle = stringResource(R.string.hint_volume_gesture_count),
+            icon = IcDock24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = interaction.pressCountOrDefault,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetInteractionIntent(interaction.copy(volumeGesturePressCount = it)))
+            },
+            // Floor of MIN_PRESS_COUNT: one or two presses would fire during ordinary volume
+            // adjustment and make the hardware keys unusable for their actual purpose.
+            range = InteractionModel.MIN_PRESS_COUNT..10,
+            enabled = true,
         )
     }
 }

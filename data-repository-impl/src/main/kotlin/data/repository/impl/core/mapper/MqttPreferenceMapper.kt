@@ -29,6 +29,10 @@ internal object MqttPreferenceMapper : ModelResourceMapper<MqttModel, MqttPrefer
                 password = model.password,
                 enabled = model.enabled,
                 friendlyName = model.friendlyName,
+                uptimeEnabled = model.uptimeEnabled,
+                appVersionEnabled = model.appVersionEnabled,
+                ipAddressEnabled = model.ipAddressEnabled,
+                ramUsageEnabled = model.ramUsageEnabled,
             )
         }
 
@@ -42,6 +46,10 @@ internal object MqttPreferenceMapper : ModelResourceMapper<MqttModel, MqttPrefer
                 password = preference.password,
                 enabled = preference.enabled,
                 friendlyName = preference.friendlyName,
+                uptimeEnabled = preference.uptimeEnabled,
+                appVersionEnabled = preference.appVersionEnabled,
+                ipAddressEnabled = preference.ipAddressEnabled,
+                ramUsageEnabled = preference.ramUsageEnabled,
             )
         }
 }

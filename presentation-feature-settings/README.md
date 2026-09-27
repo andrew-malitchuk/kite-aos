@@ -7,7 +7,9 @@ The configuration center for the Home Kiosk application.
 - **Kiosk Configuration**: Set the dashboard URL and whitelist for the web view.
 - **Motion Detector**: Fine-tune sensitivity, dim delays, and screen timeouts.
 - **Camera Source** (`@since 1.4.0`): Pick which camera feeds motion detection and MJPEG streaming — Auto / Front / Rear / External (USB). Tap to cycle; works on all form factors, including USB-OTG webcams on phones.
-- **MQTT Setup**: Configure broker connection details for remote telemetry and control.
+- **MQTT Setup**: Configure broker connection details for remote telemetry and control, plus per-entity diagnostic opt-outs (uptime, app version, IP address, RAM usage).
+- **Resilience** (`@since 2.2.0`): Unattended-operation safeguards — crash relaunch, connection monitor, memory recovery, WiFi lock, and a scheduled daily reload at a configurable hour.
+- **Interaction** (`@since 2.2.0`): Inactivity-reset timeout and a hardware volume-button gesture that opens the control drawer, with a configurable press count.
 - **Dock Positioning**: Choose the location of the control drawer (Left or Top).
 - **Localization**: Change the application language dynamically.
 - **Android TV**: A D-pad-driven master/detail layout for leanback devices (see below).

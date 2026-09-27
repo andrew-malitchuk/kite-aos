@@ -7,7 +7,7 @@ This feature module manages the initial setup experience for the application. It
 *   **Onboarding Wizard**: Provides a structured, multi-page setup flow using the `WizardPager` component.
 *   **Permission Orchestration**: Interacts with the Android system to request and verify critical permissions:
     *   `CAMERA`: Required for the `MotionService`.
-    *   `SYSTEM_ALERT_WINDOW` (Overlay): Essential for kiosk mode to stay on top.
+    *   `SYSTEM_ALERT_WINDOW` (Overlay): **Optional.** No overlay window is ever drawn; the permission only lifts the Android 10+ background-activity-start restriction for kiosk auto-return, the MQTT `app/launch` command and boot auto-start.
     *   `POST_NOTIFICATIONS`: For service status updates.
     *   `DEVICE_ADMIN`: Required for programmatic screen locking.
     *   `WRITE_SETTINGS`: For brightness management.
@@ -31,6 +31,7 @@ The wizard adapts to leanback / TV hardware, which frequently lacks a microphone
 
 *   **`RECORD_AUDIO` skipped on TV**: `RECORD_AUDIO` (used by the WebRTC camera stack) is dropped from the "all permissions granted" gate in `OnboardingContent` when running on TV, since TV boxes commonly have no microphone and would otherwise strand the user on the permissions slide. The `CAMERA` permission stays required (Camera2 external motion needs it), and the audio toggle row itself is still shown.
 *   **Conditional permission-screen availability**: The overlay, device-admin, and write-settings rows depend on the device actually exposing the matching system-settings `Intent`. `OnboardingContent` probes each with `resolveActivity(...)` up front; unavailable rows are hidden in `PermissionsList` and dropped from the completion gate so the user is never blocked by an un-grantable requirement. `OnboardingScreen` additionally wraps every optional system-screen launch (`launchSystemScreen`) in a `try/catch` for `ActivityNotFoundException`, showing an `error_permission_screen_unavailable` snackbar instead of crashing.
+*   **Overlay never gates completion**: `SYSTEM_ALERT_WINDOW` is excluded from `allPermissionsGranted` outright, not just when the settings screen is missing. Locked-down ROMs (Frameo photo frames and similar) *do* expose `ACTION_MANAGE_OVERLAY_PERMISSION` — so the `resolveActivity` probe reports it available — yet refuse the grant, which left the user stranded on the permissions slide forever. The toggle is still shown and requestable, labelled with a `permission_overlay_access_hint` subtitle explaining what it buys. _(@since 2.0.1)_
 *   **D-pad wizard focus**: `WizardPager` remembers a `FocusRequester` that only the active page attaches (`focusRequester(...).focusGroup()`), and a `LaunchedEffect` keyed on the current page requests focus after a short `FOCUS_REQUEST_DELAY_MS` (200 ms) delay to avoid racing the slide transition. On TV this lands D-pad focus on the current slide's first focusable (permission toggle or URL field); slides with no focusable content leave focus for the user to reach the Prev/Next buttons. The whole effect is gated on `isTv`, so it is a no-op on mobile (touch).
 
 ## Dependencies

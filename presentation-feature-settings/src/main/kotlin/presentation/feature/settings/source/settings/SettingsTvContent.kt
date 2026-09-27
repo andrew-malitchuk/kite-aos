@@ -48,6 +48,7 @@ import presentation.core.ui.source.kit.atom.gradient.backgroundGradient
 import presentation.core.ui.source.kit.atom.icon.IcApp24
 import presentation.core.ui.source.kit.atom.icon.IcCamera24
 import presentation.core.ui.source.kit.atom.icon.IcDim24
+import presentation.core.ui.source.kit.atom.icon.IcDock24
 import presentation.core.ui.source.kit.atom.icon.IcForward24
 import presentation.core.ui.source.kit.atom.icon.IcRefresh24
 import presentation.core.ui.source.kit.atom.icon.IcSensor24
@@ -81,6 +82,8 @@ private enum class SettingsSectionTab(val titleRes: Int, val icon: ImageVector) 
     Mqtt(R.string.settings_mqtt, IcWebProtected24),
     WebKiosk(R.string.settings_web_kiosk, IcWeb24),
     WebViewRefresh(R.string.settings_webview_refresh, IcRefresh24),
+    Resilience(R.string.settings_resilience, IcWebProtected24),
+    Interaction(R.string.settings_interaction, IcDock24),
     UiUx(R.string.settings_ui_ux, IcTheme24),
     System(R.string.settings_system, IcApp24),
     Advanced(R.string.settings_advanced, IcForward24),
@@ -247,6 +250,8 @@ internal fun SettingsTvContent(
                     SettingsSectionTab.Mqtt -> MqttSection(state, onIntent, isDashboardValid)
                     SettingsSectionTab.WebKiosk -> WebKioskSection(state, onIntent) {}
                     SettingsSectionTab.WebViewRefresh -> WebViewRefreshSection(state, onIntent)
+                    SettingsSectionTab.Resilience -> ResilienceSection(state, onIntent)
+                    SettingsSectionTab.Interaction -> InteractionSection(state, onIntent)
                     SettingsSectionTab.UiUx -> UiUxSection(state, onIntent)
                     SettingsSectionTab.System -> SystemSection(state, onIntent)
                     SettingsSectionTab.Advanced -> AdvancedSection(onIntent)

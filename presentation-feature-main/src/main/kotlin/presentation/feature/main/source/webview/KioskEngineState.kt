@@ -76,6 +76,56 @@ public class KioskEngineState(
         engine?.reload()
     }
 
+    /**
+     * Drop cached page assets and reload.
+     *
+     * Clears the HTTP and image caches only. Cookies, local storage and auth sessions are left
+     * intact deliberately — Home Assistant keeps its access token in local storage, so wiping it
+     * would turn "recover a wedged dashboard" into "walk over and sign the panel back in".
+     *
+     * @since 2.1.0
+     */
+    public fun clearCache() {
+        engine?.clearCache()
+    }
+
+    /**
+     * Suspend page execution while the dashboard backend is unreachable.
+     *
+     * This is what stops the Home Assistant frontend's ~1/second WebSocket retry loop. Left
+     * running, that traffic reads as an attack to a reverse proxy or intrusion-prevention layer,
+     * which then rate-limits or bans the panel — and the panel stays broken after the backend
+     * itself has recovered.
+     *
+     * @since 2.2.0
+     */
+    public fun pause() {
+        engine?.pause()
+    }
+
+    /**
+     * Resume page execution after [pause].
+     *
+     * @since 2.2.0
+     */
+    public fun resume() {
+        engine?.resume()
+    }
+
+    /**
+     * Run [script] inside the currently loaded page.
+     *
+     * Supported by the Android WebView engine only. GeckoView blocks `javascript:` loads and
+     * exposes evaluation solely through the WebExtension machinery, so it ignores the call rather
+     * than pretending to run it.
+     *
+     * @param script The JavaScript snippet to evaluate.
+     * @since 2.2.0
+     */
+    public fun evaluateJs(script: String) {
+        engine?.evaluateJs(script)
+    }
+
     /** Navigate backward in history. */
     public fun goBack() {
         engine?.goBack()
@@ -95,4 +145,16 @@ internal interface EngineHandle {
     fun reload()
     fun goBack()
     fun goForward()
+
+    /** Drops cached page assets and reloads, preserving cookies and auth sessions. */
+    fun clearCache()
+
+    /** Runs [script] in the loaded page; a no-op on engines without an evaluation entry point. */
+    fun evaluateJs(script: String)
+
+    /** Suspends page execution, including timers and network retries. */
+    fun pause()
+
+    /** Resumes page execution after [pause]. */
+    fun resume()
 }

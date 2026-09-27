@@ -1,7 +1,7 @@
 package domain.usecase.impl.source.usecase.configuration
 
-import domain.core.source.monad.Failure
 import domain.core.source.model.OnboardingModel
+import domain.core.source.monad.Failure
 import domain.repository.api.source.repository.ConfigureRepository
 import domain.usecase.api.source.common.Optional
 import domain.usecase.api.source.usecase.configuration.SetOnboardingStatusUseCase

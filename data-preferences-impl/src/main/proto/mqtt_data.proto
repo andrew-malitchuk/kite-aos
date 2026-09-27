@@ -13,4 +13,18 @@ message MqttProtoModel {
   string password = 5;
   bool enabled = 7;
   string friendly_name = 8;
+
+  // Per-entity opt-outs for the companion diagnostic sensors.
+  //
+  // Stored inverted (*_disabled rather than *_enabled) on purpose. proto3 has no field presence
+  // for scalars, so a newly added `bool` reads back as `false` for every config written before the
+  // field existed. With positive naming that would silently switch the diagnostics off for every
+  // user on upgrade; inverted, the same `false` means "not disabled" and they stay on.
+  //
+  // Field numbering starts at 9: 6 was used by an earlier schema and is left burned so old stored
+  // bytes can never be reinterpreted as one of these flags.
+  bool uptime_disabled = 9;
+  bool app_version_disabled = 10;
+  bool ip_address_disabled = 11;
+  bool ram_usage_disabled = 12;
 }

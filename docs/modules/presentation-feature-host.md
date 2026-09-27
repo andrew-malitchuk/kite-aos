@@ -8,6 +8,17 @@ The entry point and host module for the "kite-aos" application.
 - **Kiosk Mode Enforcement**: Immersive full-screen mode and global back-gesture blocking.
 - **Boot Persistence**: Automatically launches on device boot via `BootReceiver`.
 - **Android TV Support**: Resolves the form factor at the host root and opens the control drawer via a hidden D-pad sequence on TV.
+- **Volume-Button Gesture** (`@since 2.2.0`): Opens the control drawer from a burst of hardware volume presses, on both mobile and TV.
+
+## Volume-Button Gesture (`@since 2.2.0`)
+
+Unlike the D-pad unlock sequence below, this gesture works on **both mobile and TV** — for panels where the on-screen FAB is impractical to reach (behind glass, wall-mounted, or simply out of the user's habit).
+
+- `dispatchKeyEvent` feeds every fresh press (`ACTION_DOWN`, `repeatCount == 0`) of `KEYCODE_VOLUME_UP` or `KEYCODE_VOLUME_DOWN` into `advanceVolumeGesture()`, gated by `InteractionModel.isVolumeGestureOn` (off by default).
+- Presses must land within a rolling `VOLUME_GESTURE_WINDOW_MS` (2s) window of the previous one, or the count resets — a deliberate burst is required, not volume adjustment spread out over time.
+- Only the press that **completes** the configured count is consumed (`remoteCommandBus.emitOpenDrawer()`, count reset to 0); every earlier press returns `false` so the hardware keys keep adjusting volume normally.
+- The required count comes from `InteractionModel.pressCountOrDefault` (edited in the Settings screen's "Interaction" section), kept live via `observeVolumeGestureSettings()` collecting `ObserveInteractionUseCase` — this avoids a DataStore read on the hot key-event path.
+- Every fresh key press, whether or not it advances the gesture, also calls `remoteCommandBus.emitInteraction()`. On TV this is the only interaction signal available for the shared inactivity-reset timer, since D-pad input never reaches Compose's pointer-input pipeline; on mobile, touch events cover that separately.
 
 ## Android TV
 On Android TV the same `HostActivity` acts as the shell; TV concerns are resolved at the host root so feature modules stay form-factor agnostic.

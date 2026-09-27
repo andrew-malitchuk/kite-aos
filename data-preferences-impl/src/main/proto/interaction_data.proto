@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package interaction;
+
+option java_package = "data.preferences.impl.proto";
+option java_outer_classname = "InteractionDataProto";
+
+// How user interaction with the kiosk is interpreted: the idle timeout that returns the dashboard
+// to its home URL, and the hardware volume-button gesture that opens the control drawer.
+//
+// Unlike resilience_data.proto, every default here coincides with the proto3 zero value, so no
+// inversion or offset encoding is needed: idle reset off (0 minutes), gesture off (false). The one
+// exception is the press count, where 0 is meaningless as a gesture length and therefore safely
+// doubles as "not configured".
+message InteractionProtoModel {
+  // Minutes of inactivity before returning to the home URL. 0 disables the feature.
+  int32 inactivity_reset_minutes = 1;
+
+  // Whether N volume-button presses open the control drawer.
+  bool volume_gesture_enabled = 2;
+
+  // Number of presses required. 0 means "not configured" and resolves to the domain default.
+  int32 volume_gesture_press_count = 3;
+}

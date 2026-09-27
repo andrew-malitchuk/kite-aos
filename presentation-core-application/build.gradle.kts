@@ -81,5 +81,4 @@ dependencies {
     implementation(libs.androidx.remote.creation.core)
     implementation(libs.androidx.material3)
     // endregion
-
 }

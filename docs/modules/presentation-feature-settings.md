@@ -10,9 +10,11 @@ The configuration center for the Kite kiosk application. All user-facing setting
 | **Camera streaming** | MJPEG stream server: port, quality, FPS, and output rotation. |
 | **Screensaver** | Idle overlay: activation delay, slideshow interval, clock overlay, image folder. |
 | **Auto Reboot** | Scheduled device reboots: hour, minute, and interval (daily / weekly / bi-weekly / monthly). |
-| **MQTT** | Broker connection: IP address, port, client ID, username, password, friendly name. |
+| **MQTT** | Broker connection: IP address, port, client ID, username, password, friendly name, per-entity diagnostic opt-outs. |
 | **Web kiosk** | Dashboard URL, URL whitelist, browser engine (WebView / GeckoView), allowed applications, auto-return, SSL trust. |
 | **WebView refresh** | Periodic automatic page reload: toggle and interval in seconds. |
+| **Resilience** | Unattended-operation safeguards: crash relaunch, connection monitor, memory recovery, WiFi lock, scheduled daily reload hour. |
+| **Interaction** | Inactivity-reset timeout and the volume-button gesture (enable + press count) that opens the control drawer. |
 | **UI & UX** | Theme (light / dark / system), dock position (top / left), language, reduce motion. |
 | **System** | Set as default launcher, restart application. |
 | **Advanced** | Export and import full configuration as JSON. |
@@ -27,8 +29,10 @@ The configuration center for the Kite kiosk application. All user-facing setting
 - **Camera Streaming**: Configure MJPEG server port, quality, FPS, and frame rotation.
 - **Screensaver**: Configure idle overlay with image slideshow, clock display, and activation timing.
 - **Auto Reboot**: Set a scheduled daily/weekly/bi-weekly/monthly reboot at a specific time.
-- **MQTT Setup**: Configure broker connection details for remote telemetry and Home Assistant discovery.
+- **MQTT Setup**: Configure broker connection details for remote telemetry and Home Assistant discovery, plus per-entity diagnostic opt-outs (uptime, app version, IP address, RAM usage) on `MqttModel` — each defaults on, and switching one off removes that Home Assistant entity on the next connection rather than leaving it frozen.
 - **WebView Refresh**: Enable periodic automatic reloads of the kiosk dashboard.
+- **Resilience** (`@since 2.2.0`): Unattended-operation safeguards backed by `ResilienceModel` — crash relaunch, connection monitor, memory recovery, and WiFi lock (each on by default), plus a scheduled daily reload (off by default) at a configurable hour (`0`–`23`, defaulting to 04:00). Dispatched via `SettingsIntent.OnSetResilienceIntent`.
+- **Interaction** (`@since 2.2.0`): How deliberate input is interpreted, backed by `InteractionModel` — an inactivity-reset timeout (`0`–`240` minutes) that returns the dashboard to its home URL, and a hardware volume-button gesture (3–10 presses, default 5) that opens the control drawer when enabled. Dispatched via `SettingsIntent.OnSetInteractionIntent`; the presses themselves are detected in `presentation-feature-host`'s `HostActivity`, not here.
 - **Dock Positioning**: Choose the control drawer anchor (left or top edge).
 - **Localization**: Change the application language dynamically (English / Ukrainian).
 - **Reduce Motion**: Disable all UI animations globally to improve performance on slower devices.
