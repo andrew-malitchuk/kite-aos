@@ -90,49 +90,62 @@ internal fun AndroidWebViewEngine(state: KioskEngineState, modifier: Modifier = 
                     // evaluateJavascript() which is queued and may run after HA's ES modules
                     // have already registered their custom elements.
                     if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
-                        WebViewCompat.addDocumentStartJavaScript(
-                            this,
-                            """
-                            (function() {
-                                // 1. Patch allowExoplayer so HA uses its web video stack
-                                //    instead of waiting for a native ExoPlayer bridge.
-                                var _define = customElements.define.bind(customElements);
-                                customElements.define = function(name, ctor, opts) {
-                                    if (name === 'ha-camera-stream' || name === 'ha-hls-player') {
-                                        Object.defineProperty(ctor.prototype, 'allowExoplayer', {
-                                            get: function() { return false; },
-                                            set: function() {},
-                                            configurable: true
-                                        });
-                                    }
-                                    return _define(name, ctor, opts);
-                                };
+                        // Some WebView provider builds report this feature as supported yet throw
+                        // internally ("Must be started before we block!") when the call races the
+                        // provider's own startup sequence — observed on at least one OEM Chromium
+                        // WebView build. The page still loads; it only loses the early
+                        // ExoPlayer/CSS patch this injects, which onPageFinished's JS also applies.
+                        try {
+                            WebViewCompat.addDocumentStartJavaScript(
+                                this,
+                                """
+                                (function() {
+                                    // 1. Patch allowExoplayer so HA uses its web video stack
+                                    //    instead of waiting for a native ExoPlayer bridge.
+                                    var _define = customElements.define.bind(customElements);
+                                    customElements.define = function(name, ctor, opts) {
+                                        if (name === 'ha-camera-stream' || name === 'ha-hls-player') {
+                                            Object.defineProperty(ctor.prototype, 'allowExoplayer', {
+                                                get: function() { return false; },
+                                                set: function() {},
+                                                configurable: true
+                                            });
+                                        }
+                                        return _define(name, ctor, opts);
+                                    };
 
-                                // 2. Inject CSS as soon as <head> exists.
-                                var cssText = [
-                                    'html { height: 100vh !important; min-height: 100vh !important; }',
-                                    'body { height: 100% !important; min-height: 100vh !important; overflow: auto !important; }'
-                                ].join(' ');
-                                function injectCss() {
-                                    if (document.head && !document.getElementById('__kite_fix')) {
-                                        var s = document.createElement('style');
-                                        s.id = '__kite_fix';
-                                        s.textContent = cssText;
-                                        document.head.appendChild(s);
-                                        return true;
+                                    // 2. Inject CSS as soon as <head> exists.
+                                    var cssText = [
+                                        'html { height: 100vh !important; min-height: 100vh !important; }',
+                                        'body { height: 100% !important; min-height: 100vh !important; overflow: auto !important; }'
+                                    ].join(' ');
+                                    function injectCss() {
+                                        if (document.head && !document.getElementById('__kite_fix')) {
+                                            var s = document.createElement('style');
+                                            s.id = '__kite_fix';
+                                            s.textContent = cssText;
+                                            document.head.appendChild(s);
+                                            return true;
+                                        }
+                                        return false;
                                     }
-                                    return false;
-                                }
-                                if (!injectCss()) {
-                                    var obs = new MutationObserver(function(_, o) {
-                                        if (injectCss()) o.disconnect();
-                                    });
-                                    obs.observe(document.documentElement, { childList: true, subtree: true });
-                                }
-                            })();
-                            """.trimIndent(),
-                            setOf("*"),
-                        )
+                                    if (!injectCss()) {
+                                        var obs = new MutationObserver(function(_, o) {
+                                            if (injectCss()) o.disconnect();
+                                        });
+                                        obs.observe(document.documentElement, { childList: true, subtree: true });
+                                    }
+                                })();
+                                """.trimIndent(),
+                                setOf("*"),
+                            )
+                        } catch (e: Exception) {
+                            Log.w(
+                                "AndroidWebViewEngine",
+                                "addDocumentStartJavaScript failed; skipping early injection",
+                                e,
+                            )
+                        }
                     }
 
                     settings.apply {
@@ -147,7 +160,20 @@ internal fun AndroidWebViewEngine(state: KioskEngineState, modifier: Modifier = 
                         userAgentString =
                             "Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 " +
                             "(KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36"
-                        setSafeBrowsingEnabled(false)
+                        try {
+                            setSafeBrowsingEnabled(false)
+                        } catch (e: Throwable) {
+                            // A handful of OEM WebView provider builds ship a stripped
+                            // implementation missing this method (NoSuchMethodError) despite
+                            // declaring API 26+ support. Safe Browsing simply stays on in that
+                            // case — not a functional regression for a kiosk pointed at one
+                            // trusted dashboard URL.
+                            Log.w(
+                                "AndroidWebViewEngine",
+                                "setSafeBrowsingEnabled unsupported on this WebView provider",
+                                e,
+                            )
+                        }
                         cacheMode = WebSettings.LOAD_NO_CACHE
                     }
 

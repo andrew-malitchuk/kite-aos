@@ -121,11 +121,20 @@ public class MqttService : LifecycleService() {
      */
     private val brightnessObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
         override fun onChange(selfChange: Boolean) {
-            val brightness = Settings.System.getInt(
-                contentResolver,
-                Settings.System.SCREEN_BRIGHTNESS,
-                DevicePowerManager.BRIGHTNESS_MAX,
-            )
+            val brightness = try {
+                Settings.System.getInt(
+                    contentResolver,
+                    Settings.System.SCREEN_BRIGHTNESS,
+                    DevicePowerManager.BRIGHTNESS_MAX,
+                )
+            } catch (e: Exception) {
+                // Some OEM Settings providers intermittently hand back a corrupt Parcel on this
+                // query (a NullPointerException deep in ParcelFileDescriptor/MemoryIntArray
+                // deserialization — a framework bug, not anything this app did). Skip this one
+                // change rather than crash the whole foreground service over a single bad read.
+                Log.w(TAG, "Failed to read SCREEN_BRIGHTNESS; skipping this update", e)
+                return
+            }
             lifecycleScope.launch {
                 mqttSendBrightnessUseCase(brightness)
             }
@@ -187,8 +196,35 @@ public class MqttService : LifecycleService() {
 
         setupNotificationChannel()
         // Start foreground immediately to satisfy the Android foreground service timing contract.
-        startForeground(NOTIFICATION_ID, createNotification())
+        if (!tryStartForeground()) return
         observeConfiguration()
+    }
+
+    /**
+     * Calls [startForeground], returning `false` and stopping the service instead of crashing
+     * if the system refuses the request.
+     *
+     * On Android 12+ the platform can throw `ForegroundServiceStartNotAllowedException` here even
+     * for a service the app itself just started — e.g. when the process is recreated by the
+     * system (a `START_STICKY` restart, or the host activity's grace window having lapsed under
+     * memory pressure) without an active foreground-start exemption. There is nothing this service
+     * can do about that at this point; the caller is expected to start it again from a context
+     * that does hold an exemption, so the only safe response is to stop cleanly rather than take
+     * the whole process down with an uncaught [RuntimeException].
+     *
+     * @return `true` if the service is now in the foreground state and initialization should
+     *   continue; `false` if the service has called [stopSelf] and the caller must return.
+     * @since 2.3.0
+     */
+    private fun tryStartForeground(): Boolean {
+        return try {
+            startForeground(NOTIFICATION_ID, createNotification())
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "startForeground rejected by the system; stopping service", e)
+            stopSelf()
+            false
+        }
     }
 
     /**
