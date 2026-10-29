@@ -95,6 +95,28 @@ within 10 s of app start, and its `/device.xml` resolves.
 
 ---
 
+### 1.3 WebView User-Agent Compatibility Profile (gms flavor only) — **ALREADY DONE**
+
+**What.** Override the system WebView's user-agent string to a generic desktop/mobile-Chrome
+identity, stripping the `wv` WebView marker.
+
+**Why.** Some dashboards and embedded cards (HA's own ecosystem is mostly fine, but third-party
+widgets and some camera/video embeds are not) actively sniff the user-agent and refuse to render
+inside an Android WebView container, assuming it cannot play video or handle modern APIs. The
+`foss` flavor does not have this problem — GeckoView already presents as Firefox, which nothing
+blocks. This is a `gms`-only gap.
+
+**As built — where reality differed from this plan.** Investigated while trying to build this and
+found it already shipped, just not as an opt-in toggle: `AndroidWebViewEngine.kt` has always set
+`userAgentString = "Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 (KHTML, like Gecko)
+Chrome/137.0.0.0 Mobile Safari/537.36"` unconditionally, on both the main WebView and the popup
+child WebView created in `onCreateWindow` — no `wv` token in either. So the compatibility profile
+this item proposed is permanently on rather than a user-facing switch. No further work needed unless
+a future report shows a dashboard that specifically wants the *real* WebView UA, which would need
+the toggle this plan originally called for (reversed: default-masked, opt-out).
+
+---
+
 ## T2 — Survivability
 
 This tier is the highest-value engineering work in this document. A wall-mounted dashboard is
@@ -292,6 +314,39 @@ notification.
 
 ---
 
+### 2.6 Device Owner / Lock Task Mode
+
+**What.** Provision Kite as the device's Device Owner (via QR/NFC during setup or `adb shell dpm
+set-device-owner`) and call `startLockTask()` so the dashboard cannot be backgrounded, the recents/
+home buttons are inert, and the status bar is suppressed system-wide — not just within the app's
+own immersive-mode flag.
+
+**Why.** The app's current fullscreen/immersive handling only hides system bars; it does not stop a
+stray back-gesture, a notification shade swipe, or a bug in a third-party launcher from kicking the
+user out to the home screen on an unattended public or commercial panel. Lock Task mode is the only
+mechanism Android provides that survives all of those paths, and it is the standard a genuinely
+"locked" kiosk is judged against.
+
+**Design notes.**
+
+- Keep this strictly optional and separate from the existing immersive mode, which remains the
+  default for home/hobbyist installs — Device Owner provisioning is invasive (it must be the *first*
+  account set up on the device, or done via factory reset) and is a deliberate choice for shared/
+  public hardware, not a default.
+- `presentation-feature-host`: gate `startLockTask()`/`stopLockTask()` behind a Settings toggle that
+  only renders once the app detects it already holds Device Owner (`DevicePolicyManager.isDeviceOwnerApp`).
+  Provisioning itself happens out-of-band (QR code at factory-reset time); the app does not attempt
+  to acquire the privilege itself.
+- Needs an explicit, hard-to-trigger exit path (e.g. the existing admin-settings gesture + password)
+  that calls `stopLockTask()` — otherwise a support call becomes "drive to the wall and factory
+  reset it".
+- `foss` and `gms` both get this; it is a platform API, not a Play Services dependency.
+
+**Done when.** With the toggle on, home/recents/back are inert and the status bar stays hidden
+through a notification post, and the documented exit gesture reliably restores normal navigation.
+
+---
+
 ## T3 — Home Assistant Depth
 
 ### 3.1 Expanded Entity Set & Discovery Lifecycle — **DONE**
@@ -390,6 +445,13 @@ single automation set brightness, volume and URL atomically instead of racing th
 `domain-core`; both the MQTT subscriber and the HTTP API (1.1) decode into that same type, so
 behaviour is defined once. Unknown keys are logged and ignored, never fatal.
 
+**Retained-message rejection — DONE.** Any message arriving on a command topic with the MQTT
+**retained** flag set is dropped before it reaches `commandFlow`, rather than executed — a retained
+payload is replayed to every client that (re)subscribes, including on the panel's own reconnect, so
+without this check a one-time action (reboot, clear cache) would silently re-fire on every broker
+reconnect or app restart. Filtered once in `TelemetryMqttSourceImpl`'s `publishReceived` callback
+(`data-mqtt-impl`), which is the single ingress point every command use case reads from.
+
 ---
 
 ## T4 — Presence & Display
@@ -444,6 +506,33 @@ when a *person* approaches it and stays dark otherwise.
 - Publishes `binary_sensor` `face` with `device_class: occupancy` (see 3.1).
 - Threading: frame analysis runs on the camera executor while arm/disarm arrives on main — keep
   the shared state confined or explicitly synchronised.
+
+---
+
+### 4.3 Proximity Sensor Wake
+
+**What.** Use `Sensor.TYPE_PROXIMITY` as an additional, independent wake trigger alongside camera
+motion (4.2) and MQTT presence pulses.
+
+**Why.** Camera motion needs a working, unobstructed camera and real CPU budget (frame capture +
+luma diff); the light sensor (4.1) only drives brightness, not wake. A proximity sensor is present
+on a large share of phones/tablets, needs no runtime permission, draws negligible power, and gives
+a near-instant "something is right in front of the screen" signal — useful as the *primary* wake
+source on hardware with no usable camera, or as a cheap first-stage trigger that arms the more
+expensive camera pipeline only when something is actually close.
+
+**Design notes.**
+
+- `presentation-core-platform/source/sensor/ProximitySensorController.kt`, same shape as
+  `LightSensorController` (4.1) — registers a listener, debounces, feeds the existing wake pipeline.
+- Most proximity sensors are binary (near/far at a fixed threshold, often ~5 cm), not ranged —
+  design the trigger as an edge (far → near transition) with a short cooldown, not a continuous
+  signal.
+- Independent of camera motion: a device can enable either, both, or neither. Does not need its own
+  MQTT entity — it is a wake *source*, not a presence state worth exposing on its own.
+
+**Done when.** A tablet with camera motion disabled still wakes reliably when a hand passes close to
+the sensor, with no measurable battery impact over a multi-hour idle period.
 
 ---
 
@@ -559,9 +648,9 @@ Recorded so the decisions do not get relitigated:
 |:--|:--|:--|
 | Next | ~~2.1~~ (done), ~~2.2~~ (done), ~~2.4~~ (done) | Stop losing devices overnight |
 | +1 | 1.1, 1.2, 3.2 | Reachable without a broker, findable without an IP |
-| +2 | ~~3.1~~ (done), 4.1, ~~2.3~~ (done), 2.5 | Full companion device; dimming on camera-less hardware |
+| +2 | ~~3.1~~ (done), 4.1, 4.3, ~~2.3~~ (done), 2.5 | Full companion device; dimming and wake on camera-less hardware |
 | +3 | 5.1, 6.1 | Content and unattended scheduling |
-| Ongoing | 4.2, 7.1, 7.2 | Flavor-gated and hygiene work |
+| Ongoing | ~~1.3~~ (done), 2.6, 4.2, 7.1, 7.2 | Flavor-gated, opt-in lockdown, and hygiene work |
 
 Rationale: T2 first. Every feature added before the survivability work is a feature that will be
 reported as broken by users whose real problem is that the app was killed at 03:00.

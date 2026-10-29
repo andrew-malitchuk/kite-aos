@@ -1,3 +1,11 @@
+# [Unreleased]
+
+## Added
+- **Quiet hours** — an optional nightly window (start/end hour and minute, handling midnight wraparound) during which `MotionService` ignores camera motion entirely; the screen still dims and locks on its normal inactivity timer, it just never wakes from presence until the window ends. Off by default (22:00–07:00 once enabled). Configured via a new toggle + four fields in Settings → Mode detector
+
+## Fixed
+- MQTT command topics (`{clientId}/command/set` and the single-purpose fab/screensaver/clear-cache topics) now reject any inbound message published with the MQTT retain flag set, instead of executing it. A retained publish is replayed by the broker to every new subscriber — including the panel itself on reconnect — so without this a one-shot command like `reboot` or `clear_cache` would silently re-fire on every reconnect or app restart
+
 # [2.2.0] - 2026-09-27
 
 Kite AOS 2.2 is about panels nobody is standing in front of. Four independent, individually toggleable safeguards keep an unattended wall panel alive through crashes, memory pressure, overnight WiFi power-save and backend outages. Home Assistant also gains a proper companion surface — diagnostic sensors, a dashboard reachability sensor, discovery teardown, and a single remote command channel that drives the kiosk without one discovery entity per verb.
