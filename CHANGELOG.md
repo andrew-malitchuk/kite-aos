@@ -1,3 +1,18 @@
+# [2.3.0] - 2026-10-29
+
+A survivability follow-up: a nightly quiet-hours window for motion detection, a replay hole closed in the MQTT command channel, and six Crashlytics-reported crashes across services and both WebView engines fixed or hardened against.
+
+## Added
+- **Quiet hours** — an optional nightly window (start/end hour and minute, handling midnight wraparound) during which `MotionService` ignores camera motion entirely; the screen still dims and locks on its normal inactivity timer, it just never wakes from presence until the window ends. Off by default (22:00–07:00 once enabled). Configured via a new toggle + four fields in Settings → Mode detector
+
+## Fixed
+- MQTT command topics (`{clientId}/command/set` and the single-purpose fab/screensaver/clear-cache topics) now reject any inbound message published with the MQTT retain flag set, instead of executing it. A retained publish is replayed by the broker to every new subscriber — including the panel itself on reconnect — so without this a one-shot command like `reboot` or `clear_cache` would silently re-fire on every reconnect or app restart
+- `MqttService`/`MotionService` no longer crash the whole process when the system refuses `startForeground()` with `ForegroundServiceStartNotAllowedException` (Android 12+, e.g. after a `START_STICKY` restart) — the service now stops itself cleanly instead
+- `MqttService`'s brightness `ContentObserver` no longer crashes on an intermittent OEM `Settings.System.getInt()` bug (`NullPointerException` deep in `ParcelFileDescriptor`/`MemoryIntArray` deserialization) — one bad read is skipped instead of taking the service down
+- `AndroidWebViewEngine` no longer crashes when `addDocumentStartJavaScript()` throws `"Must be started before we block!"` on certain OEM Chromium WebView builds — the dashboard still loads, only the early ExoPlayer/CSS patch is skipped for that session
+- `AndroidWebViewEngine` no longer crashes with `NoSuchMethodError` on WebView provider builds missing `setSafeBrowsingEnabled()` despite declaring API 26+ support
+- `GeckoViewEngine`'s runtime pre-warm no longer crashes `Application.onCreate` if `GeckoRuntime.create()` fails synchronously (seen as a `dlopen` failure on some armeabi-v7a builds missing a bionic libc symbol)
+
 # [2.2.0] - 2026-09-27
 
 Kite AOS 2.2 is about panels nobody is standing in front of. Four independent, individually toggleable safeguards keep an unattended wall panel alive through crashes, memory pressure, overnight WiFi power-save and backend outages. Home Assistant also gains a proper companion surface — diagnostic sensors, a dashboard reachability sensor, discovery teardown, and a single remote command channel that drives the kiosk without one discovery entity per verb.
