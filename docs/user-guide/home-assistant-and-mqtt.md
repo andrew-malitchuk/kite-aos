@@ -106,6 +106,9 @@ with a JSON payload:
 
 Supported `action` values: `navigate` (needs `value`, the URL to load), `reload`, `back`, `forward`, `clear_cache`, `navigate_home`, and `evaluate_js` (needs `value`, the JS to run — Android WebView engine only; ignored on GeckoView).
 
+!!! warning "Don't publish with Retain on"
+    Publish commands to `{clientId}/command/set` without the MQTT retain flag. A retained message is replayed by the broker to every new subscriber — including the panel itself on its next reconnect or app restart — so a retained `reboot` or `clear_cache` would silently re-fire every time the panel comes back online. Kite drops any retained message on this topic rather than acting on it, but the safest fix is simply not to retain commands in the first place.
+
 #### Camera Stream URL Sensor
 
 When camera streaming is enabled, Kite publishes the live MJPEG endpoint as a sensor:

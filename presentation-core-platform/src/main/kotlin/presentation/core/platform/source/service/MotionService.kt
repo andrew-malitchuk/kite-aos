@@ -47,6 +47,7 @@ import presentation.core.platform.source.motion.MotionSourceFactory
 import presentation.core.platform.source.motion.NoOpMotionSource
 import presentation.core.platform.source.streaming.JpegFrameEncoder
 import presentation.core.platform.source.streaming.MjpegHttpServer
+import java.time.LocalTime
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
@@ -59,6 +60,10 @@ import kotlin.coroutines.cancellation.CancellationException
  *
  * A "blindness" mechanism ([enterBlindnessMode]) temporarily pauses frame analysis after screen
  * brightness changes, preventing the camera from interpreting its own screen light as motion.
+ *
+ * An optional quiet-hours window ([isQuietHoursActive]) suppresses the wake action during a
+ * configured nightly range without disabling the dim/lock inactivity timer, so an unattended panel
+ * stops lighting up on every passing shadow at night but still goes dark on schedule.
  *
  * Foreground service lifecycle:
  * - [onCreate]: Initializes the camera executor, helpers, notification channel, and starts the
@@ -169,6 +174,15 @@ public class MotionService : LifecycleService() {
     /** Tracks whether the screensaver is currently shown to avoid repeated emissions. */
     private var wasScreensaverActive = false
     private var wasDarkOverlayActive = false
+
+    /** Whether motion-triggered wake is suppressed during the configured nightly window. */
+    private var quietHoursEnabled = false
+
+    /** Quiet-hours window start, in minutes since midnight (local time). */
+    private var quietHoursStartMinutes = 0
+
+    /** Quiet-hours window end, in minutes since midnight (local time). */
+    private var quietHoursEndMinutes = 0
     // endregion
 
     /**
@@ -201,6 +215,15 @@ public class MotionService : LifecycleService() {
 
         /** Polling delay (ms) while motion is actively detected — shorter for responsiveness. */
         private const val ACTIVE_POLL_DELAY_MS = 5000L
+
+        /** Minutes per hour, used to fold a quiet-hours hour+minute pair into one offset. */
+        private const val MINUTES_PER_HOUR = 60
+
+        /** Default quiet-hours start hour (22:00) when the user has never set one. */
+        private const val DEFAULT_QUIET_HOURS_START_HOUR = 22
+
+        /** Default quiet-hours end hour (07:00) when the user has never set one. */
+        private const val DEFAULT_QUIET_HOURS_END_HOUR = 7
 
         /**
          * Target camera resolution for CameraX ImageAnalysis.
@@ -238,7 +261,29 @@ public class MotionService : LifecycleService() {
         setupNotificationChannel()
         // startForeground must be called within 5 seconds of the service being started,
         // otherwise the system throws a ForegroundServiceDidNotStartInTimeException.
-        startForeground(NOTIFICATION_ID, createNotification())
+        tryStartForeground()
+    }
+
+    /**
+     * Calls [startForeground], stopping the service instead of crashing if the system refuses
+     * the request.
+     *
+     * On Android 12+ the platform can throw `ForegroundServiceStartNotAllowedException` here even
+     * for a service the app itself just started — e.g. when the process is recreated by the
+     * system (a `START_STICKY` restart, or the caller's grace window having lapsed under memory
+     * pressure) without an active foreground-start exemption. There is nothing this service can do
+     * about that at this point, so the only safe response is to stop cleanly rather than take the
+     * whole process down with an uncaught [RuntimeException].
+     *
+     * @since 2.3.0
+     */
+    private fun tryStartForeground() {
+        try {
+            startForeground(NOTIFICATION_ID, createNotification())
+        } catch (e: Exception) {
+            Log.e(TAG, "startForeground rejected by the system; stopping service", e)
+            stopSelf()
+        }
     }
 
     /**
@@ -276,6 +321,16 @@ public class MotionService : LifecycleService() {
             try {
                 val model = getMoveDetectorUseCase().getOrNull()
                 isEnabled = model?.enabled ?: true
+
+                // Loaded unconditionally (not gated on isEnabled): the window suppresses the
+                // wake *action* inside handleFrame, which runs regardless of this flag.
+                quietHoursEnabled = model?.quietHoursEnabled == true
+                quietHoursStartMinutes =
+                    (model?.quietHoursStartHour ?: DEFAULT_QUIET_HOURS_START_HOUR) * MINUTES_PER_HOUR +
+                    (model?.quietHoursStartMinute ?: 0)
+                quietHoursEndMinutes =
+                    (model?.quietHoursEndHour ?: DEFAULT_QUIET_HOURS_END_HOUR) * MINUTES_PER_HOUR +
+                    (model?.quietHoursEndMinute ?: 0)
 
                 if (isEnabled) {
                     // Sensitivity is stored as an integer 0–100 in settings; divide by 10 for the
@@ -534,6 +589,10 @@ public class MotionService : LifecycleService() {
             val now = System.currentTimeMillis()
 
             val isMotion: Boolean = when {
+                // Quiet hours: treat every frame as motion-free. lastMotionTime simply stops
+                // advancing, so checkInactivity's existing idle timer dims/locks the screen as
+                // usual — the device coasts to sleep and nothing here ever calls wakeUp().
+                isQuietHoursActive() -> false
                 isChangingState && now - lastStateChangeTime > STATE_CHANGE_COOLDOWN_MS -> {
                     isChangingState = false
                     motionAnalyzer.reset()
@@ -655,6 +714,26 @@ public class MotionService : LifecycleService() {
     private fun enterBlindnessMode() {
         isChangingState = true
         lastStateChangeTime = System.currentTimeMillis()
+    }
+
+    /**
+     * Whether the current local time falls inside the configured quiet-hours window.
+     *
+     * Handles a window that wraps past midnight (e.g. 22:00 -> 07:00): when the start offset is
+     * after the end offset, "inside" means at or after start OR before end, rather than between
+     * them. An equal start/end (zero-length window) is never active — a misconfigured range fails
+     * safe to "no suppression" rather than silently blocking wake all day.
+     *
+     * @since 2.3.0
+     */
+    private fun isQuietHoursActive(): Boolean {
+        if (!quietHoursEnabled) return false
+        val nowMinutes = LocalTime.now().let { it.hour * MINUTES_PER_HOUR + it.minute }
+        return if (quietHoursStartMinutes <= quietHoursEndMinutes) {
+            nowMinutes in quietHoursStartMinutes until quietHoursEndMinutes
+        } else {
+            nowMinutes >= quietHoursStartMinutes || nowMinutes < quietHoursEndMinutes
+        }
     }
 
     /**

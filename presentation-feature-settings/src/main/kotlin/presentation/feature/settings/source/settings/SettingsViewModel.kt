@@ -1007,6 +1007,11 @@ public class SettingsViewModel(
             motionScreenTimeout = state.moveDetector?.screenTimeout ?: 60L,
             motionFabDelay = state.moveDetector?.fabDelay ?: 60L,
             isMotionEnabled = state.moveDetector?.enabled ?: false,
+            isQuietHoursEnabled = state.moveDetector?.quietHoursEnabled ?: false,
+            quietHoursStartHour = state.moveDetector?.quietHoursStartHour ?: 22,
+            quietHoursStartMinute = state.moveDetector?.quietHoursStartMinute ?: 0,
+            quietHoursEndHour = state.moveDetector?.quietHoursEndHour ?: 7,
+            quietHoursEndMinute = state.moveDetector?.quietHoursEndMinute ?: 0,
         )
         val json = configJson.encodeToString(snapshot)
         postSideEffect(SettingsSideEffect.ExportConfigEffect(json))
@@ -1077,6 +1082,11 @@ public class SettingsViewModel(
                         dimDelay = snapshot.motionDimDelay,
                         screenTimeout = snapshot.motionScreenTimeout,
                         fabDelay = snapshot.motionFabDelay,
+                        quietHoursEnabled = snapshot.isQuietHoursEnabled,
+                        quietHoursStartHour = snapshot.quietHoursStartHour,
+                        quietHoursStartMinute = snapshot.quietHoursStartMinute,
+                        quietHoursEndHour = snapshot.quietHoursEndHour,
+                        quietHoursEndMinute = snapshot.quietHoursEndMinute,
                     ),
                 )
 
@@ -1220,5 +1230,10 @@ public class SettingsViewModel(
         val motionScreenTimeout: Long = 60L,
         val motionFabDelay: Long = 60L,
         val isMotionEnabled: Boolean = false,
+        val isQuietHoursEnabled: Boolean = false,
+        val quietHoursStartHour: Int = 22,
+        val quietHoursStartMinute: Int = 0,
+        val quietHoursEndHour: Int = 7,
+        val quietHoursEndMinute: Int = 0,
     )
 }

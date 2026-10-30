@@ -91,6 +91,7 @@ import presentation.core.ui.source.kit.atom.gradient.backgroundGradient
 import presentation.core.ui.source.kit.atom.icon.IcApp24
 import presentation.core.ui.source.kit.atom.icon.IcCamera24
 import presentation.core.ui.source.kit.atom.icon.IcChrome24
+import presentation.core.ui.source.kit.atom.icon.IcDark24
 import presentation.core.ui.source.kit.atom.icon.IcDim24
 import presentation.core.ui.source.kit.atom.icon.IcDock24
 import presentation.core.ui.source.kit.atom.icon.IcFirefox24
@@ -349,6 +350,70 @@ internal fun MoveDetectorSection(state: SettingsState, onIntent: (SettingsIntent
                 )
             },
             range = 0..3600,
+            enabled = true,
+        )
+
+        ToggleListItem(
+            text = stringResource(R.string.settings_quiet_hours),
+            subtitle = stringResource(R.string.hint_quiet_hours),
+            icon = IcDark24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            isChecked = moveDetector.quietHoursEnabled ?: false,
+            onCheckedChange = {
+                onIntent(SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(quietHoursEnabled = it)))
+            },
+        )
+
+        NumberInputListItem(
+            text = stringResource(R.string.settings_quiet_hours_start_hour),
+            icon = IcDark24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = moveDetector.quietHoursStartHour ?: 22,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(quietHoursStartHour = it)))
+            },
+            range = 0..23,
+            enabled = true,
+        )
+
+        NumberInputListItem(
+            text = stringResource(R.string.settings_quiet_hours_start_minute),
+            icon = IcDark24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = moveDetector.quietHoursStartMinute ?: 0,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(quietHoursStartMinute = it)))
+            },
+            range = 0..59,
+            enabled = true,
+        )
+
+        NumberInputListItem(
+            text = stringResource(R.string.settings_quiet_hours_end_hour),
+            icon = IcDark24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = moveDetector.quietHoursEndHour ?: 7,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(quietHoursEndHour = it)))
+            },
+            range = 0..23,
+            enabled = true,
+        )
+
+        NumberInputListItem(
+            text = stringResource(R.string.settings_quiet_hours_end_minute),
+            icon = IcDark24,
+            iconBackgroundColor = Theme.color.brand,
+            iconForegroundColor = Theme.color.inkMain,
+            value = moveDetector.quietHoursEndMinute ?: 0,
+            onValueChange = {
+                onIntent(SettingsIntent.OnSetMoveDetectorIntent(moveDetector.copy(quietHoursEndMinute = it)))
+            },
+            range = 0..59,
             enabled = true,
         )
     }

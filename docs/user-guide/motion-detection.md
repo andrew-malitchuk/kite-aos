@@ -29,6 +29,27 @@ The master **Mode detector** toggle activates the camera service. It is on by de
 
 ---
 
+## Quiet Hours
+
+By default, motion wakes the screen at any hour — useful for a kitchen or living-room panel, less so for one mounted in a bedroom or hallway that shouldn't light up every time someone walks past at 3 a.m.
+
+**Quiet hours** add a nightly window during which Kite ignores motion entirely. The screen still dims and locks on the normal *Dim delay* / *Screen timeout* schedule below — it just never wakes back up from presence until the window ends.
+
+| Setting | Range | Default | What it does |
+|---|---|---|---|
+| **Quiet hours** | toggle | off | Suppresses motion-triggered wake during the window below. |
+| **Start hour** | 0–23 | 22 | Hour the quiet window begins (24-hour clock). |
+| **Start minute** | 0–59 | 0 | Minute the quiet window begins. |
+| **End hour** | 0–23 | 7 | Hour the quiet window ends. |
+| **End minute** | 0–59 | 0 | Minute the quiet window ends. |
+
+The window can cross midnight — the default, 22:00 to 07:00, means "all night." If start and end are set to the exact same time, the window is zero-length and never engages, rather than silently blocking motion for the whole day.
+
+!!! info "Applies on the next restart"
+    Like the rest of the Mode detector section, a quiet-hours change is picked up the next time the motion service restarts — flip the master **Mode detector** toggle off and on, or restart the app, to apply it immediately.
+
+---
+
 ## Tuning Tips
 
 **Screen dims too quickly** — increase *Dim delay*. 60–120 s is a comfortable range for a living room panel.

@@ -34,6 +34,11 @@ internal object MoveDetectorProtobufPreferenceMapper :
                 .setDimDelay(input.dimDelay ?: 0L)
                 .setScreenTimeout(input.screenTimeout ?: 0L)
                 .setFabDelay(input.fabDelay ?: 5L)
+                .setQuietHoursEnabled(input.quietHoursEnabled ?: false)
+                .setQuietHoursStartHour(input.quietHoursStartHour ?: 22)
+                .setQuietHoursStartMinute(input.quietHoursStartMinute ?: 0)
+                .setQuietHoursEndHour(input.quietHoursEndHour ?: 7)
+                .setQuietHoursEndMinute(input.quietHoursEndMinute ?: 0)
                 .build()
         }
 
@@ -47,6 +52,11 @@ internal object MoveDetectorProtobufPreferenceMapper :
                 dimDelay = input.dimDelay,
                 screenTimeout = input.screenTimeout,
                 fabDelay = input.fabDelay,
+                quietHoursEnabled = input.quietHoursEnabled,
+                quietHoursStartHour = input.quietHoursStartHour,
+                quietHoursStartMinute = input.quietHoursStartMinute,
+                quietHoursEndHour = input.quietHoursEndHour,
+                quietHoursEndMinute = input.quietHoursEndMinute,
             )
         }
 }

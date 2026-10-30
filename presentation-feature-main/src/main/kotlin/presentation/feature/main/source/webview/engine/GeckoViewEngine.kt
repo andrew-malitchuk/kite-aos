@@ -46,7 +46,17 @@ private const val GECKO_CRASH_RECOVERY_DELAY_MS = 1_000L
  * Safe to call multiple times — subsequent calls are no-ops (singleton already exists).
  */
 public fun preWarmGeckoRuntime(context: android.content.Context) {
-    GeckoRuntimeHolder.getOrCreate(context.applicationContext)
+    try {
+        GeckoRuntimeHolder.getOrCreate(context.applicationContext)
+    } catch (e: Throwable) {
+        // GeckoRuntime.create() can fail synchronously on devices whose bionic libc is missing a
+        // symbol libxul.so expects (seen as a dlopen failure referencing "lutimes" on some
+        // armeabi-v7a builds that nonetheless report API 26+). The asynchronous native-load
+        // failure on GeckoView's own background thread is not catchable from here — this guard
+        // only covers the synchronous path — but it keeps a pre-warm failure from crashing
+        // Application.onCreate for the whole process.
+        Log.e("GeckoViewEngine", "GeckoRuntime pre-warm failed", e)
+    }
 }
 
 /**
