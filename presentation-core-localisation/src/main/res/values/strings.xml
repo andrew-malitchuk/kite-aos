@@ -48,6 +48,11 @@
     <string name="settings_dim_delay">Dim delay</string>
     <string name="settings_fab_delay">FAB delay</string>
     <string name="settings_screen_timeout">Screen timeout</string>
+    <string name="settings_quiet_hours">Quiet hours</string>
+    <string name="settings_quiet_hours_start_hour">Start hour</string>
+    <string name="settings_quiet_hours_start_minute">Start minute</string>
+    <string name="settings_quiet_hours_end_hour">End hour</string>
+    <string name="settings_quiet_hours_end_minute">End minute</string>
     <string name="settings_move_detector">Mode detector</string>
     <string name="settings_dock_position">Dock position</string>
 
@@ -142,6 +147,7 @@
     <string name="hint_dim_delay">Seconds without motion before screen dims</string>
     <string name="hint_screen_timeout">Seconds after dim before screen locks</string>
     <string name="hint_fab_delay">Seconds of motion before control button appears</string>
+    <string name="hint_quiet_hours">Ignore motion and keep the screen off during this nightly window</string>
     <string name="hint_mqtt_section">All fields below must be valid to enable</string>
     <string name="hint_mqtt_entity_uptime">Seconds since boot — reveals silent restarts</string>
     <string name="hint_mqtt_entity_app_version">Installed version — useful across several panels</string>

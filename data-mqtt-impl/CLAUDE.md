@@ -74,6 +74,17 @@ target, so they share one topic.
     typed by hand into Home Assistant automations, so a bad one is expected traffic, and killing
     the collector over it would take the whole command channel down with it.
 
+**Retained-publish rejection** (`@since 2.2.0`): every topic `publishReceived` routes into
+`commandFlow` is a one-shot action (button, optimistic switch/text), never state. The lambda drops
+any packet with `packet.retain == true` before it reaches `commandFlow`, so a retained command
+survives nowhere upstream to replay. Without this, a broker replays the last retained publish on
+that topic to every new subscriber — including this client on its own reconnect or app restart —
+so a single "reboot" or "clear_cache" automation would silently re-fire on every reconnect. Filtered
+at this one ingress point rather than per use case, because every command consumer
+(`ObserveMqttFabCommandUseCase`, `ObserveMqttScreensaverCommandUseCase`,
+`ObserveMqttClearCacheCommandUseCase`, `ObserveMqttRemoteCommandUseCase`,
+`ObserveMqttMotionCommandUseCase`) reads from the same `commandFlow`.
+
 Only three actions get a discovery entity; the rest are reachable on the same topic but would only
 crowd the device card if every one of them became a button nobody presses by hand:
 

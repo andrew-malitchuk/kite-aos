@@ -6,7 +6,7 @@ The configuration center for the Kite kiosk application. All user-facing setting
 
 | Section | What it controls |
 |---|---|
-| **Mode detector** | Camera-based presence detection: camera source, sensitivity, dim delay, screen timeout, FAB appearance delay. |
+| **Mode detector** | Camera-based presence detection: camera source, sensitivity, dim delay, screen timeout, FAB appearance delay, and an optional nightly quiet-hours window. |
 | **Camera streaming** | MJPEG stream server: port, quality, FPS, and output rotation. |
 | **Screensaver** | Idle overlay: activation delay, slideshow interval, clock overlay, image folder. |
 | **Auto Reboot** | Scheduled device reboots: hour, minute, and interval (daily / weekly / bi-weekly / monthly). |
@@ -26,6 +26,7 @@ The configuration center for the Kite kiosk application. All user-facing setting
 - **Browser Engine**: Toggle between Android WebView and GeckoView (Firefox) inline.
 - **Motion Detector**: Fine-tune sensitivity, dim delay, screen timeout, and FAB appearance delay.
 - **Camera Source** (`@since 1.4.0`): Choose which camera drives motion detection and MJPEG streaming — Auto / Front / Rear / External (USB). A tappable `SimpleListItem` in the Mode-detector section cycles the choices, backed by `CameraSourceModel` and `Get`/`SetCameraSourceUseCase` in `SettingsViewModel`; the change is applied optimistically and re-picked up by `MotionService`. Available on every form factor (USB-OTG webcams on phones/tablets included), not just TV — on TV the cycle collapses to Auto ⇄ External since leanback boxes lack a built-in front/rear camera.
+- **Quiet Hours** (`@since 2.3.0`): A `ToggleListItem` plus four `NumberInputListItem`s in the Mode-detector section — `quietHoursEnabled` and a start/end hour+minute pair (hour `0..23`, minute `0..59`), mirroring the hour+minute pair already used by Auto Reboot. Off by default. Edits go through the same `SettingsIntent.OnSetMoveDetectorIntent` as every other field on `MoveDetectorModel`; `MotionService` is the consumer, forcing every camera frame to read as motion-free while the window is active so the screen dims/locks on its normal inactivity timer instead of waking from presence.
 - **Camera Streaming**: Configure MJPEG server port, quality, FPS, and frame rotation.
 - **Screensaver**: Configure idle overlay with image slideshow, clock display, and activation timing.
 - **Auto Reboot**: Set a scheduled daily/weekly/bi-weekly/monthly reboot at a specific time.

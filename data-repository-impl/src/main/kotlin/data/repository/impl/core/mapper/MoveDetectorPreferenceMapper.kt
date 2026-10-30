@@ -27,6 +27,11 @@ internal object MoveDetectorPreferenceMapper :
                 dimDelay = input.dimDelay,
                 screenTimeout = input.screenTimeout,
                 fabDelay = input.fabDelay,
+                quietHoursEnabled = input.quietHoursEnabled,
+                quietHoursStartHour = input.quietHoursStartHour,
+                quietHoursStartMinute = input.quietHoursStartMinute,
+                quietHoursEndHour = input.quietHoursEndHour,
+                quietHoursEndMinute = input.quietHoursEndMinute,
             )
         }
 
@@ -38,6 +43,11 @@ internal object MoveDetectorPreferenceMapper :
                 dimDelay = input.dimDelay,
                 screenTimeout = input.screenTimeout,
                 fabDelay = input.fabDelay,
+                quietHoursEnabled = input.quietHoursEnabled,
+                quietHoursStartHour = input.quietHoursStartHour,
+                quietHoursStartMinute = input.quietHoursStartMinute,
+                quietHoursEndHour = input.quietHoursEndHour,
+                quietHoursEndMinute = input.quietHoursEndMinute,
             )
         }
 }

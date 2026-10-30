@@ -213,13 +213,24 @@ internal class TelemetryMqttSourceImpl : TelemetryMqttSource {
                                     willRetain = true,
                                     willQos = Qos.AT_LEAST_ONCE,
                                     debugLog = false,
-                                    // Route inbound PUBLISH packets to the command flow.
+                                    // Route inbound PUBLISH packets to the command flow. Every
+                                    // subscribed topic here is a one-shot command (button press,
+                                    // optimistic switch/text set) rather than state — a retained
+                                    // publish on one of them is the broker replaying a past
+                                    // command to every new subscriber, including this client on
+                                    // its own reconnect/app-restart. Without this guard a single
+                                    // "reboot" or "clear_cache" automation would silently re-fire
+                                    // every time the panel reconnects. Filtering here, at the one
+                                    // ingress point all command use cases read from, covers every
+                                    // consumer at once instead of each one re-implementing it.
                                     publishReceived = { packet ->
-                                        val payloadStr = packet.payload
-                                            ?.toByteArray()
-                                            ?.decodeToString()
-                                            ?: ""
-                                        commandFlow.tryEmit(Pair(packet.topicName, payloadStr))
+                                        if (!packet.retain) {
+                                            val payloadStr = packet.payload
+                                                ?.toByteArray()
+                                                ?.decodeToString()
+                                                ?: ""
+                                            commandFlow.tryEmit(Pair(packet.topicName, payloadStr))
+                                        }
                                     },
                                 )
 
